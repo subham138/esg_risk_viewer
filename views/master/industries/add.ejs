@@ -1,0 +1,65 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3>Add/Edit Industries</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/industries">Industries Dashboard</a></li>
+                    <li class="breadcrumb-item">Add/Edit Industries</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/ind_save" class="needs-validation" novalidate="">
+                <div class="row g-3 py-3">
+                    <div class="col-md-12">
+                        <label class="form-label" for="sec_id">Section</label>
+                        <select class="form-select" id="sec_id" name="sec_id" required="">
+                            <option selected="" value="">Select Section</option>
+                            <% if(sec_data.msg.length > 0){
+                                sec_data.msg.forEach(dt => { 
+                                    var selected = '';
+                                    if(ind_id > 0) 
+                                        if(dt.id == ind_data.msg[0].sec_id) selected = 'selected'; %>
+                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
+                                <% })
+                            } %>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="ind_name">Industries name</label>
+                        <input class="form-control" id="ind_name" name="ind_name" type="text" value="<%= ind_id > 0 ? ind_data.msg[0].ind_name : '' %>" required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <% if(topic_catg.msg.length > 0){
+                        topic_catg.msg.forEach(dt => { %>
+                            <u><p class="f-w-600 f-15 mt-2"><%= dt.catg_name %></p></u>
+                            <% topic[dt.catg_name].msg.forEach(top => { %>
+                                <div class="col-md-6">
+                                    <input id="<%= top.id %>" name="top_id" value="<%= top.id %>" type="checkbox">
+                                    <label class="mt-0" for="<%= top.id %>"><%= top.topic_name %></label>
+                                </div>
+                                <% }) %>
+                        <% })
+                    } %>
+                </div>
+                <input type="hidden" name="id" value="<%= ind_id > 0 ? ind_id : 0 %>">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../templates/footer.ejs') %>

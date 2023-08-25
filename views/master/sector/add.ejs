@@ -1,0 +1,38 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3>Add/Edit Sector</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/dashboard">Sector Dashboard</a></li>
+                    <li class="breadcrumb-item">Add/Edit Sector</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/sec_save" class="needs-validation" novalidate="">
+                <div class="row g-3 py-3">
+                    <div class="col-md-12">
+                    <label class="form-label" for="sector">Sector name</label>
+                    <input class="form-control" id="sector" name="sector" type="text" value="<%= sec_id > 0 ? data.msg[0].sec_name : '' %>" required="">
+                    <div class="valid-feedback">No Error</div>
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="<%= sec_id > 0 ? sec_id : 0 %>">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../templates/footer.ejs') %>
