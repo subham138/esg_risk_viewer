@@ -15,9 +15,20 @@ const getIndustriesList = (id = null, sec_id = null) => {
     return new Promise(async (resolve, reject) => {
         var select = 'a.id, a.ind_name, a.sec_id, b.sec_name',
         table_name = 'md_industries a, md_sector b',
-        whr = id > 0 ? `a.id = ${id}` : `a.sec_id=b.id ${sec_id > 0 ? `AND a.sec_id = '${sec_id}'` : ''}`, 
+        whr = id > 0 ? `a.sec_id=b.id AND a.id = ${id}` : `a.sec_id=b.id ${sec_id > 0 ? `AND a.sec_id = '${sec_id}'` : ''}`, 
         order = null;
         var res_dt = await db_Select(select, table_name, whr, order)
+        if(id > 0){
+            var select =
+                "a.id, a.ind_id, a.topic_id, b.topic_name, b.topic_catg_id, c.catg_name, a.topic_flag",
+              table_name = "md_industries_topics a, md_topic b, md_topic_catg c",
+              whr = id > 0 ? `a.topic_id=b.id AND b.topic_catg_id=c.id AND a.ind_id = ${id}` : `a.topic_id=b.id AND b.topic_catg_id=c.id`,
+              order = null;
+              var topic_dt = await db_Select(select, table_name, whr, order)
+              if(topic_dt.suc > 0 && topic_dt.msg.length > 0){
+                res_dt.msg[0]["topic_dt"] = topic_dt.msg;
+              }
+        }
         resolve(res_dt)
     })
 }
