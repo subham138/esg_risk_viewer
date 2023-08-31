@@ -211,7 +211,7 @@ MasterRouter.get("/busi_act", async (req, res) => {
 
 MasterRouter.get("/get_ind_list_ajax", async (req, res) => {
   var data = req.query;
-  var ind_data = await getIndustriesList(0, data.sec_id);
+  var ind_data = await getIndustriesList(data.ind_id > 0 ? data.ind_id : null, data.sec_id);
   res.send(ind_data);
 });
 

@@ -39,6 +39,7 @@ app.use((req, res, next) => {
   delete req.session.message;
   next();
 });
+const { DataCollectionRouter } = require("./router/DataCollectionRouter");
 const { MasterRouter } = require("./router/MasterRouter");
 // END //
 
@@ -61,6 +62,7 @@ app.get("/", (req, res) => {
 
 app.use(UserRouter);
 app.use(MasterRouter);
+app.use(DataCollectionRouter)
 
 app.get("/dashboard", (req, res) => {
   res.render("pages/index");
