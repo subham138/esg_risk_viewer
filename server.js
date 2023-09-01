@@ -79,7 +79,7 @@ app.get("/user_data", (req, res) => {
       { id: 6, name: "f" },
     ],
   };
-  console.log(data);
+  // console.log(data);
   res.send(data);
 });
 
