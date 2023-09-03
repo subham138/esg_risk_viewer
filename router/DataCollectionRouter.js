@@ -1,7 +1,9 @@
 const express = require("express"),
-  DataCollectionRouter = express.Router();
+  DataCollectionRouter = express.Router(),
+  dateFormat = require('dateformat');
 
 const { getSectorList, getIndustriesList } = require("../modules/AdminModule");
+const { getSusDiscList } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select } = require("../modules/MasterModule");
 
 DataCollectionRouter.get("/sus_disc", async (req, res) => {
@@ -10,9 +12,10 @@ DataCollectionRouter.get("/sus_disc", async (req, res) => {
     ind_id: req.query.ind_id ? req.query.ind_id : 0,
   };
   var sec_data = await getSectorList(),
-    ind_list = [];
+    ind_list = {msg:[]};
   if (selected.sec_id > 0)
     ind_list = await getIndustriesList(null, selected.sec_id);
+  // console.log(ind_list);
   var data = {
     sec_data,
     ind_list,
@@ -23,22 +26,52 @@ DataCollectionRouter.get("/sus_disc", async (req, res) => {
 });
 
 DataCollectionRouter.post('/save_sus_disc', async (req, res) => {
-  var data = req.body
+  var data = req.body, res_dt, 
+  user = 'admin', 
+  datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
   for(let dt of data.top_id){
-    for(let i = 0; i < data[`metric_${dt}`].length; i++){
-      var chk_whr = `top_id = ${dt} AND metric = '${data[`metric_${dt}`][i]}' AND catg = '${data[`catg_${dt}`][i]}' AND unit = '${data[`unit_${dt}`][i]}' AND code = '${data[`code_${dt}`][i]}'`;
+    // console.log(dt);
+    var j = 1;
+    // console.log(Array.isArray(data[`metric_${dt}`]));
+    if(Array.isArray(data[`metric_${dt}`])){
+      for(let i = 0; i < data[`metric_${dt}`].length; i++){
+        var chk_whr = `sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
+        var chk_dt = await db_Select('id', 'td_sus_dis_top_met', chk_whr, null)
+        
+        var table_name = `td_sus_dis_top_met`, 
+        fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `top_id = '${dt}', metric = '${data[`metric_${dt}`][i]}', catg = '${data[`catg_${dt}`][i]}', unit = '${data[`unit_${dt}`][i]}', code = '${data[`code_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'` : 
+          '(sec_id, ind_id, top_id, sl_no, metric, catg, unit, code, created_by, created_dt)', 
+        values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`metric_${dt}`][i]}', '${data[`catg_${dt}`][i]}', '${data[`unit_${dt}`][i]}', '${data[`code_${dt}`][i]}', '${user}', '${datetime}')`,
+        whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = '${chk_dt.msg[0].id}'` : null, 
+        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+        res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        j++
+      }
+    }else{
+      var chk_whr = `sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
       var chk_dt = await db_Select('id', 'td_sus_dis_top_met', chk_whr, null)
-      
+      console.log(chk_dt);
       var table_name = `td_sus_dis_top_met`, 
-      fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `top_id = '${dt}', metric = '${data[`metric_${dt}`][i]}', catg = '${data[`catg_${dt}`][i]}', unit = '${data[`unit_${dt}`][i]}', code = '${data[`code_${dt}`][i]}'` : '', 
-      values, 
-      whr, 
-      flag;
-      var res_dt = await db_Insert(table_name, fields, values, whr, flag)
-      console.log(` \n`);
+      fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `top_id = '${dt}', metric = '${data[`metric_${dt}`]}', catg = '${data[`catg_${dt}`]}', unit = '${data[`unit_${dt}`]}', code = '${data[`code_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'` : 
+        '(sec_id, ind_id, top_id, sl_no, metric, catg, unit, code, created_by, created_dt)', 
+      values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`metric_${dt}`]}', '${data[`catg_${dt}`]}', '${data[`unit_${dt}`]}', '${data[`code_${dt}`]}', '${user}', '${datetime}')`,
+      whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = '${chk_dt.msg[0].id}'` : null, 
+      flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+      res_dt = await db_Insert(table_name, fields, values, whr, flag)
     }
   }
-  res.send(data)
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect(`/sus_disc?sec_id=${data.sec_id}&ind_id=${data.ind_id}`);
 })
+
+DataCollectionRouter.get("/sus_disc_ajax", async (req, res) => {
+  var data = req.query
+  var res_dt = await getSusDiscList(data.sec_id, data.ind_id, 0)
+  res_dt = {suc: res_dt.suc > 0 ? (res_dt.msg.length > 0 ? 1 : 2) : res_dt.suc,  msg: res_dt.msg}
+  res.send(res_dt)
+});
 
 module.exports = { DataCollectionRouter };

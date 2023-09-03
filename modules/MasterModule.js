@@ -32,7 +32,7 @@ const db_Insert = (table_name, fields, values, whr, flag) => {
     sql = `INSERT INTO ${table_name} ${fields} VALUES ${values}`;
     msg = "Inserted Successfully !!";
   }
-  console.log(sql);
+  // console.log(sql);
   return new Promise((resolve, reject) => {
     db.query(sql, (err, lastId) => {
       if (err) {
