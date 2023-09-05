@@ -135,9 +135,13 @@ DataCollectionRouter.post('/save_act_metric', async (req, res) => {
 
 DataCollectionRouter.get('/get_act_metric_ajax', async (req, res) => {
   var data = req.query
-  var res_dt = await getActMetrialDtls(data.sec_id, data.ind)
+  var res_dt = await getActMetrialDtls(data.sec_id, data.ind_id)
   res_dt = {suc: res_dt.suc > 0 ? (res_dt.msg.length > 0 ? 1 : 2) : res_dt.suc, msg: res_dt.msg}
   res.send(res_dt)
+})
+
+DataCollectionRouter.get('/dynamic_entry', (req, res) => {
+  res.render('data_collection/dynamic_form/entry')
 })
 
 module.exports = { DataCollectionRouter };
