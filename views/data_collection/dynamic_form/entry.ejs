@@ -1,33 +1,16 @@
 <%- include('../../templates/header.ejs') %>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
     <style>
-        /* .nomrgn {
-            margin-left: 0px !important;
-            margin-right: 0px !important;
+        .drop-row{
+            z-index: 0;
         }
-
-        .nopadd {
-            padding: 0px !important;
-        } */
-
-        /* #modules {
-            background: #eee;
-            z-index: 1;
-        } */
-
-        /* .drag-field {
-            padding-top: 15px !important;
-        } */
-
-        /* .drag-field a {
-            width: 100%;
-        } */
         .drag{
             width: 100%;
+            z-index: 1;
         }
-        #dropzone {
-            padding: 20px;
-            /* background: #fff; */
+        .dropzone {
+            padding: 10px;
+            /* background: #a56e6e; */
             z-index: 0;
         }
 
@@ -94,23 +77,56 @@
                 <% } %>
             </div>
             <div class="col-md-3">
-                <div class="card">
+                <div class="card" style="position: fixed;">
                     <div class="card-body">
                         <div id="modules" class=" col-sm-12 drag-field nopadd">
-                            <p class="drag col-sm-6"><a class="btn btn-default">Heading</a></p>
-                            <p class="drag col-sm-6"><a class="btn btn-default">Sub-Heading</a></p>
-                            <p class="drag col-sm-6"><a class="btn btn-default">Textarea</a></p>
-                            <p class="drag col-sm-6"><a class="btn btn-default">List</a></p>
-                            <p class="drag col-sm-6"><a class="btn btn-default">Table</a></p>
+                            <p class="drag col-sm-6" id="sec_head_1"><a class="btn btn-default">Heading</a></p>
+                            <p class="drag col-sm-6" id="sec_sub_head_1"><a class="btn btn-default">Sub-Heading</a></p>
+                            <p class="drag col-sm-6" id="sec_textarea_head_1"><a class="btn btn-default">Textarea</a></p>
+                            <!-- <p class="drag col-sm-6" id="sec_list_head_1"><a class="btn btn-default">List</a></p> -->
+                            <p class="drag col-sm-6" id="sec_table_head_1"><a class="btn btn-default">Table</a></p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-9">
-                <div class="card">
-                    <div class="card-body">
-                        <div id="dropzone" class="col-sm-12"></div>
-                    </div>
+            <div class="col-md-7">
+                <div class="row drop-row" id="drop">
+                    <table class="table table-hover" id="table_1">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input class="form-control form-control-sm" type="text" id="table_1_heading_1"
+                                        name="table_1_heading[]" placeholder="Add Header" aria-label="Add Header">
+                                </th>
+                                <th>
+                                    <button type="button" id="add_header_1" class="btn btn-primary"
+                                        onclick="add_header(1)">Add Head</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input class="form-control form-control-sm" type="text" id="table_1_body_1"
+                                        name="table_1_body[]" placeholder="Add Header" aria-label="Add Header">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" onclick="add_tb_row(1)">Add
+                                        Row</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- <div class="col-md-12">
+                        <div class="card row">
+                            <div class="card-body">
+                                <div class="dropzone" id="1"></div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success float-end" onclick="add_row()"><i class="icofont icofont-plus-circle"></i></button>
                 </div>
             </div>
         </div>
@@ -119,72 +135,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script>
         $('.drag').draggable({
-            appendTo: 'body',
+            // appendTo: 'body',
             helper: 'clone'
         });
-        $('#dropzone').droppable({
-            activeClass: 'active',
-            hoverClass: 'hover',
-            greedy: true,
-            // accept: ":not(.ui-sortable-helper)", // Reject clones generated by sortable
-            drop: function (e, ui) {
-                switch (ui.draggable.text()) {
-                    case 'Heading':
-                        var $el = $('<div class="drop-item form-group"><h4 onclick="editLabel(this)">' + ui.draggable.text() + '</h4><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></div>');
-                        $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                        $(this).append($el);
-                        break;
-                    case 'Sub-Heading':
-                        var $el = $('<div class="drop-item form-group"><h6 onclick="editLabel(this)">' + ui.draggable.text() + '</h6><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></div>');
-                        $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                        $(this).append($el);
-                        break;
-                    case 'Textarea':
-                        var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><input class="form-control" type="email" /></div>');
-                        $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                        $(this).append($el);
-                        break;
-                    case 'List':
-                        var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><input class="form-control" type="email" /></div>');
-                        $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                        $(this).append($el);
-                        break;
-                    case 'Table':
-                        var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><input class="form-control" type="email" /></div>');
-                        $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                        $(this).append($el);
-                        break;
-                
-                    default:
-                        break;
-                }
-                // if (ui.draggable.text() == "Textarea") {
-                //     var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><textarea class="form-control"/></div>');
-                //     $el.append($('<button type="button" class="remove"><i class="glyphicon glyphicon-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                //     $(this).append($el);
-                // }
-                // else if (ui.draggable.text() == "Email") {
-                //     var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><input class="form-control" type="email" /></div>');
-                //     $el.append($('<button type="button" class="remove"><i class="glyphicon glyphicon-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                //     $(this).append($el);
-                // }
-                // else if (ui.draggable.text() == "Radio Button") {
-                //     var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><div class="radio"><label><input type="radio" name="optradio" checked>Option 1</label></div></div>');
-                //     $el.append($('<button type="button" class="remove"><i class="glyphicon glyphicon-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                //     $(this).append($el);
-                // }
-                // else {
-                //     var $el = $('<div class="drop-item form-group"><label><p onclick="editLabel(this)">' + ui.draggable.text() + '</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><input class="form-control" type="text" /></div>');
-                //     $el.append($('<button type="button" class="remove"><i class="glyphicon glyphicon-trash"></i></button>').click(function () { $(this).parent().detach(); }));
-                //     $(this).append($el);
-                // }
-            }
-        }).sortable({
-            items: '.drop-item',
-            sort: function () {
-                $(this).removeClass("active");
-            }
-        });
+        $(document).ready(function(){
+            add_row()
+        })
         function editLabel(elm) {
             var jelm = $(elm);
             var htmlElm = jelm[0];
@@ -202,6 +158,84 @@
                     $(htmlElm).show().text(initial_text);
                 }
             });
+        }
+    </script>
+    <script>
+        function add_row(){
+            var id = $('.dropzone').length
+            var next_id = parseInt(id) + 1
+            var drzone_id = `dr${next_id}`
+            var dropzone = $(`<div class="col-md-12"><div class="card row"><div class="card-body"><div class="dropzone" id="${drzone_id}"></div></div></div></div>`);
+            dropzone.droppable({
+                activeClass: 'active',
+                hoverClass: 'hover',
+                greedy: true,
+                accept: '*',
+                // accept: ":not(.ui-sortable-helper)", // Reject clones generated by sortable
+                drop: function (e, ui) {
+                    // console.log(e.target.id);
+                    var id_attr = ui.draggable.attr('id')
+                    id_attr = id_attr.split('_')
+                    var id = id_attr[id_attr.length - 1]
+                    var zone_id = e.target.id
+                    $(`#drop`).after(`<input type="hidden" name="sec_id" value="${id}" />`)
+                    switch (ui.draggable.text()) {
+                        case 'Heading':
+                            chk_id = $(`#header_${zone_id}`).length
+                            chk_id = chk_id > 0 ? chk_id + 1 : zone_id
+                            var $el = $(`<div class="drop-item form-group"><h5 onclick="editLabel(this)">${ui.draggable.text()}</h5><input type="text" value="" name="header_${zone_id}" class="edit form-control" id="header_${zone_id}" style="display: none;"></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                        case 'Sub-Heading':
+                            chk_id = $(`#sub_header_${zone_id}`).length
+                            chk_id = chk_id > 0 ? chk_id + 1 : zone_id
+                            var $el = $(`<div class="drop-item form-group"><h6 onclick="editLabel(this)">${ui.draggable.text()}</h6><input type="text" value="" name="sub_header_${zone_id}" class="edit" id="sub_heading_${zone_id}" style="display: none;"></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                        case 'Textarea':
+                            chk_id = $(`#textarea_${zone_id}`).length
+                            chk_id = chk_id > 0 ? chk_id + 1 : zone_id
+                            var $el = $(`<div class="drop-item form-group"><label><p onclick="editLabel(this)">${ui.draggable.text()}</p><textarea class="form-control" name="textarea_${zone_id}" class="edit" id="textarea_${chk_id}" style="display: none;"/></label></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                        case 'Table':
+                            var $el = $(`<div class="drop-item form-group"><label><p onclick="editLabel(this)">${ui.draggable.text()}</p><input type="text" value="" name="" class="edit" id="edit" style="display: none;"></label><input class="form-control" type="email" /></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+            }).sortable({
+                items: '.drop-item',
+                sort: function () {
+                    $(this).removeClass("active");
+                }
+            });
+            $(`#drop`).append(dropzone)
+        }
+    </script>
+
+    <script>
+        function add_tb_row(id) {
+            if ($(`#add_header_${id}`).is(":visible")) {
+                if (confirm('Once you have click ok you can not add header. Do you want to continue?')) {
+                    $(`#add_header_${id}`).hide()
+                    $(`#table_${id} tbody:last`).append($(`#table_${id} tbody tr:last`).clone().find('input').val('').end())
+                }
+            } else {
+                $(`#table_${id} tbody:last`).append($(`#table_${id} tbody tr:last`).clone().find('input').val('').end())
+            }
+        }
+        function add_header(id) {
+            console.log(id);
+            $(`#table_${id} thead tr th:last`).before(`<th><input class="form-control form-control-sm" type="text" id="table_${id}_heading_${parseInt(id) + 1}" name="table_${id}_heading[]" placeholder="Add Header" aria-label="Add Header"></th>`)
+            $(`#table_${id} tbody tr td:last`).before(`<td><input class="form-control form-control-sm" type="text" id="table_${id}_body_${parseInt(id) + 1}" name="table_${id}_body[]" placeholder="Add Description" aria-label="Add Description"></td>`)
         }
     </script>
 
