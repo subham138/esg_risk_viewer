@@ -144,4 +144,9 @@ DataCollectionRouter.get('/dynamic_entry', (req, res) => {
   res.render('data_collection/dynamic_form/entry')
 })
 
+DataCollectionRouter.post('/save_dynamic_entry', (req, res) => {
+  var data = req.body
+  res.send(data)
+})
+
 module.exports = { DataCollectionRouter };
