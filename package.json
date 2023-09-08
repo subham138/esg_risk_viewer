@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "ESG Risk Viewer",
   "main": "server.js",
+  "nodemonConfig": {
+    "ignore":["*.json"]
+  },
   "scripts": {
     "test": "nodemon server"
   },

@@ -1,11 +1,14 @@
 const express = require("express"),
   DataCollectionRouter = express.Router(),
-  dateFormat = require("dateformat");
+  dateFormat = require("dateformat"),
+  fs = require('fs'),
+  path = require('path');
 
 const { getSectorList, getIndustriesList } = require("../modules/AdminModule");
 const {
   getSusDiscList,
   getActMetrialDtls,
+  getDynamicData,
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select } = require("../modules/MasterModule");
 
@@ -189,6 +192,16 @@ DataCollectionRouter.get("/get_act_metric_ajax", async (req, res) => {
   res.send(res_dt);
 });
 
+DataCollectionRouter.get('/dynamic_entry_view', async (req, res) => {
+  var req_data = req.query
+  var dynamic_data = await getDynamicData()
+  var data = {
+    dynamic_data,
+    header: "Dynamic Data List",
+  };
+  res.render("data_collection/dynamic_form/view", data);
+})
+
 DataCollectionRouter.get("/dynamic_entry", async (req, res) => {
   var selected = {
     sec_id: req.query.sec_id ? req.query.sec_id : 0,
@@ -203,82 +216,57 @@ DataCollectionRouter.get("/dynamic_entry", async (req, res) => {
     sec_data,
     ind_list,
     selected,
-    header: "Sustainability Disclosure Topics & Metrics",
+    header: "Date Collection",
   };
   res.render("data_collection/dynamic_form/entry", data);
 });
 
-DataCollectionRouter.get("/save_dynamic_entry", (req, res) => {
-  // var data = req.body
-  var data = {
-    header_1: "Summary",
-    textarea_1:
-      "Colleges and universities are frequent and compelling targets for cyber criminals. The industry may face data security risks due to the large number of personal records processed and stored, the mix of intellectual property and personally identifiable information held (e.g., social security numbers, vaccination records, and other information required for admission), and the open, collaborative environment of many campuses. The exposure of sensitive information through cybersecurity breaches, other malicious activities, or student negligence may result in significant social externalities such as identity fraud and theft. Data breaches may compromise public perception of the effectiveness of a school’s security measures, which could result in reputational damage and difficulty in attracting and retaining students, as well as significant costs to fix the consequences of a breach and prevent future breaches. Enhanced disclosure on the number and nature of security breaches, management strategies to address these risks, and policies and procedures to protect student information will allow shareholders to understand the effectiveness of management strategies that schools employ regarding this issue.",
-    header_2: "Risks and Opportunities",
-    textarea_2:
-      "• Loss of revenue or unanticipated remediation and litigation costs in the event of a data breach or misuse. \r\n• Damage to reputation in the event of a breach or controversy over how data is used. \r\n• Loss of significant market or forced change in business model if regulatory action restricts how companies may use data. \r\n• Increased costs to comply with new or evolving regulations.\r\n",
-    header_3: "Exposure",
-    sub_header_3: "Cost of Data breach by country or region (USD millions)",
-    table_3_heading: ["", "2022", "2023"],
-    table_3_body: [
-      "United States",
-      "9.44",
-      "9.48",
-      "Middle East",
-      "7.46",
-      "8.07",
-      "Canada",
-      "5.64",
-      "5.13",
-      "Germany",
-      "4.85",
-      "4.67",
-    ],
-    sub_header_4: "Cost of a data breach by industry (USD millions)",
-    table_4_heading: ["", "2020", "2021", "2022", "2023"],
-    table_4_body: [
-      "Healthcare",
-      "7.13",
-      "9.23",
-      "10.1",
-      "10.93",
-      "Financial",
-      "5.85",
-      "5.72",
-      "5.97",
-      "5.9",
-      "Pharmaceuticals",
-      "5.06",
-      "5.04",
-      "5.01",
-      "4.82",
-      "Technology",
-      "5.04",
-      "4.88",
-      "4.97",
-      "4.66",
-    ],
-    sec_id: ["4", "4", "3", "3", "3", "2", "2", "1", "1"],
-  };
-  data.sec_id = [...new Set(data.sec_id)].sort();
+DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
+  var data = req.body,
+  user = 'admin',
+  datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+
+  data.section_id = [...new Set(data.section_id)].sort();
 
   var table_row = [],
-    row = [];
-  let j = 1;
-  // console.log(data.table_4_heading.length);
-  for (let dt of data.table_4_body) {
-    if (j <= data.table_4_heading.length) {
-      row.push(dt);
-    } else {
-      j = 1;
-      table_row.push({...row});
-      row.length = 0;
-      row.push(dt);
+    row = [],
+    dynamic_data = [];
+  
+  for(let dt of data.section_id){
+    var dynamic_data_obj = {}
+    dynamic_data_obj['heading'] = data[`header_${dt}`] ? data[`header_${dt}`] : null
+    dynamic_data_obj['sub_heading'] = data[`sub_header_${dt}`] ? data[`sub_header_${dt}`] : null
+    dynamic_data_obj['textarea'] = data[`textarea_${dt}`] ? data[`textarea_${dt}`] : null
+    if(data[`table_${dt}_heading`] && data[`table_${dt}_body`]){
+      let j = 1;
+      table_row.length = 0
+      row.length = 0      
+
+      const chunkSize = data[`table_${dt}_heading`].length;
+      for (let i = 0; i < data[`table_${dt}_body`].length; i += chunkSize) {
+          const chunk = data[`table_${dt}_body`].slice(i, i + chunkSize);
+          table_row.push({...chunk});
+      }
+      console.log(table_row);
+      dynamic_data_obj['table'] = {head: data[`table_${dt}_heading`], body: [...table_row]}
     }
-      j++;
+    dynamic_data.push(dynamic_data_obj)
   }
-  console.log(table_row);
-  res.send(data);
+  var year = dateFormat(new Date(), 'yyyy'),
+    file_name = `${data.sec_id}_${data.ind_id}_${data.top_id}_${year}.json`
+  fs.writeFileSync(path.join(__dirname, '../dynamic_data_set', file_name), JSON.stringify(dynamic_data), 'utf-8')
+
+  var fields = `(dt_year, sec_id, ind_id, top_id, data_file_name, created_by, created_dt)`,
+  values = `('${year}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${file_name}', '${user}', '${datetime}')`,
+  whr = null, 
+  flag = 0;
+  var res_dt = await db_Insert('td_data_collection', fields, values, whr, flag)
+  res.send(res_dt);
 });
+
+DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
+  var data = req.query
+  
+})
 
 module.exports = { DataCollectionRouter };

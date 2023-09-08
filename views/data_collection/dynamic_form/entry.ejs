@@ -200,7 +200,7 @@
                     var id = id_attr[id_attr.length - 1]
                     var zone_id = e.target.id
                     // console.log(zone_id);
-                    $(`#drop`).after(`<input type="hidden" name="sec_id" value="${zone_id}" />`)
+                    $(`#drop`).after(`<input type="hidden" name="section_id" value="${zone_id}" />`)
                     switch (ui.draggable.text()) {
                         case 'Heading':
                             chk_id = $(`#header_${zone_id}`).length
