@@ -266,7 +266,13 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
 
 DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
   var data = req.query
-  
+  var resDt = await getDynamicData(data.id)
+  if(resDt.suc > 0 && resDt.msg.length > 0){
+    if(resDt.msg[0].data_file_name){
+      resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`)
+    }
+  }
+  res.send(resDt)
 })
 
 module.exports = { DataCollectionRouter };
