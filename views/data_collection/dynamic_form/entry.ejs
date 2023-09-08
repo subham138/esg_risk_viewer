@@ -91,6 +91,46 @@
             </div>
             <div class="col-md-7">
                 <form action="/save_dynamic_entry" method="post">
+                    <div class="col-md-12">
+                        <div class="card row">
+                            <div class="card-body">
+                                <div class="row g-3 py-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="sec_id">Sector</label>
+                                        <select class="form-select" id="sec_id" name="sec_id" required="">
+                                        <option selected="" value="">Select Sector</option>
+                                        <% if(sec_data.msg.length > 0){ 
+                                            sec_data.msg.forEach(dt => { 
+                                                var _selected = ''; 
+                                                if(dt.id == selected.sec_id) _selected = 'selected'; 
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                        <% }) } %>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="ind_id">Industries</label>
+                                        <select class="form-select" id="ind_id" name="ind_id" required="">
+                                        <option selected="" value="">Select Industries</option>
+                                        <% if(ind_list.msg.length > 0){ 
+                                            ind_list.msg.forEach(dt => { 
+                                                var _selected = ''; 
+                                                if(dt.id == selected.ind_id) _selected = 'selected'; 
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
+                                        <% }) } %>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="top_id">Topic List</label>
+                                        <select class="form-select" id="top_id" name="top_id" required="">
+                                            <option selected="" value="">Select Topic</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row drop-row" id="drop">
                         <!-- <div class="col-md-12">
                             <div class="card row">
@@ -159,8 +199,8 @@
                     id_attr = id_attr.split('_')
                     var id = id_attr[id_attr.length - 1]
                     var zone_id = e.target.id
-                    console.log(zone_id);
-                    $(`#drop`).after(`<input type="hidden" name="sec_id" value="${id}" />`)
+                    // console.log(zone_id);
+                    $(`#drop`).after(`<input type="hidden" name="sec_id" value="${zone_id}" />`)
                     switch (ui.draggable.text()) {
                         case 'Heading':
                             chk_id = $(`#header_${zone_id}`).length
@@ -200,7 +240,7 @@
                                         </th>
                                         <th>
                                             <button type="button" id="add_header_${zone_id}" class="btn btn-pill btn-outline-success btn-air-success"
-                                                onclick="add_header(${next_th_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                                onclick="add_header(${zone_id}, ${next_th_id})"><i class="icofont icofont-plus-circle"></i></button>
                                         </th>
                                     </tr>
                                 </thead>
@@ -211,7 +251,7 @@
                                                 name="table_${zone_id}_body" placeholder="Add Header" aria-label="Add Header">
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${zone_id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -235,21 +275,83 @@
     </script>
 
     <script>
-        function add_tb_row(id) {
-            if ($(`#add_header_${id}`).is(":visible")) {
+        function add_tb_row(zone_id, id) {
+            if ($(`#add_header_${zone_id}`).is(":visible")) {
                 if (confirm('Once you have click ok you can not add header. Do you want to continue?')) {
-                    $(`#add_header_${id}`).hide()
-                    $(`#table_${id} tbody:last`).append($(`#table_${id} tbody tr:last`).clone().find('input').val('').end())
+                    $(`#add_header_${zone_id}`).hide()
+                    $(`#table_${zone_id} tbody:last`).append($(`#table_${zone_id} tbody tr:last`).clone().find('input').val('').end())
                 }
             } else {
-                $(`#table_${id} tbody:last`).append($(`#table_${id} tbody tr:last`).clone().find('input').val('').end())
+                $(`#table_${zone_id} tbody:last`).append($(`#table_${zone_id} tbody tr:last`).clone().find('input').val('').end())
             }
         }
-        function add_header(id) {
+        function add_header(zone_id, id) {
             console.log(id);
-            $(`#table_${id} thead tr th:last`).before(`<th><input class="form-control form-control-sm" type="text" id="table_${id}_heading_${parseInt(id) + 1}" name="table_${id}_heading" placeholder="Add Header" aria-label="Add Header"></th>`)
-            $(`#table_${id} tbody tr td:last`).before(`<td><input class="form-control form-control-sm" type="text" id="table_${id}_body_${parseInt(id) + 1}" name="table_${id}_body" placeholder="Add Description" aria-label="Add Description"></td>`)
+            $(`#table_${zone_id} thead tr th:last`).before(`<th><input class="form-control form-control-sm" type="text" id="table_${zone_id}_heading_${parseInt(id) + 1}" name="table_${zone_id}_heading" placeholder="Add Header" aria-label="Add Header"></th>`)
+            $(`#table_${zone_id} tbody tr td:last`).before(`<td><input class="form-control form-control-sm" type="text" id="table_${zone_id}_body_${parseInt(id) + 1}" name="table_${zone_id}_body" placeholder="Add Description" aria-label="Add Description"></td>`)
         }
+    </script>
+
+    <script>
+        $("#sec_id").on("change", function () {
+        $.ajax({
+            method: "GET",
+            url: "/get_ind_list_ajax",
+            data: { sec_id: $(this).val() },
+            dataType: "html",
+            beforeSend: function () {
+            $(".loader-wrapper").show();
+            },
+            success: function (result) {
+            var res = JSON.parse(result);
+            console.log(res);
+            $("#ind_id").empty();
+            $("#data_set_view").hide()
+            $("#suc_disc_table tbody >").remove()
+            $("#ind_id").append(
+                $("<option>", { value: "", text: "Select Industries" })
+            );
+            if (res.suc > 0 && res.msg.length > 0)
+                $.each(res.msg, function (i, item) {
+                $("#ind_id").append(
+                    $("<option>", { value: item.id, text: item.ind_name })
+                );
+                });
+            },
+            complete: function () {
+            $(".loader-wrapper").hide();
+            },
+        });
+        });
+    </script>
+    <script>
+        $("#ind_id").on("change", function () {
+            $.ajax({
+                method: "GET",
+                url: "/get_ind_list_ajax",
+                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val() },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result);
+                    // console.log(res);
+                    $('#top_id').empty();
+                    $('#top_id').append($('<option>', {value: '', text: 'Select Topic'}));
+                    if (res.suc > 0 && res.msg.length > 0)
+                        if(res.msg[0].topic_dt)
+                            $.each(res.msg[0].topic_dt, function (i, item) {
+                                $("#top_id").append(
+                                    $("<option>", { value: item.id, text: item.topic_name })
+                                );
+                            });
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                },
+            });
+        });
     </script>
 
 <%- include('../../templates/footer.ejs') %>
