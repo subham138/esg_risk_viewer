@@ -18,10 +18,83 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    
+                    <% if(resDt.length > 0){
+                        resDt.forEach(dt => { %>
+                            <div class="row my-3">
+                                <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
+                                <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
+                                <% if(dt.textarea){ %> 
+                                    <div class="col-md-12">
+                                        <%= dt.textarea %>
+                                    </div> 
+                                <% } %>
+                                <% if(dt.table){ %>
+                                    <table>
+                                        <tr>
+                                            <% dt.table.head.forEach(tdt => { %>
+                                                <th><%= tdt %></th>
+                                            <% }) %>
+                                        </tr>
+                                        <tbody>
+                                            <% dt.table.body.forEach(trdt => { %>
+                                                <tr>
+                                                    <% Object.values(trdt).forEach(vdt => { %>
+                                                        <td><%= vdt %></td>
+                                                    <% }) %>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                <% } %>
+                            </div>
+                    <%  })
+                    } %>
                 </div>
             </div>
         </div>
+        <div class="col-sm-12 col-xl-6 box-col-6">
+            <div class="card">
+              <div class="card-header">
+                <h5>Column Chart <span class="digits">1 </span></h5>
+              </div>
+              <div class="card-body chart-block">
+                <div class="chart-overflow" id="column-chart1"></div>
+              </div>
+            </div>
+          </div>
     </div>
 </div>
+<script src="js/chart/google/google-chart-loader.js"></script>
+<script>
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+    google.charts.load('current', {'packages':['line']});
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawBasic);
+    function drawBasic() {
+    var a = google.visualization.arrayToDataTable([
+        ["Year", "Sales", "Expenses", "Profit"],
+        ["2014", 1e3, 400, 250],
+        ["2015", 1170, 460, 300],
+        ["2016", 660, 1120, 400],
+        ["2017", 1030, 540, 450]
+      ]),
+      b = {
+        chart: {
+          title: "Company Performance",
+          subtitle: "Sales, Expenses, and Profit: 2014-2017"
+        },
+        bars: "vertical",
+        vAxis: {
+          format: "decimal"
+        },
+        height: 400,
+        width:'100%',
+          colors: [vihoAdminConfig.primary, vihoAdminConfig.primary, "#e2c636"]
+
+
+      },
+    c = new google.charts.Bar(document.getElementById("column-chart1"));
+    c.draw(a, google.charts.Bar.convertOptions(b))
+    }
+</script>
 <%- include('../../templates/footer.ejs') %>

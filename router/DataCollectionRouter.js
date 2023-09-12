@@ -272,7 +272,12 @@ DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
       resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`)
     }
   }
-  res.send(resDt)
+  var data = {
+    resDt,
+    header: "Date Collection View",
+  };
+  // res.send(resDt)
+  res.render('data_collection/dynamic_form/data_view', data)
 })
 
 module.exports = { DataCollectionRouter };
