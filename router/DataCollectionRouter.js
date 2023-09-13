@@ -272,6 +272,23 @@ DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
       resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`)
     }
   }
+  // var dataArr = [], i = 1, tb_data = {};
+  // for(let dt of resDt){
+  //   if(dt.table){
+  //     dataArr.length = 0
+  //     dataArr.push(dt.table.head)
+  //     if(dt.table.body){
+  //       for(let bdt of dt.table.body){
+  //         // console.log([...Object.values(bdt)]);
+  //         dataArr.push([...Object.values(bdt).map(dt => Number(dt) ? +dt : dt)])
+  //       }
+  //     }
+  //     // break;
+  //     tb_data[i] = dataArr
+  //   }
+  //   i++
+  // }
+  // console.log(tb_data);
   var data = {
     resDt,
     header: "Date Collection View",

@@ -1,4 +1,9 @@
 <%- include('../../templates/header.ejs') %>
+<script src="js/chart/google/google-chart-loader.js"></script>
+<script>
+    google.charts.load('current', {packages: ['bar']});
+    var fun = {}, i = 1;
+</script>
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
@@ -19,6 +24,7 @@
             <div class="card">
                 <div class="card-body">
                     <% if(resDt.length > 0){
+                        var i = 1;
                         resDt.forEach(dt => { %>
                             <div class="row my-3">
                                 <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
@@ -29,72 +35,114 @@
                                     </div> 
                                 <% } %>
                                 <% if(dt.table){ %>
-                                    <table>
-                                        <tr>
-                                            <% dt.table.head.forEach(tdt => { %>
-                                                <th><%= tdt %></th>
-                                            <% }) %>
-                                        </tr>
-                                        <tbody>
-                                            <% dt.table.body.forEach(trdt => { %>
-                                                <tr>
-                                                    <% Object.values(trdt).forEach(vdt => { %>
-                                                        <td><%= vdt %></td>
-                                                    <% }) %>
-                                                </tr>
-                                            <% }) %>
-                                        </tbody>
-                                    </table>
-                                <% } %>
+                                    <div class="col-md-6">
+                                        <table class="table">
+                                            <tr>
+                                                <% dt.table.head.forEach(tdt => { %>
+                                                    <th><%= tdt %></th>
+                                                <% }) %>
+                                            </tr>
+                                            <tbody>
+                                                <% var table_data = [];
+                                                    table_data.push(dt.table.head)
+                                                    dt.table.body.forEach(trdt => {
+                                                        table_data.push([...Object.values(trdt).map(dt => parseFloat(dt) ? Number(dt) : dt)])
+                                                     %>
+                                                    <tr>
+                                                        <% Object.values(trdt).forEach(vdt => { %>
+                                                            <td><%= vdt %></td>
+                                                        <% }) %>
+                                                    </tr>
+                                                <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="chart-block">
+                                            <div class="chart-overflow" id="column_chart_<%= i %>"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <script>
+                                        i = <%= i %>;
+                                        console.log('view', i);
+                                        var table_data = <%- JSON.stringify(table_data) %>;
+                                        // console.log(table_data);
+                                        fun[`crate_bar_graph_${<%= i %>}`] = {
+                                                a: table_data,
+                                                b: {
+                                                    chart: {
+                                                        title: "<%- dt.sub_heading ? dt.sub_heading : '' %>",
+                                                        subtitle: '',
+                                                    },
+                                                    seriesType: 'bars',
+                                                    // vAxis: {
+                                                    //   format: "decimal"
+                                                    // },
+                                                    vAxis: { title: 'Marks' },
+                                                    hAxis: { title: 'Country' },
+                                                    height: 400,
+                                                    width: '100%',
+                                                    colors: ["#e2c636", "#AED6F1", "#E8DAEF", "#EDBB99"]
+                                                },                                                
+                                            }
+                                    </script>
+                                <% i++; } %>
                             </div>
-                    <%  })
+                    <% })
                     } %>
                 </div>
             </div>
         </div>
-        <div class="col-sm-12 col-xl-6 box-col-6">
-            <div class="card">
-              <div class="card-header">
-                <h5>Column Chart <span class="digits">1 </span></h5>
-              </div>
-              <div class="card-body chart-block">
-                <div class="chart-overflow" id="column-chart1"></div>
-              </div>
-            </div>
-          </div>
     </div>
 </div>
-<script src="js/chart/google/google-chart-loader.js"></script>
 <script>
-    google.charts.load('current', {packages: ['corechart', 'bar']});
-    google.charts.load('current', {'packages':['line']});
-    google.charts.load('current', {'packages':['corechart']});
+    $(document).ready(function(){
+        // console.log('FunLen', fun);
+        google.charts.setOnLoadCallback(CreateBar);
+        function CreateBar(){
+            let j = 1
+            for(let key in fun){
+                var a = google.visualization.arrayToDataTable(fun[key].a),
+                    b = fun[key].b,
+                    c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
+                c.draw(a, google.charts.Bar.convertOptions(b))
+                // console.log('funName', fun[key]);
+                j++
+            }
+        }
+    })
+</script>
+<!-- <script>
+    google.charts.load('current', {packages: ['bar']});
     google.charts.setOnLoadCallback(drawBasic);
     function drawBasic() {
     var a = google.visualization.arrayToDataTable([
-        ["Year", "Sales", "Expenses", "Profit"],
-        ["2014", 1e3, 400, 250],
-        ["2015", 1170, 460, 300],
-        ["2016", 660, 1120, 400],
-        ["2017", 1030, 540, 450]
+        ["", "2022", "2023"],
+        ["United States", 9.44, 9.48],
+        ["Middle East", 7.46, 8.07],
+        ["Canada", 5.64, 5.13],
+        ["Germany", 4.85, 4.67]
       ]),
       b = {
         chart: {
-          title: "Company Performance",
-          subtitle: "Sales, Expenses, and Profit: 2014-2017"
+          title: "Cost of Data breach by country or region (USD millions)",
+          subtitle: "2022-2023"
         },
-        bars: "vertical",
-        vAxis: {
-          format: "decimal"
-        },
+        seriesType: 'bars',
+        // vAxis: {
+        //   format: "decimal"
+        // },
+        vAxis: {title: 'Marks'},
+        hAxis: {title: 'Country'},
         height: 400,
         width:'100%',
-          colors: [vihoAdminConfig.primary, vihoAdminConfig.primary, "#e2c636"]
+          colors: [vihoAdminConfig.primary, "#e2c636"]
 
 
-      },
-    c = new google.charts.Bar(document.getElementById("column-chart1"));
+      };
+    var c = new google.charts.Bar(document.getElementById("column-chart1"));
     c.draw(a, google.charts.Bar.convertOptions(b))
     }
-</script>
+</script> -->
 <%- include('../../templates/footer.ejs') %>
