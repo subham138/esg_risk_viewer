@@ -1,4 +1,4 @@
-<%- include('../../templates/header.ejs') %>
+<%- include('../templates/header.ejs') %>
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <div class="row py-3">
                         <div class="col-md-12">
-                            <a href="/dynamic_entry" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">Add</a>
+                            <a href="/manage_user_edit" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">Add New User</a>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -36,23 +36,23 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Sector</th>
-                                    <th>Industrie</th>
-                                    <th>Topic</th>
-                                    <th>View</th>
+                                    <th>Name</th>
+                                    <th>Email Id</th>
+                                    <th>User Type</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% if(dynamic_data.msg.length > 0){
+                                <% if(user_data.msg.length > 0){
                                     let i = 1;
-                                    dynamic_data.msg.forEach(dt => { %>
+                                user_data.msg.forEach(dt => { %>
                                 <tr>
                                     <td><%= i %></td>
-                                    <td><%= dt.sec_name %></td>
-                                    <td><%= dt.ind_name %></td>
-                                    <td><%= dt.topic_name %></td>
-                                    <td><a href="/dynamic_data_view?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                                        <i class="icofont icofont-eye-alt"></i> View
+                                    <td><%= dt.user_name %></td>
+                                    <td><%= dt.user_id %></td>
+                                    <td><%= user_type_list[dt.user_type] %></td>
+                                    <td><a href="/manage_user_edit?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                        <i class="icofont icofont-ui-edit"></i> Edit
                                     </a>
                                     <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
                                         <i class="icofont icofont-ui-delete"></i> Delete
@@ -61,7 +61,7 @@
                                 </tr>
                                 <% i++; })}else{ %>
                                 <tr>
-                                    <td colspan="4">No Data Found</td>
+                                    <td class="text-center text-danger" colspan="5">No Data Found</td>
                                 </tr>
                                 <% } %>
                             </tbody>
@@ -73,4 +73,4 @@
         <!-- Zero Configuration  Ends-->
     </div>
 </div>
-<%- include('../../templates/footer.ejs') %>
+<%- include('../templates/footer.ejs') %>

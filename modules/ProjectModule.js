@@ -1,0 +1,64 @@
+const { db_Select, db_Insert } = require("./MasterModule");
+const dateFormat = require("dateformat");
+
+module.exports = {
+    getProjectList: (id=null, client_id, user_id=null) => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
+                table_name = 'td_project a',
+                whr = `a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
+                order = null;
+            var res_dt = await db_Select(select, table_name, whr, order)
+            if(id > 0){
+                if(res_dt.suc > 0 && res_dt.msg.length > 0){
+                    var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_name',
+                        table_name = 'td_user_project a, md_user b',
+                        whr = `a.user_id=b.id AND a.client_id = '${client_id}' AND a.project_id = '${res_dt.msg[0].id}'`,
+                        order = null;
+                    var user_dt = await db_Select(select, table_name, whr, order)
+                    user_dt.suc > 0 && user_dt.msg.length > 0 ? res_dt.msg[0]['user_list'] = user_dt.msg : ''
+                    resolve(res_dt)
+                }else{
+                    resolve(res_dt)
+                }
+            }else{
+                resolve(res_dt)
+            }
+        })
+    },
+    saveProject: (data, client_id, user) => {
+        return new Promise(async (resolve, reject) => {
+            var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+
+            var table_name = 'td_project',
+                fields = data.id > 0 ? `project_name = '${data.project_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(client_id, project_name, created_by, created_dt)`,
+                values = `('${client_id}', '${data.project_name}', '${user}', '${datetime}')`,
+                whr = data.id > 0 ? `id = ${data.id}` : null,
+                flag = data.id > 0 ? 1 : 0;
+            var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+
+            var project_id = data.id > 0 ? data.id : (res_dt.suc > 0 ? res_dt.lastId.insertId : 0)
+
+            if(Array.isArray(data.user_id)){
+                for(let dt of data.user_id){
+                    var table_name = 'td_user_project',
+                        fields = data.id > 0 ? `project_id = '${project_id}', user_id = '${dt}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                        `(client_id, project_id, user_id, created_by, created_dt)`,
+                        values = `('${client_id}', '${project_id}', '${dt}', '${user}', '${datetime}')`,
+                        whr = data.id > 0 ? `id = ${data.id}` : null,
+                        flag = data.id > 0 ? 1 : 0;
+                    res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                }
+            }else{
+                var table_name = 'td_user_project',
+                    fields = data.id > 0 ? `project_id = '${project_id}', user_id = '${data.user_id}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                    `(client_id, project_id, user_id, created_by, created_dt)`,
+                    values = `('${client_id}', '${project_id}', '${data.user_id}', '${user}', '${datetime}')`,
+                    whr = data.id > 0 ? `id = ${data.id}` : null,
+                    flag = data.id > 0 ? 1 : 0;
+                res_dt = await db_Insert(table_name, fields, values, whr, flag)
+            }
+            resolve(res_dt)
+        })
+    }
+}

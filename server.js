@@ -37,14 +37,22 @@ app.use((req, res, next) => {
   res.locals.active = req.path.split("/")[1];
   res.locals.message = req.session.message;
   delete req.session.message;
+  // console.log(req.path);
+  // if(req.path != '/' && req.path != '/login'){
+  //   if(!req.session.user){
+  //     res.redirect('/login')
+  //   }
+  // }
   next();
 });
-const { DataCollectionRouter } = require("./router/DataCollectionRouter");
-const { MasterRouter } = require("./router/MasterRouter");
 // END //
 
 // IMPORT ROUTERS //
 const { UserRouter } = require("./router/UserRouter");
+const { DataCollectionRouter } = require("./router/DataCollectionRouter");
+const { MasterRouter } = require("./router/MasterRouter");
+const { SubsRouter } = require("./router/SubscriptionRouter");
+const { ProjectRouter } = require("./router/ProjectsRouter");
 // END //
 
 app.get("/", (req, res) => {
@@ -63,6 +71,8 @@ app.get("/", (req, res) => {
 app.use(UserRouter);
 app.use(MasterRouter);
 app.use(DataCollectionRouter)
+app.use(SubsRouter)
+app.use(ProjectRouter)
 
 app.get("/dashboard", (req, res) => {
   res.render("pages/index");

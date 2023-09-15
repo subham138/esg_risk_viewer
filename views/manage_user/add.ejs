@@ -1,0 +1,83 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3><%= sub_header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/manage_user_save" class="needs-validation" novalidate="">
+                <div class="row g-3 py-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="user_name">User Name</label>
+                        <input class="form-control" id="user_name" name="user_name" type="text" value="<%= id > 0 ? user_data.msg[0].user_name : '' %>" required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="user_type">User Type</label>
+                        <select class="form-select" id="user_type" name="user_type" required="">
+                            <option selected="" value="">Select User Type</option>
+                            <% if(Object.keys(user_type_list).length > 0){
+                                Object.keys(user_type_list).forEach(dt => { 
+                                    var selected = '';
+                                    if(id > 0){
+                                        if(dt == user_data.msg[0].user_type) selected = 'selected';
+                                    }
+                                    if(dt != 'S' && dt != 'C'){ %>
+                                    <option value="<%= dt %>" <%= selected %>><%= user_type_list[dt] %></option>
+                                <% }})
+                            } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label" for="user_id">User Email</label>
+                        <input class="form-control" id="user_id" name="user_id" type="text" value="<%= id > 0 ? user_data.msg[0].user_id : '' %>" required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password">Password</label>
+                        <select class="form-select" id="password" name="password" required="">
+                            <option selected="" value="Esg@2023">Default</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row my-4">
+                    <div class="col-md-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="active_flag" id="active_flag_y" value="Y" <%= id > 0 ? (user_data.msg[0].active_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <label class="form-check-label" for="active_flag_y">
+                                Active
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="active_flag" id="active_flag_n" value="N" <%= id > 0 ? (user_data.msg[0].active_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <label class="form-check-label" for="active_flag_n">
+                                De-Active
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../templates/footer.ejs') %>

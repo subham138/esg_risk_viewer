@@ -4,7 +4,7 @@
           data-feather="settings"></i></a><img class="img-90 rounded-circle" src="images/dashboard/1.png"
         alt="">
       <div class="badge-bottom"><span class="badge badge-primary">New</span></div><a href="user-profile.html">
-        <h6 class="mt-3 f-14 f-w-600">Admin Master</h6>
+        <h6 class="mt-3 f-14 f-w-600"><%= user.user_name %></h6>
       </a>
       <p class="mb-0 font-roboto">Software Department</p>
       <ul>
@@ -35,7 +35,7 @@
             </li>
             <li class="dropdown"><a class="nav-link menu-title link-nav" href="/dashboard"><i
               data-feather="home"></i><span>Dashboard</span></a></li>
-
+            <% if(user.user_type == 'S'){ %>
             <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i
                   data-feather="master"></i><span>Master</span></a>
               <ul class="nav-submenu menu-content">
@@ -52,9 +52,20 @@
               <ul class="nav-submenu menu-content">
                 <li><a href="/sus_disc">Sustainability Disclosure</a></li>
                 <li><a href="/act_metric">Activity Metrics</a></li>
-                <li><a href="/dynamic_entry">Data Entry</a></li>
+                <li><a href="/dynamic_entry_view">Data Entry</a></li>
               </ul>
             </li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/client"><i
+              data-feather="client"></i><span>Client</span></a></li>
+            <% } %>
+            <% if(user.user_type == 'C'){ %>
+              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/subscription"><i
+                data-feather="subscription"></i><span>My Subscriptions</span></a></li>
+              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/manage_user"><i
+                data-feather="manage_users"></i><span>Manage Users</span></a></li>
+              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/my_project"><i
+                data-feather="my-project"></i><span>My Projects</span></a></li>
+            <% } %> 
           </ul>
         </div>
         <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>

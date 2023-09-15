@@ -11,6 +11,15 @@ const {
 } = require("../modules/AdminModule");
 const { db_Insert, db_Select, db_Check, db_Delete } = require("../modules/MasterModule");
 
+MasterRouter.use((req, res, next) => {
+  var user = req.session.user;
+    if (user) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+})
+
 MasterRouter.get("/sector", async (req, res) => {
   var data = await getSectorList();
   // console.log(data);

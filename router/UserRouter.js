@@ -2,7 +2,8 @@ const express = require("express"),
   UserRouter = express.Router(),
   bcrypt = require("bcrypt");
 
-const { db_Select } = require("../modules/MasterModule");
+const { db_Select, USER_TYPE_LIST } = require("../modules/MasterModule");
+const { getUserList, saveUser, getClientList } = require("../modules/UserModule");
 
 UserRouter.get("/login", (req, res) => {
   let user = req.session.user;
@@ -16,7 +17,7 @@ UserRouter.get("/login", (req, res) => {
 UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
-  var select = "id, user_name, user_id, password, user_type",
+  var select = "id, client_id, user_name, user_id, password, user_type, active_flag",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -49,5 +50,65 @@ UserRouter.get("/log_out", (req, res) => {
   req.session.destroy();
   res.redirect("/login");
 });
+
+UserRouter.get('/client', async (req, res) => {
+  var client_data = await getClientList()
+  var data = {
+    client_data,
+    header: "Client List",
+  };
+  res.render("client/view", data);
+})
+
+UserRouter.get('/client_edit', async (req, res) => {
+  var id = req.query.id,
+  client_data = [];
+  if(id > 0) client_data = await getClientList(id)
+  var data = {
+    client_data,
+    id,
+    user_type_list: USER_TYPE_LIST,
+    header: "Client List",
+    sub_header: "Client Add/Edit",
+    header_url: "/client",
+  };
+  res.render("client/add", data);
+})
+
+UserRouter.get('/manage_user', async (req, res) => {
+  var user_data = await getUserList(0, req.session.user.client_id);
+  // console.log(user_data);
+  var data = {
+    user_data,
+    user_type_list: USER_TYPE_LIST,
+    header: "Manage User",
+  };
+  res.render("manage_user/view", data);
+})
+
+UserRouter.get('/manage_user_edit', async (req, res) => {
+  var id = req.query.id,
+  user_data = [];
+  if(id > 0) user_data = await getUserList(id, req.session.user.client_id)
+  var data = {
+    user_data,
+    id,
+    user_type_list: USER_TYPE_LIST,
+    header: "Manage User",
+    sub_header: "Manage User Add/Edit",
+    header_url: "/manage_user",
+  };
+  res.render("manage_user/add", data);
+})
+
+UserRouter.post('/manage_user_save', async (req, res) => {
+  var data = req.body
+  var res_dt = await saveUser(data, req.session.user.user_name, req.session.user.client_id)
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect('/manage_user')
+})
 
 module.exports = { UserRouter };

@@ -78,4 +78,12 @@ const db_Check = async (fields, table_name, whr) => {
   });
 };
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check };
+const USER_TYPE_LIST = {
+  'S': 'Super Admin',
+  'C': 'Client',
+  'A': 'Admin User',
+  'V': 'Viewer',
+  'E': 'Editor'
+}
+
+module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST };

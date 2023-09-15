@@ -12,6 +12,15 @@ const {
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select } = require("../modules/MasterModule");
 
+DataCollectionRouter.use((req, res, next) => {
+  var user = req.session.user;
+    if (user) {
+        next();
+    } else {
+      res.redirect("/login");
+    }
+})
+
 DataCollectionRouter.get("/sus_disc", async (req, res) => {
   var selected = {
     sec_id: req.query.sec_id ? req.query.sec_id : 0,
@@ -261,7 +270,12 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
   whr = null, 
   flag = 0;
   var res_dt = await db_Insert('td_data_collection', fields, values, whr, flag)
-  res.send(res_dt);
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect(`/dynamic_entry_view`);
+  // res.send(res_dt);
 });
 
 DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
