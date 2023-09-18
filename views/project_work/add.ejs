@@ -1,0 +1,96 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3><%= sub_header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/busi_act_save" class="needs-validation" novalidate="">
+                <div class="row g-3 py-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="sec_id">Section</label>
+                        <select class="form-select" id="sec_id" name="sec_id" required="">
+                            <option selected="" value="">Select Section</option>
+                            <% if(sec_data.msg.length > 0){
+                                sec_data.msg.forEach(dt => { 
+                                    var selected = '';
+                                    if(id > 0) 
+                                        if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
+                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
+                                <% })
+                            } %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="ind_id">Industrie</label>
+                        <select class="form-select" id="ind_id" name="ind_id" required="">
+                            <option selected="" value="">Select Industrie</option>
+                            
+                        </select>
+                    </div>
+                    <div class="select2-drpdwn mb-2">
+                      <label class="col-form-label">Select2 multi select</label>
+                      <select class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                        <option value="AL">Alabama</option>
+                        <option value="WY">Wyoming</option>
+                        <option value="WY">Coming</option>
+                        <option value="WY">Hanry Die</option>
+                        <option value="WY">John Doe</option>
+                      </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="busi_act_name">Business Activitie</label>
+                        <input class="form-control" id="busi_act_name" name="busi_act_name" type="text" value="<%= id > 0 ? busi_data.msg[0].busi_act_name : '' %>" required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#sec_id').on('change', function (){
+        $.ajax({
+            method:'GET',
+            url: '/get_ind_list_ajax',
+            data: {sec_id: $(this).val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                console.log(res);
+                $('#ind_id').empty();
+                $('#ind_id').append($('<option>', {value: '', text: 'Select Industries'}));
+                if(res.suc > 0 && res.msg.length > 0)
+                    $.each(res.msg, function (i, item) {
+                        $('#ind_id').append($('<option>', {value: item.id, text: item.ind_name}));
+                    });
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+</script>
+
+<%- include('../templates/footer.ejs') %>

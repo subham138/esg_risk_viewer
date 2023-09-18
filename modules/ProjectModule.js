@@ -60,5 +60,15 @@ module.exports = {
             }
             resolve(res_dt)
         })
+    },
+    getLocationList: (id = null) => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'id, location_name', 
+            table_name = 'md_location', 
+            whr = id > 0 ? `id = ${id}` : null, 
+            order = 'ORDER BY location_name';
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
     }
 }

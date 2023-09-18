@@ -63,8 +63,13 @@
                 data-feather="subscription"></i><span>My Subscriptions</span></a></li>
               <li class="dropdown"><a class="nav-link menu-title link-nav" href="/manage_user"><i
                 data-feather="manage_users"></i><span>Manage Users</span></a></li>
-              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/my_project"><i
-                data-feather="my-project"></i><span>My Projects</span></a></li>
+              <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i
+                data-feather="my-project"></i><span>My Projects</span></a>
+                <ul class="nav-submenu menu-content">
+                  <li><a href="/my_project">Manage</a></li>
+                  <li><a href="/proj_work">Work</a></li>
+                </ul>
+              </li>
             <% } %> 
           </ul>
         </div>
