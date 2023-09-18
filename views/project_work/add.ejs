@@ -38,17 +38,26 @@
                         <label class="form-label" for="ind_id">Industrie</label>
                         <select class="form-select" id="ind_id" name="ind_id" required="">
                             <option selected="" value="">Select Industrie</option>
-                            
                         </select>
                     </div>
-                    <div class="select2-drpdwn mb-2">
-                      <label class="col-form-label">Select2 multi select</label>
-                      <select class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                        <option value="AL">Alabama</option>
-                        <option value="WY">Wyoming</option>
-                        <option value="WY">Coming</option>
-                        <option value="WY">Hanry Die</option>
-                        <option value="WY">John Doe</option>
+                    <div class="col-md-6 select2-drpdwn mb-2">
+                      <label class="form-label" for="top_id">Business Activities</label>
+                      <select id="top_id" name="top_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                        <option value="">Select Business Activities</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 select2-drpdwn mb-2">
+                      <label class="form-label" for="location_id">Locations of Business Activities</label>
+                      <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                        <option value="">Select Location</option>
+                        <% if(loc_list.msg.length > 0){
+                                loc_list.msg.forEach(dt => { 
+                                    var selected = '';
+                                    if(id > 0) 
+                                        if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
+                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.location_name %></option>
+                                <% })
+                            } %>
                       </select>
                     </div>
                     <div class="col-md-12">
@@ -92,5 +101,34 @@
         })
     })
 </script>
+    <script>
+        $("#ind_id").on("change", function () {
+            $.ajax({
+                method: "GET",
+                url: "/get_ind_list_ajax",
+                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val() },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result);
+                    // console.log(res);
+                    $('#top_id').empty();
+                    $('#top_id').append($('<option>', {value: '', text: 'Select Topic'}));
+                    if (res.suc > 0 && res.msg.length > 0)
+                        if(res.msg[0].topic_dt)
+                            $.each(res.msg[0].topic_dt, function (i, item) {
+                                $("#top_id").append(
+                                    $("<option>", { value: item.id, text: item.topic_name })
+                                );
+                            });
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                },
+            });
+        });
+    </script>
 
 <%- include('../templates/footer.ejs') %>
