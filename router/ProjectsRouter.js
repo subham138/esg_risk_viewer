@@ -71,4 +71,24 @@ ProjectRouter.get('/proj_work', async (req, res) => {
     res.render('project_work/add', data)
 })
 
+ProjectRouter.post('/proj_work_view', async (req, res) => {
+    var data = req.body
+    console.log(data);
+    var loc_list = await getLocationList(),
+        sec_data = await getSectorList(),
+        ind_data = [],
+        act_list = [];
+    var data = {
+        id:0,
+        loc_list,
+        sec_data,
+        ind_data,
+        act_list,
+        header: "Project Work",
+        sub_header: "Project Add/Edit",
+        header_url: "/my_project",
+    }
+    res.render('project_work/add', data)
+})
+
 module.exports = {ProjectRouter}

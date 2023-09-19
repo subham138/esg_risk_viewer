@@ -271,4 +271,10 @@ MasterRouter.post("/busi_act_save", async (req, res) => {
   }
 });
 
+MasterRouter.get('/get_busi_act_ajax', async (req, res) => {
+  var data = req.query
+  var res_dt = await getBusiActList(0, data.sec_id, data.ind_id)
+  res.send(res_dt)
+})
+
 module.exports = { MasterRouter };

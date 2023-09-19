@@ -18,56 +18,51 @@
         <div class="col-sm-12">
             <div class="card">
             <div class="card-body">
-                <form method="POST" action="/busi_act_save" class="needs-validation" novalidate="">
-                <div class="row g-3 py-3">
-                    <div class="col-md-6">
-                        <label class="form-label" for="sec_id">Section</label>
-                        <select class="form-select" id="sec_id" name="sec_id" required="">
-                            <option selected="" value="">Select Section</option>
-                            <% if(sec_data.msg.length > 0){
-                                sec_data.msg.forEach(dt => { 
-                                    var selected = '';
-                                    if(id > 0) 
-                                        if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
-                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
-                                <% })
-                            } %>
+                <form method="POST" action="/proj_work_view" class="needs-validation" novalidate="">
+                    <div class="row g-3 py-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="sec_id">Section</label>
+                            <select class="form-select" id="sec_id" name="sec_id" required="">
+                                <option selected="" value="">Select Section</option>
+                                <% if(sec_data.msg.length > 0){
+                                    sec_data.msg.forEach(dt => { 
+                                        var selected = '';
+                                        if(id > 0) 
+                                            if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
+                                        <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
+                                    <% })
+                                } %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ind_id">Industrie</label>
+                            <select class="form-select" id="ind_id" name="ind_id" required="">
+                                <option selected="" value="">Select Industrie</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 select2-drpdwn mb-2">
+                        <label class="form-label" for="bus_id">Business Activities</label>
+                        <select id="bus_id" name="bus_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                            <option value="">Select Business Activities</option>
                         </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="ind_id">Industrie</label>
-                        <select class="form-select" id="ind_id" name="ind_id" required="">
-                            <option selected="" value="">Select Industrie</option>
+                        </div>
+                        <div class="col-md-12 select2-drpdwn mb-2">
+                        <label class="form-label" for="location_id">Locations of Business Activities</label>
+                        <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                            <option value="">Select Location</option>
+                            <% if(loc_list.msg.length > 0){
+                                    loc_list.msg.forEach(dt => { 
+                                        var selected = '';
+                                        if(id > 0) 
+                                            if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
+                                        <option value="<%= dt.id %>" <%= selected %>><%= dt.location_name %></option>
+                                    <% })
+                                } %>
                         </select>
+                        </div>
                     </div>
-                    <div class="col-md-6 select2-drpdwn mb-2">
-                      <label class="form-label" for="top_id">Business Activities</label>
-                      <select id="top_id" name="top_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                        <option value="">Select Business Activities</option>
-                      </select>
-                    </div>
-                    <div class="col-md-6 select2-drpdwn mb-2">
-                      <label class="form-label" for="location_id">Locations of Business Activities</label>
-                      <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                        <option value="">Select Location</option>
-                        <% if(loc_list.msg.length > 0){
-                                loc_list.msg.forEach(dt => { 
-                                    var selected = '';
-                                    if(id > 0) 
-                                        if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
-                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.location_name %></option>
-                                <% })
-                            } %>
-                      </select>
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label" for="busi_act_name">Business Activitie</label>
-                        <input class="form-control" id="busi_act_name" name="busi_act_name" type="text" value="<%= id > 0 ? busi_data.msg[0].busi_act_name : '' %>" required="">
-                        <div class="valid-feedback">No Error</div>
-                    </div>
-                </div>
-                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                    <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                    <button class="btn btn-primary" type="submit">Submit</button>
                 </form>
             </div>
             </div>
@@ -105,7 +100,7 @@
         $("#ind_id").on("change", function () {
             $.ajax({
                 method: "GET",
-                url: "/get_ind_list_ajax",
+                url: "/get_busi_act_ajax",
                 data: { ind_id: $(this).val(), sec_id: $("#sec_id").val() },
                 dataType: "html",
                 beforeSend: function () {
@@ -114,15 +109,14 @@
                 success: function (result) {
                     var res = JSON.parse(result);
                     // console.log(res);
-                    $('#top_id').empty();
-                    $('#top_id').append($('<option>', {value: '', text: 'Select Topic'}));
+                    $('#bus_id').empty();
+                    $('#bus_id').append($('<option>', {value: '', text: 'Select Business'}));
                     if (res.suc > 0 && res.msg.length > 0)
-                        if(res.msg[0].topic_dt)
-                            $.each(res.msg[0].topic_dt, function (i, item) {
-                                $("#top_id").append(
-                                    $("<option>", { value: item.id, text: item.topic_name })
-                                );
-                            });
+                        $.each(res.msg, function (i, item) {
+                            $("#bus_id").append(
+                                $("<option>", { value: item.id, text: item.busi_act_name })
+                            );
+                        });
                 },
                 complete: function () {
                     $(".loader-wrapper").hide();
