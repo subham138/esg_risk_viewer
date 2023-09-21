@@ -1,4 +1,4 @@
-const { getSectorList } = require('../modules/AdminModule');
+const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
 const { db_Insert } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
@@ -6,14 +6,14 @@ const { getUserList } = require('../modules/UserModule');
 const express = require('express'),
 ProjectRouter = express.Router();
 
-ProjectRouter.use((req, res, next) => {
-    var user = req.session.user;
-    if (user) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-})
+// ProjectRouter.use((req, res, next) => {
+//     var user = req.session.user;
+//     if (user) {
+//         next();
+//     } else {
+//         res.redirect("/login");
+//     }
+// })
 
 ProjectRouter.get('/my_project', async (req, res) => {
     // var req_data = req.query
@@ -73,22 +73,59 @@ ProjectRouter.get('/proj_work', async (req, res) => {
 
 ProjectRouter.post('/proj_work_view', async (req, res) => {
     var data = req.body
-    console.log(data);
-    var loc_list = await getLocationList(),
-        sec_data = await getSectorList(),
-        ind_data = [],
-        act_list = [];
-    var data = {
-        id:0,
-        loc_list,
-        sec_data,
-        ind_data,
-        act_list,
-        header: "Project Work",
-        sub_header: "Project Add/Edit",
-        header_url: "/my_project",
+    var sec_data = await getSectorList(data.sec_id),
+        ind_data = await getIndustriesList(data.ind_id)
+        busi_data = await getBusiActList(0, data.sec_id, data.ind_id), busi_name = [],
+        location_data = await getLocationList(), location_name = [];
+    if(Array.isArray(data.bus_id)){
+        for(let dt of data.bus_id){
+            var indx = busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex(idt => idt.id == dt) : -1
+            if(indx >= 0){
+                busi_name.push(busi_data.msg[indx])
+            }
+        }
+    }else{
+        var indx = busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex(idt => idt.id == data.bus_id) : -1
+        if(indx >= 0){
+            busi_name.push(busi_data.msg[indx])
+        }
     }
-    res.render('project_work/add', data)
+
+    if(Array.isArray(data.location_id)){
+        for(let dt of data.location_id){
+            var indx = location_data.suc > 0 && location_data.msg.length > 0 ? location_data.msg.findIndex(idt => idt.id == dt) : -1
+            if(indx >= 0){
+                location_name.push(location_data.msg[indx])
+            }
+        }
+    }else{
+        var indx = location_data.suc > 0 && location_data.msg.length > 0 ? location_data.msg.findIndex(idt => idt.id == data.location_id) : -1
+        if(indx >= 0){
+            location_name.push(location_data.msg[indx])
+        }
+    }
+
+    console.log(ind_data);
+
+    var res_data = {
+        sec_name: sec_data.suc > 0 && sec_data.msg.length > 0 ? sec_data.msg[0] : null,
+        ind_name: ind_data.suc > 0 && ind_data.msg.length > 0 ? ind_data.msg[0] : null,
+        busi_name,
+        location_name
+    }
+    
+    res.send(res_data)
+    // var data = {
+    //     id:0,
+    //     loc_list,
+    //     sec_data,
+    //     ind_data,
+    //     act_list,
+    //     header: "Project Work",
+    //     sub_header: "Project Add/Edit",
+    //     header_url: "/my_project",
+    // }
+    // res.render('project_work/add', data)
 })
 
 module.exports = {ProjectRouter}
