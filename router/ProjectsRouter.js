@@ -1,4 +1,5 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
+const { getDynamicData } = require('../modules/DataCollectionModule');
 const { db_Insert } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
@@ -105,16 +106,20 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
         }
     }
 
-    console.log(ind_data);
+    // console.log(ind_data);
 
     var res_data = {
         sec_name: sec_data.suc > 0 && sec_data.msg.length > 0 ? sec_data.msg[0] : null,
         ind_name: ind_data.suc > 0 && ind_data.msg.length > 0 ? ind_data.msg[0] : null,
         busi_name,
-        location_name
+        location_name,
+        header: "Project Work",
+        sub_header: "Project Add/Edit",
+        header_url: "/my_project",
     }
+    res.render("project_work/add_view", res_data);
     
-    res.send(res_data)
+    // res.send(res_data)
     // var data = {
     //     id:0,
     //     loc_list,
@@ -126,6 +131,23 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
     //     header_url: "/my_project",
     // }
     // res.render('project_work/add', data)
+})
+
+ProjectRouter.get('/project_report_view', async (req, res) => {
+    var data = req.query
+    var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id);
+    if (resDt.suc > 0 && resDt.msg.length > 0) {
+      if (resDt.msg[0].data_file_name) {
+        resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`);
+      }
+    }
+    var res_data = {
+      resDt,
+      header: "Project Work",
+      sub_header: "Project Add/Edit",
+      header_url: "/my_project",
+    };
+    res.render("project_work/report_view", res_data);
 })
 
 module.exports = {ProjectRouter}
