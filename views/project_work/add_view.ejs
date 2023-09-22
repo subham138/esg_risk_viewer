@@ -17,67 +17,67 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-            <div class="card-body">
-                <form method="POST" action="/proj_work_view" class="needs-validation" novalidate="">
-                    <div class="row g-3 py-3">
-                        <div class="col-md-12">
-                            <p>
-                                <label class="form-label" for="sec_id">Section: </label>
-                                <%= sec_name.sec_name %>
-                            </p>
-                        </div>
-                        <div class="col-md-12">
-                            <p>
-                                <label class="form-label" for="ind_id">Industrie: </label>
-                                <%= ind_name.ind_name %>
-                            </p>
-                        </div>
-                        <div class="col-md-12">
-                            <p>
-                                <label class="form-label" for="bus_id">Business Activities</label>
-                                <% var busiName = ''; 
-                                if(busi_name.length > 0){
-                                    busi_name.forEach(dt => { %>
-                                        <input type="hidden" name="bus_id" value="<%= dt.id %>">
-                                    <% if(busiName == '')
-                                        busiName = dt.busi_act_name;
-                                        else busiName = busiName + ', ' + dt.busi_act_name;
-                                    })
-                                } %>
-                                <%= busiName %>
-                            </p>
-                        </div>
-                        <div class="col-md-12">
-                            <p>
-                                <label class="form-label" for="location_id">Locations of Business Activities</label>
-                                <% var locName = ''; 
-                                    if(location_name.length > 0){
-                                        location_name.forEach(dt => { %>
-                                            <input type="hidden" name="location_id" value="<%= dt.id %>">
-                                        <% if(locName == '')
-                                            locName = dt.location_name;
-                                            else locName = locName + ', ' + dt.location_name;
+                <div class="card-body">
+                    <form method="POST" action="/proj_work_view" class="needs-validation" novalidate="">
+                        <div class="row g-3 py-3">
+                            <div class="col-md-12">
+                                <p>
+                                    <label class="form-label" for="sec_id">Section: </label>
+                                    <%= sec_name.sec_name %>
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    <label class="form-label" for="ind_id">Industrie: </label>
+                                    <%= ind_name.ind_name %>
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    <label class="form-label" for="bus_id">Business Activities</label>
+                                    <% var busiName = ''; 
+                                    if(busi_name.length > 0){
+                                        busi_name.forEach(dt => { %>
+                                            <input type="hidden" name="bus_id" value="<%= dt.id %>">
+                                        <% if(busiName == '')
+                                            busiName = dt.busi_act_name;
+                                            else busiName = busiName + ', ' + dt.busi_act_name;
                                         })
                                     } %>
-                                <%= locName %>
-                            </p>
+                                    <%= busiName %>
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <p>
+                                    <label class="form-label" for="location_id">Locations of Business Activities</label>
+                                    <% var locName = ''; 
+                                        if(location_name.length > 0){
+                                            location_name.forEach(dt => { %>
+                                                <input type="hidden" name="location_id" value="<%= dt.id %>">
+                                            <% if(locName == '')
+                                                locName = dt.location_name;
+                                                else locName = locName + ', ' + dt.location_name;
+                                            })
+                                        } %>
+                                    <%= locName %>
+                                </p>
+                            </div>
+                            <div class="col-md-8">
+                                <ul class="list-group list-group-flush">
+                                    <% if(ind_name.topic_dt){
+                                        ind_name.topic_dt.forEach(dt => { %>
+                                            <li class="list-group-item">
+                                                <%= dt.topic_name %>
+                                                <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary float-end" onclick="viewTopicData(<%= dt.id %>, <%= ind_name.id %>, <%= sec_name.id %>)">View</button>
+                                            </li>
+                                        <% })
+                                    } %>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="col-md-12">
-                            <ul class="list-group list-group-flush">
-                                <% if(ind_name.topic_dt){
-                                    ind_name.topic_dt.forEach(dt => { %>
-                                        <li class="list-group-item">
-                                            <%= dt.topic_name %>
-                                            <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary" onclick="viewTopicData(<%= dt.id %>, <%= ind_name.id %>, <%= sec_name.id %>)">View</button>
-                                        </li>
-                                    <% })
-                                } %>
-                            </ul>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </form>
-            </div>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

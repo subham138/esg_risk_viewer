@@ -1,5 +1,5 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
-const { getDynamicData } = require('../modules/DataCollectionModule');
+const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
@@ -136,13 +136,18 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
 ProjectRouter.get('/project_report_view', async (req, res) => {
     var data = req.query
     var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id);
+    var susDistList = await getSusDiscList(data.sec_id, data.ind_id)
+    var metric = await getActMetrialDtls(data.sec_id, data.ind_id)
     if (resDt.suc > 0 && resDt.msg.length > 0) {
       if (resDt.msg[0].data_file_name) {
         resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`);
       }
     }
     var res_data = {
+        top_id: data.top_id,
       resDt,
+      susDistList,
+      metric,
       header: "Project Work",
       sub_header: "Project Add/Edit",
       header_url: "/my_project",
