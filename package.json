@@ -4,7 +4,9 @@
   "description": "ESG Risk Viewer",
   "main": "server.js",
   "nodemonConfig": {
-    "ignore":["*.json"]
+    "ignore": [
+      "*.json"
+    ]
   },
   "scripts": {
     "test": "nodemon server"
@@ -17,6 +19,7 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "puppeteer": "^21.3.4"
   }
 }

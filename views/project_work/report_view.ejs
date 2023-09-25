@@ -29,7 +29,7 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row" id="topic_metrics_data">
                         <div class="col-md-12">
                             <h4>Disclosure of Sustainability-related Financial Information</h4>
                             <h6>Sustainability Disclosure Topics & Metrics</h6>
@@ -70,6 +70,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="col-md-12">
+                            <button onclick="downloadPrf('topic_metrics_data')">Print</button>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-12 my-3">
                             <hr>
                             <h6 class="my-3">Activity Metrics</h6>
@@ -215,5 +220,17 @@
             }
         }
     })
+</script>
+<script>
+    function downloadPrf(divId){
+        var divToPrint = document.getElementById(divId);
+        html2canvas(divToPrint, {
+          scale: 2 // Adjust the scale as needed for better quality
+        }).then(function(canvas) {
+          const pdf = new jsPDF("p", "mm", "a4");
+          pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+          pdf.save("output.pdf");
+        });
+    }
 </script>
 <%- include('../templates/footer.ejs') %>
