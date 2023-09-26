@@ -35,7 +35,7 @@
                             <h6>Sustainability Disclosure Topics & Metrics</h6>
                         </div>
                         <div class="col-md-12">
-                            <table class="table">
+                            <table class="table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>TOPIC</th>
@@ -70,15 +70,17 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div class="row mt-3">
                         <div class="col-md-12">
-                            <button onclick="downloadPrf('topic_metrics_data')">Print</button>
+                            <button class="btn btn-pill btn-primary btn-sm float-end" data-bs-original-title title="Download Topics & Metrics" onclick="downloadPrf('topic_metrics_data', 'Topics_Metrics')"><i class="icofont icofont-download"></i></button>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="act_metrics">
                         <div class="col-md-12 my-3">
                             <hr>
                             <h6 class="my-3">Activity Metrics</h6>
-                            <table class="table">
+                            <table class="table" width="100%" border="1">
                                 <thead>
                                     <tr>
                                         <th>ACTIVITY METRIC</th>
@@ -102,10 +104,16 @@
                             </table>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <button class="btn btn-pill btn-primary btn-sm float-end" data-bs-original-title title="Download Topics & Metrics" onclick="downloadPrf('act_metrics', 'Activity_Metrics')"><i class="icofont icofont-download"></i></button>
+                        </div>
+                    </div>
                     <% if(resDt.length > 0){
                         var i = 1;
+                        var j = 1;
                         resDt.forEach(dt => { %>
-                            <div class="row my-3">
+                            <div class="row my-3" id="dynamic_data_<%= j %>">
                                 <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
                                 <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
                                 <% if(dt.textarea){ %> 
@@ -168,42 +176,67 @@
                                     </script>
                                 <% i++; } %>
                             </div>
-                    <% })
+                            <div class="row mt-3">
+                                <div class="col-md-12">
+                                    <button class="btn btn-pill btn-primary btn-sm float-end" data-bs-original-title title="Download Topics & Metrics" onclick="downloadPrf('dynamic_data_<%= j %>', 'Activity_Metrics')"><i class="icofont icofont-download"></i></button>
+                                </div>
+                            </div>
+                    <% j++; })
                     } %>
                     <div class="row">
+                        <!-- <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script> -->
                         <div class="col-md-12">
                             <h6>Access your ESG Information System, Manage and Report Disclosure Topic (Account Upgrade Required)</h6>
                         </div>
-                        <% var filetrTopic = susDistList.msg.filter(dt => dt.top_id == top_id)
-                        var i = 1
-                        filetrTopic.forEach(dt => { %>
-                            <div class="col-md-12">
-                                <label for="" class="mb-3"><%= dt.code %></label>
-                                <textarea id="editor<%= i %>" name="editor<%= i %>" cols="30" rows="10"></textarea>
+                        <div class="col-md-12" id="editorPrevDiv">
+                            <div class="col-md-12 mb-3">
+                                <button class="btn btn-pill btn-primary btn-sm float-end" data-bs-original-title title="Add New Editor" onclick="AddEditor()"><i class="icofont icofont-ui-add"></i></button>
                             </div>
-                            <script>
-                                CKEDITOR.replace( 'editor<%= i %>', {
-                                    on: {
-                                        contentDom: function( evt ) {
-                                            // Allow custom context menu only with table elemnts.
-                                            evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-                                                var path = evt.editor.elementPath();
+                        </div>
+                        <div id="editorDiv">
+                            <% var filetrTopic = susDistList.msg.filter(dt => dt.top_id == top_id)
+                            var i = 1
+                            filetrTopic.forEach(dt => { %>
+                                <div id="editorNewDiv_<%= i %>">
+                                    <div class="col-md-12 my-4">
+                                        <label for="" class="mb-3"><%= dt.code %></label>
+                                        <input type="hidden" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.code %>">
+                                        <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"></textarea>
+                                    </div>
+                                    <script>
+                                        CKEDITOR
+                                        .replace( 'editor<%= i %>', {
+                                            on: {
+                                                contentDom: function( evt ) {
+                                                    // Allow custom context menu only with table elemnts.
+                                                    evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+                                                        var path = evt.editor.elementPath();
 
-                                                if ( !path.contains( 'table' ) ) {
-                                                    contextEvent.cancel();
+                                                        if ( !path.contains( 'table' ) ) {
+                                                            contextEvent.cancel();
+                                                        }
+                                                    }, null, null, 5 );
                                                 }
-                                            }, null, null, 5 );
-                                        }
-                                    }
-                                } );
-                            </script>
-                        <% i++; }) %>
+                                            }
+                                        } );
+                                    </script>
+                                    <div class="col-md-12 mb-3">
+                                        <button class="btn btn-pill btn-primary btn-sm float-end" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue(<%= i %>)"><i class="icofont icofont-save"></i></button>
+                                    </div>
+                                    <hr>
+                                </div>
+                            <% i++; }) %>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<input type="hidden" name="sec_id" id="sec_id" value="<%= sec_id %>">
+<input type="hidden" name="ind_id" id="ind_id" value="<%= ind_id %>">
+<input type="hidden" name="top_id" id="top_id" value="<%= top_id %>">
+<input type="hidden" name="project_id" id="project_id" value="<%= project_id %>">
 <script>
     $(document).ready(function(){
         // console.log('FunLen', fun);
@@ -221,16 +254,135 @@
         }
     })
 </script>
-<script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.2.61/jspdf.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha512-a9NgEEK7tsCvABL7KqtUTQjl69z7091EVPpw5KxPlZ93T141ffe1woLtbXTX+r2/8TtTvRX/v4zTL2UlMUPgwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- <script>
     function downloadPrf(divId){
         var divToPrint = document.getElementById(divId);
-        html2canvas(divToPrint, {
-          scale: 2 // Adjust the scale as needed for better quality
-        }).then(function(canvas) {
-          const pdf = new jsPDF("p", "mm", "a4");
-          pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
-          pdf.save("output.pdf");
-        });
+        var doc = new jsPDF();
+        doc.fromHTML(`<html><head><title>Test</title></head><body style="width:100%;">` + divToPrint.innerHTML + `</body></html>`);
+        doc.save('div.pdf');
+        // html2canvas(divToPrint, {
+        //   scale: 2 // Adjust the scale as needed for better quality
+        // }).then(function(canvas) {
+        //   const pdf = new jsPDF("p", "mm", "a4");
+        //   pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+        //   pdf.save("output.pdf");
+        // });
+    }
+</script> -->
+
+<script>
+    function downloadPrf(divId, title){
+        var divToPrint = document.getElementById(divId);
+        $.ajax({
+            method: "POST",
+            url: "/download_pdf",
+            data: { pdfDiv: divToPrint.innerHTML },
+            xhrFields: {
+                responseType: 'blob' // Receive response as a binary blob
+            },
+            beforeSend: function () {
+                $(".loader-wrapper").show();
+            },
+            success: function (data) {
+            // Create a Blob URL for the PDF
+                const pdfUrl = URL.createObjectURL(data);
+
+                // Create an anchor element for downloading the PDF
+                const a = document.createElement('a');
+                a.href = pdfUrl;
+                a.download = `${title}_${new Date().getTime()}.pdf`; // Set the desired filename
+                a.style.display = 'none';
+
+                // Append the anchor to the document body and trigger a click event
+                document.body.appendChild(a);
+                a.click();
+
+                // Cleanup: Remove the anchor and revoke the Blob URL
+                document.body.removeChild(a);
+                URL.revokeObjectURL(pdfUrl);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            },
+            complete: function () {
+                $(".loader-wrapper").hide();
+            }
+        })
+    }
+</script>
+
+<script>
+    function AddEditor(){
+        var editorLength = $('textarea[name="editor"]').length
+        $('#editorDiv').append(`
+        <div id="editorNewDiv_${editorLength+1}">
+            <div class="col-md-12 my-4">
+                <label for="" class="mb-3"> Title
+                    <input type="text" name="editor_topic" id="editor_topic_${editorLength+1}" placeholder="Enter Title">
+                </label>
+                <textarea id="editor${editorLength+1}" name="editor" cols="30" rows="10"></textarea>
+            </div>
+            <div class="col-md-12 mb-3">
+                <button class="btn btn-pill btn-primary btn-sm float-end" data-bs-original-title title="Save"><i class="icofont icofont-save"></i></button>
+                <button class="btn btn-pill btn-danger btn-sm float-end ml-2" data-bs-original-title title="Save" onclick="deleteEdotor(${editorLength+1})"><i class="icofont icofont-trash"></i></button>
+            </div>
+            <hr>
+        </div>
+        `)
+        CKEDITOR
+        .replace( `editor${editorLength+1}`, {
+            on: {
+                contentDom: function( evt ) {
+                    // Allow custom context menu only with table elemnts.
+                    evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+                        var path = evt.editor.elementPath();
+
+                        if ( !path.contains( 'table' ) ) {
+                            contextEvent.cancel();
+                        }
+                    }, null, null, 5 );
+                }
+            }
+        } );
+    }
+</script>
+
+<script>
+    function deleteEdotor(id){
+        $('#editorNewDiv_'+id).remove()
+    }
+</script>
+
+<script>
+    function saveEditorValue(id){
+        var topicTitle = $('#editor_topic_'+id).val()
+        var txtEditorVal = CKEDITOR.instances['editor'+id].getData()
+        console.log(topicTitle, txtEditorVal);
+        $.ajax({
+            method:'POST',
+            url: '/save_editor_data',
+            data: {
+                topicTilte: topicTitle, 
+                txtEditorVal: txtEditorVal, 
+                sec_id: $('#sec_id').val(), 
+                ind_id: $('#ind_id').val(), 
+                top_id: $('#top_id').val(),
+                project_id: $('#project_id').val()
+            },
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
     }
 </script>
 <%- include('../templates/footer.ejs') %>

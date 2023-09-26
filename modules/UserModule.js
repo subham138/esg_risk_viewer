@@ -19,7 +19,7 @@ module.exports = {
                 datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
             var table_name = 'md_user',
-            fields = data.id > 0 ? `user_name = '${data.user_id}', user_type = '${data.user_type}', user_id = '${data.user_id}', password = '${pass}', active_flag = '${data.active_flag}', modified_by = '${user}', modified_dt = '${datetime}'`:
+            fields = data.id > 0 ? `user_name = '${data.user_name}', user_type = '${data.user_type}', user_id = '${data.user_id}', password = '${pass}', active_flag = '${data.active_flag}', modified_by = '${user}', modified_dt = '${datetime}'`:
             `(client_id, user_name, user_type, user_id, password, active_flag, created_by, created_dt)`,
             values = `('${client_id}', '${data.user_name}', '${data.user_type}', '${data.user_id}', '${pass}', '${data.active_flag}', '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,

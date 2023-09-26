@@ -70,5 +70,26 @@ module.exports = {
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
         })
+    },
+    saveProjectArticle: (data, user_id, client_id, user) => {
+        return new Promise(async (resolve, reject) => {
+            var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+            
+            var select = 'id', 
+                table_name = 'td_project_work', 
+                whr = `sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND top_id = ${data.top_id} AND project_id = ${data.project_id} AND article_code = '${data.topicTilte}'`, 
+                order = null;
+            var chk_dt = await db_Select(select, table_name, whr, order)
+
+            var table_name = 'td_project_work',
+                fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 
+                `article = '${data.txtEditorVal}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                `(sec_id, ind_id, top_id, project_id, article_code, article, user_id, created_by, created_dt)`,
+                values = `('${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${data.project_id}', '${data.topicTilte}', '${data.txtEditorVal}', '${user_id}', '${user}', '${datetime}')`,
+                whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+                flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+            var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+            resolve(res_dt)
+        })
     }
 }

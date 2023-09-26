@@ -66,11 +66,13 @@
             <li class="dropdown"><a class="nav-link menu-title link-nav" href="/client"><i
               data-feather="client"></i><span>Client</span></a></li>
             <% } %>
-            <% if(user.user_type == 'C'){ %>
+            <% if(user.user_type == 'C' || user.user_type == 'A' || user.user_type == 'E' || user.user_type == 'V'){ %>
+              <% if(user.user_type == 'C') { %>
               <li class="dropdown"><a class="nav-link menu-title link-nav" href="/subscription"><i
                 data-feather="subscription"></i><span>My Subscriptions</span></a></li>
               <li class="dropdown"><a class="nav-link menu-title link-nav" href="/manage_user"><i
                 data-feather="manage_users"></i><span>Manage Users</span></a></li>
+              <% } %>
               <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i
                 data-feather="my-project"></i><span>My Projects</span></a>
                 <ul class="nav-submenu menu-content">

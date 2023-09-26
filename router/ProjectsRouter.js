@@ -1,7 +1,7 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert } = require('../modules/MasterModule');
-const { getProjectList, saveProject, getLocationList } = require('../modules/ProjectModule');
+const { getProjectList, saveProject, getLocationList, saveProjectArticle } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 
 const express = require('express'),
@@ -145,13 +145,16 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
       }
     }
     var res_data = {
-        top_id: data.top_id,
-      resDt,
-      susDistList,
-      metric,
-      header: "Project Work",
-      sub_header: "Project Add/Edit",
-      header_url: "/my_project",
+        top_id: data.top_id, 
+        sec_id: data.sec_id,
+        ind_id: data.ind_id,
+        project_id: 1,
+        resDt,
+        susDistList,
+        metric,
+        header: "Project Work",
+        sub_header: "Project Add/Edit",
+        header_url: "/my_project",
     };
     res.render("project_work/report_view", res_data);
 })
@@ -171,15 +174,24 @@ ProjectRouter.post('/download_pdf', async (req, res) => {
     await page.setContent(htmlContent);
 
     // Generate a PDF file
-    const pdfBuffer = await page.pdf({ path: 'output.pdf', format: 'A4' });
+    const pdfBuffer = await page.pdf({format: 'A4' });
+    // var pdfBlob = new Blob([pdfBuffer])
 
     // Close the browser
     await browser.close();
 
+    // console.log(pdfBlob);
+
     // Send the PDF as a download
-    res.setHeader('Content-Disposition', 'attachment; filename=output.pdf');
     res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=output.pdf');
     res.send(pdfBuffer);
+})
+
+ProjectRouter.post('/save_editor_data', async (req, res) => {
+    var data = req.body
+    var res_dt = await saveProjectArticle(data, req.session.user.id, req.session.user.client_id, req.session.user.user_name)
+    res.send(res_dt)
 })
 
 module.exports = {ProjectRouter}
