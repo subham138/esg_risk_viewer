@@ -1,7 +1,7 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert } = require('../modules/MasterModule');
-const { getProjectList, saveProject, getLocationList, saveProjectArticle } = require('../modules/ProjectModule');
+const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 
 const express = require('express'),
@@ -19,8 +19,12 @@ puppeteer = require('puppeteer');
 
 ProjectRouter.get('/my_project', async (req, res) => {
     // var req_data = req.query
-    var project_data = await getProjectList(0, req.session.user.client_id, 0)
+    var user_type = req.session.user.user_type,
+        user_id = req.session.user.user_id;
+
+    var project_data = await getProjectList(0, req.session.user.client_id, user_type != 'A' && user_type != 'C' && user_type != 'S' ? user_id : 0)
     var data = {
+        user_type,
         project_data,
         header: "Project List",
     }
@@ -60,8 +64,11 @@ ProjectRouter.get('/proj_work', async (req, res) => {
         sec_data = await getSectorList(),
         ind_data = [],
         act_list = [];
+        var project_data = await getProjectList(req.query.id, req.session.user.client_id, 0)
     var data = {
         id:0,
+        proj_id: req.query.id,
+        proj_name: project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0].project_name : '',
         loc_list,
         sec_data,
         ind_data,
@@ -114,9 +121,11 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
         ind_name: ind_data.suc > 0 && ind_data.msg.length > 0 ? ind_data.msg[0] : null,
         busi_name,
         location_name,
+        proj_id: data.proj_id,
         header: "Project Work",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",
+        Buffer
     }
     res.render("project_work/add_view", res_data);
     
@@ -135,10 +144,13 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
 })
 
 ProjectRouter.get('/project_report_view', async (req, res) => {
-    var data = req.query
+    var enc_data = req.query.enc_data
+    var data = Buffer.from(enc_data, "base64")
+    data = JSON.parse(data);
     var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id);
     var susDistList = await getSusDiscList(data.sec_id, data.ind_id)
     var metric = await getActMetrialDtls(data.sec_id, data.ind_id)
+    var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id)
     if (resDt.suc > 0 && resDt.msg.length > 0) {
       if (resDt.msg[0].data_file_name) {
         resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`);
@@ -148,10 +160,12 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         top_id: data.top_id, 
         sec_id: data.sec_id,
         ind_id: data.ind_id,
-        project_id: 1,
+        project_id: data.proj_id,
         resDt,
         susDistList,
         metric,
+        user_type: req.session.user.user_type,
+        editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
         header: "Project Work",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",

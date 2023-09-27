@@ -75,7 +75,6 @@
                                 </ul>
                             </div>
                         </div>
-                        <button class="btn btn-primary" type="submit">Submit</button>
                     </form>
                 </div>
             </div>
@@ -85,7 +84,7 @@
 
 <script>
     function viewTopicData(top_id, ind_id, sec_id){
-        window.open(`/project_report_view?sec_id=${sec_id}&ind_id=${ind_id}&top_id=${top_id}`, '_blank')
+        window.open(`/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`, '_blank')
     }
 </script>
 

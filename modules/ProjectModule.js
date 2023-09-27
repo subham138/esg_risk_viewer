@@ -4,25 +4,34 @@ const dateFormat = require("dateformat");
 module.exports = {
     getProjectList: (id=null, client_id, user_id=null) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
-                table_name = 'td_project a',
-                whr = `a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
-                order = null;
-            var res_dt = await db_Select(select, table_name, whr, order)
-            if(id > 0){
-                if(res_dt.suc > 0 && res_dt.msg.length > 0){
-                    var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_name',
-                        table_name = 'td_user_project a, md_user b',
-                        whr = `a.user_id=b.id AND a.client_id = '${client_id}' AND a.project_id = '${res_dt.msg[0].id}'`,
-                        order = null;
-                    var user_dt = await db_Select(select, table_name, whr, order)
-                    user_dt.suc > 0 && user_dt.msg.length > 0 ? res_dt.msg[0]['user_list'] = user_dt.msg : ''
-                    resolve(res_dt)
+            if(user_id > 0){
+                var select = 'b.id, b.project_name, b.last_access, b.last_accessed_by',
+                    table_name = 'td_user_project a, td_project b',
+                    whr = `a.project_id = b.id AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''}`,
+                    order = null;
+                var res_dt = await db_Select(select, table_name, whr, order)
+                resolve(res_dt)
+            }else{
+                var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
+                    table_name = 'td_project a',
+                    whr = `a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
+                    order = null;
+                var res_dt = await db_Select(select, table_name, whr, order)
+                if(id > 0){
+                    if(res_dt.suc > 0 && res_dt.msg.length > 0){
+                        var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_name',
+                            table_name = 'td_user_project a, md_user b',
+                            whr = `a.user_id=b.id AND a.client_id = '${client_id}' AND a.project_id = '${res_dt.msg[0].id}'`,
+                            order = null;
+                        var user_dt = await db_Select(select, table_name, whr, order)
+                        user_dt.suc > 0 && user_dt.msg.length > 0 ? res_dt.msg[0]['user_list'] = user_dt.msg : ''
+                        resolve(res_dt)
+                    }else{
+                        resolve(res_dt)
+                    }
                 }else{
                     resolve(res_dt)
                 }
-            }else{
-                resolve(res_dt)
             }
         })
     },
@@ -90,6 +99,16 @@ module.exports = {
                 flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
             resolve(res_dt)
+        })
+    },
+    getSavedProjectWork: (sec_id, ind_id, top_id, project_id) => {
+        return new Promise(async (resolve, reject) => {
+            var select = '*', 
+                table_name = 'td_project_work', 
+                whr = `sec_id = ${sec_id} AND ind_id = ${ind_id} AND top_id = ${top_id} AND project_id = ${project_id}`, 
+                order = null;
+            var chk_dt = await db_Select(select, table_name, whr, order)
+            resolve(chk_dt)
         })
     }
 }
