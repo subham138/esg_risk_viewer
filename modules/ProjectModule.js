@@ -8,14 +8,14 @@ module.exports = {
                 var select = 'b.id, b.project_name, b.last_access, b.last_accessed_by',
                     table_name = 'td_user_project a, td_project b',
                     whr = `a.project_id = b.id AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''}`,
-                    order = null;
+                    order = 'ORDER BY b.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 resolve(res_dt)
             }else{
                 var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
                     table_name = 'td_project a',
                     whr = `a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
-                    order = null;
+                    order = 'ORDER BY a.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 if(id > 0){
                     if(res_dt.suc > 0 && res_dt.msg.length > 0){
