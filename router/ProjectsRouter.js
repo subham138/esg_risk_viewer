@@ -1,6 +1,6 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
-const { db_Insert } = require('../modules/MasterModule');
+const { db_Insert, db_Delete } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 
@@ -57,6 +57,12 @@ ProjectRouter.post('/my_project_save', async (req, res) => {
         message: res_dt.msg,
     };
     res.redirect('/my_project')
+})
+
+ProjectRouter.post('/delete_my_project', async (req, res) => {
+    var data = req.body
+    var res_dt = await db_Delete('td_user_project', `id=${data.id}`)
+    res.send(res_dt)
 })
 
 ProjectRouter.get('/proj_work', async (req, res) => {

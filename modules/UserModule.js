@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt'),
 dateFormat = require("dateformat");
 
 module.exports = {
-    getUserList: (id=null, client_id) => {
+    getUserList: (id=null, client_id, active_flag = null) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.id, a.user_name, a.user_id, b.client_name, a.user_type',
+            var select = 'a.id, a.user_name, a.user_id, b.client_name, a.user_type, a.active_flag',
             table_name = 'md_user a, td_client b',
-            whr = `a.client_id=b.id AND a.user_type NOT IN('S', 'C') AND a.client_id = ${client_id} ${id > 0 ? `AND a.id = ${id}` : ''}`,
+            whr = `a.client_id=b.id AND a.user_type NOT IN('S', 'C') AND a.client_id = ${client_id} ${id > 0 ? `AND a.id = ${id}` : ''} ${active_flag && active_flag != 'A' ? `AND active_flag = '${active_flag}'` : ''}`,
             order = null;
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)

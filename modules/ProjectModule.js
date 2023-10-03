@@ -50,21 +50,25 @@ module.exports = {
 
             if(Array.isArray(data.user_id)){
                 for(let dt of data.user_id){
+                    var chk_dt = await db_Select('id', 'td_user_project', `client_id = ${client_id} AND project_id = '${project_id}' AND user_id = '${dt}'`, null)
+
                     var table_name = 'td_user_project',
-                        fields = data.id > 0 ? `project_id = '${project_id}', user_id = '${dt}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                        fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `project_id = '${project_id}', user_id = '${dt}', modified_by = '${user}', modified_dt = '${datetime}'` : 
                         `(client_id, project_id, user_id, created_by, created_dt)`,
                         values = `('${client_id}', '${project_id}', '${dt}', '${user}', '${datetime}')`,
-                        whr = data.id > 0 ? `id = ${data.id}` : null,
-                        flag = data.id > 0 ? 1 : 0;
+                        whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+                        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
                     res_dt = await db_Insert(table_name, fields, values, whr, flag)
                 }
             }else{
+                var chk_dt = await db_Select('id', 'td_user_project', `client_id = ${client_id} AND project_id = '${project_id}' AND user_id = '${dt}'`, null)
+                
                 var table_name = 'td_user_project',
-                    fields = data.id > 0 ? `project_id = '${project_id}', user_id = '${data.user_id}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                    fields = chk_dt.suc > 0 && chk_dt.msg.length ? `project_id = '${project_id}', user_id = '${data.user_id}', modified_by = '${user}', modified_dt = '${datetime}'` : 
                     `(client_id, project_id, user_id, created_by, created_dt)`,
                     values = `('${client_id}', '${project_id}', '${data.user_id}', '${user}', '${datetime}')`,
-                    whr = data.id > 0 ? `id = ${data.id}` : null,
-                    flag = data.id > 0 ? 1 : 0;
+                    whr = chk_dt.suc > 0 && chk_dt.msg.length ? `id = ${chk_dt.msg[0].id}` : null,
+                    flag = chk_dt.suc > 0 && chk_dt.msg.length ? 1 : 0;
                 res_dt = await db_Insert(table_name, fields, values, whr, flag)
             }
             resolve(res_dt)

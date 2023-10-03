@@ -74,7 +74,8 @@
               <table class="table" id="suc_disc_table">
                 <thead>
                   <tr>
-                    <th>TOPIC</th>
+                    <th>TOPIC (Industry specific)</th>
+                    <th>TOPIC (Industry agnostic)</th>
                     <th>METRIC</th>
                     <th>CATEGORY</th>
                     <th>UNIT OF MEASURE</th>
@@ -166,6 +167,7 @@
                                         // created_row(dt.id, 1, 0, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code, dt.topic_name)
                                         $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1">
                                             <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>
+                                            <td><input class="form-control" id="ind_agn_${dt.id}_1" name="ind_agn_${dt.id}" type="text" value="${sus_dt.ind_agn}" required=""></td>
                                             <td><input class="form-control" id="metric_${dt.id}_1" name="metric_${dt.id}" type="text" value="${sus_dt.metric}" required=""></td>
                                             <td><input class="form-control" id="catg_${dt.id}_1" name="catg_${dt.id}" type="text" value="${sus_dt.catg}" required=""></td>
                                             <td><input class="form-control" id="unit_${dt.id}_1" name="unit_${dt.id}" type="text" value="${sus_dt.unit}" required=""></td>
@@ -173,13 +175,14 @@
                                             <td><button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button></td>
                                         </tr>`);
                                     }else{
-                                        add_row(dt.id, k, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code)
+                                        add_row(dt.id, k, sus_dt.ind_agn, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code)
                                     }
                                     k++;
                                 })
                             }else{
                                 $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1">
                                     <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>
+                                    <td><input class="form-control" id="ind_agn_${dt.id}_1" name="ind_agn_${dt.id}" type="text" value="" required=""></td>
                                     <td><input class="form-control" id="metric_${dt.id}_1" name="metric_${dt.id}" type="text" value="" required=""></td>
                                     <td><input class="form-control" id="catg_${dt.id}_1" name="catg_${dt.id}" type="text" value="" required=""></td>
                                     <td><input class="form-control" id="unit_${dt.id}_1" name="unit_${dt.id}" type="text" value="" required=""></td>
@@ -192,6 +195,7 @@
                         $.each(res.msg[0].topic_dt, function (i, dt) {
                             $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1">
                                 <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>
+                                <td><input class="form-control" id="ind_agn_${dt.id}_1" name="ind_agn_${dt.id}" type="text" value="" required=""></td>
                                 <td><input class="form-control" id="metric_${dt.id}_1" name="metric_${dt.id}" type="text" value="" required=""></td>
                                 <td><input class="form-control" id="catg_${dt.id}_1" name="catg_${dt.id}" type="text" value="" required=""></td>
                                 <td><input class="form-control" id="unit_${dt.id}_1" name="unit_${dt.id}" type="text" value="" required=""></td>
@@ -215,10 +219,11 @@
     });
   });
 
-  function created_row(top_id, id, prev_id = 0, metric='', catg='', unit='', code='', topic_name=''){
+  function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name=''){
     console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
     $(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`).after(`<tr id="row_${top_id}_${id}">
         ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
+        <td><input class="form-control" id="ind_agn_${top_id}_${id}" name="ind_agn_${top_id}" type="text" value="${ind_agn}" required=""></td>
         <td><input class="form-control" id="metric_${top_id}_${id}" name="metric_${top_id}" type="text" value="${metric}" required=""></td>
         <td><input class="form-control" id="catg_${top_id}_${id}" name="catg_${top_id}" type="text" value="${catg}" required=""></td>
         <td><input class="form-control" id="unit_${top_id}_${id}" name="unit_${top_id}" type="text" value="${unit}" required=""></td>
@@ -227,12 +232,12 @@
     </tr>`);
   }
 
-  function add_row(top_id, id, metric='', catg='', unit='', code='') {
+  function add_row(top_id, id, ind_agn='', metric='', catg='', unit='', code='') {
     var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
     let next_id = row + 1;
     $(`#first_top_td_${top_id}`).removeAttr("rowspan");
     $(`#first_top_td_${top_id}`).attr("rowspan", next_id);
-    created_row(top_id, next_id, row, metric, catg, unit, code)
+    created_row(top_id, next_id, row, ind_agn, metric, catg, unit, code)
   }
 
   function remove_row(top_id, id) {

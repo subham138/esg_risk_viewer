@@ -42,7 +42,7 @@
                                 if(project_data.msg[0].user_list){
                                     let i = 1
                                     project_data.msg[0].user_list.forEach(udt => { %>
-                                        <tr>
+                                        <tr id="tr_<%= i %>">
                                             <td>
                                                 <select class="form-select" id="user_id_<% i %>" name="user_id" required="">
                                                     <option selected="" value="">Select User</option>
@@ -141,7 +141,25 @@
     }
     function del_row(id){
         if (confirm('Are you sure you want to delete?')) {
-            $(`#tr_${id}`).remove()
+            $.ajax({
+                method: "POST",
+                url: "/delete_my_project",
+                data: { id: id },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result);
+                    console.log(res);
+                    if (res.suc > 0 && res.msg.length > 0){
+                        $(`#tr_${id}`).remove()
+                    }
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                }
+            })
         }
     }
 </script>

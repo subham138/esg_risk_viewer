@@ -111,4 +111,12 @@ UserRouter.post('/manage_user_save', async (req, res) => {
   res.redirect('/manage_user')
 })
 
+UserRouter.post('/get_client_user_list_ajax', async (req, res) => {
+  var data = req.body,
+  client_id = req.session.user.client_id;
+  var res_dt = await getUserList(0, client_id, data.flag);
+  res_dt['user_type_list'] = USER_TYPE_LIST
+  res.send(res_dt)
+})
+
 module.exports = { UserRouter };
