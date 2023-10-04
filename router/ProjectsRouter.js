@@ -3,6 +3,7 @@ const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../module
 const { db_Insert, db_Delete } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
+const dateFormat = require("dateformat");
 
 const express = require('express'),
 ProjectRouter = express.Router(),
@@ -86,12 +87,14 @@ ProjectRouter.get('/proj_work', async (req, res) => {
     res.render('project_work/add', data)
 })
 
-ProjectRouter.post('/proj_work_view', async (req, res) => {
-    var data = req.body
-    var sec_data = await getSectorList(data.sec_id),
-        ind_data = await getIndustriesList(data.ind_id)
+ProjectRouter.post('/save_proj_work', async (req, res) => {
+    var data = req.body,
         busi_data = await getBusiActList(0, data.sec_id, data.ind_id), busi_name = [],
-        location_data = await getLocationList(), location_name = [];
+        location_data = await getLocationList(), location_name = [],
+        user_id = req.session.user.user_id,
+        user_name = req.session.user.user_name,
+        datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+
     if(Array.isArray(data.bus_id)){
         for(let dt of data.bus_id){
             var indx = busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex(idt => idt.id == dt) : -1
@@ -99,11 +102,15 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
                 busi_name.push(busi_data.msg[indx])
             }
         }
+        busi_name = [...busi_name.map(dt=> dt.busi_act_name)]
+        busi_name = busi_name.join(',')
+        // console.log(busi_name);
     }else{
         var indx = busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex(idt => idt.id == data.bus_id) : -1
         if(indx >= 0){
             busi_name.push(busi_data.msg[indx])
         }
+        busi_name = busi_name[0].busi_act_name
     }
 
     if(Array.isArray(data.location_id)){
@@ -113,40 +120,59 @@ ProjectRouter.post('/proj_work_view', async (req, res) => {
                 location_name.push(location_data.msg[indx])
             }
         }
+        location_name = [...location_name.map(dt=> dt.location_name)]
+        location_name = location_name.join(',')
     }else{
         var indx = location_data.suc > 0 && location_data.msg.length > 0 ? location_data.msg.findIndex(idt => idt.id == data.location_id) : -1
         if(indx >= 0){
             location_name.push(location_data.msg[indx])
         }
+        location_name = location_name[0].location_name
     }
+    var table_name = 'td_project', 
+        fields = `last_access = '${datetime}', last_accessed_by = '${user_name}', sec_id = '${data.sec_id}', ind_id = '${data.ind_id}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"`, 
+        values = null, 
+        whr = `id = ${data.proj_id}`, 
+        flag = 1;
+    var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+    if (res_dt.suc > 0) {
+        req.session.message = {
+          type: "success",
+          message: "Data saved successfully",
+        };
+        res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id}), "utf8").toString('base64')}`);
+    } else {
+        req.session.message = { type: "danger", message: "Data not saved" };
+        res.redirect(`/proj_work?id=${data.proj_id}`);
+    }
+})
+
+ProjectRouter.get('/proj_work_view', async (req, res) => {
+    var enc_data = req.query.dt,
+        data = Buffer.from(enc_data, "base64");
+    data = JSON.parse(data)
+    var sec_data = await getSectorList(data.sec_id),
+        ind_data = await getIndustriesList(data.ind_id),
+        project_data = await getProjectList(data.proj_id, req.session.user.client_id);
+    // console.log(project_data);
+
+    project_data = project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0] : null
 
     // console.log(ind_data);
 
     var res_data = {
         sec_name: sec_data.suc > 0 && sec_data.msg.length > 0 ? sec_data.msg[0] : null,
         ind_name: ind_data.suc > 0 && ind_data.msg.length > 0 ? ind_data.msg[0] : null,
-        busi_name,
-        location_name,
+        busi_name: project_data ? project_data.business_act : '',
+        location_name: project_data ? project_data.location_busi_act : '',
         proj_id: data.proj_id,
+        proj_name: project_data ? project_data.project_name : '',
+        user_type: req.session.user.user_type,
         header: "Project Work",
         sub_header: "Project Add/Edit",
-        header_url: "/my_project",
-        Buffer
+        header_url: "/my_project"
     }
     res.render("project_work/add_view", res_data);
-    
-    // res.send(res_data)
-    // var data = {
-    //     id:0,
-    //     loc_list,
-    //     sec_data,
-    //     ind_data,
-    //     act_list,
-    //     header: "Project Work",
-    //     sub_header: "Project Add/Edit",
-    //     header_url: "/my_project",
-    // }
-    // res.render('project_work/add', data)
 })
 
 ProjectRouter.get('/project_report_view', async (req, res) => {

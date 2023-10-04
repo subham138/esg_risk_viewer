@@ -5,14 +5,14 @@ module.exports = {
     getProjectList: (id=null, client_id, user_id=null) => {
         return new Promise(async (resolve, reject) => {
             if(user_id > 0){
-                var select = 'b.id, b.project_name, b.last_access, b.last_accessed_by',
+                var select = 'b.id, b.project_name, b.sec_id, b.ind_id, b.last_access, b.last_accessed_by, b.business_act, b.location_busi_act',
                     table_name = 'td_user_project a, td_project b',
                     whr = `a.project_id = b.id AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''}`,
                     order = 'ORDER BY b.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 resolve(res_dt)
             }else{
-                var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
+                var select = 'a.id, a.project_name, a.sec_id, a.ind_id, a.last_access, a.last_accessed_by, a.business_act, a.location_busi_act',
                     table_name = 'td_project a',
                     whr = `a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
                     order = 'ORDER BY a.id DESC';

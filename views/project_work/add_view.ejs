@@ -20,6 +20,14 @@
                 <div class="card-body">
                     <form method="POST" action="/proj_work_view" class="needs-validation" novalidate="">
                         <div class="row g-3 py-3">
+                            <% if(user_type != 'V'){ %>
+                            <div class="col-md-12">
+                                <a href="/proj_work?id=<%= proj_id %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end">Modify</a>
+                            </div>
+                            <% } %>
+                            <div class="col-md-12 text-center mb-4">
+                                <p class="f-14">You are working on the project, <%= proj_name %></p>
+                            </div>
                             <div class="col-md-12">
                                 <p>
                                     <label class="form-label" for="sec_id">Section: </label>
@@ -35,31 +43,13 @@
                             <div class="col-md-12">
                                 <p>
                                     <label class="form-label" for="bus_id">Business Activities</label>
-                                    <% var busiName = ''; 
-                                    if(busi_name.length > 0){
-                                        busi_name.forEach(dt => { %>
-                                            <input type="hidden" name="bus_id" value="<%= dt.id %>">
-                                        <% if(busiName == '')
-                                            busiName = dt.busi_act_name;
-                                            else busiName = busiName + ', ' + dt.busi_act_name;
-                                        })
-                                    } %>
-                                    <%= busiName %>
+                                    <%= busi_name %>
                                 </p>
                             </div>
                             <div class="col-md-12">
                                 <p>
                                     <label class="form-label" for="location_id">Locations of Business Activities</label>
-                                    <% var locName = ''; 
-                                        if(location_name.length > 0){
-                                            location_name.forEach(dt => { %>
-                                                <input type="hidden" name="location_id" value="<%= dt.id %>">
-                                            <% if(locName == '')
-                                                locName = dt.location_name;
-                                                else locName = locName + ', ' + dt.location_name;
-                                            })
-                                        } %>
-                                    <%= locName %>
+                                    <%= location_name %>
                                 </p>
                             </div>
                             <div class="col-md-8">
