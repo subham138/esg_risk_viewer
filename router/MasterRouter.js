@@ -64,7 +64,7 @@ MasterRouter.get("/industries", async (req, res) => {
 
 MasterRouter.get("/ind_edit", async (req, res) => {
   var id = req.query.id,
-    ind_data,
+    ind_data = [],
     sec_data = await getSectorList();
   var topic_catg = await getTopicCatgList(),
     topic = {};

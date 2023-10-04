@@ -46,7 +46,7 @@
                             <u><p class="f-w-600 f-15 mt-2"><%= dt.catg_name %></p></u>
                             <% topic[dt.catg_name].msg.forEach(top => { %>
                                 <div class="col-md-6">
-                                    <input id="<%= top.id %>" name="top_id" value="<%= top.id %>" type="checkbox" <%= ind_data.msg[0].topic_dt ? (ind_data.msg[0].topic_dt.findIndex(ind => ind.topic_id == top.id) >= 0 ? 'checked' : '') : '' %>>
+                                    <input id="<%= top.id %>" name="top_id" value="<%= top.id %>" type="checkbox" <%= ind_id > 0 ? (ind_data.msg[0].topic_dt ? (ind_data.msg[0].topic_dt.findIndex(ind => ind.topic_id == top.id) >= 0 ? 'checked' : '') : '') : '' %>>
                                     <label class="mt-0" for="<%= top.id %>"><%= top.topic_name %></label>
                                 </div>
                                 <% }) %>
