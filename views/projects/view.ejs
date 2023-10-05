@@ -57,7 +57,7 @@
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                         <% }%>
-                                        <a class="btn btn-pill btn-outline-primary btn-air-primary" onclick="redirectToPage(<%= dt.id %>, <%= dt.sec_id > 0 ? dt.sec_id : null %>, <%= dt.ind_id > 0 ? dt.ind_id : null %>, '<%= dt.business_act %>')">
+                                        <a class="btn btn-pill btn-outline-primary btn-air-primary" onclick="redirectToPage(<%= dt.id %>, <%= dt.sec_id > 0 ? dt.sec_id : '' %>, <%= dt.ind_id > 0 ? dt.ind_id : '' %>, '<%= dt.business_act %>')">
                                             <% if(user_type != 'V'){ %> 
                                                 <i class="icofont icofont-ui-settings"></i> Manage 
                                             <% }else{ %>
@@ -85,7 +85,7 @@
 </div>
 <script>
     function redirectToPage(id, sec_id, ind_id, bus_act){
-        if(sec_id && ind_id && bus_act){
+        if(sec_id > 0 && ind_id > 0 && bus_act != ''){
             window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id}))}`
         }else{
             window.location.href = `/proj_work?id=${id}`
