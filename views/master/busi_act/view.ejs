@@ -26,41 +26,48 @@
             <% } %>
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="display" id="basic-1">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Sector</th>
-                                    <th>Industrie</th>
-                                    <th>Name</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if(data.msg.length > 0){
-                                    let i = 1;
-                                data.msg.forEach(dt => { %>
-                                <tr>
-                                    <td><%= i %></td>
-                                    <td><%= dt.sec_name %></td>
-                                    <td><%= dt.ind_name %></td>
-                                    <td><%= dt.busi_act_name %></td>
-                                    <td><a href="/busi_act_edit?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                                        <i class="icofont icofont-ui-edit"></i> Edit
-                                    </a>
-                                    <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
-                                        <i class="icofont icofont-ui-delete"></i> Delete
-                                    </a> -->
-                                    </td>
-                                </tr>
-                                <% i++; })}else{ %>
-                                <tr>
-                                    <td colspan="4">No Data Found</td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
+                    <div class="row">
+                        <div class="col-md-12 my-2">
+                            <a href="/busi_act_edit?id=0" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new business activities" data-bs-original-title="Edit">Add New Business Activities</a>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="display" id="basic-1">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Sector</th>
+                                            <th>Industrie</th>
+                                            <th>Name</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if(data.msg.length > 0){
+                                            let i = 1;
+                                        data.msg.forEach(dt => { %>
+                                        <tr>
+                                            <td><%= i %></td>
+                                            <td><%= dt.sec_name %></td>
+                                            <td><%= dt.ind_name %></td>
+                                            <td><%= dt.busi_act_name %></td>
+                                            <td><a href="/busi_act_edit?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                                <i class="icofont icofont-ui-edit"></i> Edit
+                                            </a>
+                                            <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                                                <i class="icofont icofont-ui-delete"></i> Delete
+                                            </a> -->
+                                            </td>
+                                        </tr>
+                                        <% i++; })}else{ %>
+                                        <tr>
+                                            <td colspan="4">No Data Found</td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
