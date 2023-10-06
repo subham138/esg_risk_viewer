@@ -1,3 +1,4 @@
+const { SaveSubsData } = require('../modules/SubscModule');
 const { getClientList } = require('../modules/UserModule');
 
 const express = require('express'),
@@ -26,21 +27,21 @@ SubsRouter.get('/subscription', async (req, res) => {
 SubsRouter.get('/subs_plan', async (req, res) => {
     var data = req.query,
     user_id = req.session.user.user_id,
-    user_name = req.query.user.user_name,
+    user_name = req.session.user.user_name,
     client_id = req.session.user.client_id;
-    var res_dt = asass;
+    var res_dt = await SaveSubsData(user_name, client_id, data.id);
     if(res_dt.suc > 0){
         req.session.message = {
             type: "success",
             message: "Your plan updated successfully",
         };
-        req.redirect('/subscription')
+        res.redirect('/subscription')
     }else{
         req.session.message = {
             type: "warning",
             message: "Something went wrong. Please try again after some time.",
         };
-        req.redirect('/subscription')
+        res.redirect('/subscription')
     }
 })
 

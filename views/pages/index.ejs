@@ -2,11 +2,22 @@
 <% const monthNames = ["January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
 ]; %>
+<script>
+  $(document).ready(function(){
+    var flag = <%= flag %>
+    var noOfDays = <%= daysLeft %>
+    if(flag){
+      $('#exampleModalCenter').modal('show');
+      $('#subMsg').append(`<label class="text-danger text-center">Your Subscription will ended within ${noOfDays >= 0 ? noOfDays : 0} days.</label>`)
+    }
+  })
+</script>
 <!-- Container-fluid starts-->
 <div class="container-fluid dashboard-default-sec">
 <div class="row">
   <div class="col-xl-6 xl-100 box-col-12">
     <div class="card">
+      <!-- <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Vertically centered</button> -->
       <div class="cal-date-widget card-body">
         <div class="row">
           <div class="col-xl-6 col-xs-12 col-md-6 col-sm-6">

@@ -55,6 +55,7 @@ const { DataCollectionRouter } = require("./router/DataCollectionRouter");
 const { MasterRouter } = require("./router/MasterRouter");
 const { SubsRouter } = require("./router/SubscriptionRouter");
 const { ProjectRouter } = require("./router/ProjectsRouter");
+const { DashboardRouter } = require("./router/DashboardRouter");
 // END //
 
 app.get("/", (req, res) => {
@@ -75,10 +76,7 @@ app.use(MasterRouter);
 app.use(DataCollectionRouter)
 app.use(SubsRouter)
 app.use(ProjectRouter)
-
-app.get("/dashboard", (req, res) => {
-  res.render("pages/index");
-});
+app.use(DashboardRouter)
 
 app.get("/user_data", (req, res) => {
   var data = {

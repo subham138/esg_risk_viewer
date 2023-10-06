@@ -152,7 +152,7 @@
 <script>
     function updatePackage(plan_id){
         if(confirm(`Do you want to subscribe our ${plan_id == 'P' ? 'Premium' : (plan_id == 'S' ? 'Standard' : 'Basic')} package?`)){
-            window.location.href = `/`
+            window.location.href = `/subs_plan?id=${plan_id}`
         }
     }
 </script>
