@@ -18,7 +18,7 @@
         <div class="col-sm-12">
             <div class="card">
             <div class="card-body">
-                <form method="POST" action="/manage_user_save" class="needs-validation" novalidate="">
+                <form method="POST" action="/client_save" class="needs-validation" novalidate="">
                 <div class="row g-3 py-3">
                     <div class="col-md-6">
                         <label class="form-label" for="client_name">Client Name</label>
@@ -34,7 +34,7 @@
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <label class="form-label" for="user_id">User Email</label>
-                        <input class="form-control" id="user_id" name="user_id" type="text" value="<%= id > 0 ? client_data.msg[0].user_id : '' %>" required="">
+                        <input class="form-control" id="user_id" name="user_id" type="text" value="<%= id > 0 ? client_data.msg[0].user_id : '' %>" required="" <%= id > 0 ? 'readonly' : '' %>>
                         <div class="valid-feedback">No Error</div>
                     </div>
                     <div class="col-md-6">

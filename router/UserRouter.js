@@ -3,9 +3,12 @@ const express = require("express"),
   bcrypt = require("bcrypt");
 
 const { db_Select, USER_TYPE_LIST } = require("../modules/MasterModule");
-const { getUserList, saveUser, getClientList } = require("../modules/UserModule");
+const { getUserList, saveUser, getClientList, saveClientData } = require("../modules/UserModule");
 
 UserRouter.get("/login", (req, res) => {
+  // var dt = new Date();
+  // console.log(dt);
+  // console.log(new Date(dt.setMonth(dt.getMonth()+6)));
   let user = req.session.user;
   if (user) {
     res.redirect("/dashboard");
@@ -73,6 +76,16 @@ UserRouter.get('/client_edit', async (req, res) => {
     header_url: "/client",
   };
   res.render("client/add", data);
+})
+
+UserRouter.post('/client_save', async (req, res) => {
+  var data = req.body
+  var res_dt = await saveClientData(data, req.session.user.user_name)
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect('/client')
 })
 
 UserRouter.get('/manage_user', async (req, res) => {
