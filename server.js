@@ -2,7 +2,7 @@ const express = require("express"),
   path = require("path"),
   session = require("express-session"),
   app = express(),
-  port = process.env.PORT || 3001;
+  port = process.env.PORT || 3000;
 
 // SET VIEW ENGINE AND PATH //
 app.set("view engine", "ejs");
