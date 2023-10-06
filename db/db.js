@@ -14,7 +14,7 @@ const db = mysql.createPool({
   connectionLimit: 10,
   host: "localhost",
   user: "root",
-  password: "root",
+  password: "Cloud#1851",
   database: "esg_risk_viewer",
 });
 
