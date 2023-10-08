@@ -2,7 +2,9 @@ const express = require("express"),
   path = require("path"),
   session = require("express-session"),
   app = express(),
-  port = process.env.PORT || 3000;
+  port = process.env.PORT || 3000,
+  https = require('https'),
+  fs = require('fs');
 
 // SET VIEW ENGINE AND PATH //
 app.set("view engine", "ejs");
@@ -32,6 +34,17 @@ app.use(
   })
 );
 // END //
+
+const options = {
+  key: fs.readFileSync(path.join(__dirname, 'ssl/private-key.txt')),
+  cert: fs.readFileSync(path.join(__dirname, 'ssl/esgriskviewer.crt')),
+  /*ca: [
+      fs.readFileSync(path.join(__dirname, 'ssl_credential/DigiCertCA.crt')),
+      fs.readFileSync(path.join(__dirname, 'ssl_credential/My_CA_Bundle.crt'))
+  ]*/
+};
+
+var server = https.createServer(options, app);
 
 // PRE REQUEST HANDLER //
 app.use((req, res, next) => {
@@ -93,9 +106,14 @@ app.get("/user_data", (req, res) => {
   res.send(data);
 });
 
-// LISTEN SERVER //
+/* // LISTEN SERVER //
 app.listen(port, (err) => {
   if (err) throw new Error(err);
   else console.log(`App is running at http://localhost:${port}`);
 });
 // END //
+*/
+server.listen(port, (err) => {
+  if (err) throw new Error(err);
+  else console.log(`App is running at https://localhost:${port}`);
+});
