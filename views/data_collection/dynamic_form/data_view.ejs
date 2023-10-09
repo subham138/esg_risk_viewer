@@ -22,76 +22,99 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-body">
-                    <% if(resDt.length > 0){
-                        var i = 1;
-                        resDt.forEach(dt => { %>
-                            <div class="row my-3">
-                                <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
-                                <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
-                                <% if(dt.textarea){ %> 
-                                    <div class="col-md-12">
-                                        <%= dt.textarea %>
-                                    </div> 
-                                <% } %>
-                                <% if(dt.table){ %>
-                                    <div class="col-md-6">
-                                        <table class="table">
-                                            <tr>
-                                                <% dt.table.head.forEach(tdt => { %>
-                                                    <th><%= tdt %></th>
-                                                <% }) %>
-                                            </tr>
-                                            <tbody>
-                                                <% var table_data = [];
-                                                    table_data.push(dt.table.head)
-                                                    dt.table.body.forEach(trdt => {
-                                                        table_data.push([...Object.values(trdt).map(dt => parseFloat(dt) ? Number(dt) : dt)])
-                                                     %>
-                                                    <tr>
-                                                        <% Object.values(trdt).forEach(vdt => { %>
-                                                            <td><%= vdt %></td>
-                                                        <% }) %>
-                                                    </tr>
-                                                <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="chart-block">
-                                            <div class="chart-overflow" id="column_chart_<%= i %>"></div>
+                <form action="/save_dynamic_entry" method="post">
+                    <div class="card-body">
+                        <input type="hidden" name="sec_id" value="<%= dataSet.msg.length > 0 ? dataSet.msg[0].sec_id : 0 %>" />
+                        <input type="hidden" name="ind_id" value="<%= dataSet.msg.length > 0 ? dataSet.msg[0].ind_id : 0 %>" />
+                        <input type="hidden" name="top_id" value="<%= dataSet.msg.length > 0 ? dataSet.msg[0].top_id : 0 %>" />
+                        <% if(resDt.length > 0){
+                            var j = 1;
+                            var i = 1;
+                            resDt.forEach(dt => { %>
+                                <input type="hidden" name="section_id" value="<%= j %>" />
+                                <div class="row my-3">
+                                    <% if(dt.heading){ %> <div class="col-md-12"><h4 onclick="editLabel(this)"><%= dt.heading %></h4><input type="text" value="<%= dt.heading %>" name="header_<%= j %>" class="edit form-control" id="header_<%= j %>" style="display: none;"></div> <% } %>
+                                    <% if(dt.sub_heading){ %> <div class="col-md-12"><h5 onclick="editLabel(this)"><%= dt.sub_heading %></h5><input type="text" value="<%= dt.sub_heading %>" name="sub_header_<%= j %>" class="edit form-control" id="sub_heading_<%= j %>" style="display: none;"></div> <% } %>
+                                    <% if(dt.textarea){ %> 
+                                        <div class="col-md-12">
+                                            <p onclick="editLabel(this)"><%= dt.textarea %></p>
+                                            <textarea class="edit form-control" name="textarea_<%= j %>" id="textarea_<%= j %>" style="display: none;"><%= dt.textarea %></textarea>
+                                        </div> 
+                                    <% } %>
+                                    <% if(dt.table){ %>
+                                        <div class="col-md-12 mb-4">
+                                            <table class="table" id="table_<%= j %>">
+                                                <tr>
+                                                    <% let th_count = 1;
+                                                    dt.table.head.forEach(tdt => { %>
+                                                        <th>
+                                                            <span onclick="editLabel(this)"><%= tdt %></span>
+                                                            <!-- <input type="text" value="<%= dt.heading %>" name="header_<%= i %>" class="edit form-control" id="header_<%= i %>" style="display: none;"> -->
+                                                            <input class="edit form-control form-control-sm" type="text" id="table_<%= j %>_heading_<%= th_count %>"
+                                                    name="table_<%= j %>_heading" placeholder="Add Header" aria-label="Add Header" value="<%= tdt %>" style="display: none; width: auto;">
+                                                        </th>
+                                                    <% th_count++; }) %>
+                                                </tr>
+                                                <tbody>
+                                                    <% var table_data = [];
+                                                        table_data.push(dt.table.head)
+                                                        dt.table.body.forEach(trdt => {
+                                                            table_data.push([...Object.values(trdt).map(dt => parseFloat(dt) ? Number(dt) : dt)])
+                                                        %>
+                                                        <tr>
+                                                            <% let td_count = 1; Object.values(trdt).forEach(vdt => { %>
+                                                                <td>
+                                                                    <span onclick="editLabel(this)"><%= vdt %></span>
+                                                                    <input class="edit form-control form-control-sm" type="text" id="table_<%= j %>_body_<%= td_count %>"
+                                                    name="table_<%= j %>_body" placeholder="Add Header" aria-label="Add Header" value="<%= vdt %>" style="display: none; width: auto;">
+                                                                </td>
+                                                            <% td_count++; }) %>
+                                                        </tr>
+                                                    <% }) %>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </div>
-                                    
-                                    <script>
-                                        i = <%= i %>;
-                                        console.log('view', i);
-                                        var table_data = <%- JSON.stringify(table_data) %>;
-                                        // console.log(table_data);
-                                        fun[`crate_bar_graph_${<%= i %>}`] = {
-                                                a: table_data,
-                                                b: {
-                                                    chart: {
-                                                        title: "<%- dt.sub_heading ? dt.sub_heading : '' %>",
-                                                        subtitle: '',
-                                                    },
-                                                    seriesType: 'bars',
-                                                    // vAxis: {
-                                                    //   format: "decimal"
-                                                    // },
-                                                    vAxis: { title: 'Marks' },
-                                                    hAxis: { title: 'Country' },
-                                                    height: 400,
-                                                    width: '100%',
-                                                    colors: ["#e2c636", "#AED6F1", "#E8DAEF", "#EDBB99"]
-                                                },                                                
-                                            }
-                                    </script>
-                                <% i++; } %>
-                            </div>
-                    <% })
-                    } %>
-                </div>
+                                        <div class="col-md-12">
+                                            <div class="chart-block">
+                                                <div class="chart-overflow" id="column_chart_<%= i %>"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <script>
+                                            i = <%= i %>;
+                                            console.log('view', i);
+                                            var table_data = <%- JSON.stringify(table_data) %>;
+                                            // console.log(table_data);
+                                            fun[`crate_bar_graph_${<%= i %>}`] = {
+                                                    a: table_data,
+                                                    b: {
+                                                        chart: {
+                                                            title: "<%- dt.sub_heading ? dt.sub_heading : '' %>",
+                                                            subtitle: '',
+                                                        },
+                                                        seriesType: 'bars',
+                                                        // vAxis: {
+                                                        //   format: "decimal"
+                                                        // },
+                                                        vAxis: { title: 'Marks' },
+                                                        hAxis: { title: 'Country' },
+                                                        height: 400,
+                                                        width: '100%',
+                                                        colors: ["#e2c636", "#AED6F1", "#E8DAEF", "#EDBB99"]
+                                                    },                                                
+                                                }
+                                        </script>
+                                    <% i++; } %>
+                                </div>
+                        <% j++; })
+                        } %>
+                    </div>
+                    <div class="row m-3">
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-pill btn-outline-success btn-air-success float-end">Update</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -113,36 +136,25 @@
         }
     })
 </script>
-<!-- <script>
-    google.charts.load('current', {packages: ['bar']});
-    google.charts.setOnLoadCallback(drawBasic);
-    function drawBasic() {
-    var a = google.visualization.arrayToDataTable([
-        ["", "2022", "2023"],
-        ["United States", 9.44, 9.48],
-        ["Middle East", 7.46, 8.07],
-        ["Canada", 5.64, 5.13],
-        ["Germany", 4.85, 4.67]
-      ]),
-      b = {
-        chart: {
-          title: "Cost of Data breach by country or region (USD millions)",
-          subtitle: "2022-2023"
-        },
-        seriesType: 'bars',
-        // vAxis: {
-        //   format: "decimal"
-        // },
-        vAxis: {title: 'Marks'},
-        hAxis: {title: 'Country'},
-        height: 400,
-        width:'100%',
-          colors: [vihoAdminConfig.primary, "#e2c636"]
-
-
-      };
-    var c = new google.charts.Bar(document.getElementById("column-chart1"));
-    c.draw(a, google.charts.Bar.convertOptions(b))
+<script>
+    function editLabel(elm) {
+        console.log(elm);
+        var jelm = $(elm);
+        var htmlElm = jelm[0];
+        $(htmlElm).hide();
+        $(htmlElm).siblings('.edit').show();
+        $(htmlElm).siblings('.edit').focus()
+        var initial_text = $(htmlElm).text();
+        $(htmlElm).siblings('.edit').focusout(function () {
+            var editedInput = $(htmlElm).siblings('.edit').val();
+            $(htmlElm).siblings('.edit').hide();
+            if (editedInput != '') {
+                $(htmlElm).show().text(editedInput);
+            }
+            else {
+                $(htmlElm).show().text(initial_text);
+            }
+        });
     }
-</script> -->
+</script>
 <%- include('../../templates/footer.ejs') %>

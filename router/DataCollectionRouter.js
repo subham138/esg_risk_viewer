@@ -257,10 +257,12 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
     file_name = `${data.sec_id}_${data.ind_id}_${data.top_id}_${year}.json`
   fs.writeFileSync(path.join(__dirname, '../dynamic_data_set', file_name), JSON.stringify(dynamic_data), 'utf-8')
 
-  var fields = `(dt_year, sec_id, ind_id, top_id, data_file_name, created_by, created_dt)`,
-  values = `('${year}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${file_name}', '${user}', '${datetime}')`,
-  whr = null, 
-  flag = 0;
+  var chk_dt = await db_Select('id', 'td_data_collection', `dt_year = '${year}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = '${data.top_id}'`, null)
+  
+  var fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `data_file_name = '${file_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(dt_year, sec_id, ind_id, top_id, data_file_name, created_by, created_dt)`,
+    values = `('${year}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${file_name}', '${user}', '${datetime}')`,
+    whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = '${chk_dt.msg[0].id}'` : null, 
+    flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert('td_data_collection', fields, values, whr, flag)
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
@@ -273,33 +275,25 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
 DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
   var data = req.query
   var resDt = await getDynamicData(data.id)
+  var dataSet = resDt
   if(resDt.suc > 0 && resDt.msg.length > 0){
     if(resDt.msg[0].data_file_name){
-      resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`)
+      try{
+        resDt = fs.readFileSync(path.join('dynamic_data_set', resDt.msg[0].data_file_name), 'utf-8')
+        resDt = JSON.parse(resDt)
+      }catch(err){
+        console.log(err);
+        resDt = []
+      }
+      // console.log(resDt);
+      // resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`)
     }
   }
-  // var dataArr = [], i = 1, tb_data = {};
-  // for(let dt of resDt){
-  //   if(dt.table){
-  //     dataArr.length = 0
-  //     dataArr.push(dt.table.head)
-  //     if(dt.table.body){
-  //       for(let bdt of dt.table.body){
-  //         // console.log([...Object.values(bdt)]);
-  //         dataArr.push([...Object.values(bdt).map(dt => Number(dt) ? +dt : dt)])
-  //       }
-  //     }
-  //     // break;
-  //     tb_data[i] = dataArr
-  //   }
-  //   i++
-  // }
-  // console.log(tb_data);
   var data = {
     resDt,
+    dataSet,
     header: "Date Collection View",
   };
-  // res.send(resDt)
   res.render('data_collection/dynamic_form/data_view', data)
 })
 
