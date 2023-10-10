@@ -227,7 +227,7 @@ MasterRouter.get("/get_ind_list_ajax", async (req, res) => {
 MasterRouter.get("/busi_act_edit", async (req, res) => {
   var id = req.query.id,
     sec_data = await getSectorList(),
-    ind_data = [],
+    ind_data = {suc:0, msg:[]},
     busi_data;
   if (id > 0) {
     busi_data = await getBusiActList(id);
@@ -236,6 +236,7 @@ MasterRouter.get("/busi_act_edit", async (req, res) => {
       busi_data.suc > 0 ? busi_data.msg[0].sec_id : 0
     );
   }
+  console.log(ind_data);
   var data = {
     sec_data,
     ind_data,
