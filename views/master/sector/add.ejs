@@ -18,12 +18,11 @@
         <div class="col-sm-12">
             <div class="card">
             <div class="card-body">
-                <form method="POST" action="/sec_save" class="needs-validation" novalidate="">
+                <form method="POST" action="/sec_save">
                 <div class="row g-3 py-3">
                     <div class="col-md-12">
                     <label class="form-label" for="sector">Sector name</label>
-                    <input class="form-control" id="sector" name="sec_name" type="text" value="<%= sec_id > 0 ? data.msg[0].sec_name : '' %>" required="">
-                    <div class="valid-feedback">No Error</div>
+                    <input class="form-control" id="sector" name="sec_name" type="text" value="<%= sec_id > 0 ? data.msg[0].sec_name : '' %>" required="required">
                     </div>
                 </div>
                 <input type="hidden" name="id" value="<%= sec_id > 0 ? sec_id : 0 %>">
