@@ -38,7 +38,8 @@
                             <table class="table" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>TOPIC</th>
+                                        <th>General Issue Category (Industry agnostic)</th>
+                                        <th>Disclosure Topics (Industry specific)</th>
                                         <th>METRIC</th>
                                         <th>CATEGORY</th>
                                         <th>UNIT OF MEASURE</th>
@@ -59,6 +60,7 @@
                                                         <%= dt.topic_name %>
                                                     </td>
                                                 <% } %>
+                                                <td><%= dt.ind_agn %></td>
                                                 <td><%= dt.metric %></td>
                                                 <td><%= dt.catg %></td>
                                                 <td><%= dt.unit %></td>
