@@ -248,7 +248,8 @@
                                         </td>
                                     </tr>
                                 </tbody>
-                            </table></div>`);
+                            </table>
+                            </div>`);
                             $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
                             $(`#${drzone_id}`).append($el);
                             break;
@@ -345,6 +346,19 @@
                 },
             });
         });
+    </script>
+
+    <script>
+        function setChartImage(event, zone_id){
+            // console.log($(event));
+            var element = $(event)
+            var imgVal = element[0].children
+            console.log(imgVal);
+            var imageId = imgVal[0].id
+            $(`chart_${zone_id}`).val(imageId)
+            $(`previewChart_${zone_id} >`).remove()
+            $(`previewChart_${zone_id}`).append(`<img src="images/charts/lineChart2.png" width="100%" height="100%" alt="" srcset="">`)
+        }
     </script>
 
 <%- include('../../templates/footer.ejs') %>
