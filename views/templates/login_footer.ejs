@@ -7,7 +7,7 @@
  <script src="js/icons/feather-icon/feather.min.js"></script>
  <script src="js/icons/feather-icon/feather-icon.js"></script>
  <!-- Sidebar jquery-->
- <script src="js/sidebar-menu.js"></script>
+ <!-- <script src="js/sidebar-menu.js"></script> -->
  <script src="js/config.js"></script>
  <!-- Bootstrap js-->
  <script src="js/bootstrap/popper.min.js"></script>
@@ -18,5 +18,21 @@
  <script src="js/script.js"></script>
  <!-- login js-->
  <!-- Plugin used-->
+ <script>
+    $('.showPass').on('click', function(){
+        if($('input[name="password"]').attr('type') == 'password'){
+            $('input[name="password"]').removeAttr('type')
+            $('input[name="password"]').attr('type', 'text')
+            $('.showPass >').remove()
+            $(this).append('<i class="icofont icofont-eye-blocked"></i>')
+        }else{
+            $('input[name="password"]').removeAttr('type')
+            $('input[name="password"]').attr('type', 'password')
+            $('.showPass >').remove()
+            $(this).append('<i class="icofont icofont-eye"></i>')
+        }
+        
+    })
+ </script>
 </body>
 </html>

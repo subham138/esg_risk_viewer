@@ -51,7 +51,10 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user;
   res.locals.active = req.path.split("/")[1];
   res.locals.message = req.session.message;
+  res.locals.videoPopUp = req.session.videoPopUp ? (req.session.user ? (req.session.user.user_type != 'S' ? req.session.videoPopUp : false) : req.session.videoPopUp) : false
   delete req.session.message;
+  delete req.session.videoPopUp;
+  // console.log(res.locals.videoPopUp, req.path);
   // console.log(req.path);
   // if(req.path != '/' && req.path != '/login'){
   //   if(!req.session.user){

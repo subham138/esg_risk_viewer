@@ -15,6 +15,25 @@
     </div>
   </div>
 </div>
+<% console.log(videoPopUp); if(videoPopUp){ %>
+<div class="modal fade bd-example-modal-lg" id="videoPopupModal" tabindex="-1" role="dialog" aria-labelledby="videoPopupModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tutorial Video</h5>
+        <button class="btn-close" type="button" onclick="closeVideoModal()"></button>
+      </div>
+      <div class="modal-body">
+        <video id="totVideo" controls width="100%" autoplay loop muted>
+          <source src="videos/esg.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
 </div>
 <!-- footer start-->
 <footer class="footer">
@@ -86,7 +105,10 @@
 <!-- login js-->
 <!-- Plugin used-->
 <script>
-  
+  function closeVideoModal(){
+    $("video")[0].pause()
+    $('#videoPopupModal').modal('hide');
+  }
 </script>
 </body>
 

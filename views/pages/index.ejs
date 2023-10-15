@@ -4,8 +4,13 @@
 ]; %>
 <script>
   $(document).ready(function(){
+    console.log($('#videoPopupModal').length);
+    if($('#videoPopupModal').length){
+      $('#videoPopupModal').modal({backdrop: 'static', keyboard: false})
+      $('#videoPopupModal').modal('show');
+    }
     var flag = <%= flag %>
-    var noOfDays = <%= daysLeft %>
+    var noOfDays = '<%= daysLeft %>';
     if(flag){
       $('#exampleModalCenter').modal('show');
       $('#subMsg').append(`<label class="text-danger text-center">Your Subscription will ended within ${noOfDays >= 0 ? noOfDays : 0} days.</label>`)

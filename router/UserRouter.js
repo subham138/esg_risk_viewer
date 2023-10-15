@@ -50,6 +50,7 @@ UserRouter.post("/login", async (req, res) => {
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         req.session.user = chk_dt.msg[0];
+        req.session.videoPopUp = true;
         res.redirect("/dashboard");
       } else {
         req.session.message = {
