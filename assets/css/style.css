@@ -15139,8 +15139,13 @@ strong~p {
   right: 10px;
 }
 
+.login_back_color{
+    background-color: #202A44;
+}
+
 .login-card {
   background-color: rgba(36, 105, 92, 0.1);
+  /* background-color: #202A44; */
   height: 100vh;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -15180,11 +15185,24 @@ strong~p {
   color: #999;
 }
 
+.video-right{
+  margin-left: 17vw;
+}
+
 .login-form .btn {
   text-transform: uppercase;
   font-weight: 700;
-  margin-left: auto;
+  /* margin-left: auto; */
   display: block;
+}
+
+.btn_close{
+  position: absolute; 
+  z-index: 9;
+  opacity: 1;
+  margin-left: 46vw;
+  top: 2vw;
+  cursor: pointer;
 }
 
 .login-form p {

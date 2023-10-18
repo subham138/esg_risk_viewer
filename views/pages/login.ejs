@@ -2,9 +2,9 @@
 <style>
   .show-hide span {
     font-size: 20px !important;
-  }Add
+  }
 </style>
-<div class="row">
+<div class="row login_back_color">
     <!-- <div class="col-xl-5"><img class="bg-img-cover bg-center" src="images/logo/ESG_Risk_Viewer.jpeg" alt="looginpage"></div> -->
     <div class="col-12">
       
@@ -19,31 +19,64 @@
             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
           <% } %>
-          <img width="80%" height="100%" src="images/logo/ESG_logo_trans.png" alt="">
-          <center class="mt-3">
+          <img width="100%" height="100%" src="images/logo/ESG_logo_trans.png" alt="">
+          <!-- <center class="mt-3">
             <h4>Login</h4>
             <h6>Welcome back! Log in to your account.</h6>
-          </center>
-          <div class="form-group">
-            <label>Email Address</label>
+          </center> -->
+          <!-- <div>
+            <button class="btn btn-primary btn-block video-right" onclick="watch_video()">Watch Video</button>
+          </div> -->
+          <button type="button" class="btn btn-primary btn-block video-right" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Watch Video
+          </button>
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="max-width: 700px; margin-top: 5%;">
+              <div class="modal-content">
+                <!-- <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                <div class="modal-body" style="position: relative;">
+               <button type="button" class="btn-close btn_close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <video id="totVideo" controls width="100%" autoplay loop muted>
+                    <source src="videos/ESG_Risk_Viewer_Presentation_4K.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <!-- <div class="modal-footer" style="border: none;">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div> -->
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <!-- <label>Email Address</label> -->
             <div class="input-group"><span class="input-group-text"><i class="icon-email"></i></span>
-              <input class="form-control" type="email" name="email" required="" placeholder="Test@gmail.com">
+              <input class="form-control" type="email" name="email" required="" placeholder="Username/Email address">
             </div>
           </div>
           <div class="form-group">
-            <label>Password</label>
+            <!-- <label>Password</label> -->
             <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
-              <input class="form-control" type="password" name="password" required="" placeholder="*********">
+              <input class="form-control" type="password" name="password" required="" placeholder="Password">
               <div class="show-hide"><span class="showPass"><i class="icofont icofont-eye"></i></span></div>
             </div>
           </div>
           <div class="form-group">
-            <div class="checkbox">
+            <!-- <div class="checkbox">
               <input id="checkbox1" type="checkbox">
               <label class="text-muted" for="checkbox1">Remember password</label>
-            </div><a class="link" href="forget-password.html">Forgot password?</a>
+            </div> -->
+            <a class="link" href="forget-password.html">Forgot password?</a>
           </div>
-          <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Sign in</button></div>
+          <div class="form-group">
+            <div class="row-12">
+              <div class="col-8">
+                <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+              </div>
+            </div>
+           <div class="col-4"></div>
+          </div>
           <!-- <div class="login-social-title">                
             <h5>Sign in with</h5>
           </div>
@@ -56,8 +89,9 @@
             </ul>
           </div> -->
           <!-- <p>Don't have account?<a class="ms-2" href="sign-up.html">Create Account</a></p> -->
+         
         </form>
       </div>
     </div>
   </div>
-<%- include('../templates/login_footer.ejs')%>
+<%- include('../templates/login_footer.ejs') %>
