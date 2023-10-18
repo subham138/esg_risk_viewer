@@ -76,6 +76,7 @@ ProjectRouter.get('/proj_work', async (req, res) => {
         id:0,
         proj_id: req.query.id,
         proj_name: project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0].project_name : '',
+        project_data: project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0] : false,
         loc_list,
         sec_data,
         ind_data,

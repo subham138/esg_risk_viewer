@@ -56,6 +56,17 @@ MasterRouter.post("/sec_save", async (req, res) => {
   }
 });
 
+MasterRouter.get("/sec_delete", async (req, res) => {
+  var id = req.query.id, res_dt;
+  if (id > 0) {
+    res_dt = await db_Delete('md_sector', `id = ${id}`);
+    req.session.message = { type: "danger", message: "Data deleted successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not saved" };
+  }
+  res.redirect("/sector");
+});
+
 MasterRouter.get("/industries", async (req, res) => {
   var data = await getIndustriesList();
   // console.log(data);
@@ -170,6 +181,18 @@ MasterRouter.post("/topic_catg_save", async (req, res) => {
   }
 });
 
+MasterRouter.get("/topic_catg_del", async (req, res) => {
+  var id = req.query.id,
+    res_dt;
+  if (id > 0) {
+    res_dt = await db_Delete('md_topic_catg', `id = ${id}`);
+    req.session.message = { type: "danger", message: "Data deleted successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not saved" };
+  }
+  res.redirect("/topic_catg");
+});
+
 MasterRouter.get("/topic", async (req, res) => {
   var data = await getTopicList();
   // console.log(data);
@@ -193,7 +216,7 @@ MasterRouter.post("/topic_save", async (req, res) => {
       data.id > 0
         ? `topic_catg_id = '${data.topic_catg_id}', topic_name = '${data.topic_name}'`
         : "(topic_catg_id, topic_name)",
-    values = `('${data.sec_id}', '${data.ind_name}')`,
+    values = `('${data.topic_catg_id}', '${data.topic_name}')`,
     whr = data.id > 0 ? `id = ${data.id}` : null,
     flag = data.id > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
@@ -277,5 +300,18 @@ MasterRouter.get('/get_busi_act_ajax', async (req, res) => {
   var res_dt = await getBusiActList(0, data.sec_id, data.ind_id)
   res.send(res_dt)
 })
+
+MasterRouter.get("/busi_act_del", async (req, res) => {
+  var id = req.query.id,
+    res_dt;
+  if (id > 0) {
+    res_dt = await db_Delete('md_busi_act', `id = ${id}`);
+    req.session.message = { type: "danger", message: "Data deleted successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not saved" };
+  }
+  res.redirect("/busi_act");
+});
+
 
 module.exports = { MasterRouter };

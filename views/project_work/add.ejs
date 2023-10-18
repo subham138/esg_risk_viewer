@@ -30,8 +30,8 @@
                                 <% if(sec_data.msg.length > 0){
                                     sec_data.msg.forEach(dt => { 
                                         var selected = '';
-                                        if(id > 0) 
-                                            if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
+                                        if(project_data) 
+                                            if(project_data.sec_id == dt.id) selected = 'selected'; %>
                                         <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
                                     <% })
                                 } %>
@@ -54,10 +54,12 @@
                             <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                 <option value="">Select Location</option>
                                 <% if(loc_list.msg.length > 0){
+                                        var location_list = project_data ? (project_data.location_busi_act != '' ? project_data.location_busi_act : '') : '';
+                                        location_list = location_list ? location_list.split(',') : [];
                                         loc_list.msg.forEach(dt => { 
                                             var selected = '';
-                                            if(id > 0) 
-                                                if(dt.id == busi_data.msg[0].sec_id) selected = 'selected'; %>
+                                            if(location_list.length > 0) 
+                                                if(location_list.includes(dt.location_name)) selected = 'selected'; %>
                                             <option value="<%= dt.id %>" <%= selected %>><%= dt.location_name %></option>
                                         <% })
                                     } %>
@@ -75,6 +77,14 @@
 </div>
 
 <script>
+    $(document).ready(function(){
+        if($('#sec_id').val() > 0){
+            $('#sec_id').change()
+        }
+    })
+</script>
+
+<script>
     $('#sec_id').on('change', function (){
         $.ajax({
             method:'GET',
@@ -89,10 +99,22 @@
                 console.log(res);
                 $('#ind_id').empty();
                 $('#ind_id').append($('<option>', {value: '', text: 'Select Industries'}));
-                if(res.suc > 0 && res.msg.length > 0)
+                if(res.suc > 0 && res.msg.length > 0){
+                    var ind_id = '<%= project_data ? project_data.ind_id : 0 %>';
+                    if(ind_id > 0){
+                        $.each(res.msg, function (i, item) {
+                            var selected = false
+                            if(item.id == ind_id)
+                                selected = true
+                            $('#ind_id').append($('<option>', {value: item.id, text: item.ind_name, selected: selected}));
+                        });
+                        $('#ind_id').change()
+                    }
+                    else
                     $.each(res.msg, function (i, item) {
                         $('#ind_id').append($('<option>', {value: item.id, text: item.ind_name}));
                     });
+                }
             },
             complete: function(){
                 $('.loader-wrapper').hide()
@@ -115,12 +137,25 @@
                     // console.log(res);
                     $('#bus_id').empty();
                     $('#bus_id').append($('<option>', {value: '', text: 'Select Business'}));
-                    if (res.suc > 0 && res.msg.length > 0)
-                        $.each(res.msg, function (i, item) {
-                            $("#bus_id").append(
-                                $("<option>", { value: item.id, text: item.busi_act_name })
-                            );
-                        });
+                    if (res.suc > 0 && res.msg.length > 0){
+                        var bus_act = '<%= project_data ? (project_data.business_act != "" ? project_data.business_act : "") : "" %>'
+                        bus_act = bus_act != "" ? bus_act.split(',') : []
+                        if(bus_act.length > 0){
+                            $.each(res.msg, function (i, item) {
+                                var selected = false
+                                if(bus_act.includes(item.busi_act_name)) selected = true
+                                $("#bus_id").append(
+                                    $("<option>", { value: item.id, text: item.busi_act_name, selected: selected })
+                                );
+                            });
+                        }else{
+                            $.each(res.msg, function (i, item) {
+                                $("#bus_id").append(
+                                    $("<option>", { value: item.id, text: item.busi_act_name })
+                                );
+                            });
+                        }
+                    }
                 },
                 complete: function () {
                     $(".loader-wrapper").hide();
