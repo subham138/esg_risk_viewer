@@ -106,28 +106,37 @@ MasterRouter.post("/ind_save", async (req, res) => {
     values = `('${data.sec_id}', '${data.ind_name}')`,
     whr = data.id > 0 ? `id = ${data.id}` : null,
     flag = data.id > 0 ? 1 : 0;
-  console.log(data);
+  // console.log(data);
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+  if(data.top_id)
   if (data.top_id.length > 0) {
-    console.log(`(${data.top_id.join(',')})`);
-    var table_name = "md_industries_topics",
-      whr = `ind_id = ${data.id > 0 ? data.id : res_dt.lastId.insertId} AND topic_id NOT IN(${data.top_id.join(',')})`;
-      var top_delete = await db_Delete(table_name, whr)
+    // console.log(`(${data.top_id.join(',')})`);
+    try{
+      var table_name = "md_industries_topics",
+        whr = `ind_id = ${data.id > 0 ? data.id : res_dt.lastId.insertId} AND topic_id NOT IN(${data.top_id.length > 1 ? data.top_id.join(',') : data.top_id[0]})`;
+        var top_delete = await db_Delete(table_name, whr)
+    }catch(err){
+      console.log(err);
+    }
     for (let dt of data.top_id) {
-      var chk_dt = await db_Check(
-        "id",
-        "md_industries_topics",
-        `topic_id = ${dt} AND ind_id = ${
-          data.id > 0 ? data.id : res_dt.lastId.insertId
-        }`
-      );
-      if (chk_dt.suc > 0 && chk_dt.msg == 0) {
-        var table_name = "md_industries_topics",
-          fields = "(ind_id, topic_id, topic_flag, created_by, created_dt)",
-          values = `('${data.id}', '${dt}', 'Y', 'admin', '${datetime}')`,
-          whr = null,
-          flag = 0;
-        var ind_topic = await db_Insert(table_name, fields, values, whr, flag);
+      try{
+        var chk_dt = await db_Check(
+          "id",
+          "md_industries_topics",
+          `topic_id = ${dt} AND ind_id = ${
+            data.id > 0 ? data.id : res_dt.lastId.insertId
+          }`
+        );
+        if (chk_dt.suc > 0 && chk_dt.msg == 0) {
+          var table_name = "md_industries_topics",
+            fields = "(ind_id, topic_id, topic_flag, created_by, created_dt)",
+            values = `('${data.id}', '${dt}', 'Y', 'admin', '${datetime}')`,
+            whr = null,
+            flag = 0;
+          var ind_topic = await db_Insert(table_name, fields, values, whr, flag);
+        }
+      }catch(err){
+        console.log(err);
       }
       //   console.log(chk_dt);
     }
