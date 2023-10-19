@@ -19,6 +19,7 @@ SubsRouter.get('/subscription', async (req, res) => {
     console.log(client_dtls);
     var data = {
         subs: client_dtls.suc > 0 && client_dtls.msg.length > 0 ? client_dtls.msg[0].plan_type : 'N',
+        subs_dt: client_dtls.suc > 0 && client_dtls.msg.length > 0 ? client_dtls.msg[0].diff_dt : 0,
         header: "Subscription",
     };
     res.render('subscription/view', data)

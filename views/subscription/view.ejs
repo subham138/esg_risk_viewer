@@ -36,7 +36,9 @@
                 </div>
                 <div class="card-body row pricing-content">
                     <div class="col-md-12">
-                        <label><%= subs == 'N' ? 'You have no active plans' : 'Your ' + subs == 'B' ? 'Basic' : (subs == 'S' ? 'Standard' : 'Premium') +' plan is activte.' %></label>
+                        <label>
+                            <%= subs == 'N' ? 'You have no active plans' : 'Your Subscription expires in '+ subs_dt + ' days' %>
+                        </label>
                     </div>
                     <div class="col-md-4">
                         <div class="pricing-block card text-center">

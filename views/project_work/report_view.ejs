@@ -197,11 +197,13 @@
                         <div class="col-md-12">
                             <h6>Manage Disclosure Topics</h6>
                         </div>
+                        <% if(user_type != 'V'){ %>
                         <div class="col-md-12" id="editorPrevDiv">
                             <div class="col-md-12 mb-3">
                                 <button class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-original-title title="Add New Editor" onclick="AddEditor()"><i class="icofont icofont-ui-add"></i></button>
                             </div>
                         </div>
+                        <% } %>
                         <div id="editorDiv">
                             <% var filetrTopic = susDistList.msg.filter(dt => dt.top_id == top_id)
                             var i = 1
@@ -219,11 +221,11 @@
                                     </div>
                                     <script>
                                         CKEDITOR
-                                        .replace( 'editor<%= i %>', {
+                                        .replace('editor<%= i %>', {
                                             on: {
                                                 contentDom: function( evt ) {
                                                     // Allow custom context menu only with table elemnts.
-                                                    evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+                                                    evt.editor.editable().on('contextmenu', function( contextEvent ) {
                                                         var path = evt.editor.elementPath();
 
                                                         if ( !path.contains( 'table' ) ) {
@@ -273,9 +275,11 @@
                                                     }
                                                 } );
                                             </script>
+                                            <% if(user_type != 'V'){ %>
                                             <div class="col-md-12 mb-3">
                                                 <button class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue(<%= i %>)"><i class="icofont icofont-save"> Save</i></button>
                                             </div>
+                                            <% } %>
                                             <hr>
                                         </div>
                                     <% }
