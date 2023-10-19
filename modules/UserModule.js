@@ -63,7 +63,7 @@ module.exports = {
                 fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `user_name = '${data.user_name}', user_type = 'C', user_id = '${data.user_id}', active_flag = 'Y', modified_by = '${user}', modified_dt = '${datetime}'`:
                 `(client_id, user_name, user_type, user_id, password, active_flag, created_by, created_dt)`,
                 values = `('${client_id}', '${data.user_name}', 'C', '${data.user_id}', '${pass}', 'Y', '${user}', '${datetime}')`,
-                whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `` : null,
+                whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
                 flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
             resolve(res_dt)
