@@ -12,8 +12,9 @@
     var flag = <%= flag %>
     var noOfDays = '<%= daysLeft %>';
     if(flag){
+      $('#exampleModalCenter').modal({backdrop: 'static', keyboard: false})
       $('#exampleModalCenter').modal('show');
-      $('#subMsg').append(`<label class="text-danger text-center">Your Subscription will ended within ${noOfDays >= 0 ? noOfDays : 0} days.</label>`)
+      $('#subMsg').append(`<label class="text-danger text-center">${noOfDays >= 0 ? `Your Subscription will ended within ${noOfDays} days` : `You have no active plan`}.</label>`)
     }
   })
 </script>
