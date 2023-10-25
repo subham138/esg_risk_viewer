@@ -281,6 +281,7 @@ $(function() {
 
 $(function() {
     function a() {
+        console.log(f,j,h,g, 'lalala');
         $("#stacking-flot-chart").length > 0 && $.plot("#stacking-flot-chart", j, {
             series: {
                 stack: f,

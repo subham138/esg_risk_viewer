@@ -232,6 +232,8 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
   var table_row = [],
     row = [],
     dynamic_data = [];
+
+    console.log(data)
   
   for(let dt of data.section_id){
     var dynamic_data_obj = {}
@@ -249,7 +251,7 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
           table_row.push({...chunk});
       }
       console.log(table_row);
-      dynamic_data_obj['table'] = {head: data[`table_${dt}_heading`], body: [...table_row]}
+      dynamic_data_obj['table'] = {head: data[`table_${dt}_heading`], body: [...table_row], graph_type: data[`chartType_${dt}`]}
     }
     dynamic_data.push(dynamic_data_obj)
   }
