@@ -1,5 +1,14 @@
 <%- include('../templates/header.ejs') %>
 <script src="js/chart/google/google-chart-loader.js"></script>
+
+<!-- morris-chart -->
+    <script src="js/chart/morris-chart/raphael.js"></script>
+    <script src="js/chart/morris-chart/morris.js"> </script>
+    <script src="js/chart/morris-chart/prettify.min.js"></script>
+    <script src="js/chart/morris-chart/morris.min.js"></script>
+    <script src="js/chart/morris-chart/morris-script.js"></script>
+<!-- END -->
+
 <style>
     .topic_text {
       text-align: center;
@@ -7,7 +16,7 @@
     }
   </style>
 <script>
-    google.charts.load('current', {packages: ['bar']});
+    google.charts.load('current', {packages: ['corechart', 'bar', 'line']});
     var fun = {}, i = 1;
 </script>
 <div class="container-fluid">
@@ -152,6 +161,16 @@
                                                 <div class="chart-overflow" id="column_chart_<%= i %>"></div>
                                             </div>
                                         </div>
+                                        <div class="col-md-12">
+                                            <div class="flot-chart-container">
+                                                <div class="flot-chart-placeholder" id="stacked-bar-chart_<%= i %>"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="chart-block">
+                                                <canvas id="myBarGraph_<%= i %>"></canvas>
+                                            </div>
+                                        </div>
                                         
                                         <script>
                                             i = <%= i %>;
@@ -165,7 +184,7 @@
                                                             title: "<%- dt.sub_heading ? dt.sub_heading : '' %>",
                                                             subtitle: '',
                                                         },
-                                                        seriesType: 'bars',
+                                                        // seriesType: 'bars',
                                                         // vAxis: {
                                                         //   format: "decimal"
                                                         // },
@@ -174,7 +193,8 @@
                                                         height: 400,
                                                         width: '100%',
                                                         colors: ["#e2c636", "#AED6F1", "#E8DAEF", "#EDBB99"]
-                                                    },                                                
+                                                    },
+                                                    c: "<%= dt.table.graph_type %>"                                               
                                                 }
                                         </script>
                                     <% i++; } %>
@@ -303,11 +323,111 @@
         google.charts.setOnLoadCallback(CreateBar);
         function CreateBar(){
             let j = 1
+            // for(let key in fun){
+            //     var a = google.visualization.arrayToDataTable(fun[key].a),
+            //         b = fun[key].b,
+            //         c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
+            //     c.draw(a, google.charts.Bar.convertOptions(b))
+            //     // console.log('funName', fun[key]);
+            //     j++
+            // }
             for(let key in fun){
-                var a = google.visualization.arrayToDataTable(fun[key].a),
-                    b = fun[key].b,
-                    c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
-                c.draw(a, google.charts.Bar.convertOptions(b))
+                console.log(fun[key]);
+                switch (fun[key].c) {
+                    case 'b1':
+                        $(`#stacked-bar-chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var a = google.visualization.arrayToDataTable(fun[key].a),
+                            b = fun[key].b;
+                        var c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
+                        c.draw(a, google.charts.Bar.convertOptions(b))
+                        break;
+                    case 'b2':
+                        $(`#stacked-bar-chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var a = google.visualization.arrayToDataTable(fun[key].a),
+                            b = fun[key].b;
+                        b['bars'] = 'horizontal'
+                        var c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
+                        c.draw(a, google.charts.Bar.convertOptions(b))
+                        break;
+                    case 'l3':
+                        $(`#stacked-bar-chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var a = google.visualization.arrayToDataTable(fun[key].a),
+                            b = fun[key].b;
+                        var c = new google.charts.Line(document.getElementById(`column_chart_${j}`));
+                        c.draw(a, google.charts.Line.convertOptions(b))
+                        break;
+                    case 'bm1':
+                        $(`#stacked-bar-chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var a = google.visualization.arrayToDataTable(fun[key].a),
+                            b = fun[key].b;
+                        b['seriesType'] = 'bars'
+                        var series = {}
+                        series[fun[key].a.length - 1] = {type: 'line'}
+                        b['series'] = series
+                        var chart = new google.visualization.ComboChart(document.getElementById(`column_chart_${j}`));
+                        chart.draw(a, b);
+                        break;
+                    case 'a1':
+                        $(`#stacked-bar-chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var a = google.visualization.arrayToDataTable(fun[key].a),
+                            b = fun[key].b;
+                        var chart = new google.visualization.AreaChart(document.getElementById(`column_chart_${j}`));
+                        chart.draw(a, b);
+                        break;
+                    case 'b5':
+                        $(`#column_chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var header = fun[key].a[0],
+                            index = 0;
+                        var dataSet = []
+                        for(let tab of fun[key].a){
+                            if(index > 0){
+                                var bodyIndex = 0, tabDataSet = []
+                                var currTbIndex = 0
+                                var tabData = {}
+                                for(let tabBody of tab){
+                                    // for(let tabHead of header){
+                                        if(header[currTbIndex] != ''){
+                                            if(tabBody > 0){
+                                                tabData[header[currTbIndex].toString()] = tabBody
+                                                tabData['x'] = tab[0]
+                                                // tabData.push(tabBody)
+                                                tabDataSet.push(tabData)
+                                            }
+                                        }
+                                        currTbIndex++;
+                                    // }
+                                }
+                                dataSet.push(tabData)
+                            }
+                            index++;
+                        }
+                        var tbKeys = [...Object.keys(dataSet[0]).map(key => key != 'x' ? key : '')].filter(x => x).join(',')
+                        tbKeys = tbKeys.split(',')
+                        console.log(dataSet, tbKeys);
+                        Morris.Bar({
+                            element: `stacked-bar-chart_${j}`,
+                            data: dataSet,
+                            xkey: "x",
+                            ykeys: tbKeys,
+                            barColors: ["#e2c636", "#AED6F1", "#E8DAEF", "#EDBB99"],
+                            labels: tbKeys,
+                        })
+                        break;
+                    default:
+                        $(`#stacked-bar-chart_${j}`).parent().hide()
+                        $(`#myBarGraph_${j}`).parent().hide()
+                        var a = google.visualization.arrayToDataTable(fun[key].a),
+                            b = fun[key].b;
+                        var c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
+                        c.draw(a, google.charts.Bar.convertOptions(b))
+                        break;
+                }
                 // console.log('funName', fun[key]);
                 j++
             }
