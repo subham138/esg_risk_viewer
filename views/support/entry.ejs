@@ -1,0 +1,83 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3><%= sub_header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/support_save" class="needs-validation">
+                <div class="row g-3 py-3">
+                    <div class="col-md-4">
+                        <p>
+                            <span class="fw-bold">Date:</span> 
+                            <% if(id > 0){ %>
+                                <span class="ml-2"><%= supportList.length > 0 ? dateFormat(supportList[0].tkt_date, 'dd/mm/yyyy HH:MM:ss') : '' %></span>
+                            <% }else{ %>
+                                <span class="ml-2" id="showCurrDate"></span> 
+                            <% } %>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><span class="fw-bold">Client Name:</span> <span class="ml-2"><%= client_name %></span></p>
+                        <input type="hidden" name="client_id" value="<%= client_id %>">
+                    </div>
+                    <div class="col-md-4">
+                        <p><span class="fw-bold">Created By:</span> <span class="ml-2"><%= user_name %></span></p>
+                        <input type="hidden" name="user_id" value="<%= user_id %>">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="issue">Issue</label>
+                        <textarea class="form-control" id="issue" name="issue" rows="3"><%= id > 0 ? (supportList.length > 0 ? supportList[0].issue : '') : '' %></textarea>
+                    </div>
+                    <% if(user_type == 'S'){ %>
+                    <div class="col-md-6">
+                        <label class="form-label" for="tkt_status">Status</label>
+                        <select class="form-select" id="tkt_status" name="tkt_status" required="">
+                            <option selected="" value="">Select Status</option>
+                            <option value="P" <%= id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'P' ? 'selected' : '') : '') : '' %>>Pending</option>
+                            <option value="S" <%= id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'S' ? 'selected' : '') : '') : '' %>>Resolved</option>
+                            <option value="R" <%= id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'R' ? 'selected' : '') : '') : '' %>>Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="remarks">Remarks</label>
+                        <textarea class="form-control" id="remarks" name="remarks" rows="3"><%= id > 0 ? (supportList.length > 0 ? supportList[0].remarks : '') : '' %></textarea>
+                    </div>
+                    <% } %>
+                </div>
+                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        if($('#showCurrDate').length > 0){
+            setInterval(() => {
+                var currDate = new Date();
+                var dt = currDate.getDay() + '/' + currDate.getMonth() + '/' + currDate.getFullYear();
+                var time = currDate.getHours() + ":" + currDate.getMinutes() + ":" + currDate.getSeconds();
+                $('#showCurrDate').text(dt + ' ' + time)
+            }, 1000);
+        }
+    })
+</script>
+
+<%- include('../templates/footer.ejs') %>

@@ -72,6 +72,7 @@ const { MasterRouter } = require("./router/MasterRouter");
 const { SubsRouter } = require("./router/SubscriptionRouter");
 const { ProjectRouter } = require("./router/ProjectsRouter");
 const { DashboardRouter } = require("./router/DashboardRouter");
+const { SupportRouter } = require("./router/SupportRouter");
 // END //
 
 app.get("/", (req, res) => {
@@ -93,6 +94,7 @@ app.use(DataCollectionRouter)
 app.use(SubsRouter)
 app.use(ProjectRouter)
 app.use(DashboardRouter)
+app.use(SupportRouter)
 
 app.get("/user_data", (req, res) => {
   var data = {
