@@ -1,0 +1,520 @@
+<%- include('../../templates/header.ejs') %>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+    <style>
+        .drop-row{
+            z-index: 0;
+        }
+        .drag{
+            width: 100%;
+            z-index: 1;
+        }
+        .dropzone {
+            padding: 10px;
+            /* background: #a56e6e; */
+            z-index: 0;
+        }
+
+        .active {
+            outline: 1px solid red;
+        }
+
+        .hover {
+            outline: 1px solid blue;
+        }
+
+        .drop-item .remove {
+            display: none;
+        }
+
+        .drop-item:hover .remove {
+            display: inherit;
+        }
+
+        .remove {
+            background: no-repeat;
+            border: none;
+            font-size: 11px;
+            color: red;
+        }
+
+        .imgGraphChecked {
+            background: no-repeat;
+            border: none;
+            font-size: 20px;
+            color: green;
+            position: absolute;
+            display: none;
+            top: -5px;
+            right: 3px;
+        }
+
+        .drop-item {
+            cursor: move;
+            margin-bottom: 10px;
+            background-color: rgb(255, 255, 255);
+            padding: 20px;
+            border: 1px solid rgb(204, 204, 204);
+            position: relative;
+        }
+
+        .drop-item p {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .drop-item .remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+    </style>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <% if(message){ %>
+                <div
+                  class="alert alert-<%= message.type %> dark alert-dismissible fade show"
+                  role="alert"
+                >
+                  <i data-feather="clock"></i>
+                  <p><%= message.message %></p>
+                  <button
+                    class="btn-close"
+                    type="button"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <% } %>
+            </div>
+            <div class="col-md-3">
+                <div class="card" style="position: fixed;">
+                    <div class="card-body">
+                        <div id="modules" class=" col-sm-12 drag-field nopadd">
+                            <p class="drag col-sm-6" id="sec_head_1"><a class="btn btn-default">Heading</a></p>
+                            <p class="drag col-sm-6" id="sec_sub_head_1"><a class="btn btn-default">Sub-Heading</a></p>
+                            <p class="drag col-sm-6" id="sec_textarea_1"><a class="btn btn-default">Textarea</a></p>
+                            <!-- <p class="drag col-sm-6" id="sec_list_head_1"><a class="btn btn-default">List</a></p> -->
+                            <p class="drag col-sm-6" id="sec_table_1"><a class="btn btn-default">Table</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <form action="/save_dynamic_entry" method="post">
+                    <div class="col-md-12">
+                        <div class="card row">
+                            <div class="card-body">
+                                <div class="row g-3 py-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="sec_id">Sector</label>
+                                        <select class="form-select" id="sec_id" name="sec_id" required="">
+                                        <option selected="" value="">Select Sector</option>
+                                        <% if(sec_data.msg.length > 0){ 
+                                            sec_data.msg.forEach(dt => { 
+                                                var _selected = ''; 
+                                                if(dt.id == selected.sec_id) _selected = 'selected'; 
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                        <% }) } %>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="ind_id">Industries</label>
+                                        <select class="form-select" id="ind_id" name="ind_id" required="">
+                                        <option selected="" value="">Select Industries</option>
+                                        <% if(ind_list.msg.length > 0){ 
+                                            ind_list.msg.forEach(dt => { 
+                                                var _selected = ''; 
+                                                if(dt.id == selected.ind_id) _selected = 'selected'; 
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
+                                        <% }) } %>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="top_id">Topic List</label>
+                                        <select class="form-select" id="top_id" name="top_id" required="">
+                                            <option selected="" value="">Select Topic</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row drop-row" id="drop">
+                    </div>
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-pill btn-outline-success btn-air-success float-end" onclick="add_row()"><i class="icofont icofont-plus-circle"></i></button>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-pill btn-outline-success btn-air-success float-end">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <script>
+        function getDynamicFile(){
+            $.ajax({
+                url: '/get_dynamic_data_set_ajax',
+                method: 'GET',
+                data: {filePath: '9_58_10_2023.json'},
+                success: function(data){
+                    console.log(data);
+                    if(data.length > 0){
+                        var i = 1
+                        data.forEach(dt => {
+                            add_row()
+                            var fieldFlag = ''
+                            if(dt.heading) {
+                                fieldFlag = 'H';
+                                createDynamicData(i, fieldFlag, dt)
+                            }
+                            if(dt.sub_heading) {
+                                fieldFlag = 'SH';
+                                createDynamicData(i, fieldFlag, dt)
+                            }
+                            if(dt.textarea) {
+                                fieldFlag = 'T';
+                                createDynamicData(i, fieldFlag, dt)
+                            }
+                            if(dt.table) {
+                                fieldFlag = 'TB';
+                                createDynamicData(i, fieldFlag, dt)
+                            }
+                            i++;
+                        })
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        }
+        getDynamicFile()
+        function createDynamicData(id, flag, data){
+            console.log('Test', id, flag, data);
+            var drzone_id = `dr${id}`
+            switch (flag) {
+                case 'H':
+                    var $el = $(`<div class="drop-item form-group"><h5 onclick="editLabel(this)">${data.heading}</h5><input type="text" value="${data.heading}" name="header_${id}" class="edit form-control" id="header_${id}" style="display: none;"></div>`);
+                    $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                    $(`#${drzone_id}`).append($el);
+                    break;
+                case 'SH':
+                    var $el = $(`<div class="drop-item form-group"><h6 onclick="editLabel(this)">${data.sub_heading}</h6><input type="text" value="${data.sub_heading}" name="sub_header_${id}" class="edit form-control" id="sub_heading_${id}" style="display: none;"></div>`);
+                    $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                    $(`#${drzone_id}`).append($el);
+                    break;
+                case 'T':
+                    var $el = $(`<div class="drop-item form-group"><label class="col-md-12"><p onclick="editLabel(this)">${data.textarea}</p><textarea class="edit form-control" name="textarea_${id}" id="textarea_${id}" style="display: none;" rows="8">${data.textarea}</textarea></label></div>`);
+                    $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                    $(`#${drzone_id}`).append($el);
+                    break;
+                case 'TB':
+                    var tb_th_id = $(`#table_${id} thead th`).length
+                    tb_th_id = tb_th_id > 0 ? tb_th_id : 0
+                    var next_th_id = parseInt(tb_th_id) + 1
+
+                    var tb_td_id = $(`#table_${id} tbody td`).length
+                    tb_td_id = tb_td_id > 0 ? tb_td_id : 0
+                    var next_td_id = parseInt(tb_td_id) + 1
+                    var $el = $(`<div class="drop-item"><table class="table table-hover" id="table_${id}">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input class="form-control form-control-sm" type="text" id="table_${id}_heading_${next_th_id}"
+                                        name="table_${id}_heading" placeholder="Add Header" aria-label="Add Header">
+                                </th>
+                                <th>
+                                    <button type="button" id="add_header_${id}" class="btn btn-pill btn-outline-success btn-air-success"
+                                        onclick="add_header(${id}, ${next_th_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input class="form-control form-control-sm" type="text" id="table_${id}_body_${next_td_id}"
+                                        name="table_${id}_body" placeholder="Add Header" aria-label="Add Header">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>`);
+                    $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                    $(`#${drzone_id}`).append($el);
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+    <script>
+        $('.drag').draggable({
+            // appendTo: 'body',
+            helper: 'clone'
+        });
+        $(document).ready(function(){
+            add_row()
+        })
+        function editLabel(elm) {
+            var jelm = $(elm);
+            var htmlElm = jelm[0];
+            $(htmlElm).hide();
+            $(htmlElm).siblings('.edit').show();
+            $(htmlElm).siblings('.edit').focus()
+            var initial_text = $(htmlElm).text();
+            $(htmlElm).siblings('.edit').focusout(function () {
+                var editedInput = $(htmlElm).siblings('.edit').val();
+                $(htmlElm).siblings('.edit').hide();
+                if (editedInput != '') {
+                    $(htmlElm).show().text(editedInput);
+                }
+                else {
+                    $(htmlElm).show().text(initial_text);
+                }
+            });
+        }
+    </script>
+    <script>
+        function add_row(){
+            var id = $('.dropzone').length
+            var next_id = parseInt(id) + 1
+            var drzone_id = `dr${next_id}`
+            var dropzone = $(`<div class="card row" id="${next_id}"><div class="card-body"><div class="dropzone" id="${drzone_id}"></div></div></div>`);
+            dropzone.droppable({
+                activeClass: 'active',
+                hoverClass: 'hover',
+                greedy: true,
+                accept: '*',
+                // accept: ":not(.ui-sortable-helper)", // Reject clones generated by sortable
+                drop: function (e, ui) {
+                    console.log(e.target);
+                    var id_attr = ui.draggable.attr('id')
+                    id_attr = id_attr.split('_')
+                    var id = id_attr[id_attr.length - 1]
+                    var zone_id = e.target.id
+                    // console.log(zone_id);
+                    $(`#drop`).after(`<input type="hidden" name="section_id" value="${zone_id}" />`)
+                    switch (ui.draggable.text()) {
+                        case 'Heading':
+                            chk_id = $(`#header_${zone_id}`).length
+                            chk_id = chk_id > 0 ? chk_id + 1 : zone_id
+                            var $el = $(`<div class="drop-item form-group"><h5 onclick="editLabel(this)">${ui.draggable.text()}</h5><input type="text" value="" name="header_${zone_id}" class="edit form-control" id="header_${zone_id}" style="display: none;"></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                        case 'Sub-Heading':
+                            chk_id = $(`#sub_header_${zone_id}`).length
+                            chk_id = chk_id > 0 ? chk_id + 1 : zone_id
+                            var $el = $(`<div class="drop-item form-group"><h6 onclick="editLabel(this)">${ui.draggable.text()}</h6><input type="text" value="" name="sub_header_${zone_id}" class="edit form-control" id="sub_heading_${zone_id}" style="display: none;"></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                        case 'Textarea':
+                            chk_id = $(`#textarea_${zone_id}`).length
+                            chk_id = chk_id > 0 ? chk_id + 1 : zone_id
+                            var $el = $(`<div class="drop-item form-group"><label><p onclick="editLabel(this)">${ui.draggable.text()}</p><textarea class="edit form-control" name="textarea_${zone_id}" id="textarea_${chk_id}" style="display: none;"></textarea></label></div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                        case 'Table':
+                            var tb_th_id = $(`#table_${zone_id} thead th`).length
+                            tb_th_id = tb_th_id > 0 ? tb_th_id : 0
+                            var next_th_id = parseInt(tb_th_id) + 1
+
+                            var tb_td_id = $(`#table_${zone_id} tbody td`).length
+                            tb_td_id = tb_td_id > 0 ? tb_td_id : 0
+                            var next_td_id = parseInt(tb_td_id) + 1
+                            var $el = $(`<div class="drop-item"><table class="table table-hover" id="table_${zone_id}">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input class="form-control form-control-sm" type="text" id="table_${zone_id}_heading_${next_th_id}"
+                                                name="table_${zone_id}_heading" placeholder="Add Header" aria-label="Add Header">
+                                        </th>
+                                        <th>
+                                            <button type="button" id="add_header_${zone_id}" class="btn btn-pill btn-outline-success btn-air-success"
+                                                onclick="add_header(${zone_id}, ${next_th_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input class="form-control form-control-sm" type="text" id="table_${zone_id}_body_${next_td_id}"
+                                                name="table_${zone_id}_body" placeholder="Add Header" aria-label="Add Header">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${zone_id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>`);
+                            $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                            $el.append($(`
+                            <div class="row" id="graphImgRow_${zone_id}">
+                                <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/barChart1.png" id="b1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                                <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/barChart2.png" id="b2" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                                <!-- <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/barChart3.png" id="b3" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div> -->
+                                <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/barChart5.png" id="b5" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                                <!-- <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/barChart4.png" id="b4" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div> -->
+
+                                <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/barChartMix1.png" id="bm1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                                <!-- <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/lineChart1.png" id="l1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                                <div class="col-md-2 my-3 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/lineChart2.png" id="l2" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div> -->
+                                <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/lineChart3.png" id="l3" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                                <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${zone_id})">
+                                    <img src="images/charts/areaChart1.png" id="a1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                    <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-12 my-3 text-center" id="previewChart_${zone_id}"></div><input type="hidden" id="chart_${zone_id}" name="chartType_${zone_id}">`))
+                            $(`#${drzone_id}`).append($el);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+            })
+            $(`#drop`).append(dropzone)
+        }
+    </script>
+
+    <script>
+        function add_tb_row(zone_id, id) {
+            if ($(`#add_header_${zone_id}`).is(":visible")) {
+                if (confirm('Once you have click ok you can not add header. Do you want to continue?')) {
+                    $(`#add_header_${zone_id}`).hide()
+                    $(`#table_${zone_id} tbody:last`).append($(`#table_${zone_id} tbody tr:last`).clone().find('input').val('').end())
+                }
+            } else {
+                $(`#table_${zone_id} tbody:last`).append($(`#table_${zone_id} tbody tr:last`).clone().find('input').val('').end())
+            }
+        }
+        function add_header(zone_id, id) {
+            console.log(id);
+            $(`#table_${zone_id} thead tr th:last`).before(`<th><input class="form-control form-control-sm" type="text" id="table_${zone_id}_heading_${parseInt(id) + 1}" name="table_${zone_id}_heading" placeholder="Add Header" aria-label="Add Header"></th>`)
+            $(`#table_${zone_id} tbody tr td:last`).before(`<td><input class="form-control form-control-sm" type="text" id="table_${zone_id}_body_${parseInt(id) + 1}" name="table_${zone_id}_body" placeholder="Add Description" aria-label="Add Description"></td>`)
+        }
+    </script>
+
+    <script>
+        $("#sec_id").on("change", function () {
+        $.ajax({
+            method: "GET",
+            url: "/get_ind_list_ajax",
+            data: { sec_id: $(this).val() },
+            dataType: "html",
+            beforeSend: function () {
+            $(".loader-wrapper").show();
+            },
+            success: function (result) {
+            var res = JSON.parse(result);
+            console.log(res);
+            $("#ind_id").empty();
+            $("#data_set_view").hide()
+            $("#suc_disc_table tbody >").remove()
+            $("#ind_id").append(
+                $("<option>", { value: "", text: "Select Industries" })
+            );
+            if (res.suc > 0 && res.msg.length > 0)
+                $.each(res.msg, function (i, item) {
+                $("#ind_id").append(
+                    $("<option>", { value: item.id, text: item.ind_name })
+                );
+                });
+            },
+            complete: function () {
+            $(".loader-wrapper").hide();
+            },
+        });
+        });
+    </script>
+    <script>
+        $("#ind_id").on("change", function () {
+            $.ajax({
+                method: "GET",
+                url: "/get_ind_list_ajax",
+                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val() },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result);
+                    // console.log(res);
+                    $('#top_id').empty();
+                    $('#top_id').append($('<option>', {value: '', text: 'Select Topic'}));
+                    if (res.suc > 0 && res.msg.length > 0)
+                        if(res.msg[0].topic_dt)
+                            $.each(res.msg[0].topic_dt, function (i, item) {
+                                $("#top_id").append(
+                                    $("<option>", { value: item.id, text: item.topic_name })
+                                );
+                            });
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                },
+            });
+        });
+    </script>
+    <script>
+        function setChartImage(event, zone_id){
+            // console.log($(event));
+            var element = $(event)
+            var imgVal = element[0].children
+            console.log(element);
+            var imageId = imgVal[0].id,
+            img = imgVal[0].attributes[0].value;
+            console.log(imageId, img);
+            $(`#chart_${zone_id}`).val(imageId)
+            $(`#previewChart_${zone_id} >`).remove()
+            $(`#previewChart_${zone_id}`).append($(`<label class="fw-500 fs-4 text-decoration-underline">This is a sample graph preview.</label><img src="${img}" width="50%" height="50%" alt="" srcset="">`))
+            document.querySelectorAll(`#graphImgRow_${zone_id} .imgGraphChecked`).forEach(e => {
+                e.style.display = 'none';
+            })
+            var btnChk = element[0].children[1]
+            btnChk.style.display = 'block'
+        }
+    </script>
+
+<%- include('../../templates/footer.ejs') %>

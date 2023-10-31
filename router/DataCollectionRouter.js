@@ -299,4 +299,56 @@ DataCollectionRouter.get('/dynamic_data_view', async (req, res) => {
   res.render('data_collection/dynamic_form/data_view', data)
 })
 
+DataCollectionRouter.get('/dynamic_edit', async (req, res) => {
+  var selected = {
+    id: req.query.id ? req.query.id : 0,
+    sec_id: req.query.sec_id ? req.query.sec_id : 0,
+    ind_id: req.query.ind_id ? req.query.ind_id : 0,
+  };
+  var resDt;
+  var sec_data = await getSectorList(),
+    ind_list = { msg: [] };
+  if (selected.id > 0){
+    ind_list = await getIndustriesList(null, selected.sec_id);
+    resDt = await getDynamicData(selected.id)
+    var dataSet = resDt
+    if(resDt.suc > 0 && resDt.msg.length > 0){
+      if(resDt.msg[0].data_file_name){
+        try{
+          resDt = fs.readFileSync(path.join('dynamic_data_set', resDt.msg[0].data_file_name), 'utf-8')
+          resDt = JSON.parse(resDt)
+        }catch(err){
+          console.log(err);
+          resDt = []
+        }
+        // console.log(resDt);
+        // resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`)
+      }
+    }
+  }
+console.log(resDt);
+  // console.log(ind_list);
+  var data = {
+    sec_data,
+    ind_list,
+    selected,
+    resDt,
+    header: "Date Collection Edit",
+  };
+  res.render("data_collection/dynamic_form/edit", data);
+})
+
+DataCollectionRouter.get('/get_dynamic_data_set_ajax', async (req, res) => {
+  var file_name = req.query.filePath
+  try{
+    fs.readFile(path.join('dynamic_data_set', file_name), 'utf-8', (err, data) => {
+      if(err) res.send([])
+      else res.send(JSON.parse(data))
+    })
+  }catch(err){
+    console.log(err);
+    res.send([])
+  }
+})
+
 module.exports = { DataCollectionRouter };

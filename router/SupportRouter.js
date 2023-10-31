@@ -77,4 +77,13 @@ SupportRouter.post('/support_save', async (req, res) => {
     }
 })
 
+SupportRouter.post('/getSupportList', async (req, res) => {
+    var client_id = req.session.user.client_id,
+        userType = req.session.user.user_type,
+        user_id = req.session.user.id;
+    var data = req.body
+    var supportList = await getSupportList(0, userType, client_id, user_id, data.flag)
+    res.send(supportList)
+})
+
 module.exports = {SupportRouter}

@@ -2,11 +2,11 @@ const { db_Select, db_Insert } = require("./MasterModule"),
     dateFormat = require("dateformat");
 
 module.exports = {
-    getSupportList: (id, user_type, client_id, user_id) => {
+    getSupportList: (id, user_type, client_id, user_id, status='P') => {
         return new Promise(async (resolve, reject) => {
             var select = 'a.id, a.tkt_no, a.tkt_date, a.client_id, b.client_name, a.issue, c.user_name issued_by, (SELECT d.user_name FROM md_user d WHERE a.resolved_by=d.id) resolved_by, a.resolve_dt, a.remarks, a.tkt_status',
                 table_name = 'td_support_log a, td_client b, md_user c',
-                whr = `a.client_id=b.id AND a.issued_by=c.id ${user_type != 'S' ? 
+                whr = `a.client_id=b.id AND a.issued_by=c.id AND a.tkt_status = '${status}' ${user_type != 'S' ? 
                 `AND a.client_id = ${client_id} ${user_type != 'C' && user_type != 'A' ? 
                 `AND a.issued_by = ${user_id}` : ''} ${id > 0 ? 
                     `AND a.id = ${id}` : ''}` : 
