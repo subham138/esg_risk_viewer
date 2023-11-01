@@ -113,7 +113,7 @@
                                         <% if(sec_data.msg.length > 0){ 
                                             sec_data.msg.forEach(dt => { 
                                                 var _selected = ''; 
-                                                if(dt.id == selected.sec_id) _selected = 'selected'; 
+                                                if(dt.id == dataSet[0].sec_id) _selected = 'selected'; 
                                         %>
                                         <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
                                         <% }) } %>
@@ -126,7 +126,7 @@
                                         <% if(ind_list.msg.length > 0){ 
                                             ind_list.msg.forEach(dt => { 
                                                 var _selected = ''; 
-                                                if(dt.id == selected.ind_id) _selected = 'selected'; 
+                                                if(dt.id == dataSet[0].ind_id) _selected = 'selected'; 
                                         %>
                                         <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
                                         <% }) } %>
@@ -136,6 +136,13 @@
                                         <label class="form-label" for="top_id">Topic List</label>
                                         <select class="form-select" id="top_id" name="top_id" required="">
                                             <option selected="" value="">Select Topic</option>
+                                            <% if(topList.length > 0){ 
+                                                topList[0].topic_dt.forEach(dt => { 
+                                                    var _selected = ''; 
+                                                    if(dt.id == dataSet[0].top_id) _selected = 'selected'; 
+                                            %>
+                                            <option value="<%= dt.id %>" <%= _selected %>><%= dt.topic_name %></option>
+                                            <% }) } %>
                                         </select>
                                     </div>
                                 </div>
@@ -152,6 +159,7 @@
                             <button type="submit" class="btn btn-pill btn-outline-success btn-air-success float-end">Save</button>
                         </div>
                     </div>
+                    <input type="hidden" id="fileName" value="<%= dataSet[0].data_file_name %>">
                 </form>
             </div>
         </div>
@@ -162,7 +170,7 @@
             $.ajax({
                 url: '/get_dynamic_data_set_ajax',
                 method: 'GET',
-                data: {filePath: '9_58_10_2023.json'},
+                data: {filePath: $('#fileName').val()},
                 success: function(data){
                     console.log(data);
                     if(data.length > 0){
@@ -185,7 +193,10 @@
                             if(dt.table) {
                                 fieldFlag = 'TB';
                                 createDynamicData(i, fieldFlag, dt)
+                                $(`#graphImgRow_${i} #${dt.table.graph_type}`).parent().click()
+                                // console.log(`#graphImgRow_${i} #${dt.table.graph_type}`)
                             }
+                            $(`#drop`).after(`<input type="hidden" name="section_id" value="${i}" />`)
                             i++;
                         })
                     }
@@ -195,9 +206,7 @@
                 }
             })
         }
-        getDynamicFile()
         function createDynamicData(id, flag, data){
-            console.log('Test', id, flag, data);
             var drzone_id = `dr${id}`
             switch (flag) {
                 case 'H':
@@ -223,13 +232,31 @@
                     var tb_td_id = $(`#table_${id} tbody td`).length
                     tb_td_id = tb_td_id > 0 ? tb_td_id : 0
                     var next_td_id = parseInt(tb_td_id) + 1
+                    var heads = ''
+                    for(let dt of data.table.head){
+                        heads = heads + `<th>
+                                    <input class="form-control form-control-sm" type="text" id="table_${id}_heading_${next_th_id}"
+                                        name="table_${id}_heading" value="${dt}" placeholder="Add Header" aria-label="Add Header">
+                                </th>`
+                        next_th_id++;
+                    }
+                    var tbody = '<tr>'
+                    for(let dt of data.table.body){
+                        Object.values(dt).forEach(vdt => {
+                            tbody = tbody + `<td>
+                                        <input class="form-control form-control-sm" type="text" id="table_${id}_body_${next_td_id}"
+                                            name="table_${id}_body" value="${vdt}" placeholder="Add Body" aria-label="Add Body">
+                                    </td>`
+                            next_td_id++;
+                        })
+                        tbody = tbody + `<td>
+                                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                </td>` + '</tr>';
+                    }
                     var $el = $(`<div class="drop-item"><table class="table table-hover" id="table_${id}">
                         <thead>
                             <tr>
-                                <th>
-                                    <input class="form-control form-control-sm" type="text" id="table_${id}_heading_${next_th_id}"
-                                        name="table_${id}_heading" placeholder="Add Header" aria-label="Add Header">
-                                </th>
+                                ${heads}
                                 <th>
                                     <button type="button" id="add_header_${id}" class="btn btn-pill btn-outline-success btn-air-success"
                                         onclick="add_header(${id}, ${next_th_id})"><i class="icofont icofont-plus-circle"></i></button>
@@ -237,19 +264,56 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <input class="form-control form-control-sm" type="text" id="table_${id}_body_${next_td_id}"
-                                        name="table_${id}_body" placeholder="Add Header" aria-label="Add Header">
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
-                                </td>
-                            </tr>
+                                ${tbody}
                         </tbody>
                     </table>
                     </div>`);
                     $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { $(this).parent().detach(); }));
+                    $el.append($(`
+                        <div class="row" id="graphImgRow_${id}">
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/barChart1.png" id="b1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/barChart2.png" id="b2" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <!-- <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/barChart3.png" id="b3" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div> -->
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/barChart5.png" id="b5" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <!-- <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/barChart4.png" id="b4" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div> -->
+
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/barChartMix1.png" id="bm1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <!-- <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/lineChart1.png" id="l1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 my-3 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/lineChart2.png" id="l2" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div> -->
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/lineChart3.png" id="l3" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setChartImage(this, ${id})">
+                                <img src="images/charts/areaChart1.png" id="a1" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-12 my-3 text-center" id="previewChart_${id}"></div><input type="hidden" id="chart_${id}" name="chartType_${id}">`))
                     $(`#${drzone_id}`).append($el);
                     break;
                 default:
@@ -263,7 +327,8 @@
             helper: 'clone'
         });
         $(document).ready(function(){
-            add_row()
+            // add_row()
+            getDynamicFile()
         })
         function editLabel(elm) {
             var jelm = $(elm);
@@ -432,7 +497,13 @@
         function add_header(zone_id, id) {
             console.log(id);
             $(`#table_${zone_id} thead tr th:last`).before(`<th><input class="form-control form-control-sm" type="text" id="table_${zone_id}_heading_${parseInt(id) + 1}" name="table_${zone_id}_heading" placeholder="Add Header" aria-label="Add Header"></th>`)
-            $(`#table_${zone_id} tbody tr td:last`).before(`<td><input class="form-control form-control-sm" type="text" id="table_${zone_id}_body_${parseInt(id) + 1}" name="table_${zone_id}_body" placeholder="Add Description" aria-label="Add Description"></td>`)
+            if($(`#table_${zone_id} tbody tr`).length > 1){
+                $(`#table_${zone_id} tbody tr`).each(function(){
+                    $(this).find('td').eq($(this).find('td').length -1).before(`<td><input class="form-control form-control-sm" type="text" id="table_${zone_id}_body_${parseInt(id) + 1}" name="table_${zone_id}_body" placeholder="Add Description" aria-label="Add Description"></td>`)
+                })
+            }else{
+                $(`#table_${zone_id} tbody tr td:last`).before(`<td><input class="form-control form-control-sm" type="text" id="table_${zone_id}_body_${parseInt(id) + 1}" name="table_${zone_id}_body" placeholder="Add Description" aria-label="Add Description"></td>`)
+            }
         }
     </script>
 

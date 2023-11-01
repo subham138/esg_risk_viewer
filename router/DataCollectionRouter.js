@@ -4,7 +4,7 @@ const express = require("express"),
   fs = require('fs'),
   path = require('path');
 
-const { getSectorList, getIndustriesList } = require("../modules/AdminModule");
+const { getSectorList, getIndustriesList, getTopicList } = require("../modules/AdminModule");
 const {
   getSusDiscList,
   getActMetrialDtls,
@@ -306,12 +306,15 @@ DataCollectionRouter.get('/dynamic_edit', async (req, res) => {
     ind_id: req.query.ind_id ? req.query.ind_id : 0,
   };
   var resDt;
+  var dataSet= {suc:0, msg:[]}, topList = {suc:0, msg:[]};
   var sec_data = await getSectorList(),
     ind_list = { msg: [] };
   if (selected.id > 0){
-    ind_list = await getIndustriesList(null, selected.sec_id);
     resDt = await getDynamicData(selected.id)
-    var dataSet = resDt
+    ind_list = await getIndustriesList(null, resDt.msg[0].sec_id);
+    topList = await getIndustriesList(resDt.suc > 0 ? resDt.msg[0].ind_id : null, resDt.msg[0].sec_id);
+    // console.log(topList);
+    dataSet = resDt
     if(resDt.suc > 0 && resDt.msg.length > 0){
       if(resDt.msg[0].data_file_name){
         try{
@@ -326,13 +329,15 @@ DataCollectionRouter.get('/dynamic_edit', async (req, res) => {
       }
     }
   }
-console.log(resDt);
+// console.log(resDt);
   // console.log(ind_list);
   var data = {
     sec_data,
     ind_list,
     selected,
     resDt,
+    dataSet: dataSet.suc > 0 ? dataSet.msg : [],
+    topList: topList.suc > 0 ? topList.msg : [],
     header: "Date Collection Edit",
   };
   res.render("data_collection/dynamic_form/edit", data);
