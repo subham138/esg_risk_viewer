@@ -422,10 +422,11 @@
                     default:
                         $(`#stacked-bar-chart_${j}`).parent().hide()
                         $(`#myBarGraph_${j}`).parent().hide()
-                        var a = google.visualization.arrayToDataTable(fun[key].a),
-                            b = fun[key].b;
-                        var c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
-                        c.draw(a, google.charts.Bar.convertOptions(b))
+                        $(`#column_chart_${j}`).parent().hide()
+                        // var a = google.visualization.arrayToDataTable(fun[key].a),
+                        //     b = fun[key].b;
+                        // var c = new google.charts.Bar(document.getElementById(`column_chart_${j}`));
+                        // c.draw(a, google.charts.Bar.convertOptions(b))
                         break;
                 }
                 // console.log('funName', fun[key]);
