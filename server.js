@@ -73,6 +73,7 @@ const { SubsRouter } = require("./router/SubscriptionRouter");
 const { ProjectRouter } = require("./router/ProjectsRouter");
 const { DashboardRouter } = require("./router/DashboardRouter");
 const { SupportRouter } = require("./router/SupportRouter");
+const { imgGalaryRouter } = require("./router/imgGalaryRouter");
 // END //
 
 app.get("/", (req, res) => {
@@ -88,6 +89,11 @@ app.get("/", (req, res) => {
   }
 });
 
+app.post('/test', (req, res) => {
+  console.log(req.files);
+  res.send('LALA')
+})
+
 app.use(UserRouter);
 app.use(MasterRouter);
 app.use(DataCollectionRouter)
@@ -95,6 +101,7 @@ app.use(SubsRouter)
 app.use(ProjectRouter)
 app.use(DashboardRouter)
 app.use(SupportRouter)
+app.use(imgGalaryRouter)
 
 app.get("/user_data", (req, res) => {
   var data = {

@@ -1,0 +1,84 @@
+<%- include('../templates/header.ejs') %>
+
+<div class="container-fluid">
+    <div class="page-header">
+      <div class="row">
+        <div class="col-sm-6">
+          <h3>Dropzone</h3>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <!-- <li class="breadcrumb-item">Advance</li> -->
+            <li class="breadcrumb-item active">Dropzone</li>
+          </ol>
+        </div>
+        <div class="col-sm-6">
+          <!-- Bookmark Start-->
+          <div class="bookmark">
+            <ul>
+              <li><a href="javascript:void(0)" data-container="body" data-bs-toggle="popover" data-placement="top" title="" data-original-title="Tables"><i data-feather="inbox"></i></a></li>
+              <li><a href="javascript:void(0)" data-container="body" data-bs-toggle="popover" data-placement="top" title="" data-original-title="Chat"><i data-feather="message-square"></i></a></li>
+              <li><a href="javascript:void(0)" data-container="body" data-bs-toggle="popover" data-placement="top" title="" data-original-title="Icons"><i data-feather="command"></i></a></li>
+              <li><a href="javascript:void(0)" data-container="body" data-bs-toggle="popover" data-placement="top" title="" data-original-title="Learning"><i data-feather="layers"></i></a></li>
+              <li><a href="javascript:void(0)"><i class="bookmark-search" data-feather="star"></i></a>
+                <form class="form-inline search-form">
+                  <div class="form-group form-control-search">
+                    <input type="text" placeholder="Search..">
+                  </div>
+                </form>
+              </li>
+            </ul>
+          </div>
+          <!-- Bookmark Ends-->
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Container-fluid starts-->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h5>Single File Upload</h5>
+        </div>
+        <div class="card-body">
+          <form class="dropzone digits" id="badgeImgUpload">
+            <div class="dz-message needsclick"><i class="icon-cloud-up"></i>
+              <h6>Drop files here or click to upload.</h6>
+              <span class="note needsclick">
+                (This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)
+              </span>
+            </div>
+          </form>
+          <button id="uploadButton">Upload Files</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Container-fluid Ends-->
+
+<!-- Plugins JS start-->
+<script src="js/dropzone/dropzone.js"></script>
+<script src="js/dropzone/dropzone-script.js"></script>
+<!-- Plugins JS Ends-->
+
+<script>
+  var myDropzone = new Dropzone("#badgeImgUpload", {
+    url: '/upload',
+    maxFilesize: 2, // MB
+    maxFiles: 5,
+    autoProcessQueue: false, // Disable automatic file uploads
+    acceptedFiles: '.jpg, .jpeg, .png, .gif'
+  });
+  $('#uploadButton').on('click', function() {
+    myDropzone.processQueue(); // Manually initiate the file upload
+  });
+
+  myDropzone.on("success", function(file, response) {
+    console.log("File uploaded:", response);
+  });
+</script>
+    
+<%- include('../templates/footer.ejs') %>
