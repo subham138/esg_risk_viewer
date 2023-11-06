@@ -46051,3 +46051,12 @@ span.twitter-typeahead .tt-suggestion:active {
 .lginBtn{
   width: 100%;
 }
+.loginInput{
+  padding: 15px;
+}
+.show-hide {
+  top: 50% !important;
+}
+.LoginFpText{
+  font-size: 15px;
+}
