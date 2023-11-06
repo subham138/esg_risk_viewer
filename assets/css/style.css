@@ -46050,6 +46050,7 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 .lginBtn{
   width: 100%;
+  height: 51px;
 }
 .loginInput{
   padding: 15px;
