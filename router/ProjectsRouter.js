@@ -184,6 +184,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var susDistList = await getSusDiscList(data.sec_id, data.ind_id)
     var metric = await getActMetrialDtls(data.sec_id, data.ind_id)
     var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id)
+    var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
     if (resDt.suc > 0 && resDt.msg.length > 0) {
       if (resDt.msg[0].data_file_name) {
         resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`);
@@ -191,6 +192,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     }
     var res_data = {
         top_id: data.top_id, 
+        topName,
         sec_id: data.sec_id,
         ind_id: data.ind_id,
         project_id: data.proj_id,
