@@ -28,55 +28,60 @@
           <!-- <div>
             <button class="btn btn-primary btn-block video-right" onclick="watch_video()">Watch Video</button>
           </div> -->
-          <button type="button" class="btn btn-primary btn-block video-right" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <!-- <button type="button" class="btn btn-primary btn-block video-right" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Watch Video
-          </button>
-          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" style="max-width: 700px; margin-top: 5%;">
-              <div class="modal-content">
-                <!-- <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div> -->
-                <div class="modal-body" style="position: relative;">
-               <button type="button" class="btn-close btn_close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  <video id="totVideo" controls width="100%" autoplay loop muted>
-                    <source src="videos/ESG_Risk_Viewer_Presentation_4K.mp4" type="video/mp4">
-                  </video>
+          </button> -->
+          <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 700px; margin-top: 5%;">
+                  <div class="modal-content">
+                    <!-- <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div> -->
+                    <div class="modal-body" style="position: relative;">
+                      <button type="button" class="btn-close btn_close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      <video id="totVideo" controls width="100%" autoplay loop muted>
+                        <source src="videos/ESG_Risk_Viewer_Presentation_4K.mp4" type="video/mp4">
+                      </video>
+                    </div>
+                    <!-- <div class="modal-footer" style="border: none;">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div> -->
+                  </div>
                 </div>
-                <!-- <div class="modal-footer" style="border: none;">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+              <div class="form-group mt-3">
+                <!-- <label>Email Address</label> -->
+                <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-user"></i></span>
+                  <input class="form-control" type="email" name="email" required="" placeholder="Username/Email address">
+                </div>
+              </div>
+              <div class="form-group">
+                <!-- <label>Password</label> -->
+                <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
+                  <input class="form-control" type="password" name="password" required="" placeholder="Password">
+                  <div class="show-hide"><span class="showPass"><i class="icofont icofont-eye"></i></span></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-12">
+                    <button class="btn btn-primary btn-block lginBtn" type="submit">Sign in</button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group mt-0 pt-0">
+                <!-- <div class="checkbox">
+                  <input id="checkbox1" type="checkbox">
+                  <label class="text-muted" for="checkbox1">Remember password</label>
                 </div> -->
+                <a class="link text-white text-center" href="forget-password.html">Forgot password?</a>
               </div>
+
             </div>
-          </div>
-          <div class="form-group mt-3">
-            <!-- <label>Email Address</label> -->
-            <div class="input-group"><span class="input-group-text"><i class="icofont icofont-ui-user text-white"></i></span>
-              <input class="form-control" type="email" name="email" required="" placeholder="Username/Email address">
-            </div>
-          </div>
-          <div class="form-group">
-            <!-- <label>Password</label> -->
-            <div class="input-group"><span class="input-group-text"><i class="icofont icofont-ui-lock text-white"></i></span>
-              <input class="form-control" type="password" name="password" required="" placeholder="Password">
-              <div class="show-hide"><span class="showPass"><i class="icofont icofont-eye"></i></span></div>
-            </div>
-          </div>
-          <div class="form-group">
-            <!-- <div class="checkbox">
-              <input id="checkbox1" type="checkbox">
-              <label class="text-muted" for="checkbox1">Remember password</label>
-            </div> -->
-            <a class="link text-white" href="forget-password.html">Forgot password?</a>
-          </div>
-          <div class="form-group">
-            <div class="row-12">
-              <div class="col-8">
-                <button class="btn btn-primary btn-block" type="submit">Sign in</button>
-              </div>
-            </div>
-           <div class="col-4"></div>
           </div>
           <!-- <div class="login-social-title">                
             <h5>Sign in with</h5>

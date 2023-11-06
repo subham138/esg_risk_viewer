@@ -46037,3 +46037,17 @@ span.twitter-typeahead .tt-suggestion:active {
 .row .graphImgSet img:hover {
   transform: scale(1.4); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
+
+/* .main-nav{
+  background: #202A44 !important;
+  color: white !important;
+} */
+
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-link.active, .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-link:hover {
+  /* background-color: #2e3855 !important; */
+  background-color: #202A44 !important;
+  color: white !important;
+}
+.lginBtn{
+  width: 100%;
+}
