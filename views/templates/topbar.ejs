@@ -19,7 +19,7 @@
             <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center"
                 id="sidebar-toggle"></i></div>
           </div>
-          <div class="left-menu-header col">
+          <div class="left-menu-header col p-b-0 p-t-0">
             <ul>
               <li>
                 <h5 style="color: #24695c;">Welcome <%= user.user_name %></h5>
@@ -36,7 +36,7 @@
             </ul> -->
           </div>
           <div class="nav-right col pull-right right-menu p-0">
-            <ul class="nav-menus">
+            <ul class="nav-menus p-b-0 p-t-0">
               <!-- <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i
                     data-feather="maximize"></i></a></li>
               <li class="onhover-dropdown">
@@ -104,43 +104,39 @@
               </li>
               <li>
                 <div class="mode"><i class="fa fa-moon-o"></i></div>
-              </li>
-              <li class="onhover-dropdown"><i data-feather="message-square"></i>
-                <ul class="chat-dropdown onhover-show-div">
-                  <li>
-                    <div class="media"><img class="img-fluid rounded-circle me-3" src="images/user/4.jpg"
-                        alt="">
-                      <div class="media-body"><span>Ain Chavez</span>
-                        <p class="f-12 light-font">Lorem Ipsum is simply dummy...</p>
-                      </div>
-                      <p class="f-12">32 mins ago</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media"><img class="img-fluid rounded-circle me-3" src="images/user/1.jpg"
-                        alt="">
-                      <div class="media-body"><span>Erica Hughes</span>
-                        <p class="f-12 light-font">Lorem Ipsum is simply dummy...</p>
-                      </div>
-                      <p class="f-12">58 mins ago</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media"><img class="img-fluid rounded-circle me-3" src="images/user/2.jpg"
-                        alt="">
-                      <div class="media-body"><span>Kori Thomas</span>
-                        <p class="f-12 light-font">Lorem Ipsum is simply dummy...</p>
-                      </div>
-                      <p class="f-12">1 hr ago</p>
-                    </div>
-                  </li>
-                  <li class="text-center"> <a class="f-w-700" href="javascript:void(0)">See All </a></li>
-                </ul>
               </li> -->
-              <li class="onhover-dropdown p-0">
-                <button class="btn btn-primary-light" type="button"><a href="/log_out"><i
-                      data-feather="log-out"></i>Log out</a></button>
+              <li class="onhover-dropdown">
+                <div class="circle">
+                  <span class="initials">
+                    <% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
+                      var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? Array.from(userNameArr[1])[0] : ''}` : 'U' %>
+                    <%= userNameAvt.toUpperCase() %>
+                  </span>
+                </div>
+                <ul class="chat-dropdown onhover-show-div proDropDown">
+                  <li>
+                    <div class="ProfCard">
+                      <div class="card-profile mb-2">
+                        <div class="circle">
+                          <span class="initials">
+                            <% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
+                              var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? Array.from(userNameArr[1])[0] : ''}` : 'U' %>
+                            <%= userNameAvt.toUpperCase() %>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="text-center profile-details">
+                        <h4><p class="proNameFld" data-bs-original-title="" title="<%= user.user_name %>"><%= user.user_name %></p></h4>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="text-center"> <a class="f-w-700" href="/log_out"><i data-feather="log-out"></i><label class="m-l-5">Log out</label></a></li>
+                </ul>
               </li>
+              <!-- <li class="onhover-dropdown p-0">
+                <button class="btn btn-primary-light" type="button"><a href="/log_out">
+                  <i data-feather="log-out"></i>Log out</a></button>
+              </li> -->
             </ul>
           </div>
           <div class="d-lg-none mobile-toggle pull-right w-auto"><i data-feather="more-horizontal"></i></div>

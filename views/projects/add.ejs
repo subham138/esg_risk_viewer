@@ -141,25 +141,29 @@
     }
     function del_row(id){
         if (confirm('Are you sure you want to delete?')) {
-            $.ajax({
-                method: "POST",
-                url: "/delete_my_project",
-                data: { id: id },
-                dataType: "html",
-                beforeSend: function () {
-                    $(".loader-wrapper").show();
-                },
-                success: function (result) {
-                    var res = JSON.parse(result);
-                    console.log(res);
-                    if (res.suc > 0 && res.msg.length > 0){
-                        $(`#tr_${id}`).remove()
+            if($('#id').val() > 0){
+                $.ajax({
+                    method: "POST",
+                    url: "/delete_my_project",
+                    data: { id: id },
+                    dataType: "html",
+                    beforeSend: function () {
+                        $(".loader-wrapper").show();
+                    },
+                    success: function (result) {
+                        var res = JSON.parse(result);
+                        console.log(res);
+                        if (res.suc > 0 && res.msg.length > 0){
+                            $(`#tr_${id}`).remove()
+                        }
+                    },
+                    complete: function () {
+                        $(".loader-wrapper").hide();
                     }
-                },
-                complete: function () {
-                    $(".loader-wrapper").hide();
-                }
-            })
+                })
+            }else{
+                $(`#tr_${id}`).remove()
+            }
         }
     }
 </script>

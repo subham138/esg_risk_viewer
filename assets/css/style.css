@@ -39959,7 +39959,7 @@ span.twitter-typeahead .tt-suggestion:active {
   background: url(../images/weather_img.jpg);
   background-repeat: no-repeat;
   background-size: cover;
-  height: 350px;
+  height: 100%;
   color: #fff;
   text-align: center;
   display: -webkit-box;
@@ -46013,21 +46013,22 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 
 .circle {
-  background-color: rgb(229 237 239);
+  background-color: rgb(32 42 68);
   border-radius: 50%;
-  height: 90px;
+  height: 50px;
   text-align: center;
-  width: 90px;
-  border: 10px solid rgba(36, 105, 92, 0.2);
+  width: 50px;
+  /* border: 10px solid rgba(36, 105, 92, 0.2); */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .initials {
-  font-size: calc(var(--avatar-size) / 2);
+  font-size: calc(var(--avatar-size) / 3);
   line-height: 1;
   position: relative;
+  color: white;
 }
 
 .row .graphImgSet{
@@ -46054,10 +46055,59 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 .loginInput{
   padding: 15px;
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+  color: #1F1F1F !important;
 }
 .show-hide {
   top: 50% !important;
 }
 .LoginFpText{
   font-size: 15px;
+}
+.cal-datepicker{
+  margin-top: 0px !important;
+}
+.videoCard{
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+.videoContainer{
+  width: 60%;
+  height: 60%;
+  padding: 5px;
+}
+.videoConText{
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 15px;
+}
+.headerDashText{
+  font-size: 16px;
+  font-weight: 500;
+  padding: 10px;
+}
+.page-main-header .main-header-right .nav-right .chat-dropdown {
+  top: 80px !important;
+  width: 240px;
+}
+.page-main-header .main-header-right .nav-right>ul>li {
+  border-radius: 50px !important;
+}
+.ProfCard{
+  /* padding: 0px !important; */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.proDropDown{
+  background: #fbfbfb;
+  border-radius: 13px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.proNameFld{
+  font-size: 20px;
+  color: #202a44;
+  font-weight: 500;
 }
