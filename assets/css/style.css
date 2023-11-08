@@ -46122,3 +46122,46 @@ span.twitter-typeahead .tt-suggestion:active {
   border-radius: 0px !important;
   color: #fff !important;
 }
+.nav-menu .dropdown .nav-submenu{
+  border-radius: 0px !important;
+  color: #fff !important;
+  background: #2b495c;
+}
+nav #mainnav .nav-menu{
+  height: 100%;
+}
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu .dropdown ul.nav-submenu li a.active {
+  color: #fff;
+  background: #424f6f;
+}
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-submenu li a {
+  color: #fff;
+}
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu .dropdown ul.nav-submenu li:hover a{
+  color: #c0cce9;
+}
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav {
+  top: 85px !important;
+}
+.cusANavLink{
+  font-size: 16px;
+  font-weight: 500 !important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.cusINavLink{
+  font-size: 25px;
+}
+.cusSpanNavLink{
+  font-weight: 400 !important;
+}
+.page-wrapper.compact-wrapper .page-body-wrapper .according-menu i{
+  color: #fff;
+}
+.caruBackCol{
+  background-color: #316379 !important;
+}
+.caruBackCol1{
+background-color: #424f6f !important;
+}

@@ -14,12 +14,12 @@
                 <h6>General </h6>
               </div>
             </li> -->
-            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/dashboard">
-              <i class="icofont icofont-dashboard m-r-10"></i><span>Dashboard</span></a>
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/dashboard">
+              <i class="icofont icofont-dashboard m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Dashboard</span></a>
             </li>
             <% if(user.user_type == 'S'){ %>
-            <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i
-                  data-feather="master"></i><span>Master</span></a>
+            <li class="dropdown"><a class="nav-link menu-title cusANavLink" href="javascript:void(0)">
+              <i class="icofont icofont-ui-settings m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Master</span></a>
               <ul class="nav-submenu menu-content">
                 <li><a href="/sector">Sector</a></li>
                 <li><a href="/industries">Industries</a></li>
@@ -29,31 +29,31 @@
               </ul>
             </li>
 
-            <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i
-                  data-feather="data-collection"></i><span>Data Collection</span></a>
+            <li class="dropdown"><a class="nav-link menu-title cusANavLink" href="javascript:void(0)">
+              <i class="icofont icofont-cubes m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Data Collection</span></a>
               <ul class="nav-submenu menu-content">
                 <li><a href="/sus_disc">Sustainability Disclosure</a></li>
                 <li><a href="/act_metric">Activity Metrics</a></li>
                 <li><a href="/dynamic_entry_view">Data Entry</a></li>
               </ul>
             </li>
-            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/client"><i
-              data-feather="client"></i><span>Add Client</span></a></li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/client">
+              <i class="icofont icofont-businessman m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Add Client</span></a></li>
             <% } %>
             <% if(user.user_type == 'C' || user.user_type == 'A' || user.user_type == 'E' || user.user_type == 'V'){ %>
               <% if(user.user_type == 'C') { %>
               <!-- <li class="dropdown"><a class="nav-link menu-title link-nav" href="/subscription"><i
-                data-feather="subscription"></i><span>My Subscriptions</span></a></li> -->
-              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/manage_user">
-                <i class="icofont icofont-users-alt-3 m-r-10"></i><span>Manage Users</span></a></li>
+                data-feather="subscription"></i><span class="cusSpanNavLink">My Subscriptions</span></a></li> -->
+              <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/manage_user">
+                <i class="icofont icofont-users-alt-3 m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Manage Users</span></a></li>
               <% } %>
-              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/my_project">
-                <i class="icofont icofont-ui-social-link m-r-10"></i><span>My Projects</span></a></li>
+              <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/my_project">
+                <i class="icofont icofont-ui-social-link m-r-20 cusINavLink"></i><span class="cusSpanNavLink">My Projects</span></a></li>
             <% } %>
-            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/support">
-              <i class="icofont icofont-live-support m-r-10"></i><span>Support</span></a></li>
-            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/log_out">
-              <i class="icofont icofont-sign-out m-r-10"></i><span>Sign out</span></a>
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/support">
+              <i class="icofont icofont-live-support m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Support</span></a></li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/log_out">
+              <i class="icofont icofont-sign-out m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Sign out</span></a>
             </li>
             <!-- <li class="dropdown"><a class="nav-link menu-title link-nav" href="/img_upload"><i
                 data-feather="img_upload"></i><span>Image Gallery</span></a></li> -->
