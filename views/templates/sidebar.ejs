@@ -1,6 +1,6 @@
 <!-- Page Sidebar Start-->
 <header class="main-nav">
-    <nav class="m-t-10">
+    <nav>
       <div class="main-navbar">
         <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
         <div id="mainnav">
@@ -14,8 +14,9 @@
                 <h6>General </h6>
               </div>
             </li> -->
-            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/dashboard"><i
-              data-feather="home"></i><span>Dashboard</span></a></li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/dashboard">
+              <i class="icofont icofont-dashboard m-r-10"></i><span>Dashboard</span></a>
+            </li>
             <% if(user.user_type == 'S'){ %>
             <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i
                   data-feather="master"></i><span>Master</span></a>
@@ -43,14 +44,17 @@
               <% if(user.user_type == 'C') { %>
               <!-- <li class="dropdown"><a class="nav-link menu-title link-nav" href="/subscription"><i
                 data-feather="subscription"></i><span>My Subscriptions</span></a></li> -->
-              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/manage_user"><i
-                data-feather="manage_users"></i><span>Manage Users</span></a></li>
+              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/manage_user">
+                <i class="icofont icofont-users-alt-3 m-r-10"></i><span>Manage Users</span></a></li>
               <% } %>
-              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/my_project"><i
-                data-feather="my-project"></i><span>My Projects</span></a></li>
+              <li class="dropdown"><a class="nav-link menu-title link-nav" href="/my_project">
+                <i class="icofont icofont-ui-social-link m-r-10"></i><span>My Projects</span></a></li>
             <% } %>
-            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/support"><i
-              data-feather="support"></i><span>Support</span></a></li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/support">
+              <i class="icofont icofont-live-support m-r-10"></i><span>Support</span></a></li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav" href="/log_out">
+              <i class="icofont icofont-sign-out m-r-10"></i><span>Sign out</span></a>
+            </li>
             <!-- <li class="dropdown"><a class="nav-link menu-title link-nav" href="/img_upload"><i
                 data-feather="img_upload"></i><span>Image Gallery</span></a></li> -->
           </ul>

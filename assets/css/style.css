@@ -46013,7 +46013,7 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 
 .circle {
-  background-color: rgb(32 42 68);
+  background-color: #316379;
   border-radius: 50%;
   height: 50px;
   text-align: center;
@@ -46046,8 +46046,8 @@ span.twitter-typeahead .tt-suggestion:active {
 
 .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-link.active, .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-link:hover {
   /* background-color: #2e3855 !important; */
-  background-color: #202A44 !important;
-  color: white !important;
+  background-color: #424f6f !important;
+  color: #fff !important;
 }
 .lginBtn{
   width: 100%;
@@ -46110,4 +46110,15 @@ span.twitter-typeahead .tt-suggestion:active {
   font-size: 20px;
   color: #202a44;
   font-weight: 500;
+}
+.main-nav{
+  background: #316379 !important;
+}
+.nav-menu .dropdown{
+  border-radius: 0px !important;
+  padding: 0px !important;
+}
+.nav-menu .dropdown .nav-link{
+  border-radius: 0px !important;
+  color: #fff !important;
 }
