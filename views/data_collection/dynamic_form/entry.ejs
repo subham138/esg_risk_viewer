@@ -67,6 +67,9 @@
             top: 4px;
             right: 4px;
         }
+        .dropzone i {
+            font-size: 20px !important;
+        }
     </style>
     <div class="container-fluid">
         <div class="row">
@@ -243,7 +246,7 @@
                                                 name="table_${zone_id}_heading" placeholder="Add Header" aria-label="Add Header">
                                         </th>
                                         <th>
-                                            <button type="button" id="add_header_${zone_id}" class="btn btn-pill btn-outline-success btn-air-success"
+                                            <button type="button" id="add_header_${zone_id}" class="btn btn-pill btn-outline-primary btn-air-primary"
                                                 onclick="add_header(${zone_id}, ${next_th_id})"><i class="icofont icofont-plus-circle"></i></button>
                                         </th>
                                     </tr>
@@ -255,7 +258,7 @@
                                                 name="table_${zone_id}_body" placeholder="Add Header" aria-label="Add Header">
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${zone_id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
+                                            <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary" onclick="add_tb_row(${zone_id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>

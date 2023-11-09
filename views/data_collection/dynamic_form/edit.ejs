@@ -34,7 +34,7 @@
             background: no-repeat;
             border: none;
             font-size: 11px;
-            color: red;
+            color: red !important;
         }
 
         .imgGraphChecked {
@@ -66,6 +66,17 @@
             position: absolute;
             top: 4px;
             right: 4px;
+        }
+        .dropzone i {
+            font-size: 20px !important;
+        }
+        .dropzone button:hover i {
+            color: #fff;
+        }
+
+        .remove i{
+            color: red;
+            font-size: 12px !important;
         }
     </style>
     <div class="container-fluid">
@@ -152,11 +163,11 @@
                     <div class="row drop-row" id="drop">
                     </div>
                     <div class="col-sm-12">
-                        <button type="button" class="btn btn-pill btn-outline-success btn-air-success float-end" onclick="add_row()"><i class="icofont icofont-plus-circle"></i></button>
+                        <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary float-end" onclick="add_row()"><i class="icofont icofont-plus-circle"></i></button>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <button type="submit" class="btn btn-pill btn-outline-success btn-air-success float-end">Save</button>
+                            <button type="submit" class="btn btn-pill btn-outline-primary btn-air-primary float-end">Save</button>
                         </div>
                     </div>
                     <input type="hidden" id="fileName" value="<%= dataSet[0].data_file_name %>">
@@ -253,7 +264,7 @@
                         })
                         if(tbi == tbValLen)
                         tbody = tbody + `<td>
-                                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_tb_row(${id}, ${next_td_id})"><i class="icofont icofont-plus-circle"></i><i class="icofont icofont-arrow-down"></i></button>
+                                    <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary" onclick="add_tb_row(${id}, ${next_td_id})"><i class="icofont icofont-plus-circle dropIcon"></i><i class="icofont icofont-arrow-down dropIcon"></i></button>
                                 </td>` + '</tr>';
                         else
                         tbody = tbody + `<td></td></tr>`;
@@ -264,7 +275,7 @@
                             <tr>
                                 ${heads}
                                 <th>
-                                    <button type="button" id="add_header_${id}" class="btn btn-pill btn-outline-success btn-air-success"
+                                    <button type="button" id="add_header_${id}" class="btn btn-pill btn-outline-primary btn-air-primary"
                                         onclick="add_header(${id}, ${next_th_id})"><i class="icofont icofont-plus-circle"></i><i class="icofont icofont-arrow-right"></i></button>
                                 </th>
                             </tr>
