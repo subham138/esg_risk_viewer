@@ -187,6 +187,8 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var metric = await getActMetrialDtls(data.sec_id, data.ind_id)
     var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id)
     var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
+    var allDynamicData = await getDynamicData(0, data.sec_id, data.ind_id, 0);
+    allDynamicData = allDynamicData.suc > 0 ? allDynamicData.msg : ''
     // console.log(resDt);
     if (resDt.suc > 0 && resDt.msg.length > 0) {
         if(resDt.msg.length == 1){
@@ -215,6 +217,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         user_type: req.session.user.user_type,
         editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
         data_set,
+        allDynamicData,
         header: "Project Work",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",
