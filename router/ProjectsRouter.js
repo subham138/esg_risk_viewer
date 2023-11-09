@@ -7,7 +7,9 @@ const dateFormat = require("dateformat");
 
 const express = require('express'),
 ProjectRouter = express.Router(),
-puppeteer = require('puppeteer');
+puppeteer = require('puppeteer'),
+fs = require('fs'),
+path = require('path');
 
 // ProjectRouter.use((req, res, next) => {
 //     var user = req.session.user;
@@ -177,7 +179,7 @@ ProjectRouter.get('/proj_work_view', async (req, res) => {
 })
 
 ProjectRouter.get('/project_report_view', async (req, res) => {
-    var enc_data = req.query.enc_data
+    var enc_data = req.query.enc_data, data_set = {};
     var data = Buffer.from(enc_data, "base64")
     data = JSON.parse(data);
     var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id);
@@ -185,10 +187,21 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var metric = await getActMetrialDtls(data.sec_id, data.ind_id)
     var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id)
     var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
+    // console.log(resDt);
     if (resDt.suc > 0 && resDt.msg.length > 0) {
-      if (resDt.msg[0].data_file_name) {
-        resDt = require(`../dynamic_data_set/${resDt.msg[0].data_file_name}`);
-      }
+        if(resDt.msg.length == 1){
+            if (resDt.msg[0].data_file_name) {
+                resDt = fs.readFileSync(path.join('dynamic_data_set', resDt.msg[0].data_file_name), 'utf-8')
+                resDt = JSON.parse(resDt)
+            }
+        }else{
+            for(let dt of resDt.msg){
+                if(dt.data_file_name != ''){
+                    var dynData = fs.readFileSync(path.join('dynamic_data_set', dt.data_file_name), 'utf-8')
+                    data_set[dt.top_id] = JSON.parse(dynData)
+                }
+            }
+        }
     }
     var res_data = {
         top_id: data.top_id, 
@@ -201,11 +214,13 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         metric,
         user_type: req.session.user.user_type,
         editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
+        data_set,
         header: "Project Work",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",
     };
     res.render("project_work/report_view", res_data);
+    // res.send(res_data)
 })
 
 ProjectRouter.post('/download_pdf', async (req, res) => {

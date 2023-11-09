@@ -109,7 +109,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var select = '*', 
                 table_name = 'td_project_work', 
-                whr = `sec_id = ${sec_id} AND ind_id = ${ind_id} AND top_id = ${top_id} AND project_id = ${project_id}`, 
+                whr = `sec_id = ${sec_id} AND ind_id = ${ind_id} ${top_id > 0 ? `AND top_id = ${top_id}` : ''} AND project_id = ${project_id}`, 
                 order = null;
             var chk_dt = await db_Select(select, table_name, whr, order)
             resolve(chk_dt)

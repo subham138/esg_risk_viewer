@@ -46016,7 +46016,7 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 
 .circle {
-  background-color: var(--theme-primary);
+  /* background-color: var(--theme-primary); */
   border-radius: 50%;
   height: 50px;
   text-align: center;
@@ -46025,13 +46025,15 @@ span.twitter-typeahead .tt-suggestion:active {
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 2px solid var(--theme-primary);
 }
 
 .initials {
   font-size: calc(var(--avatar-size) / 3);
   line-height: 1;
   position: relative;
-  color: white;
+  color: #111727;
+  font-weight: 400;
 }
 
 .row .graphImgSet{

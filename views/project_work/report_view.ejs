@@ -170,6 +170,7 @@
                                                         <% if(susDistList.msg.length > 0){
                                                             var rowSpan = 1
                                                             var prevRes = ''
+                                                            var dynDataLen = Object.keys(data_set).length
                                                             susDistList.msg.forEach(dt => {
                                                                 var nowRes = dt.top_id
                                                                 if(prevRes != nowRes){
@@ -227,7 +228,52 @@
                                                                                 </div> -->
                                                                         <% j++; })
                                                                         } %>
-                                                                    <% }else{ %>
+                                                                    <% }else if(dynDataLen > 0){
+                                                                        if(data_set[dt.top_id]){
+                                                                            var i = 1;
+                                                                            var j = 1;
+                                                                            data_set[dt.top_id].forEach(dt => { %>
+                                                                                <div class="row m-3" id="dynamic_data_<%= j %>">
+                                                                                    <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
+                                                                                    <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
+                                                                                    <% if(dt.textarea){ %> 
+                                                                                        <div class="col-md-12">
+                                                                                            <%= dt.textarea %>
+                                                                                        </div> 
+                                                                                    <% } %>
+                                                                                    <% if(dt.table){ %>
+                                                                                        <div class="col-md-12 m-t-5">
+                                                                                            <table class="table m-t-5">
+                                                                                                <tr>
+                                                                                                    <% dt.table.head.forEach(tdt => { %>
+                                                                                                        <th><%= tdt %></th>
+                                                                                                    <% }) %>
+                                                                                                </tr>
+                                                                                                <tbody>
+                                                                                                    <% var table_data = [];
+                                                                                                        table_data.push(dt.table.head)
+                                                                                                        dt.table.body.forEach(trdt => {
+                                                                                                            table_data.push([...Object.values(trdt).map(dt => parseFloat(dt) ? Number(dt) : dt)])
+                                                                                                        %>
+                                                                                                        <tr>
+                                                                                                            <% Object.values(trdt).forEach(vdt => { %>
+                                                                                                                <td><%= vdt %></td>
+                                                                                                            <% }) %>
+                                                                                                        </tr>
+                                                                                                    <% }) %>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                    <% i++; } %>
+                                                                                </div>
+                                                                        <% })}else{ %>
+                                                                            <div class="row">
+                                                                                <div class="col-md-12 text-center p-3">
+                                                                                    <p class="h6 text-danger">No Data Available</p>
+                                                                                </div>
+                                                                            </div>
+                                                                       <% } %>
+                                                                    <% }else { %>
                                                                         <div class="row">
                                                                             <div class="col-md-12 text-center p-3">
                                                                                 <p class="h6 text-danger">No Data Available</p>
