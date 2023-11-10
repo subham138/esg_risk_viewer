@@ -26,7 +26,8 @@
                 <h3><%= header %></h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item"><%= header %></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
                 </ol>
             </div>
         </div>
@@ -48,15 +49,15 @@
                                                 <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#disTop" aria-expanded="true" aria-controls="collapse11">Disclosure topics</button>
                                             </h5>
                                         </div>
-                                        <div class="collapse show" id="disTop" aria-labelledby="disTop" data-bs-parent="#accordionoc">
+                                        <div class="collapse m-3 show" id="disTop" aria-labelledby="disTop" data-bs-parent="#accordionoc">
                                             <div class="row">
-                                                <div class="col-md-12">
-                                                    <p class="p-3 h5">Sustainability Disclosure Topics & Metrics</p>
+                                                <div class="col-md-12 m-b-10">
+                                                    <p class="dyn-col-head">Sustainability Disclosure Topics & Metrics</p>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <table class="table" width="100%">
                                                         <thead>
-                                                            <tr>
+                                                            <tr class="tbDynDt">
                                                                 <th>General Issue Category (Industry agnostic)</th>
                                                                 <th>Disclosure Topics (Industry specific)</th>
                                                                 <th>METRIC</th>
@@ -72,7 +73,7 @@
                                                                 susDistList.msg.forEach(dt => {
                                                                     var nowRes = dt.top_id
                                                                     %>
-                                                                    <tr>
+                                                                    <tr class="hoverDynDtaTbl">
                                                                         <% if(prevRes != nowRes){
                                                                             prevRes = dt.top_id %>
                                                                             <td class="topic_text" rowspan="<%= susDistList.msg.filter(sdt => sdt.top_id == dt.top_id).length %>">
@@ -91,14 +92,13 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <hr>
-                                                <div class="col-md-12">
-                                                    <p class="p-3 h5">Activity Metrics</p>
+                                                <div class="col-md-12 m-b-10">
+                                                    <p class="dyn-col-head">Activity Metrics</p>
                                                 </div>
                                                 <div class="col-md-12 my-3">
-                                                    <table class="table" width="100%" border="1">
+                                                    <table class="table" width="100%">
                                                         <thead>
-                                                            <tr>
+                                                            <tr class="tbDynDt">
                                                                 <th>ACTIVITY METRIC</th>
                                                                 <th>CATEGORY</th>
                                                                 <th>UNIT OF MEASURE</th>
@@ -108,7 +108,7 @@
                                                         <tbody>
                                                             <% if(metric.msg.length > 0){
                                                                 metric.msg.forEach(dt => { console.log(dt) %>
-                                                                    <tr>
+                                                                    <tr class="hoverDynDtaTbl">
                                                                         <td><%= dt.act_metric %></td>
                                                                         <td><%= dt.catg %></td>
                                                                         <td><%= dt.unit %></td>
@@ -153,20 +153,6 @@
                                             <div class="row m-3">
                                                 <div class="col-md-12">
                                                     <div class="default-according style-2" id="inExpoAccordionoc">
-                                                        <!-- <div class="card">
-                                                            <div class="card-header bg-primary caruBackCol1">
-                                                                <h5 class="mb-0">
-                                                                    <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#sdgs" aria-expanded="true" aria-controls="collapse11">SDGs</button>
-                                                                </h5>
-                                                            </div>
-                                                            <div class="collapse" id="sdgs" aria-labelledby="sdgs" data-bs-parent="#inExpoAccordionoc">
-                                                                <div class="row">
-                                                                    <div class="col-md-12 text-center p-3">
-                                                                        <p class="h6 text-danger">No Data Available</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
                                                         <% if(allDynamicData.length > 0){
                                                             var rowSpan = 1
                                                             var prevRes = ''
@@ -188,11 +174,21 @@
                                                                                 <div class="row m-3" id="dynamic_data_<%= j %>">
                                                                                     <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
                                                                                     <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
-                                                                                    <% if(dt.textarea){ %> 
-                                                                                        <div class="col-md-12">
-                                                                                            <%= dt.textarea %>
-                                                                                        </div> 
-                                                                                    <% } %>
+                                                                                    <% if(dt.icon){ %>
+                                                                                        <div class="col-md-2">
+                                                                                            <img src="images/icons/<%= dt.icon %>.png" id="<%= dt.icon %>" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                                                                        </div>
+                                                                                        <% if(dt.textarea){ %>
+                                                                                            <div class="col-md-10">
+                                                                                                <p><%= dt.icon %></p>
+                                                                                                <%= dt.textarea %>
+                                                                                            </div> 
+                                                                                    <% }}else{ %> 
+                                                                                        <% if(dt.textarea){ %>
+                                                                                            <div class="col-md-12">
+                                                                                                <%= dt.textarea %>
+                                                                                            </div>
+                                                                                    <% }} %>
                                                                                     <% if(dt.table){ %>
                                                                                         <div class="col-md-12 m-t-5">
                                                                                             <table class="table m-t-5">
@@ -233,11 +229,21 @@
                                                                                 <div class="row m-3" id="dynamic_data_<%= j %>">
                                                                                     <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
                                                                                     <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
-                                                                                    <% if(dt.textarea){ %> 
-                                                                                        <div class="col-md-12">
-                                                                                            <%= dt.textarea %>
-                                                                                        </div> 
-                                                                                    <% } %>
+                                                                                    <% if(dt.icon){ %>
+                                                                                        <div class="col-md-2">
+                                                                                            <img src="images/icons/<%= dt.icon %>.png" id="<%= dt.icon %>" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                                                                        </div>
+                                                                                        <% if(dt.textarea){ %>
+                                                                                            <div class="col-md-10">
+                                                                                                <p><%= dt.icon %></p>
+                                                                                                <%= dt.textarea %>
+                                                                                            </div> 
+                                                                                    <% }}else{ %> 
+                                                                                        <% if(dt.textarea){ %>
+                                                                                            <div class="col-md-12">
+                                                                                                <%= dt.textarea %>
+                                                                                            </div>
+                                                                                    <% }} %>
                                                                                     <% if(dt.table){ %>
                                                                                         <div class="col-md-12 m-t-5">
                                                                                             <table class="table m-t-5">
@@ -315,90 +321,103 @@
                                                     </div>
                                                 </div>
                                             <% } %>
-                                            <div id="editorDiv">
-                                                <% var filetrTopic = susDistList.msg.filter(dt => dt.top_id == top_id)
-                                                    var i = 1
-                                                    filetrTopic.forEach(dt => {
-                                                        var getRes = editorData.filter(edt => edt.article_code == dt.code)
-                                                        %>
-                                                        <div id="editorNewDiv_<%= i %>" class="row">
-                                                            <div class="col-md-12 m-3 row">
-                                                                <div class="col-md-6">
-                                                                    <input class="form-control" type="text" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.code %>">
-                                                                </div>
-                                                                <div class="col-md-12">
-                                                                    <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
-                                                                </div>
-                                                            </div>
-                                                            <script>
-                                                                CKEDITOR
-                                                                .replace('editor<%= i %>', {
-                                                                    on: {
-                                                                        contentDom: function( evt ) {
-                                                                            // Allow custom context menu only with table elemnts.
-                                                                            evt.editor.editable().on('contextmenu', function( contextEvent ) {
-                                                                                var path = evt.editor.elementPath();
-
-                                                                                if ( !path.contains( 'table' ) ) {
-                                                                                    contextEvent.cancel();
-                                                                                }
-                                                                            }, null, null, 5 );
-                                                                        }
-                                                                    }
-                                                                } );
-                                                            </script>
-                                                            <% if(user_type != 'V'){ %>
-                                                                <div class="col-md-10">&nbsp;</div>
-                                                            <div class="col-md-2">
-                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue(<%= i %>)"><i class="icofont icofont-save"></i> Save</button>
-                                                            </div>
-                                                            <% } %>
-                                                            <hr>
-                                                        </div>
-                                                    <% i++; });
-                                                    var topList = [...filetrTopic.map(dt => dt.code)]
-                                                    if(editorData.length > 0){
-                                                        var i = topList.length + 1
-                                                        editorData.forEach(dt => {
-                                                            if(!topList.includes(dt.article_code)){ %>
-                                                                <div id="editorNewDiv_<%= i %>" class="row mt-3">
-                                                                    <div class="col-md-12 m-3 row">
-                                                                        <div class="col-md-6">
-                                                                            <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>">
-                                                                        </div>
-                                                                        <div class="col-md-12">
-                                                                            <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"><%= dt.article %></textarea>
-                                                                        </div>
+                                            <div id="editorDiv" class="row">
+                                                <% var filetrTopic = susDistList.msg.length > 0 ? susDistList.msg : []
+                                                    if(filetrTopic.length > 0){
+                                                        var prevRes = ''
+                                                        var ediR = 1
+                                                        filetrTopic.forEach(dt => { 
+                                                            var getRes = editorData.filter(edt => edt.article_code == dt.code && edt.top_id==dt.top_id)
+                                                            var nowRes = dt.top_id
+                                                            %>
+                                                            <div id="editorNewDiv_<%= ediR %>" class="row">
+                                                                <% if(prevRes != nowRes){
+                                                                    prevRes = dt.top_id %>
+                                                                    <p class="dyn-col-head"><%= dt.topic_name %></p>
+                                                                <% } %>
+                                                                <div class="col-md-12 m-3 row">
+                                                                    <div class="col-md-1 ediDiv">
+                                                                        <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
                                                                     </div>
-                                                                    <script>
-                                                                        CKEDITOR
-                                                                        .replace( 'editor<%= i %>', {
-                                                                            on: {
-                                                                                contentDom: function( evt ) {
-                                                                                    // Allow custom context menu only with table elemnts.
-                                                                                    evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-                                                                                        var path = evt.editor.elementPath();
-                                
-                                                                                        if ( !path.contains( 'table' ) ) {
-                                                                                            contextEvent.cancel();
-                                                                                        }
-                                                                                    }, null, null, 5 );
-                                                                                }
+                                                                    <div class="col-md-6">
+                                                                        <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>">
+                                                                    </div>
+                                                                    <div class="col-md-12 colEditor">
+                                                                        <textarea id="editor<%= ediR %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <script>
+                                                                    CKEDITOR
+                                                                    .replace('editor<%= ediR %>', {
+                                                                        on: {
+                                                                            contentDom: function( evt ) {
+                                                                                // Allow custom context menu only with table elemnts.
+                                                                                evt.editor.editable().on('contextmenu', function( contextEvent ) {
+                                                                                    var path = evt.editor.elementPath();
+                        
+                                                                                    if ( !path.contains( 'table' ) ) {
+                                                                                        contextEvent.cancel();
+                                                                                    }
+                                                                                }, null, null, 5 );
                                                                             }
-                                                                        } );
-                                                                    </script>
-                                                                    <% if(user_type != 'V'){ %>
-                                                                        <div class="col-md-10">&nbsp;</div>
+                                                                        }
+                                                                    } );
+                                                                </script>
+                                                                <% if(user_type != 'V'){ %>
+                                                                    <div class="col-md-10">&nbsp;</div>
                                                                     <div class="col-md-2">
-                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue(<%= i %>)"><i class="icofont icofont-save"> Save</i></button>
+                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"></i> Save</button>
                                                                     </div>
-                                                                    <% } %>
-                                                                    <hr>
-                                                                </div>
-                                                            <% }
-                                                        })
+                                                                <% } %>
+                                                            </div>
+                                                        <% ediR++; })
+                                                        var topList = [...filetrTopic.map(dt => dt.code)]
+                                                        if(editorData.length > 0){
+                                                            var i = ediR > 0 ? ediR + 1 : 1
+                                                            editorData.forEach(dt => {
+                                                                if(!topList.includes(dt.article_code)){ %>
+                                                                    <div id="editorNewDiv_<%= i %>" class="row mt-3">
+                                                                        <div class="col-md-12 m-3 row">
+                                                                            <div class="col-md-1 ediDiv">
+                                                                                <div for="editor_topic_<%= i %>" class="editLabelBull"></div>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>">
+                                                                            </div>
+                                                                            <div class="col-md-12 colEditor">
+                                                                                <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"><%= dt.article %></textarea>
+                                                                            </div>
+                                                                        </div>
+                                                                        <script>
+                                                                            console.log('else EDitor', '<%= i %>');
+                                                                            CKEDITOR
+                                                                            .replace( 'editor<%= i %>', {
+                                                                                on: {
+                                                                                    contentDom: function( evt ) {
+                                                                                        // Allow custom context menu only with table elemnts.
+                                                                                        evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+                                                                                            var path = evt.editor.elementPath();
+                                    
+                                                                                            if ( !path.contains( 'table' ) ) {
+                                                                                                contextEvent.cancel();
+                                                                                            }
+                                                                                        }, null, null, 5 );
+                                                                                    }
+                                                                                }
+                                                                            } );
+                                                                        </script>
+                                                                        <% if(user_type != 'V'){ %>
+                                                                            <div class="col-md-10">&nbsp;</div>
+                                                                            <div class="col-md-2">
+                                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                            </div>
+                                                                        <% } %>
+                                                                    </div>
+                                                                <% }
+                                                            i++;})
+                                                        }
                                                     }
-                                                    %>
+                                                %>
                                             </div>
                                         </div>
                                     </div>
@@ -462,6 +481,7 @@
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -549,10 +569,10 @@
             </div>
             <div class="col-md-8">&nbsp;</div>
             <div class="col-md-2">
-                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveEditorValue(${editorLength+1})"><i class="icofont icofont-save"></i></button>
+                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveEditorValue(${editorLength+1}, 0)"><i class="icofont icofont-save"> Save</i></button>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-pill btn-outline-danger btn-air-danger float-end ml-2 text-center" data-bs-original-title title="Save" onclick="deleteEdotor(${editorLength+1})"><i class="icofont icofont-trash"></i></button>
+                <button class="btn btn-pill btn-outline-danger btn-air-danger float-end ml-2 text-center" data-bs-original-title title="Save" onclick="deleteEdotor(${editorLength+1})"><i class="icofont icofont-trash"> Delete</i></button>
             </div>
         </div>
         `)
@@ -581,7 +601,7 @@
 </script>
 
 <script>
-    function saveEditorValue(id){
+    function saveEditorValue(id, top_id){
         var topicTitle = $('#editor_topic_'+id).val()
         var txtEditorVal = CKEDITOR.instances['editor'+id].getData()
         console.log(topicTitle, txtEditorVal);
@@ -593,7 +613,7 @@
                 txtEditorVal: txtEditorVal, 
                 sec_id: $('#sec_id').val(), 
                 ind_id: $('#ind_id').val(), 
-                top_id: $('#top_id').val(),
+                top_id: top_id,
                 project_id: $('#project_id').val()
             },
             dataType: 'html',

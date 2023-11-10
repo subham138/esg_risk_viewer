@@ -17,17 +17,21 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-body">
-                    <form method="POST" action="/proj_work_view" class="needs-validation">
-                        <div class="row g-3 py-3">
-                            <% if(user_type != 'V'){ %>
-                            <div class="col-md-12">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6 text-center mb-4">
+                            <p class="pro-card-head">You are working on the project <b><%= proj_name %></b></p>
+                        </div>
+                        <% if(user_type != 'V'){ %>
+                            <div class="col-md-6">
                                 <a href="/proj_work?id=<%= proj_id %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end">Modify</a>
                             </div>
-                            <% } %>
-                            <div class="col-md-12 text-center mb-4">
-                                <p class="f-14">You are working on the project <b><%= proj_name %></b></p>
-                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/proj_work_view" class="needs-validation">
+                        <div class="row g-3">
                             <div class="col-md-12">
                                 <p>
                                     <label class="form-label" for="sec_id">Section: </label>
@@ -77,7 +81,8 @@
 
 <script>
     function viewTopicData(top_id, ind_id, sec_id){
-        window.open(`/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`, '_blank')
+        // window.open(`/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`, '_blank')
+        window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`
     }
 </script>
 

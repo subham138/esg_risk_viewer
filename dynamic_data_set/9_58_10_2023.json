@@ -1,1 +1,89 @@
-[{"heading":"Summary Edit","sub_heading":null,"textarea":"Colleges and universities are frequent and compelling targets for cyber criminals. The industry may face data security risks due to the large number of personal records processed and stored, the mix of intellectual property and personally identifiable information held (e.g., social security numbers, vaccination records, and other information required for admission), and the open, collaborative environment of many campuses. The exposure of sensitive information through cybersecurity breaches, other malicious activities, or student negligence may result in significant social externalities such as identity fraud and theft. Data breaches may compromise public perception of the effectiveness of a school’s security measures, which could result in reputational damage and difficulty in attracting and retaining students, as well as significant costs to fix the consequences of a breach and prevent future breaches. Enhanced disclosure on the number and nature of security breaches, management strategies to address these risks, and policies and procedures to protect student information will allow shareholders to understand the effectiveness of management strategies that schools employ regarding this issue.\r\n\r\nModify\r\n"},{"heading":"Risks and Opportunities","sub_heading":null,"textarea":"• Loss of revenue or unanticipated remediation and litigation costs in the event of a data breach or misuse. \r\n• Damage to reputation in the event of a breach or controversy over how data is used. \r\n• Loss of significant market or forced change in business model if regulatory action restricts how companies may use data. \r\n• Increased costs to comply with new or evolving regulations.\r\n• Modify."},{"heading":"Exposure ExMod","sub_heading":"Cost of Data breach by country or region (IND millions)","textarea":null,"table":{"head":["","2023","2024"],"body":[{"0":"India","1":"9.44","2":"9.5"},{"0":"Middle East","1":"7.46","2":"8.07"},{"0":"Canada","1":"8","2":"5.13"},{"0":"Germany","1":"5","2":"4.67"}],"graph_type":"b2"}},{"heading":null,"sub_heading":"Cost of a data breach by industry (INR millions)","textarea":null,"table":{"head":["","2020","2021","2022","2024"],"body":[{"0":"Healthcare","1":"7.13","2":"9.23","3":"10.1","4":"10.93"},{"0":"Financial sdas","1":"6","2":"6","3":"5.97","4":"5.9"},{"0":"Pharmaceuticals","1":"5.1","2":"5.04","3":"5.01","4":"5"}],"graph_type":"bm1"}},{"heading":null,"sub_heading":null,"textarea":null,"table":{"head":["test","test1"],"body":[{"0":"123","1":"321"}],"graph_type":""}}]
+[
+    {
+        "heading": "Summary Edit",
+        "sub_heading": null,
+        "textarea": "Colleges and universities are frequent and compelling targets for cyber criminals. The industry may face data security risks due to the large number of personal records processed and stored, the mix of intellectual property and personally identifiable information held (e.g., social security numbers, vaccination records, and other information required for admission), and the open, collaborative environment of many campuses. The exposure of sensitive information through cybersecurity breaches, other malicious activities, or student negligence may result in significant social externalities such as identity fraud and theft. Data breaches may compromise public perception of the effectiveness of a school’s security measures, which could result in reputational damage and difficulty in attracting and retaining students, as well as significant costs to fix the consequences of a breach and prevent future breaches. Enhanced disclosure on the number and nature of security breaches, management strategies to address these risks, and policies and procedures to protect student information will allow shareholders to understand the effectiveness of management strategies that schools employ regarding this issue.\r\n\r\nModify\r\n",
+        "icon": null
+    },
+    {
+        "heading": "Risks and Opportunities",
+        "sub_heading": null,
+        "textarea": "• Loss of revenue or unanticipated remediation and litigation costs in the event of a data breach or misuse. \r\n• Damage to reputation in the event of a breach or controversy over how data is used. \r\n• Loss of significant market or forced change in business model if regulatory action restricts how companies may use data. \r\n• Increased costs to comply with new or evolving regulations.\r\n• Modify.",
+        "icon": "WEB-03"
+    },
+    {
+        "heading": "Exposure ExMod",
+        "sub_heading": "Cost of Data breach by country or region (IND millions)",
+        "textarea": null,
+        "icon": null,
+        "table": {
+            "head": [
+                "",
+                "2023",
+                "2024"
+            ],
+            "body": [
+                {
+                    "0": "India",
+                    "1": "9.44",
+                    "2": "9.5"
+                },
+                {
+                    "0": "Middle East",
+                    "1": "7.46",
+                    "2": "8.07"
+                },
+                {
+                    "0": "Canada",
+                    "1": "8",
+                    "2": "5.13"
+                },
+                {
+                    "0": "Germany",
+                    "1": "5",
+                    "2": "4.67"
+                }
+            ],
+            "graph_type": "b2"
+        }
+    },
+    {
+        "heading": null,
+        "sub_heading": "Cost of a data breach by industry (INR millions)",
+        "textarea": null,
+        "icon": null,
+        "table": {
+            "head": [
+                "",
+                "2020",
+                "2021",
+                "2022",
+                "2024"
+            ],
+            "body": [
+                {
+                    "0": "Healthcare",
+                    "1": "7.13",
+                    "2": "9.23",
+                    "3": "10.1",
+                    "4": "10.93"
+                },
+                {
+                    "0": "Financial sdas",
+                    "1": "6",
+                    "2": "6",
+                    "3": "5.97",
+                    "4": "5.9"
+                },
+                {
+                    "0": "Pharmaceuticals",
+                    "1": "5.1",
+                    "2": "5.04",
+                    "3": "5.01",
+                    "4": "5"
+                }
+            ],
+            "graph_type": "bm1"
+        }
+    }
+]

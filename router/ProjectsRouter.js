@@ -219,7 +219,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         data_set,
         allDynamicData,
         header: "Project Work",
-        sub_header: "Project Add/Edit",
+        sub_header: "Project View",
         header_url: "/my_project",
     };
     res.render("project_work/report_view", res_data);

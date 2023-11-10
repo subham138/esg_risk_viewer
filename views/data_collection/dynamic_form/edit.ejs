@@ -200,6 +200,9 @@
                             if(dt.textarea) {
                                 fieldFlag = 'T';
                                 createDynamicData(i, fieldFlag, dt)
+                                if(dt.icon){
+                                    $(`#icoImgRow_${i} #${dt.icon}`).parent().click()
+                                }
                             }
                             if(dt.table) {
                                 fieldFlag = 'TB';
@@ -233,6 +236,78 @@
                 case 'T':
                     var $el = $(`<div class="drop-item form-group"><label class="col-md-12"><p onclick="editLabel(this)">${data.textarea}</p><textarea class="edit form-control" name="textarea_${id}" id="textarea_${id}" style="display: none;" rows="8">${data.textarea}</textarea></label></div>`);
                     $el.append($('<button type="button" class="remove"><i class="icofont icofont-trash"></i></button>').click(function () { if(confirm("Do you want to delete?"))$(this).parent().detach(); }));
+                    $el.append($(`
+                        <div class="row m-t-15" id="icoImgRow_${id}">
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-01.png" id="WEB-01" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-02.png" id="WEB-02" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-03.png" id="WEB-03" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-04.png" id="WEB-04" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-05.png" id="WEB-05" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-06.png" id="WEB-06" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-07.png" id="WEB-07" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 my-3 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-08.png" id="WEB-08" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-09.png" id="WEB-09" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-10.png" id="WEB-10" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-11.png" id="WEB-11" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-12.png" id="WEB-12" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-13.png" id="WEB-13" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-14.png" id="WEB-14" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-15.png" id="WEB-15" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-16.png" id="WEB-16" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                            <div class="col-md-2 mt-2 graphImgSet" onclick="setIcoImage(this, ${id})">
+                                <img src="images/icons/WEB-17.png" id="WEB-17" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
+                                <button type="button" class="imgGraphChecked"><i class="icofont icofont-check"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-12 my-3 text-center" id="previewIco_${id}"></div><input type="hidden" id="ico_${id}" name="icoType_${id}">`))
                     $(`#${drzone_id}`).append($el);
                     break;
                 case 'TB':
@@ -598,6 +673,25 @@
             $(`#previewChart_${zone_id} >`).remove()
             $(`#previewChart_${zone_id}`).append($(`<label class="fw-500 fs-4 text-decoration-underline">This is a sample graph preview.</label><img src="${img}" width="50%" height="50%" alt="" srcset="">`))
             document.querySelectorAll(`#graphImgRow_${zone_id} .imgGraphChecked`).forEach(e => {
+                e.style.display = 'none';
+            })
+            var btnChk = element[0].children[1]
+            btnChk.style.display = 'block'
+        }
+    </script>
+    <script>
+        function setIcoImage(event, zone_id){
+            // console.log($(event));
+            var element = $(event)
+            var imgVal = element[0].children
+            console.log(element);
+            var imageId = imgVal[0].id,
+            img = imgVal[0].attributes[0].value;
+            console.log(imageId, img);
+            $(`#ico_${zone_id}`).val(imageId)
+            $(`#previewIco_${zone_id} >`).remove()
+            $(`#previewIco_${zone_id}`).append($(`<label class="fw-500 fs-4 text-decoration-underline">This is a sample icon preview.</label><img src="${img}" width="50%" height="50%" alt="" srcset="">`))
+            document.querySelectorAll(`#icoImgRow_${zone_id} .imgGraphChecked`).forEach(e => {
                 e.style.display = 'none';
             })
             var btnChk = element[0].children[1]

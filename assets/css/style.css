@@ -46177,3 +46177,40 @@ background-color: var(--theme-secondary) !important;
 .videoContainer video{
   border: 1px solid;
 }
+.pro-card-head{
+  font-size: 18px;
+  text-decoration: underline 2px solid #1ce2ec;
+  float: left;
+}
+.dyn-col-head{
+  font-size: 20px;
+  text-decoration: underline 2px solid #1ce2ec;
+  font-weight: 600;
+  margin: 10px 0 0px 15px;
+}
+.hoverDynDtaTbl:hover{
+  background: #f1f1f1;
+}
+.tbDynDt{
+  text-align: left;
+  vertical-align: middle;
+}
+.colEditor{
+  padding-right: 30px;
+  padding-top: 15px;
+}
+.colEditor .cke{
+  border: 1px solid;
+}
+.editLabelBull {
+  width: 15%;
+  background: #7030a0;
+  height: 25%;
+  border-radius: 50% 0px;
+}
+.ediDiv{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px;
+}
