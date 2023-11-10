@@ -240,6 +240,7 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
     dynamic_data_obj['heading'] = data[`header_${dt}`] ? data[`header_${dt}`] : null
     dynamic_data_obj['sub_heading'] = data[`sub_header_${dt}`] ? data[`sub_header_${dt}`] : null
     dynamic_data_obj['textarea'] = data[`textarea_${dt}`] ? data[`textarea_${dt}`] : null
+    dynamic_data_obj['icon'] = data[`icoType_${dt}`] ? data[`icoType_${dt}`] : null
     if(data[`table_${dt}_heading`] && data[`table_${dt}_body`]){
       let j = 1;
       table_row.length = 0
