@@ -82,7 +82,7 @@
 <script>
     function viewTopicData(top_id, ind_id, sec_id){
         // window.open(`/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`, '_blank')
-        window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`
+        window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id:'<%= proj_id %>',proj_name:'<%= proj_name %>'}))}`
     }
 </script>
 

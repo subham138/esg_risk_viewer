@@ -46178,7 +46178,7 @@ background-color: var(--theme-secondary) !important;
   border: 1px solid;
 }
 .pro-card-head{
-  font-size: 18px;
+  font-size: 20px;
   text-decoration: underline 2px solid #1ce2ec;
   float: left;
 }
@@ -46203,9 +46203,9 @@ background-color: var(--theme-secondary) !important;
   border: 1px solid;
 }
 .editLabelBull {
-  width: 15%;
+  width: 30%;
   background: #7030a0;
-  height: 25%;
+  height: 100%;
   border-radius: 50% 0px;
 }
 .ediDiv{

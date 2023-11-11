@@ -211,6 +211,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         sec_id: data.sec_id,
         ind_id: data.ind_id,
         project_id: data.proj_id,
+        projName: data.proj_name,
         resDt,
         susDistList,
         metric,
