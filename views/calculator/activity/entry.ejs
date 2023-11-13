@@ -1,0 +1,52 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3><%= sub_header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/topic_save" class="needs-validation">
+                <div class="row g-3 py-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="type_id">Section</label>
+                        <select class="form-select" id="type_id" name="type_id" required="">
+                            <option selected="" value="">Select Section</option>
+                            <% if(cal_type.length > 0){
+                                cal_type.forEach(dt => { 
+                                    var selected = '';
+                                    if(id > 0) 
+                                        if(dt.id == data[0].type_id) selected = 'selected'; %>
+                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.type_name %></option>
+                                <% })
+                            } %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="act_name">Activity</label>
+                        <input class="form-control" id="act_name" name="act_name" type="text" value="<%= id > 0 ? data[0].act_name : '' %>" required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../templates/footer.ejs') %>

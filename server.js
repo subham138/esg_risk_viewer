@@ -74,6 +74,7 @@ const { ProjectRouter } = require("./router/ProjectsRouter");
 const { DashboardRouter } = require("./router/DashboardRouter");
 const { SupportRouter } = require("./router/SupportRouter");
 const { imgGalaryRouter } = require("./router/imgGalaryRouter");
+const { CalculatorRouter } = require("./router/CalculatorRouter");
 // END //
 
 app.get("/", (req, res) => {
@@ -102,6 +103,7 @@ app.use(ProjectRouter)
 app.use(DashboardRouter)
 app.use(SupportRouter)
 app.use(imgGalaryRouter)
+app.use(CalculatorRouter)
 
 app.get("/user_data", (req, res) => {
   var data = {
