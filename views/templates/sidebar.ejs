@@ -3,7 +3,7 @@
     <nav>
       <div class="main-navbar">
         <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
-        <div id="mainnav">
+        <div id="mainnav" class="customNav">
           <ul class="nav-menu custom-scrollbar">
             <li class="back-btn">
               <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2"
@@ -62,11 +62,20 @@
             <% } %>
             <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/support">
               <i class="icofont icofont-live-support m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Support</span></a></li>
-            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/log_out">
+            <!-- <li class="dropdown signOut"><a class="nav-link menu-title link-nav cusANavLink" href="/log_out">
               <i class="icofont icofont-sign-out m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Sign out</span></a>
-            </li>
+            </li> -->
             <!-- <li class="dropdown"><a class="nav-link menu-title link-nav" href="/img_upload"><i
                 data-feather="img_upload"></i><span>Image Gallery</span></a></li> -->
+          </ul>
+          <ul class="nav-menu">
+            <li class="back-btn">
+              <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2"
+                  aria-hidden="true"></i></div>
+            </li>
+            <li class="dropdown signOut"><a class="nav-link menu-title link-nav cusANavLink" href="/log_out">
+              <i class="icofont icofont-sign-out m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Sign out</span></a>
+            </li>
           </ul>
         </div>
         <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>

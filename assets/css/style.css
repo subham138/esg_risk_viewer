@@ -46134,6 +46134,7 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 nav #mainnav .nav-menu{
   height: 100%;
+  /* height: 88vh; */
 }
 .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu .dropdown ul.nav-submenu li a.active {
   color: #fff;
@@ -46213,4 +46214,22 @@ background-color: var(--theme-secondary) !important;
   justify-content: center;
   align-items: center;
   margin: 0px;
+}
+/* .signOut{
+  bottom: -45vh;
+}
+#mainnav{
+  min-height: 88vh;
+}
+.main-navbar{
+  min-height: 88vh;
+}
+nav{
+  min-height: 100%;
+} */
+.customNav{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 88vh;
 }
