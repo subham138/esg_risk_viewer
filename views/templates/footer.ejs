@@ -113,6 +113,12 @@
     $('#videoPopupModal').modal('hide');
   }
 </script>
+<script>
+  function routToNextPage(route,params=null,encode=false){
+    console.log(`${route}${params ? `?data=${encode ? window.btoa(params) : params}` : ''}`);
+    window.location.href = `${route}${params ? `?data=${encode ? window.btoa(params) : params}` : ''}`
+  }
+</script>
 </body>
 
 </html>

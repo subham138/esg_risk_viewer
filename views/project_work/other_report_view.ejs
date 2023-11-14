@@ -1,0 +1,92 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3><%= sub_header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-12 text-center mb-4">
+                            <p class="pro-card-head">You are working on the project <b><%= proj_name %></b></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-12 row m-b-15">
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="IFRS">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">IFRS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="ESRS">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">ESRS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="GRI">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">GRI</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="SFDR">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">SFDR</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="TCFD">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">TCFD</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="IFRS">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">Voluntary Reporting</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <p class="text-center text-danger h5">Coming Soon!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var reportType = '<%= repo_type %>';
+        console.log(reportType);
+        $('.u-step').each(function(){
+            if($(this).attr('dt-for').trim().split(' ').join('').toLowerCase() != reportType){
+                $(this).removeClass('done')
+                $(this).addClass('disabled')
+            }
+            else
+                $(this).addClass('done')
+        })
+    })
+</script>
+
+<%- include('../templates/footer.ejs') %>

@@ -212,6 +212,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         ind_id: data.ind_id,
         project_id: data.proj_id,
         projName: data.proj_name,
+        repo_type: data.repo_type,
         resDt,
         susDistList,
         metric,
@@ -260,6 +261,25 @@ ProjectRouter.post('/save_editor_data', async (req, res) => {
     var data = req.body
     var res_dt = await saveProjectArticle(data, req.session.user.id, req.session.user.client_id, req.session.user.user_name)
     res.send(res_dt)
+})
+
+ProjectRouter.get('/other_report_view', async (req, res) => {
+    var enc_data = req.query.enc_data,
+        data = Buffer.from(enc_data, "base64");
+    data = JSON.parse(data)
+    var res_data = {
+        project_id: data.proj_id,
+        proj_name: data.proj_name,
+        repo_type: data.repo_type,
+        header: "Project Work",
+        sub_header: "Project View",
+        header_url: "/my_project",
+    };
+    res.render("project_work/other_report_view", res_data);
+})
+
+ProjectRouter.get('/test', async (req, res) => {
+    res.render("project_work/test");
 })
 
 module.exports = {ProjectRouter}

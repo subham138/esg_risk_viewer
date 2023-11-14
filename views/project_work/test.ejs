@@ -1,0 +1,126 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Test</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item">Test</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-12 text-center mb-4">
+                            <p class="pro-card-head">You are working on the project <b>Test</b></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="col-md-12 colEditor">
+                                <textarea id="editor1" name="editor" cols="30" rows="10"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-6 mt-2">
+                                    <div class="u-step">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">Computer</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="u-step">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">PHP</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="u-step">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">Oliveware</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="u-step">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">ARDB</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="u-step">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">Risk</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="u-step">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">Share</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <p><span class="h6">Total Match: </span><span id="countMatch"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var dataSet = ['computer', 'php', 'oliveware', 'ardb', 'risk', 'share']
+    var totCount = 0
+    CKEDITOR
+    .replace( 'editor1', {
+        on: {
+            contentDom: function(evt) {
+                // Allow custom context menu only with table elemnts.
+                evt.editor.editable().on('contextmenu', function( contextEvent ) {
+                    var path = evt.editor.elementPath();
+                    if ( !path.contains('table') ) {
+                        contextEvent.cancel();
+                    }
+                }, null, null, 5 );
+            },
+            change: function(e){
+                // console.log(e.editor.getData());
+                totCount = 0
+                var editorVal = e.editor.getData()
+                var plainText = $("<div>").html(editorVal).text();
+                var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                // console.log('len', txtArr.length);
+                if(txtArr.length > 0){
+                    txtArr = [...new Set(txtArr)]
+                    console.log(txtArr);
+                    txtArr.filter(dt => increseCount(dt))
+                    // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                    // console.log(totCount);
+                }
+                $('#countMatch').text(totCount)
+                // console.log(dataSet.includes('php'))
+            }
+        }
+    } );
+    const increseCount = (dt) => {
+        if(dataSet.includes(dt.trim().split('\n').join('').toLowerCase())){
+            totCount = totCount + 1
+        }
+    }
+</script>
+
+<%- include('../templates/footer.ejs') %>

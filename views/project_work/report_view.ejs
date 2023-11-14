@@ -40,12 +40,52 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col-md-6 text-center mb-4">
+                        <div class="col-md-6 text-center">
                             <p class="pro-card-head">You are working on the project <b><%= projName %></b></p>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 row m-b-15">
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="IFRS">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">IFRS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="ESRS">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">ESRS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="GRI">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">GRI</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="SFDR">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">SFDR</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="TCFD">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">TCFD</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <div class="u-step" dt-for="voluntaryreporting">
+                                    <div class="u-step-desc text-center"><span class="u-step-title">Voluntary Reporting</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="downloadFull">
                         <div class="row" id="topic_metrics_data">
                             <div class="col-md-12">
@@ -514,6 +554,21 @@
         // });
     }
 </script> -->
+
+<script>
+    $(document).ready(function(){
+        var reportType = '<%= repo_type %>';
+        console.log(reportType);
+        $('.u-step').each(function(){
+            if($(this).attr('dt-for').trim().split(' ').join('').toLowerCase() != reportType){
+                $(this).removeClass('done')
+                $(this).addClass('disabled')
+            }
+            else
+                $(this).addClass('done')
+        })
+    })
+</script>
 
 <script>
     function downloadPrf(divId, title){

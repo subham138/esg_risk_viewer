@@ -18,7 +18,7 @@
         <div class="col-sm-12">
             <div class="card">
             <div class="card-body">
-                <form method="POST" action="/topic_save" class="needs-validation">
+                <form method="POST" action="/cal_emi_type_edit" class="needs-validation">
                 <div class="row g-3 py-3">
                     <div class="col-md-6">
                         <label class="form-label" for="type_id">Section</label>
@@ -57,12 +57,51 @@
                     </div>
                 </div>
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-primary m-t-10" type="submit">Submit</button>
                 </form>
             </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $('#type_id').on('change', function (){
+        $.ajax({
+            method:'POST',
+            url: '/get_cal_act_ajax',
+            data: {type_id: $(this).val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#act_id').empty();
+                $('#act_id').append($('<option>', {value: '', text: 'Select Activity'}));
+                if(res.suc > 0 && res.msg.length > 0){
+                    var act_id = '<%= id > 0 ? data[0].act_id : 0 %>';
+                    if(act_id > 0){
+                        $.each(res.msg, function (i, item) {
+                            var selected = false
+                            if(item.id == act_id)
+                                selected = true
+                            $('#act_id').append($('<option>', {value: item.id, text: item.act_name, selected: selected}));
+                        });
+                        $('#act_id').change()
+                    }
+                    else
+                    $.each(res.msg, function (i, item) {
+                        $('#act_id').append($('<option>', {value: item.id, text: item.act_name}));
+                    });
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+</script>
 
 <%- include('../../templates/footer.ejs') %>

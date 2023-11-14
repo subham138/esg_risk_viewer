@@ -3,7 +3,7 @@ const dateFormat = require("dateformat");
 module.exports = {
     getCalTypeList: (id = 0) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'type_name, type', 
+            var select = 'id, type_name, type', 
             table_name = 'md_cal_type',
             whr = id > 0 ? `id = ${id}` : null,
             order = 'ORDER BY type_name';
@@ -26,7 +26,7 @@ module.exports = {
     },
     getCalAct: (id = 0, type_id = 0) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.type_id, a.act_name, b.type_name',
+            var select = 'a.id, a.type_id, a.act_name, b.type_name',
             table_name = 'md_cal_act a, md_cal_type b',
             whr = `a.type_id=b.id ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''}`,
             order = 'ORDER BY a.act_name';
@@ -49,7 +49,7 @@ module.exports = {
     },
     getCalEmiType: (id = 0, type_id = 0, act_id = 0) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.type_id, b.type_name, a.act_id, c.act_name, a.emi_name',
+            var select = 'a.id, a.type_id, b.type_name, a.act_id, c.act_name, a.emi_name',
             table_name = 'md_cal_emi_type a, md_cal_type b, md_cal_act c',
             whr = `a.type_id=b.id AND a.act_id=c.id ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''} ${act_id > 0 ? `AND a.act_id = ${act_id}` : ''}`,
             order = 'ORDER BY a.emi_name';
