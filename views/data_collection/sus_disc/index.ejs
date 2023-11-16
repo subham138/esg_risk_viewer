@@ -80,6 +80,7 @@
                     <th>CATEGORY</th>
                     <th>UNIT OF MEASURE</th>
                     <th>CODE</th>
+                    <th>AI Tool “Bag” of ESG words</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -172,10 +173,11 @@
                                             <td><input class="form-control" id="catg_${dt.id}_1" name="catg_${dt.id}" type="text" value="${sus_dt.catg}" required=""></td>
                                             <td><input class="form-control" id="unit_${dt.id}_1" name="unit_${dt.id}" type="text" value="${sus_dt.unit}" required=""></td>
                                             <td><input class="form-control" id="code_${dt.id}_1" name="code_${dt.id}" type="text" value="${sus_dt.code}" required=""></td>
+                                            <td><textarea class="form-control" id="words_${dt.id}_1" name="words_${dt.id}" type="text" required="" rows="3">${sus_dt.words}</textarea></td>
                                             <td><button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button></td>
                                         </tr>`);
                                     }else{
-                                        add_row(dt.id, k, sus_dt.ind_agn, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code)
+                                        add_row(dt.id, k, sus_dt.ind_agn, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code, sus_dt.words)
                                     }
                                     k++;
                                 })
@@ -187,6 +189,7 @@
                                     <td><input class="form-control" id="catg_${dt.id}_1" name="catg_${dt.id}" type="text" value="" required=""></td>
                                     <td><input class="form-control" id="unit_${dt.id}_1" name="unit_${dt.id}" type="text" value="" required=""></td>
                                     <td><input class="form-control" id="code_${dt.id}_1" name="code_${dt.id}" type="text" value="" required=""></td>
+                                    <td><textarea class="form-control" id="words_${dt.id}_1" name="words_${dt.id}" type="text" value="" required="" rows="3"></textarea></td>
                                     <td><button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button></td>
                                 </tr>`);
                             }
@@ -200,6 +203,7 @@
                                 <td><input class="form-control" id="catg_${dt.id}_1" name="catg_${dt.id}" type="text" value="" required=""></td>
                                 <td><input class="form-control" id="unit_${dt.id}_1" name="unit_${dt.id}" type="text" value="" required=""></td>
                                 <td><input class="form-control" id="code_${dt.id}_1" name="code_${dt.id}" type="text" value="" required=""></td>
+                                <td><textarea class="form-control" id="words_${dt.id}_1" name="words_${dt.id}" type="text" value="" required="" rows="3"></textarea></td>
                                 <td><button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button></td>
                             </tr>`);
                         })
@@ -219,7 +223,7 @@
     });
   });
 
-  function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name=''){
+  function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name='', words=''){
     console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
     $(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`).after(`<tr id="row_${top_id}_${id}">
         ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
@@ -228,16 +232,17 @@
         <td><input class="form-control" id="catg_${top_id}_${id}" name="catg_${top_id}" type="text" value="${catg}" required=""></td>
         <td><input class="form-control" id="unit_${top_id}_${id}" name="unit_${top_id}" type="text" value="${unit}" required=""></td>
         <td><input class="form-control" id="code_${top_id}_${id}" name="code_${top_id}" type="text" value="${code}" required=""></td>
+        <td><textarea class="form-control" id="words_${top_id}_${id}" name="words_${top_id}" type="text" required="" rows="3">${words}</textarea></td>
         <td>${prev_id > 0 ? `<button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${top_id}, ${id})"><i class="icofont icofont-trash"></i></button>` : `<button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${top_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>`}</td>
     </tr>`);
   }
 
-  function add_row(top_id, id, ind_agn='', metric='', catg='', unit='', code='') {
+  function add_row(top_id, id, ind_agn='', metric='', catg='', unit='', code='', words='') {
     var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
     let next_id = row + 1;
     $(`#first_top_td_${top_id}`).removeAttr("rowspan");
     $(`#first_top_td_${top_id}`).attr("rowspan", next_id);
-    created_row(top_id, next_id, row, ind_agn, metric, catg, unit, code)
+    created_row(top_id, next_id, row, ind_agn, metric, catg, unit, code, '', words)
   }
 
   function remove_row(top_id, id) {

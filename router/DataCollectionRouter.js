@@ -61,9 +61,9 @@ DataCollectionRouter.post("/save_sus_disc", async (req, res) => {
                   data[`unit_${dt}`][i]
                 }', code = '${
                   data[`code_${dt}`][i]
-                }', modified_by= '${user}', modified_dt = '${datetime}'`
-              : "(sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, created_by, created_dt)",
-          values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`][i]}', '${data[`metric_${dt}`][i]}', '${data[`catg_${dt}`][i]}', '${data[`unit_${dt}`][i]}', '${data[`code_${dt}`][i]}', '${user}', '${datetime}')`,
+                }', words = '${data[`words_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`
+              : "(sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
+          values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`][i]}', '${data[`metric_${dt}`][i]}', '${data[`catg_${dt}`][i]}', '${data[`unit_${dt}`][i]}', '${data[`code_${dt}`][i]}', '${data[`words_${dt}`][i]}', '${user}', '${datetime}')`,
           whr =
             chk_dt.suc > 0 && chk_dt.msg.length > 0
               ? `id = '${chk_dt.msg[0].id}'`
@@ -83,11 +83,11 @@ DataCollectionRouter.post("/save_sus_disc", async (req, res) => {
                 data[`catg_${dt}`]
               }', unit = '${data[`unit_${dt}`]}', code = '${
                 data[`code_${dt}`]
-              }', modified_by= '${user}', modified_dt = '${datetime}'`
-            : "(sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, created_by, created_dt)",
+              }', words = '${data[`words_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`
+            : "(sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
         values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`]}', '${data[`metric_${dt}`]}', '${data[`catg_${dt}`]}', '${data[`unit_${dt}`]}', '${
           data[`code_${dt}`]
-        }', '${user}', '${datetime}')`,
+        }', '${data[`words_${dt}`]}', '${user}', '${datetime}')`,
         whr =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
             ? `id = '${chk_dt.msg[0].id}'`

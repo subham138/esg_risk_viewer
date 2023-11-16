@@ -4,3 +4,5 @@ CREATE TABLE `esg_risk_viewer`.`td_sus_dis_top_met` (`id` INT(11) NOT NULL AUTO_
 <---------------- END ------------------------->
 CREATE TABLE `td_support_log` (`id` INT(11) NOT NULL AUTO_INCREMENT , `tkt_no` VARCHAR(20) NOT NULL , `tkt_date` DATETIME NOT NULL , `client_id` INT(11) NOT NULL , `issue` TEXT NULL DEFAULT NULL , `resolved_by` VARCHAR(50) NULL DEFAULT NULL , `resolve_dt` DATETIME NULL DEFAULT NULL , `tkt_status` ENUM('P','S','R') NOT NULL DEFAULT 'P' COMMENT 'P-> Pending; S-> Solved; R-> Rejected' , `created_by` VARCHAR(50) NULL DEFAULT NULL , `created_dt` DATETIME NULL DEFAULT NULL , `modified_by` VARCHAR(50) NULL DEFAULT NULL , `modified_dt` DATETIME NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
 ALTER TABLE `td_support_log` ADD `issued_by` INT(11) NOT NULL AFTER `issue`;
+
+ALTER TABLE `td_sus_dis_top_met` ADD `words` TEXT NULL DEFAULT NULL AFTER `code`;

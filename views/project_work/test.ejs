@@ -106,8 +106,25 @@
                 // console.log('len', txtArr.length);
                 if(txtArr.length > 0){
                     txtArr = [...new Set(txtArr)]
-                    console.log(txtArr);
-                    txtArr.filter(dt => increseCount(dt))
+                    // console.log(txtArr, 'TOt array');
+                    var matchTxt = txtArr.filter(dt => increseCount(dt))
+                    if(matchTxt.length > 0){
+                        // console.log(matchTxt, 'Match array');
+                        $('.u-step').each(function(){
+                            $(this).removeClass('done')
+                        })
+                        for(let dt of matchTxt){
+                            $('.u-step').each(function(){
+                                // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                    $(this).addClass('done')
+                            })
+                        }
+                    }else{
+                        $('.u-step').each(function(){
+                            $(this).removeClass('done')
+                        })
+                    }
                     // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
                     // console.log(totCount);
                 }
@@ -119,6 +136,7 @@
     const increseCount = (dt) => {
         if(dataSet.includes(dt.trim().split('\n').join('').toLowerCase())){
             totCount = totCount + 1
+            return dt.trim().split('\n').join('').toLowerCase().split(' ').join('');
         }
     }
 </script>

@@ -380,7 +380,7 @@
                                                                     prevRes = dt.top_id %>
                                                                     <p class="dyn-col-head"><%= dt.topic_name %></p>
                                                                 <% } %>
-                                                                <div class="col-md-12 m-3 row">
+                                                                <div class="col-md-6 m-3 row">
                                                                     <div class="col-md-1 ediDiv">
                                                                         <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
                                                                     </div>
@@ -404,6 +404,41 @@
                                                                                         contextEvent.cancel();
                                                                                     }
                                                                                 }, null, null, 5 );
+                                                                            },
+                                                                            change: function(e){
+                                                                                // console.log(e.editor.getData());
+                                                                                totCount = 0
+                                                                                var editorVal = e.editor.getData()
+                                                                                var plainText = $("<div>").html(editorVal).text();
+                                                                                var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                                                                                // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                                                                                // console.log('len', txtArr.length);
+                                                                                if(txtArr.length > 0){
+                                                                                    txtArr = [...new Set(txtArr)]
+                                                                                    // console.log(txtArr, 'TOt array');
+                                                                                    var matchTxt = txtArr.filter(dt => increseCount(dt))
+                                                                                    if(matchTxt.length > 0){
+                                                                                        // console.log(matchTxt, 'Match array');
+                                                                                        $('.u-step').each(function(){
+                                                                                            $(this).removeClass('done')
+                                                                                        })
+                                                                                        for(let dt of matchTxt){
+                                                                                            $('.u-step').each(function(){
+                                                                                                // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                                                                                if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                                                                                    $(this).addClass('done')
+                                                                                            })
+                                                                                        }
+                                                                                    }else{
+                                                                                        $('.u-step').each(function(){
+                                                                                            $(this).removeClass('done')
+                                                                                        })
+                                                                                    }
+                                                                                    // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                                                                                    // console.log(totCount);
+                                                                                }
+                                                                                $('#countMatch').text(totCount)
+                                                                                // console.log(dataSet.includes('php'))
                                                                             }
                                                                         }
                                                                     } );
