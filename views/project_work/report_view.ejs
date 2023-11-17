@@ -371,7 +371,8 @@
                                                     if(filetrTopic.length > 0){
                                                         var prevRes = ''
                                                         var ediR = 1
-                                                        filetrTopic.forEach(dt => { 
+                                                        filetrTopic.forEach(dt => {
+                                                            console.log(dt, 'LALALa')
                                                             var getRes = editorData.filter(edt => edt.article_code == dt.code && edt.top_id==dt.top_id)
                                                             var nowRes = dt.top_id
                                                             %>
@@ -380,7 +381,7 @@
                                                                     prevRes = dt.top_id %>
                                                                     <p class="dyn-col-head"><%= dt.topic_name %></p>
                                                                 <% } %>
-                                                                <div class="col-md-6 m-3 row">
+                                                                <div class="col-md-8 m-3 row">
                                                                     <div class="col-md-1 ediDiv">
                                                                         <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
                                                                     </div>
@@ -391,6 +392,22 @@
                                                                         <textarea id="editor<%= ediR %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
                                                                     </div>
                                                                 </div>
+                                                                <% if(dt.words != '' && dt.words && dt.words != 'null'){
+                                                                    var word_list = dt.words.trim().split(',');
+                                                                    if(word_list > 0){
+                                                                        word_list.forEach(dt => { %>
+                                                                            <div class="col-md-4 row">
+                                                                                <div class="col-md-6 mt-2">
+                                                                                    <div class="u-step">
+                                                                                        <div class="u-step-desc text-center"><span class="u-step-title"><%= dt %></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        <% })
+                                                                    } %>
+                                                                <% } %>
+                                                                
                                                                 <script>
                                                                     CKEDITOR
                                                                     .replace('editor<%= ediR %>', {
