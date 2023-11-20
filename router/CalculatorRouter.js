@@ -1,4 +1,4 @@
-const { getCalTypeList, getCalAct, getCalEmiType, saveCalType, saveCalAct, saveCalEmiType, getUnitList, saveUnit } = require('../modules/CalculatorModule');
+const { getCalTypeList, getCalAct, getCalEmiType, saveCalType, saveCalAct, saveCalEmiType, getUnitList, saveUnit, getCalEmiVal, saveCalEmiVal } = require('../modules/CalculatorModule');
 
 const express = require('express'),
     CalculatorRouter = express.Router();
@@ -194,7 +194,7 @@ CalculatorRouter.post('/unit_edit', async (req, res) => {
 })
 
 CalculatorRouter.get('/cal_emi_val', async (req, res) => {
-    var data = await getUnitList()
+    var data = await getCalEmiVal(0, 0, 0, 0, 0, 'Y')
     var view_data = {
         data,
         header: 'Calculator Emission Value'
@@ -202,15 +202,22 @@ CalculatorRouter.get('/cal_emi_val', async (req, res) => {
     res.render('calculator/emission_val/view', view_data)
 })
 
-CalculatorRouter.get('/cal_emi_unit_edit', async (req, res) => {
+CalculatorRouter.get('/cal_emi_val_edit', async (req, res) => {
     var dt = Buffer.from(req.query.data, "base64"),
-    type_list = await getCalTypeList(), 
-    act_list = {suc:0,msg:[]}, emi_type = {suc:0,msg:[]}, unit_list= await getUnitList();
+        type_list = await getCalTypeList(), 
+        act_list = {suc:0,msg:[]}, 
+        emi_type = {suc:0,msg:[]}, 
+        unit_list= await getUnitList();
     dt = JSON.parse(dt);
-    var id = dt.id;
+    var type_id = dt.type_id,
+        act_id = dt.act_id,
+        emi_type_id = dt.emi_type_id;
     var data = {suc:0,msg:[]}
-    if(id > 0)
-        data = await getUnitList(id)
+    if (type_id > 0 && act_id > 0 && emi_type_id > 0){
+        data = await getCalEmiVal(0, type_id, act_id, emi_type_id);
+        act_list = await getCalAct(0, type_id)
+        emi_type = await getCalEmiType(0, type_id, act_id)
+    }
     var view_data = {
         data: data.suc > 0 ? data.msg : [],
         type_list: type_list.suc > 0 ? type_list.msg : [],
@@ -220,24 +227,26 @@ CalculatorRouter.get('/cal_emi_unit_edit', async (req, res) => {
         header: "Calculator Emission Value",
         sub_header: "Add/Edit Calculator Emission Value",
         header_url: "/cal_emi_val",
-        id: id,
+        type_id,
+        act_id,
+        emi_type_id
     }
     res.render('calculator/emission_val/entry', view_data)
 })
 
-CalculatorRouter.post('/cal_emi_unit_edit', async (req, res) => {
+CalculatorRouter.post('/cal_emi_val_edit', async (req, res) => {
     var data = req.body,
     user = req.session.user.user_name;
-    var res_dt = await saveUnit(data, user)
+    var res_dt = await saveCalEmiVal(data, user);
     if(res_dt.suc > 0){
         req.session.message = {
             type: "success",
             message: "Saved successfully",
         };
-        res.redirect("/cal_emi_unit");
+        res.redirect("/cal_emi_val");
     } else {
         req.session.message = { type: "danger", message: "Data not saved" };
-        res.redirect(data.id > 0 ? `/cal_emi_unit` : "/cal_emi_unit");
+        res.redirect(data.id > 0 ? `/cal_emi_val` : "/cal_emi_val");
     }
 })
 

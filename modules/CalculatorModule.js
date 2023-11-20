@@ -93,4 +93,53 @@ module.exports = {
             resolve(res_dt)
         })
     },
+    getCalEmiVal: (id = 0, type_id = 0, act_id = 0, emi_type_id=0, unit_id=0, dashboard_flag = 'N') => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'a.id, a.type_id, b.type_name, b.type, a.act_id, c.act_name, a.emi_type_id, d.emi_name, a.unit_id, e.unit_name, a.co_val',
+            table_name = 'md_cal_emi_val a, md_cal_type b, md_cal_act c, md_cal_emi_type d, md_unit e',
+            whr = `a.type_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.unit_id=e.id ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''} ${act_id > 0 ? `AND a.act_id = ${act_id}` : ''} ${emi_type_id > 0 ? `AND a.emi_type_id = ${emi_type_id}` : ''} ${unit_id > 0 ? `AND a.unit_id = ${unit_id}` : ''}`,
+            order = dashboard_flag == 'Y' ? 'GROUP BY a.type_id, a.act_id, a.emi_type_id' : null;
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
+    },
+    saveCalEmiVal: (data, user) => {
+        return new Promise(async (resolve, reject) => {
+            var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+            var res_dt;
+            if(Array.isArray(data.unit_id) && Array.isArray(data.co_val)){
+                for(let i=0; i<data.unit_id.length; i++){
+                    var select = 'id',
+                        table_name = 'md_cal_emi_val',
+                        whr = `type_id = ${data.type_id} AND act_id = ${data.act_id} AND emi_type_id = ${data.emi_type_id} AND unit_id = ${data.unit_id[i]}`,
+                        order = null;
+                    var chk_dt = await db_Select(select, table_name, whr, order)
+
+                    var table_name = 'md_cal_emi_val',
+                        fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `type_id = '${data.type_id}', act_id = '${data.act_id}', emi_type_id = '${data.emi_type_id}', unit_id = '${data.unit_id[i]}', co_val = '${data.co_val[i]}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                        '(type_id, act_id, emi_type_id, unit_id, co_val, created_by, created_dt)',
+                        values = `('${data.type_id}', '${data.act_id}', '${data.emi_type_id}', '${data.unit_id[i]}', '${data.co_val[i]}', '${user}', '${datetime}')`,
+                        whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+                        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+                    res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                }
+                resolve(res_dt)
+            }else{
+                var select = 'id',
+                    table_name = 'md_cal_emi_val',
+                    whr = `type_id = ${data.type_id} AND act_id = ${data.act_id} AND emi_type_id = ${data.emi_type_id} AND unit_id = ${data.unit_id}`,
+                    order = null;
+                var chk_dt = await db_Select(select, table_name, whr, order)
+
+                var table_name = 'md_cal_emi_val',
+                    fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `type_id = '${data.type_id}', act_id = '${data.act_id}', emi_type_id = '${data.emi_type_id}', unit_id = '${data.unit_id}', co_val = '${data.co_val}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                    '(type_id, act_id, emi_type_id, unit_id, co_val, created_by, created_dt)',
+                    values = `('${data.type_id}', '${data.act_id}', '${data.emi_type_id}', '${data.unit_id}', '${data.co_val}', '${user}', '${datetime}')`,
+                    whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+                    flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+                res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                resolve(res_dt);
+            }
+        })
+    }
 }

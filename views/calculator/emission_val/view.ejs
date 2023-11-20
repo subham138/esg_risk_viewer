@@ -1,0 +1,78 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3><%= header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><%= header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Zero Configuration  Starts-->
+        <div class="col-sm-12">
+            <% if(message){ %>
+                <div class="alert alert-<%= message.type %> dark alert-dismissible fade show" role="alert">
+                  <i data-feather="clock"></i>
+                  <p><%= message.message %></p>
+                  <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 my-2">
+                            <button onclick="routToNextPage('/cal_emi_val_edit', JSON.stringify({id: 0}), true)" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</button>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="display" id="basic-1">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Type</th>
+                                            <th>Activity</th>
+                                            <th>Name</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if(data.msg.length > 0){
+                                            let i = 1;
+                                        data.msg.forEach(dt => { %>
+                                        <tr>
+                                            <td><%= i %></td>
+                                            <td><%= dt.type_name %></td>
+                                            <td><%= dt.act_name %></td>
+                                            <td><%= dt.emi_name %></td>
+                                            <td><button onclick="routToNextPage('/cal_emi_val_edit', JSON.stringify({type_id: '<%= dt.type_id %>', act_id: '<%= dt.act_id %>', emi_type_id: '<%= dt.emi_type_id %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                                <i class="icofont icofont-ui-edit"></i> Edit
+                                            </button>
+                                            <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                                                <i class="icofont icofont-ui-delete"></i> Delete
+                                            </a> -->
+                                            </td>
+                                        </tr>
+                                        <% i++; })}else{ %>
+                                        <tr>
+                                            <td colspan="4">No Data Found</td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Zero Configuration  Ends-->
+    </div>
+</div>
+<%- include('../../templates/footer.ejs') %>
