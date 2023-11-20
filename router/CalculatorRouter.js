@@ -1,4 +1,4 @@
-const { getCalTypeList, getCalAct, getCalEmiType, saveCalType, saveCalAct, saveCalEmiType } = require('../modules/CalculatorModule');
+const { getCalTypeList, getCalAct, getCalEmiType, saveCalType, saveCalAct, saveCalEmiType, getUnitList, saveUnit } = require('../modules/CalculatorModule');
 
 const express = require('express'),
     CalculatorRouter = express.Router();
@@ -105,6 +105,13 @@ CalculatorRouter.get('/cal_emi_type', async (req, res) => {
     res.render('calculator/emission_type/view', view_data)
 })
 
+CalculatorRouter.post('/get_cal_emi_type_ajax', async (req, res) => {
+    var type_id = req.query.type_id,
+    act_id = req.query.act_id;
+    var res_dt = await getCalEmiType(0, type_id, act_id)
+    res.send(res_dt)
+})
+
 CalculatorRouter.get('/cal_emi_type_edit', async (req, res) => {
     var dt = Buffer.from(req.query.data, "base64")
     dt = JSON.parse(dt);
@@ -141,6 +148,96 @@ CalculatorRouter.post('/cal_emi_type_edit', async (req, res) => {
     } else {
         req.session.message = { type: "danger", message: "Data not saved" };
         res.redirect(data.id > 0 ? `/cal_emi_type` : "/cal_emi_type");
+    }
+})
+
+CalculatorRouter.get('/unit', async (req, res) => {
+    var data = await getUnitList()
+    var view_data = {
+        data,
+        header: 'Unit Master'
+    }
+    res.render('calculator/unit/view', view_data)
+})
+
+CalculatorRouter.get('/unit_edit', async (req, res) => {
+    var dt = Buffer.from(req.query.data, "base64")
+    dt = JSON.parse(dt);
+    var id = dt.id;
+    var data = {suc:0,msg:[]}
+    if(id > 0)
+        data = await getUnitList(id)
+    var view_data = {
+        data: data.suc > 0 ? data.msg : [],
+        header: "Unit Master",
+        sub_header: "Add/Edit Unit Master",
+        header_url: "/unit",
+        id: id,
+    }
+    res.render('calculator/unit/entry', view_data)
+})
+
+CalculatorRouter.post('/unit_edit', async (req, res) => {
+    var data = req.body,
+    user = req.session.user.user_name;
+    var res_dt = await saveUnit(data, user)
+    if(res_dt.suc > 0){
+        req.session.message = {
+            type: "success",
+            message: "Saved successfully",
+        };
+        res.redirect("/unit");
+    } else {
+        req.session.message = { type: "danger", message: "Data not saved" };
+        res.redirect(data.id > 0 ? `/unit` : "/unit");
+    }
+})
+
+CalculatorRouter.get('/cal_emi_val', async (req, res) => {
+    var data = await getUnitList()
+    var view_data = {
+        data,
+        header: 'Calculator Emission Value'
+    }
+    res.render('calculator/emission_val/view', view_data)
+})
+
+CalculatorRouter.get('/cal_emi_unit_edit', async (req, res) => {
+    var dt = Buffer.from(req.query.data, "base64"),
+    type_list = await getCalTypeList(), 
+    act_list = {suc:0,msg:[]}, emi_type = {suc:0,msg:[]}, unit_list= await getUnitList();
+    dt = JSON.parse(dt);
+    var id = dt.id;
+    var data = {suc:0,msg:[]}
+    if(id > 0)
+        data = await getUnitList(id)
+    var view_data = {
+        data: data.suc > 0 ? data.msg : [],
+        type_list: type_list.suc > 0 ? type_list.msg : [],
+        act_list: act_list.suc > 0 ? act_list.msg : [],
+        emi_type: emi_type.suc > 0 ? emi_type.msg : [],
+        unit_list: unit_list.suc > 0 ? unit_list.msg : [],
+        header: "Calculator Emission Value",
+        sub_header: "Add/Edit Calculator Emission Value",
+        header_url: "/cal_emi_val",
+        id: id,
+    }
+    res.render('calculator/emission_val/entry', view_data)
+})
+
+CalculatorRouter.post('/cal_emi_unit_edit', async (req, res) => {
+    var data = req.body,
+    user = req.session.user.user_name;
+    var res_dt = await saveUnit(data, user)
+    if(res_dt.suc > 0){
+        req.session.message = {
+            type: "success",
+            message: "Saved successfully",
+        };
+        res.redirect("/cal_emi_unit");
+    } else {
+        req.session.message = { type: "danger", message: "Data not saved" };
+        res.redirect(data.id > 0 ? `/cal_emi_unit` : "/cal_emi_unit");
     }
 })
 

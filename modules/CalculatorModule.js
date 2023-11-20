@@ -1,6 +1,29 @@
 const {db_Select, db_Insert} = require("./MasterModule")
 const dateFormat = require("dateformat");
 module.exports = {
+    getUnitList: (id = 0) => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'id, unit_name', 
+            table_name = 'md_unit',
+            whr = id > 0 ? `id = ${id}` : null,
+            order = 'ORDER BY unit_name';
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
+    },
+    saveUnit: (data, user) => {
+        return new Promise(async (resolve, reject) => {
+            var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+            var table_name = 'md_unit',
+            fields = data.id > 0 ? `unit_name = '${data.unit_name}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+            '(unit_name, created_by, created_dt)',
+            values = `('${data.unit_name}', '${user}', '${datetime}')`,
+            whr = data.id > 0 ? `id = ${data.id}` : null,
+            flag = data.id > 0 ? 1 : 0;
+            var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+            resolve(res_dt)
+        })
+    },
     getCalTypeList: (id = 0) => {
         return new Promise(async (resolve, reject) => {
             var select = 'id, type_name, type', 

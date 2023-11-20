@@ -17,7 +17,7 @@
   </style>
 <script>
     google.charts.load('current', {packages: ['corechart', 'bar', 'line']});
-    var fun = {}, i = 1;
+    var fun = {}, i = 1, wordList = {}, totCount ={};
 </script>
 <div class="container-fluid">
     <div class="page-header">
@@ -372,16 +372,15 @@
                                                         var prevRes = ''
                                                         var ediR = 1
                                                         filetrTopic.forEach(dt => {
-                                                            console.log(dt, 'LALALa')
                                                             var getRes = editorData.filter(edt => edt.article_code == dt.code && edt.top_id==dt.top_id)
                                                             var nowRes = dt.top_id
                                                             %>
-                                                            <div id="editorNewDiv_<%= ediR %>" class="row">
+                                                            <div id="editorNewDiv_<%= ediR %>" class="row m-t-10">
                                                                 <% if(prevRes != nowRes){
                                                                     prevRes = dt.top_id %>
                                                                     <p class="dyn-col-head"><%= dt.topic_name %></p>
                                                                 <% } %>
-                                                                <div class="col-md-8 m-3 row">
+                                                                <div class="col-md-8 m-l-10 row">
                                                                     <div class="col-md-1 ediDiv">
                                                                         <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
                                                                     </div>
@@ -394,18 +393,39 @@
                                                                 </div>
                                                                 <% if(dt.words != '' && dt.words && dt.words != 'null'){
                                                                     var word_list = dt.words.trim().split(',');
-                                                                    if(word_list > 0){
-                                                                        word_list.forEach(dt => { %>
-                                                                            <div class="col-md-4 row">
-                                                                                <div class="col-md-6 mt-2">
-                                                                                    <div class="u-step">
-                                                                                        <div class="u-step-desc text-center"><span class="u-step-title"><%= dt %></span>
+                                                                    if(word_list.length > 0){ %>
+                                                                        <script>
+                                                                            wordList[<%= ediR %>] = '<%= dt.words %>';
+                                                                            // console.log(wordList)
+                                                                        </script>
+                                                                        <div class="col-md-4 row">
+                                                                            <div class="wordContainer">
+                                                                                <div class="wordHeader">
+                                                                                    <div class="u-step done">
+                                                                                        <div class="u-step-desc text-center">
+                                                                                            <span class="u-step-title">Check Alignment/Misalignment</span>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
+                                                                                <div class="wordSubHeader">
+                                                                                    <p>ESG-related words included by your peers and not included in your text:</p>
+                                                                                </div>
+                                                                                <div class="wordCount">
+                                                                                    <span id="countMatchNum_<%= ediR %>">0</span> <span>words</span>
+                                                                                </div>
+                                                                                <div class="wordButton col-md-12 row" id="countMatch_<%= ediR %>">
+                                                                                <% word_list.forEach(dt => { %>
+                                                                                    <div class="col-md-6 mt-2">
+                                                                                        <div class="u-step">
+                                                                                            <div class="u-step-desc text-center"><span class="u-step-title"><%= dt %></span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                <% }) %>
+                                                                                </div>
                                                                             </div>
-                                                                        <% })
-                                                                    } %>
+                                                                        </div>
+                                                                    <% } %>
                                                                 <% } %>
                                                                 
                                                                 <script>
@@ -424,37 +444,37 @@
                                                                             },
                                                                             change: function(e){
                                                                                 // console.log(e.editor.getData());
-                                                                                totCount = 0
+                                                                                totCount[<%= ediR %>] = 0
                                                                                 var editorVal = e.editor.getData()
                                                                                 var plainText = $("<div>").html(editorVal).text();
                                                                                 var txtArr = plainText.trim().split('\n').join(' ').split(' ')
                                                                                 // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
-                                                                                // console.log('len', txtArr.length);
+                                                                                // console.log('len', txtArr);
                                                                                 if(txtArr.length > 0){
                                                                                     txtArr = [...new Set(txtArr)]
                                                                                     // console.log(txtArr, 'TOt array');
-                                                                                    var matchTxt = txtArr.filter(dt => increseCount(dt))
+                                                                                    var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
                                                                                     if(matchTxt.length > 0){
                                                                                         // console.log(matchTxt, 'Match array');
-                                                                                        $('.u-step').each(function(){
+                                                                                        $('#countMatch_<%= ediR %> .u-step').each(function(){
                                                                                             $(this).removeClass('done')
                                                                                         })
                                                                                         for(let dt of matchTxt){
-                                                                                            $('.u-step').each(function(){
+                                                                                            $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                                                // console.log($(this).text());
                                                                                                 // if(matchTxt.includes($(this).text().trim().toLowerCase()))
                                                                                                 if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
                                                                                                     $(this).addClass('done')
                                                                                             })
                                                                                         }
                                                                                     }else{
-                                                                                        $('.u-step').each(function(){
+                                                                                        $('#countMatch_<%= ediR %> .u-step').each(function(){
                                                                                             $(this).removeClass('done')
                                                                                         })
                                                                                     }
                                                                                     // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
                                                                                     // console.log(totCount);
                                                                                 }
-                                                                                $('#countMatch').text(totCount)
                                                                                 // console.log(dataSet.includes('php'))
                                                                             }
                                                                         }
@@ -474,7 +494,7 @@
                                                             editorData.forEach(dt => {
                                                                 if(!topList.includes(dt.article_code)){ %>
                                                                     <div id="editorNewDiv_<%= i %>" class="row mt-3">
-                                                                        <div class="col-md-12 m-3 row">
+                                                                        <div class="col-md-8 m-3 row">
                                                                             <div class="col-md-1 ediDiv">
                                                                                 <div for="editor_topic_<%= i %>" class="editLabelBull"></div>
                                                                             </div>
@@ -668,7 +688,7 @@
         var editorLength = $('textarea[name="editor"]').length
         $('#editorDiv').append(`
         <div id="editorNewDiv_${editorLength+1}" class="row">
-            <div class="col-md-12 m-3 row">
+            <div class="col-md-8 m-3 row">
                 <div class="col-md-1">
                     <label for="" class="mb-3"> Title</label>
                 </div>
@@ -740,6 +760,22 @@
                 $('.loader-wrapper').hide()
             }
         })
+    }
+</script>
+<script>
+    const increseCount = (dt, id) => {
+        // console.log(dt, 'dt');
+        var totCountVal = totCount[id]
+        var dataSet = wordList[id].trim().split(',')
+        dataSet = dataSet.map(dt => dt.trim().toLowerCase());
+        console.log(totCountVal, 'totCountVal');
+        // console.log(dataSet.includes(dt.trim().split('\n').join('').toLowerCase()), 'sadasd', dt);
+        if(dataSet.includes(dt.trim().split('\n').join('').toLowerCase())){
+            totCountVal += 1
+            totCount[id] = totCountVal
+            $(`#countMatchNum_${id}`).text(`${totCountVal}`)
+            return dt.trim().split('\n').join('').toLowerCase().split(' ').join('');
+        }
     }
 </script>
 <%- include('../templates/footer.ejs') %>

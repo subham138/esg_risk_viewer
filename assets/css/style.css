@@ -46252,3 +46252,33 @@ nav{
   justify-content: space-between;
   min-height: 88vh;
 }
+.wordContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+.wordHeader {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.wordSubHeader {
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #002060;
+  margin-bottom: 20px;
+}
+.wordCount{
+  padding: 15px;
+  background: #d2d4e0;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.wordButton {
+  border: 1px solid #002060;
+  padding-bottom: 10px;
+  max-height: 40%;
+  overflow: auto;
+}
