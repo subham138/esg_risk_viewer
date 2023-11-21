@@ -6,3 +6,5 @@ CREATE TABLE `td_support_log` (`id` INT(11) NOT NULL AUTO_INCREMENT , `tkt_no` V
 ALTER TABLE `td_support_log` ADD `issued_by` INT(11) NOT NULL AFTER `issue`;
 
 ALTER TABLE `td_sus_dis_top_met` ADD `words` TEXT NULL DEFAULT NULL AFTER `code`;
+<----------------------------- DONE ----------------------------->
+ALTER TABLE `td_client` ADD `ai_tag_tool_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `plan_deactive_dt`;

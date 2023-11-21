@@ -380,7 +380,7 @@
                                                                     prevRes = dt.top_id %>
                                                                     <p class="dyn-col-head"><%= dt.topic_name %></p>
                                                                 <% } %>
-                                                                <div class="col-md-8 m-l-10 row">
+                                                                <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-10 row">
                                                                     <div class="col-md-1 ediDiv">
                                                                         <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
                                                                     </div>
@@ -391,7 +391,8 @@
                                                                         <textarea id="editor<%= ediR %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
                                                                     </div>
                                                                 </div>
-                                                                <% if(dt.words != '' && dt.words && dt.words != 'null'){
+                                                                <% if(ai_tag_tool_flag != 'N'){
+                                                                    if(dt.words != '' && dt.words && dt.words != 'null'){
                                                                     var word_list = dt.words.trim().split(',');
                                                                     if(word_list.length > 0){ %>
                                                                         <script>
@@ -426,7 +427,7 @@
                                                                             </div>
                                                                         </div>
                                                                     <% } %>
-                                                                <% } %>
+                                                                <% }} %>
                                                                 
                                                                 <script>
                                                                     CKEDITOR
@@ -444,45 +445,47 @@
                                                                             },
                                                                             change: function(e){
                                                                                 // console.log(e.editor.getData());
-                                                                                totCount[<%= ediR %>] = 0
-                                                                                var editorVal = e.editor.getData()
-                                                                                var plainText = $("<div>").html(editorVal).text();
-                                                                                var txtArr = plainText.trim().split('\n').join(' ').split(' ')
-                                                                                // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
-                                                                                // console.log('len', txtArr);
-                                                                                if(txtArr.length > 0){
-                                                                                    txtArr = [...new Set(txtArr)]
-                                                                                    // console.log(txtArr, 'TOt array');
-                                                                                    var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
-                                                                                    if(matchTxt.length > 0){
-                                                                                        // console.log(matchTxt, 'Match array');
-                                                                                        $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                            $(this).removeClass('done')
-                                                                                        })
-                                                                                        for(let dt of matchTxt){
+                                                                                var ai_flag = '<%= ai_tag_tool_flag %>';
+                                                                                if(ai_flag != 'N'){
+                                                                                    totCount[<%= ediR %>] = 0
+                                                                                    var editorVal = e.editor.getData()
+                                                                                    var plainText = $("<div>").html(editorVal).text();
+                                                                                    var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                                                                                    // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                                                                                    // console.log('len', txtArr);
+                                                                                    if(txtArr.length > 0){
+                                                                                        txtArr = [...new Set(txtArr)]
+                                                                                        // console.log(txtArr, 'TOt array');
+                                                                                        var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
+                                                                                        if(matchTxt.length > 0){
+                                                                                            // console.log(matchTxt, 'Match array');
                                                                                             $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                                // console.log($(this).text());
-                                                                                                // if(matchTxt.includes($(this).text().trim().toLowerCase()))
-                                                                                                if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
-                                                                                                    $(this).addClass('done')
+                                                                                                $(this).removeClass('done')
+                                                                                            })
+                                                                                            for(let dt of matchTxt){
+                                                                                                $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                                                    // console.log($(this).text());
+                                                                                                    // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                                                                                    if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                                                                                        $(this).addClass('done')
+                                                                                                })
+                                                                                            }
+                                                                                        }else{
+                                                                                            $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                                                $(this).removeClass('done')
                                                                                             })
                                                                                         }
-                                                                                    }else{
-                                                                                        $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                            $(this).removeClass('done')
-                                                                                        })
+                                                                                        // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                                                                                        // console.log(totCount);
                                                                                     }
-                                                                                    // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
-                                                                                    // console.log(totCount);
                                                                                 }
-                                                                                // console.log(dataSet.includes('php'))
                                                                             }
                                                                         }
                                                                     } );
                                                                 </script>
                                                                 <% if(user_type != 'V'){ %>
                                                                     <div class="col-md-10">&nbsp;</div>
-                                                                    <div class="col-md-2">
+                                                                    <div class="col-md-2 m-t-10">
                                                                         <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"></i> Save</button>
                                                                     </div>
                                                                 <% } %>
@@ -494,7 +497,7 @@
                                                             editorData.forEach(dt => {
                                                                 if(!topList.includes(dt.article_code)){ %>
                                                                     <div id="editorNewDiv_<%= i %>" class="row mt-3">
-                                                                        <div class="col-md-8 m-3 row">
+                                                                        <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-3 row">
                                                                             <div class="col-md-1 ediDiv">
                                                                                 <div for="editor_topic_<%= i %>" class="editLabelBull"></div>
                                                                             </div>
@@ -524,7 +527,7 @@
                                                                         </script>
                                                                         <% if(user_type != 'V'){ %>
                                                                             <div class="col-md-10">&nbsp;</div>
-                                                                            <div class="col-md-2">
+                                                                            <div class="col-md-2 m-t-10">
                                                                                 <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"> Save</i></button>
                                                                             </div>
                                                                         <% } %>
@@ -807,7 +810,7 @@
         var editorLength = $('textarea[name="editor"]').length
         $('#editorDiv').append(`
         <div id="editorNewDiv_${editorLength+1}" class="row">
-            <div class="col-md-8 m-3 row">
+            <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-3 row">
                 <div class="col-md-1">
                     <label for="" class="mb-3"> Title</label>
                 </div>

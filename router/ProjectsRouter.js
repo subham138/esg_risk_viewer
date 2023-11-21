@@ -192,9 +192,9 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
     emi_type = {suc:0,msg:[]};
     var year_list=[], currDate = new Date();
-    console.log(parseInt(currDate.getFullYear()));
+    // console.log(parseInt(currDate.getFullYear()));
     for(let i = 0; i<=6; i++){
-        console.log(i, 'Year');
+        // console.log(i, 'Year');
         year_list.push(parseInt(currDate.getFullYear()) - i)
     }
     allDynamicData = allDynamicData.suc > 0 ? allDynamicData.msg : ''
@@ -214,6 +214,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
             }
         }
     }
+    console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
     var res_data = {
         top_id: data.top_id, 
         topName,
@@ -226,6 +227,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         susDistList,
         metric,
         user_type: req.session.user.user_type,
+        ai_tag_tool_flag: req.session.user.ai_tag_tool_flag,
         editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
         data_set,
         allDynamicData,

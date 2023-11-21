@@ -39,8 +39,7 @@ UserRouter.get("/login", (req, res) => {
 UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
-  var select =
-      "id, client_id, user_name, user_id, password, user_type, active_flag",
+  var select = "id, client_id, user_name, user_id, password, user_type, active_flag",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -50,6 +49,14 @@ UserRouter.post("/login", async (req, res) => {
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         req.session.user = chk_dt.msg[0];
+        if(chk_dt.msg[0].user_type != 'S'){
+          var select = "id, ai_tag_tool_flag",
+            table_name = "td_client",
+            whr = `id = '${chk_dt.msg[0].client_id}'`,
+            order = null;
+          var client_dt = await db_Select(select, table_name, whr, order);
+          req.session.user['ai_tag_tool_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].ai_tag_tool_flag : 'N') : 'N';
+        }
         req.session.videoPopUp = true;
         res.redirect("/dashboard");
       } else {
