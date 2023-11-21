@@ -1,4 +1,5 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
+const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert, db_Delete } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork } = require('../modules/ProjectModule');
@@ -188,6 +189,14 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id)
     var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
     var allDynamicData = await getDynamicData(0, data.sec_id, data.ind_id, 0);
+    var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
+    emi_type = {suc:0,msg:[]};
+    var year_list=[], currDate = new Date();
+    console.log(parseInt(currDate.getFullYear()));
+    for(let i = 0; i<=6; i++){
+        console.log(i, 'Year');
+        year_list.push(parseInt(currDate.getFullYear()) - i)
+    }
     allDynamicData = allDynamicData.suc > 0 ? allDynamicData.msg : ''
     // console.log(resDt);
     if (resDt.suc > 0 && resDt.msg.length > 0) {
@@ -220,12 +229,22 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
         data_set,
         allDynamicData,
+        type_list: type_list.suc > 0 ? type_list.msg : [],
+        act_list: act_list.suc > 0 ? act_list.msg : [],
+        emi_type: emi_type.suc > 0 ? emi_type.msg : [],
+        year_list,
         header: "Project Work",
         sub_header: "Project View",
         header_url: "/my_project",
     };
     res.render("project_work/report_view", res_data);
     // res.send(res_data)
+})
+
+ProjectRouter.post('/get_cal_unit_list_ajax', async (req, res) => {
+    var data = req.body
+    var res_dt = await getCalUnitList(data.type_id, data.act_id, data.emi_type_id)
+    res.send(res_dt)
 })
 
 ProjectRouter.post('/download_pdf', async (req, res) => {

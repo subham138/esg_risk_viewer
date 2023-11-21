@@ -141,5 +141,15 @@ module.exports = {
                 resolve(res_dt);
             }
         })
+    },
+    getCalUnitList: (type_id = 0, act_id = 0, emi_type_id=0) => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'DISTINCT a.unit_id, b.unit_name, a.co_val',
+                table_name = 'md_cal_emi_val a, md_unit b',
+                whr = `a.unit_id=b.id ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''} ${act_id > 0 ? `AND a.act_id = ${act_id}` : ''} ${emi_type_id > 0 ? `AND a.emi_type_id = ${emi_type_id}` : ''}`,
+                order = null;
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
     }
 }
