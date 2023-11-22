@@ -64,6 +64,18 @@
                             } %>
                         </select>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="repo_period">Reporting period</label>
+                        <select class="form-select" id="repo_period" name="repo_period" required="">
+                            <option selected="" value="">Select One</option>
+                            <% if(year_list.length > 0){
+                                year_list.forEach(dt => { 
+                                    var selected = ''; %>
+                                    <option value="<%= dt %>"><%= dt %></option>
+                                <% })
+                            } %>
+                        </select>
+                    </div>
                 </div>
                 <div class="row g-3 py-3">
                     <div class="col-md-12">

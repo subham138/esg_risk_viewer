@@ -218,6 +218,12 @@ CalculatorRouter.get('/cal_emi_val_edit', async (req, res) => {
         act_list = await getCalAct(0, type_id)
         emi_type = await getCalEmiType(0, type_id, act_id)
     }
+    var year_list=[], currDate = new Date();
+    // console.log(parseInt(currDate.getFullYear()));
+    for(let i = 0; i<=6; i++){
+        // console.log(i, 'Year');
+        year_list.push(parseInt(currDate.getFullYear()) - i)
+    }
     var view_data = {
         data: data.suc > 0 ? data.msg : [],
         type_list: type_list.suc > 0 ? type_list.msg : [],
@@ -229,7 +235,8 @@ CalculatorRouter.get('/cal_emi_val_edit', async (req, res) => {
         header_url: "/cal_emi_val",
         type_id,
         act_id,
-        emi_type_id
+        emi_type_id,
+        year_list
     }
     res.render('calculator/emission_val/entry', view_data)
 })
