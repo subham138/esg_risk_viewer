@@ -95,7 +95,7 @@ module.exports = {
     },
     getCalEmiVal: (id = 0, type_id = 0, act_id = 0, emi_type_id=0, unit_id=0, dashboard_flag = 'N') => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.id, a.type_id, b.type_name, b.type, a.act_id, c.act_name, a.emi_type_id, d.emi_name, a.unit_id, e.unit_name, a.co_val',
+            var select = dashboard_flag == 'Y' ? 'a.type_id, b.type_name, b.type, a.act_id, c.act_name, a.emi_type_id, d.emi_name' : 'a.id, a.type_id, b.type_name, b.type, a.act_id, c.act_name, a.emi_type_id, d.emi_name, a.unit_id, e.unit_name, a.co_val',
             table_name = 'md_cal_emi_val a, md_cal_type b, md_cal_act c, md_cal_emi_type d, md_unit e',
             whr = `a.type_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.unit_id=e.id ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''} ${act_id > 0 ? `AND a.act_id = ${act_id}` : ''} ${emi_type_id > 0 ? `AND a.emi_type_id = ${emi_type_id}` : ''} ${unit_id > 0 ? `AND a.unit_id = ${unit_id}` : ''}`,
             order = dashboard_flag == 'Y' ? 'GROUP BY a.type_id, a.act_id, a.emi_type_id' : null;
