@@ -70,8 +70,12 @@
                             <option selected="" value="">Select One</option>
                             <% if(year_list.length > 0){
                                 year_list.forEach(dt => { 
-                                    var selected = ''; %>
-                                    <option value="<%= dt %>"><%= dt %></option>
+                                    var selected = ''; 
+                                    if(period > 0)
+                                        if(period == dt)
+                                            selected = 'selected'
+                                    %>
+                                    <option value="<%= dt %>" <%= selected %>><%= dt %></option>
                                 <% })
                             } %>
                         </select>
@@ -89,46 +93,8 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <% if(data.length > 0){
-                                    let i = 1
-                                    data.forEach(dt => { %>
-                                        <tr id="tr_<%= i %>">
-                                            <td>
-                                                <select class="form-select" id="unit_id_<%= i %>" name="unit_id" required="" onchange="unitChange(event)">
-                                                    <option selected="" value="">Select Unit</option>
-                                                    <% if(unit_list.length > 0){
-                                                        unit_list.forEach(udt => { 
-                                                            var selected = '';
-                                                            if(udt.id == dt.unit_id) selected = 'selected'; %>
-                                                            <option value="<%= udt.id %>" <%= selected %>><%= udt.unit_name %></option>
-                                                        <% })
-                                                    } %>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input class="form-control" id="co_val_<%= i %>" name="co_val" type="text" value="<%= dt.co_val %>" required="">
-                                            </td>
-                                        </tr>
-                                    <% i++; })
-                                }else{ %>
-                                    <tr id="tr_1">
-                                        <td>
-                                            <select class="form-select" id="unit_id_1" name="unit_id" required="" onchange="unitChange(event)">
-                                                <option selected="" value="">Select Unit</option>
-                                                <% if(unit_list.length > 0){
-                                                    unit_list.forEach(dt => { 
-                                                        var selected = ''; %>
-                                                        <option value="<%= dt.id %>"><%= dt.unit_name %></option>
-                                                    <% })
-                                                } %>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input class="form-control" id="co_val_1" name="co_val" type="text" value="" required="">
-                                        </td>
-                                    </tr>
-                                <% } %>
+                            <tbody id="emiDataTable">
+                                
                             </tbody>
                         </table>
                     </div>
@@ -140,7 +106,14 @@
         </div>
     </div>
 </div>
-
+<script>
+    $(document).ready(function(){
+        var period = '<%= period %>';
+        if(period > 0){
+            $('#repo_period').change()
+        }
+    })
+</script>
 <script>
     $('#type_id').on('change', function (){
         $('label[for="emi_type_id"]').text($(this).attr('dt-set'))
@@ -188,6 +161,82 @@
                     $.each(res.msg, function (i, item) {
                         $('#emi_type_id').append($('<option>', {value: item.id, text: item.emi_name}));
                     });
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+    $('#emi_type_id').on('change', function(){
+        console.log($('#repo_period').val());
+        if($('#repo_period').val() > 0){
+            $('#repo_period').change()
+        }else{
+            $('#repo_period').val('')
+            $('table tbody').empty();
+        }
+    })
+</script>
+<script>
+    $('#repo_period').on('change', function(){
+        $.ajax({
+            method:'POST',
+            url: '/get_cal_unit_list_ajax',
+            data: {type_id: $('#type_id').val(), act_id: $('#act_id').val(), emi_type_id: $(`#emi_type_id`).val(), year: $(this).val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                if(res.suc > 0){
+                    $('table tbody').empty();
+                    if(res.msg.length > 0){
+                        let i = 1;
+                        $.each(res.msg, function (node, item) {
+                            var sel_unit_id = ''
+                            $('table tbody').append(`
+                            <tr id="tr_${i}">
+                                <td>
+                                    <select class="form-select" id="unit_id_${i}" name="unit_id" required="" onchange="unitChange(event)">
+                                        <option selected="" value="">Select Unit</option>
+                                        <% if(unit_list.length > 0){
+                                            unit_list.forEach(dt => { 
+                                                var selected = ''; %>
+                                                ${sel_unit_id = '<%= dt.id %>'}
+                                                <option value="<%= dt.id %>" ${sel_unit_id == item.unit_id ? 'selected' : ''}><%= dt.unit_name %></option>
+                                            <% })
+                                        } %>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input class="form-control" id="co_val_${i}" name="co_val" type="text" value="${item.co_val}" required="">
+                                </td>
+                            </tr>
+                            `)
+                            i++;
+                        });
+                    }else{
+                        $('table tbody').append(`
+                        <tr id="tr_1">
+                            <td>
+                                <select class="form-select" id="unit_id_1" name="unit_id" required="" onchange="unitChange(event)">
+                                    <option selected="" value="">Select Unit</option>
+                                    <% if(unit_list.length > 0){
+                                        unit_list.forEach(dt => { 
+                                            var selected = ''; %>
+                                            <option value="<%= dt.id %>"><%= dt.unit_name %></option>
+                                        <% })
+                                    } %>
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-control" id="co_val_1" name="co_val" type="text" value="" required="">
+                            </td>
+                        </tr>
+                        `);
+                    }
                 }
             },
             complete: function(){

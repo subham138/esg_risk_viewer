@@ -245,7 +245,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
 
 ProjectRouter.post('/get_cal_unit_list_ajax', async (req, res) => {
     var data = req.body
-    var res_dt = await getCalUnitList(data.type_id, data.act_id, data.emi_type_id)
+    var res_dt = await getCalUnitList(data.type_id, data.act_id, data.emi_type_id, data.year)
     res.send(res_dt)
 })
 

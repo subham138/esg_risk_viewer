@@ -36,6 +36,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Period</th>
                                             <th>Type</th>
                                             <th>Activity</th>
                                             <th>Name</th>
@@ -48,10 +49,11 @@
                                         data.msg.forEach(dt => { %>
                                         <tr>
                                             <td><%= i %></td>
+                                            <td><%= dt.repo_period %></td>
                                             <td><%= dt.type_name %></td>
                                             <td><%= dt.act_name %></td>
                                             <td><%= dt.emi_name %></td>
-                                            <td><button onclick="routToNextPage('/cal_emi_val_edit', JSON.stringify({type_id: '<%= dt.type_id %>', act_id: '<%= dt.act_id %>', emi_type_id: '<%= dt.emi_type_id %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <td><button onclick="routToNextPage('/cal_emi_val_edit', JSON.stringify({type_id: '<%= dt.type_id %>', act_id: '<%= dt.act_id %>', emi_type_id: '<%= dt.emi_type_id %>', period: '<%= dt.repo_period %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </button>
                                             <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">

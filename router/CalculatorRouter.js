@@ -211,7 +211,8 @@ CalculatorRouter.get('/cal_emi_val_edit', async (req, res) => {
     dt = JSON.parse(dt);
     var type_id = dt.type_id,
         act_id = dt.act_id,
-        emi_type_id = dt.emi_type_id;
+        emi_type_id = dt.emi_type_id,
+        period = dt.period;
     var data = {suc:0,msg:[]}
     if (type_id > 0 && act_id > 0 && emi_type_id > 0){
         data = await getCalEmiVal(0, type_id, act_id, emi_type_id);
@@ -236,7 +237,8 @@ CalculatorRouter.get('/cal_emi_val_edit', async (req, res) => {
         type_id,
         act_id,
         emi_type_id,
-        year_list
+        year_list,
+        period
     }
     res.render('calculator/emission_val/entry', view_data)
 })

@@ -40,7 +40,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col-md-6 text-center">
+                        <div class="col-md-12 text-center">
                             <p class="pro-card-head">You are working on the project <b><%= projName %></b></p>
                         </div>
                     </div>
@@ -117,13 +117,16 @@
                                                             <% if(susDistList.msg.length > 0){
                                                                 var rowSpan = 1
                                                                 var prevRes = ''
-                                                                susDistList.msg.forEach(dt => {
+                                                                var susModifyDt = susDistList.msg.map(dt => dt.code != '' && dt.code != 'null' && dt.code ? dt : null)
+                                                                susModifyDt = susModifyDt.filter(dt => dt != undefined)
+                                                                susModifyDt.forEach(dt => {
+                                                                    if(typeof(dt) === 'object'){
                                                                     var nowRes = dt.top_id
                                                                     %>
                                                                     <tr class="hoverDynDtaTbl">
                                                                         <% if(prevRes != nowRes){
                                                                             prevRes = dt.top_id %>
-                                                                            <td class="topic_text" rowspan="<%= susDistList.msg.filter(sdt => sdt.top_id == dt.top_id).length %>">
+                                                                            <td class="topic_text" rowspan="<%= susModifyDt.filter(sdt => sdt.top_id == dt.top_id).length %>">
                                                                                 <%= dt.topic_name %>
                                                                             </td>
                                                                         <% } %>
@@ -133,7 +136,7 @@
                                                                         <td><%= dt.unit %></td>
                                                                         <td><%= dt.code %></td>
                                                                     </tr>
-                                                                <% })
+                                                                <% }})
                                                             } %>
                                                             <tr></tr>
                                                         </tbody>
@@ -649,7 +652,7 @@
                                                         </div>
                                                         <div class="col-md-6 m-t-10">
                                                             <label class="form-label float-start" for="emi_type_id_1">Emission Type</label>
-                                                            <select class="form-select" id="emi_type_id_1" name="emi_type_id" required="" onchange="calUnitSet(1)">
+                                                            <select class="form-select" id="emi_type_id_1" name="emi_type_id" required="">
                                                                 <option selected="" value="">Please select an emission type</option>
                                                                 <% if(emi_type.length > 0){
                                                                     emi_type.forEach(dt => { 
@@ -671,8 +674,21 @@
                                                                 } %>
                                                             </select>
                                                         </div>
+                                                        <div class="col-md-6 m-t-10">
+                                                            <label class="form-label float-start" for="strt_month_1">Start Month</label>
+                                                            <select class="form-select" id="strt_month_1" name="strt_month" required="" onchange="calSelectMonth(1)">
+                                                                <option selected="" value="">Select One</option>
+                                                                <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                if(months.length > 0){
+                                                                    months.forEach(dt => { 
+                                                                        var selected = ''; %>
+                                                                        <option value="<%= dt %>"><%= dt %></option>
+                                                                    <% })
+                                                                } %>
+                                                            </select>
+                                                        </div>
                                                         <div class="col-md-12">
-                                                            <table class="table">
+                                                            <table class="table" id="cal_val_entry_table_1">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Month</th>
@@ -683,32 +699,7 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                                    for(let em = 1; em <= 12; em++){ %>
-                                                                        <tr>
-                                                                            <td><%= months[em-1] %></td>
-                                                                            <td>
-                                                                                <select class="form-select" id="emi_type_unit_id_<%= em %>_1" name="emi_type_id" required="" onchange="setCalVal(1, '<%= em %>')">
-                                                                                    <option selected="" value="">Please select unit of measurement</option>
-                                                                                    <% if(emi_type.length > 0){
-                                                                                        emi_type.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </td>
-                                                                            <td><input class="form-control" id="cal_val_<%= em %>_1" name="cal_val" type="text" value="" required="" onchange="setCoVal(1, '<%= em %>')"></td>
-                                                                            <td><input class="form-control" id="emi_fact_val_<%= em %>_1" name="emi_fact_val" type="text" value="" required=""></td>
-                                                                            <td><input class="form-control" id="co_val_<%= em %>_1" name="co_val" type="text" value="" required="" onchange="setCoVal(1, '<%= em %>')"></td>
-                                                                        </tr>
-                                                                    <% } %>
-                                                                    <tr>
-                                                                        <td colspan="2">Total</td>
-                                                                        <td><span id="tot_cal_val_1"></span></td>
-                                                                        <td></td>
-                                                                        <td><span id="tot_co_val_1"></span></td>
-                                                                    </tr>
+                                                                    
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -960,7 +951,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id: $('#type_id').val(), act_id: $('#act_id').val(), emi_type_id: $(`#emi_type_id_${id}`).val()},
+            data: {type_id: $(`#type_id_${id}`).val(), act_id: $(`#act_id_${id}`).val(), emi_type_id: $(`#emi_type_id_${id}`).val(), year: $(`#repo_period_${id}`).val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -969,6 +960,9 @@
                 var res = JSON.parse(result);
                 for(let idt = 1; idt <= 12; idt++){
                     $(`#emi_type_unit_id_${idt}_${id}`).empty()
+                    $(`#cal_val_${idt}_${id}`).val('')
+                    $(`#emi_fact_val_${idt}_${id}`).val('')
+                    $(`#co_val_${idt}_${id}`).val('')
                     $(`#emi_type_unit_id_${idt}_${id}`).append($('<option>', {value: '', text: 'Please select unit of measurement'}));
                     if(res.suc > 0 && res.msg.length > 0){
                         $.each(res.msg, function (i, item) {
@@ -1058,8 +1052,21 @@
                     } %>
                 </select>
             </div>
+            <div class="col-md-6 m-t-10">
+                <label class="form-label float-start" for="strt_month_${nextCalField}">Start Month</label>
+                <select class="form-select" id="strt_month_${nextCalField}" name="strt_month" required="" onchange="calSelectMonth(${nextCalField})">
+                    <option selected="" value="">Select One</option>
+                    <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    if(months.length > 0){
+                        months.forEach(dt => { 
+                            var selected = ''; %>
+                            <option value="<%= dt %>"><%= dt %></option>
+                        <% })
+                    } %>
+                </select>
+            </div>
             <div class="col-md-12">
-                <table class="table">
+                <table class="table" id="cal_val_entry_table_${nextCalField}">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -1069,37 +1076,63 @@
                             <th>Kg CO2e</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                        for(let em = 1; em <= 12; em++){ %>
-                            <tr>
-                                <td><%= months[em-1] %></td>
-                                <td>
-                                    <select class="form-select" id="emi_type_unit_id_<%= em %>_${nextCalField}" name="emi_type_id" required="" onchange="setCalVal(${nextCalField}, '<%= em %>')">
-                                        <option selected="" value="">Please select unit of measurement</option>
-                                        <% if(emi_type.length > 0){
-                                            emi_type.forEach(dt => { 
-                                                var selected = ''; %>
-                                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                            <% })
-                                        } %>
-                                    </select>
-                                </td>
-                                <td><input class="form-control" id="cal_val_<%= em %>_${nextCalField}" name="cal_val" type="text" value="" required="" onchange="setCoVal(${nextCalField}, '<%= em %>')"></td>
-                                <td><input class="form-control" id="emi_fact_val_<%= em %>_${nextCalField}" name="emi_fact_val" type="text" value="" required=""></td>
-                                <td><input class="form-control" id="co_val_<%= em %>_${nextCalField}" name="co_val" type="text" value="" required="" onchange="setCoVal(${nextCalField}, '<%= em %>')"></td>
-                            </tr>
-                        <% } %>
-                        <tr>
-                            <td colspan="2">Total</td>
-                            <td><span id="tot_cal_val_${nextCalField}"></span></td>
-                            <td></td>
-                            <td><span id="tot_co_val_${nextCalField}"></span></td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
+        `)
+    }
+</script>
+<script>
+    function calSelectMonth(id){
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var selMonth = $(`#strt_month_${id}`).val()
+        var selMonthIndex = months.findIndex(dt => dt === selMonth)
+        var monthCount = selMonthIndex,
+        currMonth = [];
+        for(let dt of months){
+            if(monthCount > (months.length-1)){
+                monthCount = 0
+            }
+            currMonth.push(months[monthCount])
+            monthCount++;
+        }
+        createCalTable(id, currMonth)
+        calUnitSet(id)
+
+    }
+    function createCalTable(id, months){
+        var nextCalField = 1
+        $(`#cal_val_entry_table_${id} tbody`).empty()
+        for(let m of months){
+            $(`#cal_val_entry_table_${id} tbody`).append(`
+            <tr>
+                <td>${m}</td>
+                <td>
+                    <select class="form-select" id="emi_type_unit_id_${nextCalField}_${id}" name="emi_type_id" required="" onchange="setCalVal(${id}, '${nextCalField}')">
+                        <option selected="" value="">Please select unit of measurement</option>
+                        <% if(emi_type.length > 0){
+                            emi_type.forEach(dt => { 
+                                var selected = ''; %>
+                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                            <% })
+                        } %>
+                    </select>
+                </td>
+                <td><input class="form-control" id="cal_val_${nextCalField}_${id}" name="cal_val" type="text" value="" required="" onchange="setCoVal(${id}, '${nextCalField}')"></td>
+                <td><input class="form-control" id="emi_fact_val_${nextCalField}_${id}" name="emi_fact_val" type="text" value="" required=""></td>
+                <td><input class="form-control" id="co_val_${nextCalField}_${id}" name="co_val" type="text" value="" required="" onchange="setCoVal(${id}, '${nextCalField}')"></td>
+            </tr>
+            `)
+            nextCalField++;
+        }
+        $(`#cal_val_entry_table_${id} tbody`).append(`
+        <tr>
+            <td colspan="2">Total</td>
+            <td><span id="tot_cal_val_${id}"></span></td>
+            <td></td>
+            <td><span id="tot_co_val_${id}"></span></td>
+        </tr>
         `)
     }
 </script>
