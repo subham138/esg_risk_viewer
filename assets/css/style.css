@@ -46282,3 +46282,7 @@ nav{
   max-height: 40%;
   overflow: auto;
 }
+.calSeparetor{
+  background-color: #424f6f;
+  height: 2px;
+}
