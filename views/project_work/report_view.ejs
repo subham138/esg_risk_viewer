@@ -635,83 +635,211 @@
                                                                         <% } %>
                                                                     </div>
                                                                     <div class="col-md-12" id="calDetails_s1">
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="type_id_s1_1">Section</label>
-                                                                                <select class="form-select" id="type_id_s1_1" name="type_id" required="" onchange="changeTypeId('s1',1)">
-                                                                                    <option selected="" value="">Select Section</option>
-                                                                                    <% if(type_list.length > 0){
-                                                                                        type_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
+                                                                        <% if('s1' in ghg_emi_data){
+                                                                            var sc_len = ghg_emi_data['s1'].length / 12;
+                                                                            for(let sc = 1; sc <= sc_len; sc++){
+                                                                                var newGhgDt = ghg_emi_data['s1'].filter(dt => dt.sl_no == sc && dt.scope == 's1')
+                                                                                    %>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="type_id_s1_<%= sc %>">Section</label>
+                                                                                            <select class="form-select" id="type_id_s1_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s1','<%= sc %>')">
+                                                                                                <option selected="" value="">Select Section</option>
+                                                                                                <% if(type_list.length > 0){
+                                                                                                    type_list.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].sec_id == dt.id)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <script>
+                                                                                            $(document).ready(async function(){
+                                                                                                await changeTypeId('s1','<%= sc %>', '<%= newGhgDt[0].act_id %>')
+                                                                                                await changeActId('s1','<%= sc %>', '<%= newGhgDt[0].emi_type_id %>')
+                                                                                            })
+                                                                                        </script>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="act_id_s1_<%= sc %>">Activity</label>
+                                                                                            <select class="form-select" id="act_id_s1_<%= sc %>" name="act_id" required="" onchange="changeActId('s1','<%= sc %>')">
+                                                                                                <option selected="" value="">Select Section</option>
+                                                                                                <% if(act_list.length > 0){
+                                                                                                    act_list.forEach(dt => { 
+                                                                                                        var selected = ''; %>
+                                                                                                        <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="emi_type_id_s1_<%= sc %>">Emission Type</label>
+                                                                                            <select class="form-select" id="emi_type_id_s1_<%= sc %>" name="emi_type_id" required="">
+                                                                                                <option selected="" value="">Please select an emission type</option>
+                                                                                                <% if(emi_type.length > 0){
+                                                                                                    emi_type.forEach(dt => { 
+                                                                                                        var selected = ''; %>
+                                                                                                        <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="repo_period_s1_<%= sc %>">Reporting period</label>
+                                                                                            <select class="form-select" id="repo_period_s1_<%= sc %>" name="repo_period" required="">
+                                                                                                <option selected="" value="">Select One</option>
+                                                                                                <% if(year_list.length > 0){
+                                                                                                    year_list.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].repo_period == dt)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="strt_month_s1_<%= sc %>">Start Month</label>
+                                                                                            <select class="form-select" id="strt_month_s1_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s1','<%= sc %>')">
+                                                                                                <option selected="" value="">Select One</option>
+                                                                                                <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                                if(months.length > 0){
+                                                                                                    months.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].repo_month == dt)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-12 m-t-10 table-responsive">
+                                                                                            <table class="table table-bordered" id="cal_val_entry_table_s1_<%= sc %>">
+                                                                                                <thead>
+                                                                                                    <tr>
+                                                                                                        <th>Month</th>
+                                                                                                        <th>Unit</th>
+                                                                                                        <th>Values</th>
+                                                                                                        <th>Emission factors</th>
+                                                                                                        <th>Kg CO2e</th>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                    <% if(newGhgDt.length > 0){
+                                                                                                        var nextCalField = 1;
+                                                                                                        newGhgDt.forEach(gdt => { %>
+                                                                                                            <tr>
+                                                                                                                <td><%= gdt.repo_month %></td>
+                                                                                                                <td>
+                                                                                                                    <select class="form-select" id="emi_type_unit_id_s1_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" required="" onchange="setCalVal('s1', '<%= sc %>', '<%= nextCalField %>')">
+                                                                                                                        <option selected="" value="">Please select unit of measurement</option>
+                                                                                                                    </select>
+                                                                                                                </td>
+                                                                                                                <td><input class="form-control" id="cal_val_s1_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                <td><input class="form-control" id="emi_fact_val_s1_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
+                                                                                                                <td><input class="form-control" id="co_val_s1_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                            </tr>
+                                                                                                    <%  nextCalField++; })} %>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                        <% if(user_type != 'V'){ %>
+                                                                                            <div class="col-md-10"></div>
+                                                                                            <div class="col-md-2 m-t-10">
+                                                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s1','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                                            </div>
+                                                                                        <% } %>
+                                                                                    </div>
+                                                                                <% }
+                                                                        }else{ %>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="type_id_s1_1">Section</label>
+                                                                                    <select class="form-select" id="type_id_s1_1" name="type_id" required="" onchange="changeTypeId('s1',1)">
+                                                                                        <option selected="" value="">Select Section</option>
+                                                                                        <% if(type_list.length > 0){
+                                                                                            type_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="act_id_s1_1">Activity</label>
+                                                                                    <select class="form-select" id="act_id_s1_1" name="act_id" required="" onchange="changeActId('s1',1)">
+                                                                                        <option selected="" value="">Select Section</option>
+                                                                                        <% if(act_list.length > 0){
+                                                                                            act_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="emi_type_id_s1_1">Emission Type</label>
+                                                                                    <select class="form-select" id="emi_type_id_s1_1" name="emi_type_id" required="">
+                                                                                        <option selected="" value="">Please select an emission type</option>
+                                                                                        <% if(emi_type.length > 0){
+                                                                                            emi_type.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="repo_period_s1_1">Reporting period</label>
+                                                                                    <select class="form-select" id="repo_period_s1_1" name="repo_period" required="">
+                                                                                        <option selected="" value="">Select One</option>
+                                                                                        <% if(year_list.length > 0){
+                                                                                            year_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt %>"><%= dt %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="strt_month_s1_1">Start Month</label>
+                                                                                    <select class="form-select" id="strt_month_s1_1" name="strt_month" required="" onchange="calSelectMonth('s1',1)">
+                                                                                        <option selected="" value="">Select One</option>
+                                                                                        <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                        if(months.length > 0){
+                                                                                            months.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt %>"><%= dt %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-12 m-t-10 table-responsive">
+                                                                                    <table class="table table-bordered" id="cal_val_entry_table_s1_1">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Month</th>
+                                                                                                <th>Unit</th>
+                                                                                                <th>Values</th>
+                                                                                                <th>Emission factors</th>
+                                                                                                <th>Kg CO2e</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody></tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                                <% if(user_type != 'V'){ %>
+                                                                                    <div class="col-md-10"></div>
+                                                                                    <div class="col-md-2 m-t-10">
+                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s1',1)"><i class="icofont icofont-save"> Save</i></button>
+                                                                                    </div>
+                                                                                <% } %>
                                                                             </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="act_id_s1_1">Activity</label>
-                                                                                <select class="form-select" id="act_id_s1_1" name="act_id" required="" onchange="changeActId('s1',1)">
-                                                                                    <option selected="" value="">Select Section</option>
-                                                                                    <% if(act_list.length > 0){
-                                                                                        act_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.act_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="emi_type_id_s1_1">Emission Type</label>
-                                                                                <select class="form-select" id="emi_type_id_s1_1" name="emi_type_id" required="">
-                                                                                    <option selected="" value="">Please select an emission type</option>
-                                                                                    <% if(emi_type.length > 0){
-                                                                                        emi_type.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="repo_period_s1_1">Reporting period</label>
-                                                                                <select class="form-select" id="repo_period_s1_1" name="repo_period" required="">
-                                                                                    <option selected="" value="">Select One</option>
-                                                                                    <% if(year_list.length > 0){
-                                                                                        year_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt %>"><%= dt %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="strt_month_s1_1">Start Month</label>
-                                                                                <select class="form-select" id="strt_month_s1_1" name="strt_month" required="" onchange="calSelectMonth('s1',1)">
-                                                                                    <option selected="" value="">Select One</option>
-                                                                                    <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                                                    if(months.length > 0){
-                                                                                        months.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt %>"><%= dt %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-12">
-                                                                                <table class="table" id="cal_val_entry_table_s1_1">
-                                                                                    <thead>
-                                                                                        <tr>
-                                                                                            <th>Month</th>
-                                                                                            <th>Unit</th>
-                                                                                            <th>Values</th>
-                                                                                            <th>Emission factors</th>
-                                                                                            <th>Kg CO2e</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody></tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                        </div>
+                                                                        <% } %>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -735,83 +863,212 @@
                                                                         <% } %>
                                                                     </div>
                                                                     <div class="col-md-12" id="calDetails_s2">
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="type_id_s2_1">Section</label>
-                                                                                <select class="form-select" id="type_id_s2_1" name="type_id" required="" onchange="changeTypeId('s2',1)">
-                                                                                    <option selected="" value="">Select Section</option>
-                                                                                    <% if(type_list.length > 0){
-                                                                                        type_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
+                                                                        <% if('s2' in ghg_emi_data){
+                                                                            var sc_len = ghg_emi_data['s2'].length / 12;
+                                                                            for(let sc = 1; sc <= sc_len; sc++){
+                                                                                var newGhgDt = ghg_emi_data['s2'].filter(dt => dt.sl_no == sc && dt.scope == 's2')
+                                                                                %>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="type_id_s2_<%= sc %>">Section</label>
+                                                                                            <select class="form-select" id="type_id_s2_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s2','<%= sc %>')">
+                                                                                                <option selected="" value="">Select Section</option>
+                                                                                                <% if(type_list.length > 0){
+                                                                                                    type_list.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].sec_id == dt.id)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <script>
+                                                                                            $(document).ready(async function(){
+                                                                                                await changeTypeId('s2','<%= sc %>', '<%= newGhgDt[0].act_id %>')
+                                                                                                await changeActId('s2','<%= sc %>', '<%= newGhgDt[0].emi_type_id %>')
+                                                                                            })
+                                                                                        </script>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="act_id_s2_<%= sc %>">Activity</label>
+                                                                                            <select class="form-select" id="act_id_s2_<%= sc %>" name="act_id" required="" onchange="changeActId('s2','<%= sc %>')">
+                                                                                                <option selected="" value="">Select Section</option>
+                                                                                                <% if(act_list.length > 0){
+                                                                                                    act_list.forEach(dt => { 
+                                                                                                        var selected = ''; %>
+                                                                                                        <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="emi_type_id_s2_<%= sc %>">Emission Type</label>
+                                                                                            <select class="form-select" id="emi_type_id_s2_<%= sc %>" name="emi_type_id" required="">
+                                                                                                <option selected="" value="">Please select an emission type</option>
+                                                                                                <% if(emi_type.length > 0){
+                                                                                                    emi_type.forEach(dt => { 
+                                                                                                        var selected = ''; %>
+                                                                                                        <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="repo_period_s2_<%= sc %>">Reporting period</label>
+                                                                                            <select class="form-select" id="repo_period_s2_<%= sc %>" name="repo_period" required="">
+                                                                                                <option selected="" value="">Select One</option>
+                                                                                                <% if(year_list.length > 0){
+                                                                                                    year_list.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].repo_period == dt)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="strt_month_s2_<%= sc %>">Start Month</label>
+                                                                                            <select class="form-select" id="strt_month_s2_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s2','<%= sc %>')">
+                                                                                                <option selected="" value="">Select One</option>
+                                                                                                <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                                if(months.length > 0){
+                                                                                                    months.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].repo_month == dt)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-12 m-t-10 table-responsive">
+                                                                                            <table class="table table-bordered" id="cal_val_entry_table_s2_<%= sc %>">
+                                                                                                <thead>
+                                                                                                    <tr>
+                                                                                                        <th>Month</th>
+                                                                                                        <th>Unit</th>
+                                                                                                        <th>Values</th>
+                                                                                                        <th>Emission factors</th>
+                                                                                                        <th>Kg CO2e</th>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                    <% if(newGhgDt.length > 0){
+                                                                                                        var nextCalField = 1;
+                                                                                                        newGhgDt.forEach(gdt => { %>
+                                                                                                            <tr>
+                                                                                                                <td><%= gdt.repo_month %></td>
+                                                                                                                <td>
+                                                                                                                    <select class="form-select" id="emi_type_unit_id_s2_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" required="" onchange="setCalVal('s2', '<%= sc %>', '<%= nextCalField %>')">
+                                                                                                                        <option selected="" value="">Please select unit of measurement</option>
+                                                                                                                    </select>
+                                                                                                                </td>
+                                                                                                                <td><input class="form-control" id="cal_val_s2_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s2', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                <td><input class="form-control" id="emi_fact_val_s2_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
+                                                                                                                <td><input class="form-control" id="co_val_s2_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s2', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                            </tr>
+                                                                                                    <%  nextCalField++; })} %>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                        <% if(user_type != 'V'){ %>
+                                                                                            <div class="col-md-10"></div>
+                                                                                            <div class="col-md-2 m-t-10">
+                                                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s2','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                                            </div>
+                                                                                        <% } %>
+                                                                                    </div>
+                                                                                <%
+                                                                            }
+                                                                        }else{ %>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="type_id_s2_1">Section</label>
+                                                                                    <select class="form-select" id="type_id_s2_1" name="type_id" required="" onchange="changeTypeId('s2',1)">
+                                                                                        <option selected="" value="">Select Section</option>
+                                                                                        <% if(type_list.length > 0){
+                                                                                            type_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="act_id_s2_1">Activity</label>
+                                                                                    <select class="form-select" id="act_id_s2_1" name="act_id" required="" onchange="changeActId('s2',1)">
+                                                                                        <option selected="" value="">Select Section</option>
+                                                                                        <% if(act_list.length > 0){
+                                                                                            act_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="emi_type_id_s2_1">Emission Type</label>
+                                                                                    <select class="form-select" id="emi_type_id_s2_1" name="emi_type_id" required="">
+                                                                                        <option selected="" value="">Please select an emission type</option>
+                                                                                        <% if(emi_type.length > 0){
+                                                                                            emi_type.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="repo_period_s2_1">Reporting period</label>
+                                                                                    <select class="form-select" id="repo_period_s2_1" name="repo_period" required="">
+                                                                                        <option selected="" value="">Select One</option>
+                                                                                        <% if(year_list.length > 0){
+                                                                                            year_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt %>"><%= dt %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="strt_month_s2_1">Start Month</label>
+                                                                                    <select class="form-select" id="strt_month_s2_1" name="strt_month" required="" onchange="calSelectMonth('s2',1)">
+                                                                                        <option selected="" value="">Select One</option>
+                                                                                        <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                        if(months.length > 0){
+                                                                                            months.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt %>"><%= dt %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-12 m-t-10 table-responsive">
+                                                                                    <table class="table table-bordered" id="cal_val_entry_table_s2_1">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Month</th>
+                                                                                                <th>Unit</th>
+                                                                                                <th>Values</th>
+                                                                                                <th>Emission factors</th>
+                                                                                                <th>Kg CO2e</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody></tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                                <% if(user_type != 'V'){ %>
+                                                                                    <div class="col-md-10"></div>
+                                                                                    <div class="col-md-2 m-t-10">
+                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s2',1)"><i class="icofont icofont-save"> Save</i></button>
+                                                                                    </div>
+                                                                                <% } %>
                                                                             </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="act_id_s2_1">Activity</label>
-                                                                                <select class="form-select" id="act_id_s2_1" name="act_id" required="" onchange="changeActId('s2',1)">
-                                                                                    <option selected="" value="">Select Section</option>
-                                                                                    <% if(act_list.length > 0){
-                                                                                        act_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.act_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="emi_type_id_s2_1">Emission Type</label>
-                                                                                <select class="form-select" id="emi_type_id_s2_1" name="emi_type_id" required="">
-                                                                                    <option selected="" value="">Please select an emission type</option>
-                                                                                    <% if(emi_type.length > 0){
-                                                                                        emi_type.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="repo_period_s2_1">Reporting period</label>
-                                                                                <select class="form-select" id="repo_period_s2_1" name="repo_period" required="">
-                                                                                    <option selected="" value="">Select One</option>
-                                                                                    <% if(year_list.length > 0){
-                                                                                        year_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt %>"><%= dt %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="strt_month_s2_1">Start Month</label>
-                                                                                <select class="form-select" id="strt_month_s2_1" name="strt_month" required="" onchange="calSelectMonth('s2',1)">
-                                                                                    <option selected="" value="">Select One</option>
-                                                                                    <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                                                    if(months.length > 0){
-                                                                                        months.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt %>"><%= dt %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-12">
-                                                                                <table class="table" id="cal_val_entry_table_s2_1">
-                                                                                    <thead>
-                                                                                        <tr>
-                                                                                            <th>Month</th>
-                                                                                            <th>Unit</th>
-                                                                                            <th>Values</th>
-                                                                                            <th>Emission factors</th>
-                                                                                            <th>Kg CO2e</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody></tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                        </div>
+                                                                        <% } %>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -835,87 +1092,212 @@
                                                                         <% } %>
                                                                     </div>
                                                                     <div class="col-md-12" id="calDetails_s3">
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="type_id_s3_1">Section</label>
-                                                                                <select class="form-select" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)">
-                                                                                    <option selected="" value="">Select Section</option>
-                                                                                    <% if(type_list.length > 0){
-                                                                                        type_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
+                                                                        <% if('s3' in ghg_emi_data){
+                                                                            var sc_len = ghg_emi_data['s3'].length / 12;
+                                                                            for(let sc = 1; sc <= sc_len; sc++){
+                                                                                var newGhgDt = ghg_emi_data['s3'].filter(dt => dt.sl_no == sc && dt.scope == 's3')
+                                                                                %>
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="type_id_s3_<%= sc %>">Section</label>
+                                                                                            <select class="form-select" id="type_id_s3_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s3','<%= sc %>')">
+                                                                                                <option selected="" value="">Select Section</option>
+                                                                                                <% if(type_list.length > 0){
+                                                                                                    type_list.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].sec_id == dt.id)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <script>
+                                                                                            $(document).ready(async function(){
+                                                                                                await changeTypeId('s3','<%= sc %>', '<%= newGhgDt[0].act_id %>')
+                                                                                                await changeActId('s3','<%= sc %>', '<%= newGhgDt[0].emi_type_id %>')
+                                                                                            })
+                                                                                        </script>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="act_id_s3_<%= sc %>">Activity</label>
+                                                                                            <select class="form-select" id="act_id_s3_<%= sc %>" name="act_id" required="" onchange="changeActId('s3','<%= sc %>')">
+                                                                                                <option selected="" value="">Select Section</option>
+                                                                                                <% if(act_list.length > 0){
+                                                                                                    act_list.forEach(dt => { 
+                                                                                                        var selected = ''; %>
+                                                                                                        <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="emi_type_id_s3_<%= sc %>">Emission Type</label>
+                                                                                            <select class="form-select" id="emi_type_id_s3_<%= sc %>" name="emi_type_id" required="">
+                                                                                                <option selected="" value="">Please select an emission type</option>
+                                                                                                <% if(emi_type.length > 0){
+                                                                                                    emi_type.forEach(dt => { 
+                                                                                                        var selected = ''; %>
+                                                                                                        <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="repo_period_s3_<%= sc %>">Reporting period</label>
+                                                                                            <select class="form-select" id="repo_period_s3_<%= sc %>" name="repo_period" required="">
+                                                                                                <option selected="" value="">Select One</option>
+                                                                                                <% if(year_list.length > 0){
+                                                                                                    year_list.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].repo_period == dt)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-6 m-t-10">
+                                                                                            <label class="form-label float-start" for="strt_month_s3_<%= sc %>">Start Month</label>
+                                                                                            <select class="form-select" id="strt_month_s3_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s3','<%= sc %>')">
+                                                                                                <option selected="" value="">Select One</option>
+                                                                                                <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                                if(months.length > 0){
+                                                                                                    months.forEach(dt => { 
+                                                                                                        var selected = '';
+                                                                                                        if(newGhgDt.length > 0)
+                                                                                                            if(newGhgDt[0].repo_month == dt)
+                                                                                                                selected = 'selected'; %>
+                                                                                                        <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                    <% })
+                                                                                                } %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-md-12 m-t-10 table-responsive">
+                                                                                            <table class="table table-bordered" id="cal_val_entry_table_s3_<%= sc %>">
+                                                                                                <thead>
+                                                                                                    <tr>
+                                                                                                        <th>Month</th>
+                                                                                                        <th>Unit</th>
+                                                                                                        <th>Values</th>
+                                                                                                        <th>Emission factors</th>
+                                                                                                        <th>Kg CO2e</th>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                    <% if(newGhgDt.length > 0){
+                                                                                                        var nextCalField = 1;
+                                                                                                        newGhgDt.forEach(gdt => { %>
+                                                                                                            <tr>
+                                                                                                                <td><%= gdt.repo_month %></td>
+                                                                                                                <td>
+                                                                                                                    <select class="form-select" id="emi_type_unit_id_s3_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" required="" onchange="setCalVal('s3', '<%= sc %>', '<%= nextCalField %>')">
+                                                                                                                        <option selected="" value="">Please select unit of measurement</option>
+                                                                                                                    </select>
+                                                                                                                </td>
+                                                                                                                <td><input class="form-control" id="cal_val_s3_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                <td><input class="form-control" id="emi_fact_val_s3_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
+                                                                                                                <td><input class="form-control" id="co_val_s3_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                            </tr>
+                                                                                                    <%  nextCalField++; })} %>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                        <% if(user_type != 'V'){ %>
+                                                                                            <div class="col-md-10"></div>
+                                                                                            <div class="col-md-2 m-t-10">
+                                                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                                            </div>
+                                                                                        <% } %>
+                                                                                    </div>
+                                                                                <%
+                                                                            }
+                                                                        }else{ %>
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="type_id_s3_1">Section</label>
+                                                                                    <select class="form-select" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)">
+                                                                                        <option selected="" value="">Select Section</option>
+                                                                                        <% if(type_list.length > 0){
+                                                                                            type_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="act_id_s3_1">Activity</label>
+                                                                                    <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)">
+                                                                                        <option selected="" value="">Select Section</option>
+                                                                                        <% if(act_list.length > 0){
+                                                                                            act_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="emi_type_id_s3_1">Emission Type</label>
+                                                                                    <select class="form-select" id="emi_type_id_s3_1" name="emi_type_id" required="">
+                                                                                        <option selected="" value="">Please select an emission type</option>
+                                                                                        <% if(emi_type.length > 0){
+                                                                                            emi_type.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="repo_period_s3_1">Reporting period</label>
+                                                                                    <select class="form-select" id="repo_period_s3_1" name="repo_period" required="">
+                                                                                        <option selected="" value="">Select One</option>
+                                                                                        <% if(year_list.length > 0){
+                                                                                            year_list.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt %>"><%= dt %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 m-t-10">
+                                                                                    <label class="form-label float-start" for="strt_month_s3_1">Start Month</label>
+                                                                                    <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)">
+                                                                                        <option selected="" value="">Select One</option>
+                                                                                        <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                        if(months.length > 0){
+                                                                                            months.forEach(dt => { 
+                                                                                                var selected = ''; %>
+                                                                                                <option value="<%= dt %>"><%= dt %></option>
+                                                                                            <% })
+                                                                                        } %>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-12 m-t-10 table-responsive">
+                                                                                    <table class="table table-bordered" id="cal_val_entry_table_s3_1">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Month</th>
+                                                                                                <th>Unit</th>
+                                                                                                <th>Values</th>
+                                                                                                <th>Emission factors</th>
+                                                                                                <th>Kg CO2e</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody></tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                                <% if(user_type != 'V'){ %>
+                                                                                    <div class="col-md-10"></div>
+                                                                                    <div class="col-md-2 m-t-10">
+                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3',1)"><i class="icofont icofont-save"> Save</i></button>
+                                                                                    </div>
+                                                                                <% } %>
                                                                             </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="act_id_s3_1">Activity</label>
-                                                                                <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)">
-                                                                                    <option selected="" value="">Select Section</option>
-                                                                                    <% if(act_list.length > 0){
-                                                                                        act_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.act_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="emi_type_id_s3_1">Emission Type</label>
-                                                                                <select class="form-select" id="emi_type_id_s3_1" name="emi_type_id" required="">
-                                                                                    <option selected="" value="">Please select an emission type</option>
-                                                                                    <% if(emi_type.length > 0){
-                                                                                        emi_type.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="repo_period_s3_1">Reporting period</label>
-                                                                                <select class="form-select" id="repo_period_s3_1" name="repo_period" required="">
-                                                                                    <option selected="" value="">Select One</option>
-                                                                                    <% if(year_list.length > 0){
-                                                                                        year_list.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt %>"><%= dt %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-6 m-t-10">
-                                                                                <label class="form-label float-start" for="strt_month_s3_1">Start Month</label>
-                                                                                <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)">
-                                                                                    <option selected="" value="">Select One</option>
-                                                                                    <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                                                    if(months.length > 0){
-                                                                                        months.forEach(dt => { 
-                                                                                            var selected = ''; %>
-                                                                                            <option value="<%= dt %>"><%= dt %></option>
-                                                                                        <% })
-                                                                                    } %>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="col-md-12 m-t-10 table-responsive">
-                                                                                <table class="table table-bordered" id="cal_val_entry_table_s3_1">
-                                                                                    <thead>
-                                                                                        <tr>
-                                                                                            <th>Month</th>
-                                                                                            <th>Unit</th>
-                                                                                            <th>Values</th>
-                                                                                            <th>Emission factors</th>
-                                                                                            <th>Kg CO2e</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody></tbody>
-                                                                                </table>
-                                                                            </div>
-                                                                            <div class="col-md-10"></div>
-                                                                            <div class="col-md-2 m-t-10">
-                                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3',1)"><i class="icofont icofont-save"> Save</i></button>
-                                                                            </div>
-                                                                        </div>
+                                                                        <% } %>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1109,7 +1491,7 @@
     }
 </script>
 <script>
-    function changeTypeId(scope, id){
+    function changeTypeId(scope, id, act_id = 0){
         $(`label[for="emi_type_id_${scope}_${id}"]`).text($(`#type_id_${scope}_${id}`).attr('dt-set'))
         $.ajax({
             method:'POST',
@@ -1126,7 +1508,11 @@
                 $(`#act_id_${scope}_${id}`).append($('<option>', {value: '', text: 'Select Activity'}));
                 if(res.suc > 0 && res.msg.length > 0){
                     $.each(res.msg, function (i, item) {
-                        $(`#act_id_${scope}_${id}`).append($('<option>', {value: item.id, text: item.act_name}));
+                        var _selected = false
+                        if(act_id > 0)
+                            if(act_id == item.id)
+                                _selected = true;
+                        $(`#act_id_${scope}_${id}`).append($('<option>', {value: item.id, text: item.act_name, selected: _selected}));
                     });
                 }
             },
@@ -1137,7 +1523,7 @@
     }
 </script>
 <script>
-    function changeActId(scope, id){
+    function changeActId(scope, id, emi_type_id = 0){
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
@@ -1153,7 +1539,11 @@
                 $(`#emi_type_id_${scope}_${id}`).append($('<option>', {value: '', text: 'Select One'}));
                 if(res.suc > 0 && res.msg.length > 0){
                     $.each(res.msg, function (i, item) {
-                        $(`#emi_type_id_${scope}_${id}`).append($('<option>', {value: item.id, text: item.emi_name}));
+                        var _selected = false
+                        if(emi_type_id > 0)
+                            if(emi_type_id == item.id)
+                                _selected = true;
+                        $(`#emi_type_id_${scope}_${id}`).append($('<option>', {value: item.id, text: item.emi_name, selected: _selected}));
                     });
                 }
             },
@@ -1280,8 +1670,8 @@
                     } %>
                 </select>
             </div>
-            <div class="col-md-12">
-                <table class="table" id="cal_val_entry_table_${scope}_${nextCalField}">
+            <div class="col-md-12 m-t-10 table-responsive">
+                <table class="table table-bordered" id="cal_val_entry_table_${scope}_${nextCalField}">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -1294,6 +1684,12 @@
                     <tbody></tbody>
                 </table>
             </div>
+            <% if(user_type != 'V'){ %>
+                <div class="col-md-10"></div>
+                <div class="col-md-2 m-t-10">
+                    <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('${scope}',${nextCalField})"><i class="icofont icofont-save"> Save</i></button>
+                </div>
+            <% } %>
         </div>
         `)
     }
@@ -1324,7 +1720,7 @@
             <tr>
                 <td>${m}</td>
                 <td>
-                    <select class="form-select" id="emi_type_unit_id_${scope}_${nextCalField}_${id}" name="emi_type_id" required="" onchange="setCalVal('${scope}', ${id}, '${nextCalField}')">
+                    <select class="form-select" id="emi_type_unit_id_${scope}_${nextCalField}_${id}" name="emi_type_unit_id" required="" onchange="setCalVal('${scope}', ${id}, '${nextCalField}')">
                         <option selected="" value="">Please select unit of measurement</option>
                         <% if(emi_type.length > 0){
                             emi_type.forEach(dt => { 
@@ -1361,6 +1757,7 @@
         var selMonthIndex = months.findIndex(dt => dt === selMonth)
         var monthCount = selMonthIndex,
         currMonth = [];
+        var req_data = [];
         for(let dt of months){
             if(monthCount > (months.length-1)){
                 monthCount = 0
@@ -1369,6 +1766,32 @@
             monthCount++;
         }
         console.log(type_id,act_id,emi_type_id,repo_period,currMonth);
+        var m_i = 1
+        for(let dt of currMonth){
+            req_data.push({month: dt, emi_type_unit_id: $(`#emi_type_unit_id_${scope}_${m_i}_${id}`).val(), cal_val: $(`#cal_val_${scope}_${m_i}_${id}`).val(), emi_fact_val: $(`#emi_fact_val_${scope}_${m_i}_${id}`).val(), co_val: $(`#co_val_${scope}_${m_i}_${id}`).val()})
+            m_i++;
+        }
+
+        $.ajax({
+            method:'POST',
+            url: '/save_ghg_emi_val',
+            data: {sl_no: id, scope, sec_id: type_id, act_id, emi_type_id, repo_period, req_data: JSON.stringify(req_data)},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                // var res = JSON.parse(result);
+                console.log(result);
+            },
+            error: function(err){
+                console.log(err);
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+        console.log(req_data);
     }
 </script>
 <%- include('../templates/footer.ejs') %>

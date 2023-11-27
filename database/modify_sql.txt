@@ -10,3 +10,45 @@ ALTER TABLE `td_sus_dis_top_met` ADD `words` TEXT NULL DEFAULT NULL AFTER `code`
 ALTER TABLE `td_client` ADD `ai_tag_tool_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `plan_deactive_dt`;
 
 ALTER TABLE `md_cal_emi_val` ADD `repo_period` INT(11) NOT NULL AFTER `emi_type_id`;
+
+CREATE TABLE `td_ghg_emission` (
+  `id` int(11) NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `scope` varchar(3) NOT NULL,
+  `entry_dt` date NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `sl_no` int(11) NOT NULL,
+  `sec_id` int(11) NOT NULL,
+  `act_id` int(11) NOT NULL,
+  `emi_type_id` int(11) NOT NULL,
+  `repo_period` int(11) NOT NULL,
+  `repo_month` varchar(4) NOT NULL,
+  `emi_type_unit_id` int(11) NOT NULL,
+  `cal_val` float(10,2) NOT NULL DEFAULT 0.00,
+  `emi_fact_val` float(10,2) NOT NULL DEFAULT 0.00,
+  `co_val` float(10,2) NOT NULL DEFAULT 0.00,
+  `created_by` varchar(50) DEFAULT NULL,
+  `created_dt` datetime DEFAULT NULL,
+  `modified_by` varchar(50) DEFAULT NULL,
+  `modified_dt` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `td_ghg_emission`
+--
+ALTER TABLE `td_ghg_emission`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `td_ghg_emission`
+--
+ALTER TABLE `td_ghg_emission`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

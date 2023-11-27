@@ -114,5 +114,38 @@ module.exports = {
             var chk_dt = await db_Select(select, table_name, whr, order)
             resolve(chk_dt)
         })
+    },
+    getGhgEmiList: (client_id, id = 0) => {
+        return new Promise(async (resolve, reject) => {
+            var select = '*',
+                table_name = 'td_ghg_emission', 
+                whr = `client_id = ${client_id} ${id > 0 ? `AND id=${id}` : ''}`, 
+                order = null;
+            var chk_dt = await db_Select(select, table_name, whr, order)
+            resolve(chk_dt)
+        })
+    },
+    saveGhgEmi: (data, user_id, user, client_id) => {
+        return new Promise(async (resolve, reject) => {
+            var res_dt = '', nowDate = dateFormat(new Date(), "yyyy-mm-dd"), datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+            data.req_data = JSON.parse(data.req_data);
+            if(Array.isArray(data.req_data)){
+                for (let dt of data.req_data){
+                    var select = "id",
+                      table_name = "td_ghg_emission",
+                      whr = `client_id = ${client_id} AND scope = '${data.scope}' AND sl_no = ${data.sl_no} AND sec_id = ${data.sec_id} AND act_id = ${data.act_id} AND emi_type_id = ${data.emi_type_id} AND repo_period = ${data.repo_period} AND repo_month = '${dt.month}'`,
+                      order = null;
+                    var chk_dt = await db_Select(select, table_name, whr, order)
+                    var table_name = "td_ghg_emission",
+                        fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `emi_type_unit_id = '${dt.emi_type_unit_id}', cal_val = '${dt.cal_val}', emi_fact_val = '${dt.emi_fact_val}', co_val = '${dt.co_val}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+                        '(client_id, scope, entry_dt, user_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)',
+                        values = `(${client_id}, '${data.scope}', '${nowDate}', '${user_id}', '${data.sl_no}', '${data.sec_id}', '${data.act_id}', '${data.emi_type_id}', '${data.repo_period}', '${dt.month}', '${dt.emi_type_unit_id}', '${dt.cal_val}', '${dt.emi_fact_val}', '${dt.co_val}', '${user}', '${datetime}')`,
+                        whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+                        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+                    res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                }
+            }
+            resolve(res_dt)
+        })
     }
 }

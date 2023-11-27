@@ -2,7 +2,7 @@ const { getSectorList, getIndustriesList, getBusiActList } = require('../modules
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert, db_Delete } = require('../modules/MasterModule');
-const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork } = require('../modules/ProjectModule');
+const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 const dateFormat = require("dateformat");
 
@@ -192,6 +192,17 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
     emi_type = {suc:0,msg:[]};
     var year_list=[], currDate = new Date();
+    var ghg_emi_list = await getGhgEmiList(req.session.user.client_id)
+    ghg_emi_list = ghg_emi_list.suc > 0 ? (ghg_emi_list.msg.length > 0 ? ghg_emi_list.msg : []) : [];
+    var scope_list = ghg_emi_list.length > 0 ? ghg_emi_list.map(dt => dt.scope) : []
+    scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
+    var ghg_emi_data = {};
+    if(scope_list.length > 0){
+        for(let dt of scope_list){
+            ghg_emi_data[dt] = ghg_emi_list.filter(fdt => fdt.scope == dt)
+        }
+    }
+    console.log(ghg_emi_data);
     // console.log(parseInt(currDate.getFullYear()));
     for(let i = 0; i<=6; i++){
         // console.log(i, 'Year');
@@ -234,6 +245,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         type_list: type_list.suc > 0 ? type_list.msg : [],
         act_list: act_list.suc > 0 ? act_list.msg : [],
         emi_type: emi_type.suc > 0 ? emi_type.msg : [],
+        ghg_emi_data,
         year_list,
         header: "Project Work",
         sub_header: "Project View",
@@ -301,6 +313,17 @@ ProjectRouter.get('/other_report_view', async (req, res) => {
 
 ProjectRouter.get('/test', async (req, res) => {
     res.render("project_work/test");
+})
+
+ProjectRouter.post('/save_ghg_emi_val', async (req, res) => {
+    var data = req.body
+    console.log(data);
+    if(data){
+        var res_dt = await saveGhgEmi(data, req.session.user.id, req.session.user.user_name, req.session.user.client_id)
+        res.send(res_dt);
+    }else{
+        res.send({suc:0, msg: 'No data found'})
+    }
 })
 
 module.exports = {ProjectRouter}
