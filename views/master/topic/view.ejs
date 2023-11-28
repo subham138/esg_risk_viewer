@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 my-2">
-                            <a href="/topic_edit?id=0" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</a>
+                            <a href="/topic_edit?id=0&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</a>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -49,7 +49,7 @@
                                             <td><%= i %></td>
                                             <td><%= dt.topic_catg %></td>
                                             <td><%= dt.topic_name %></td>
-                                            <td><a href="/topic_edit?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <td><a href="/topic_edit?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                             <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">

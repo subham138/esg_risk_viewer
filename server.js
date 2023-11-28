@@ -90,9 +90,14 @@ app.get("/", (req, res) => {
   }
 });
 
-app.post('/test', (req, res) => {
-  console.log(req.files);
-  res.send('LALA')
+app.get('/test_lala', (req, res) => {
+  var enc = Buffer.from('F').toString('base64'),
+  dec = new Buffer.from(enc, 'base64').toString();
+  console.log(dec);
+  res.send(encodeURIComponent(enc))
+  // console.log(req.files);
+  // res.send('LALA')
+  // res.render('test')
 })
 
 app.use(UserRouter);

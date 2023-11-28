@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 my-2">
-                            <a href="/busi_act_edit?id=0" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new business activities" data-bs-original-title="Edit">Add New Business Activities</a>
+                            <a href="/busi_act_edit?id=0&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new business activities" data-bs-original-title="Edit">Add New Business Activities</a>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -51,10 +51,10 @@
                                             <td><%= dt.sec_name %></td>
                                             <td><%= dt.ind_name %></td>
                                             <td><%= dt.busi_act_name %></td>
-                                            <td><a href="/busi_act_edit?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <td><a href="/busi_act_edit?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
-                                            <a href="/busi_act_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return delItem();">
+                                            <a href="/busi_act_del?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return delItem();">
                                                 <i class="icofont icofont-ui-delete"></i> Delete
                                             </a>
                                             </td>

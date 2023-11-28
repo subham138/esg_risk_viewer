@@ -19,14 +19,15 @@
             <div class="card">
             <div class="card-body">
                 <form method="POST" id="formPost" action="/sec_save">
-                <div class="row g-3 py-3">
-                    <div class="col-md-12">
-                    <label class="form-label" for="sec_name">Sector name</label>
-                    <input class="form-control" id="sec_name" name="sec_name" type="text" value="<%= sec_id > 0 ? data.msg[0].sec_name : '' %>" required="required">
+                    <div class="row g-3 py-3">
+                        <div class="col-md-12">
+                            <label class="form-label" for="sec_name">Sector name</label>
+                            <input class="form-control" id="sec_name" name="sec_name" type="text" value="<%= sec_id > 0 ? data.msg[0].sec_name : '' %>" required="required">
+                        </div>
                     </div>
-                </div>
-                <input type="hidden" name="id" value="<%= sec_id > 0 ? sec_id : 0 %>">
-                <button class="btn btn-primary" type="button" id="subBtn">Submit</button>
+                    <input type="hidden" name="id" value="<%= sec_id > 0 ? sec_id : 0 %>">
+                    <input type="hidden" name="flag" value="<%= flag ? flag : '' %>">
+                    <button class="btn btn-primary" type="button" id="subBtn">Submit</button>
                 </form>
             </div>
             </div>
@@ -37,7 +38,7 @@
     $("#subBtn").click(function (event) {
         var secVal = $('#sec_name').val()
         secVal = secVal.split(' ').join('')
-        console.log(secVal.length);
+        // console.log(secVal.length);
         if(secVal.length > 0){
             $("form").submit()
         }else{
@@ -46,7 +47,7 @@
     })
     function checkSave(){
         var secVal = $('#sec_name').val()
-        console.log(secVal.length);
+        // console.log(secVal.length);
         return false;
     }
 </script>

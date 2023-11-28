@@ -22,20 +22,25 @@ DataCollectionRouter.use((req, res, next) => {
 })
 
 DataCollectionRouter.get("/sus_disc", async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from(enc_dt, 'base64').toString();
+
   var selected = {
     sec_id: req.query.sec_id ? req.query.sec_id : 0,
     ind_id: req.query.ind_id ? req.query.ind_id : 0,
   };
-  var sec_data = await getSectorList(),
+  var sec_data = await getSectorList(0, flag),
     ind_list = { msg: [] };
   if (selected.sec_id > 0)
-    ind_list = await getIndustriesList(null, selected.sec_id);
+    ind_list = await getIndustriesList(null, selected.sec_id, flag);
   // console.log(ind_list);
   var data = {
     sec_data,
     ind_list,
     selected,
     header: "Sustainability Disclosure Topics & Metrics",
+    flag,
+    enc_dt,
   };
   res.render("data_collection/sus_disc", data);
 });
@@ -45,67 +50,119 @@ DataCollectionRouter.post("/save_sus_disc", async (req, res) => {
     res_dt,
     user = "admin",
     datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
-  for (let dt of data.top_id) {
-    // console.log(dt);
-    var j = 1;
-    // console.log(Array.isArray(data[`metric_${dt}`]));
-    if (Array.isArray(data[`metric_${dt}`])) {
-      for (let i = 0; i < data[`metric_${dt}`].length; i++) {
-        var chk_whr = `sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
+    // console.log(data);
+    if(Array.isArray(data.top_id)){
+      for (let dt of data.top_id) {
+        // console.log(dt);
+        var j = 1;
+        // console.log(Array.isArray(data[`metric_${dt}`]));
+        if (Array.isArray(data[`metric_${dt}`])) {
+          for (let i = 0; i < data[`metric_${dt}`].length; i++) {
+            var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
+            var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+    
+            var table_name = `td_sus_dis_top_met`,
+              fields =
+                chk_dt.suc > 0 && chk_dt.msg.length > 0
+                  ? `top_id = '${dt}', ind_agn = '${data[`ind_agn_${dt}`][i]}', metric = '${data[`metric_${dt}`][i]}', catg = '${data[`catg_${dt}`][i]}', unit = '${
+                      data[`unit_${dt}`][i]
+                    }', code = '${
+                      data[`code_${dt}`][i]
+                    }', words = '${data[`words_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`
+                  : "(repo_flag, sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
+              values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`][i]}', '${data[`metric_${dt}`][i]}', '${data[`catg_${dt}`][i]}', '${data[`unit_${dt}`][i]}', '${data[`code_${dt}`][i]}', '${data[`words_${dt}`][i]}', '${user}', '${datetime}')`,
+              whr =
+                chk_dt.suc > 0 && chk_dt.msg.length > 0
+                  ? `id = '${chk_dt.msg[0].id}'`
+                  : null,
+              flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag);
+            j++;
+          }
+        } else {
+          var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
+          var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+          console.log(chk_dt);
+          var table_name = `td_sus_dis_top_met`,
+            fields =
+              chk_dt.suc > 0 && chk_dt.msg.length > 0
+                ? `top_id = '${dt}', ind_agn = '${data[`ind_agn_${dt}`]}', metric = '${data[`metric_${dt}`]}', catg = '${
+                    data[`catg_${dt}`]
+                  }', unit = '${data[`unit_${dt}`]}', code = '${
+                    data[`code_${dt}`]
+                  }', words = '${data[`words_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`
+                : "(repo_flag, sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
+            values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`]}', '${data[`metric_${dt}`]}', '${data[`catg_${dt}`]}', '${data[`unit_${dt}`]}', '${
+              data[`code_${dt}`]
+            }', '${data[`words_${dt}`]}', '${user}', '${datetime}')`,
+            whr =
+              chk_dt.suc > 0 && chk_dt.msg.length > 0
+                ? `id = '${chk_dt.msg[0].id}'`
+                : null,
+            flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+          res_dt = await db_Insert(table_name, fields, values, whr, flag);
+        }
+      }
+    }else{
+      var dt = data.top_id
+      var j = 1;
+      if (Array.isArray(data[`metric_${dt}`])) {
+        for (let i = 0; i < data[`metric_${dt}`].length; i++) {
+          var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
+          var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+  
+          var table_name = `td_sus_dis_top_met`,
+            fields =
+              chk_dt.suc > 0 && chk_dt.msg.length > 0
+                ? `top_id = '${dt}', ind_agn = '${data[`ind_agn_${dt}`][i]}', metric = '${data[`metric_${dt}`][i]}', catg = '${data[`catg_${dt}`][i]}', unit = '${
+                    data[`unit_${dt}`][i]
+                  }', code = '${
+                    data[`code_${dt}`][i]
+                  }', words = '${data[`words_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`
+                : "(repo_flag, sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
+            values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`][i]}', '${data[`metric_${dt}`][i]}', '${data[`catg_${dt}`][i]}', '${data[`unit_${dt}`][i]}', '${data[`code_${dt}`][i]}', '${data[`words_${dt}`][i]}', '${user}', '${datetime}')`,
+            whr =
+              chk_dt.suc > 0 && chk_dt.msg.length > 0
+                ? `id = '${chk_dt.msg[0].id}'`
+                : null,
+            flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+          res_dt = await db_Insert(table_name, fields, values, whr, flag);
+          j++;
+        }
+      } else {
+        var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
         var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
-
+        console.log(chk_dt);
         var table_name = `td_sus_dis_top_met`,
           fields =
             chk_dt.suc > 0 && chk_dt.msg.length > 0
-              ? `top_id = '${dt}', ind_agn = '${data[`ind_agn_${dt}`][i]}', metric = '${data[`metric_${dt}`][i]}', catg = '${data[`catg_${dt}`][i]}', unit = '${
-                  data[`unit_${dt}`][i]
-                }', code = '${
-                  data[`code_${dt}`][i]
-                }', words = '${data[`words_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`
-              : "(sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
-          values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`][i]}', '${data[`metric_${dt}`][i]}', '${data[`catg_${dt}`][i]}', '${data[`unit_${dt}`][i]}', '${data[`code_${dt}`][i]}', '${data[`words_${dt}`][i]}', '${user}', '${datetime}')`,
+              ? `top_id = '${dt}', ind_agn = '${data[`ind_agn_${dt}`]}', metric = '${data[`metric_${dt}`]}', catg = '${
+                  data[`catg_${dt}`]
+                }', unit = '${data[`unit_${dt}`]}', code = '${
+                  data[`code_${dt}`]
+                }', words = '${data[`words_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`
+              : "(repo_flag, sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
+          values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`]}', '${data[`metric_${dt}`]}', '${data[`catg_${dt}`]}', '${data[`unit_${dt}`]}', '${
+            data[`code_${dt}`]
+          }', '${data[`words_${dt}`]}', '${user}', '${datetime}')`,
           whr =
             chk_dt.suc > 0 && chk_dt.msg.length > 0
               ? `id = '${chk_dt.msg[0].id}'`
               : null,
           flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
         res_dt = await db_Insert(table_name, fields, values, whr, flag);
-        j++;
       }
-    } else {
-      var chk_whr = `sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
-      var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
-      console.log(chk_dt);
-      var table_name = `td_sus_dis_top_met`,
-        fields =
-          chk_dt.suc > 0 && chk_dt.msg.length > 0
-            ? `top_id = '${dt}', ind_agn = '${data[`ind_agn_${dt}`]}', metric = '${data[`metric_${dt}`]}', catg = '${
-                data[`catg_${dt}`]
-              }', unit = '${data[`unit_${dt}`]}', code = '${
-                data[`code_${dt}`]
-              }', words = '${data[`words_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`
-            : "(sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, created_by, created_dt)",
-        values = `('${data.sec_id}', '${data.ind_id}', '${dt}', '${j}', '${data[`ind_agn_${dt}`]}', '${data[`metric_${dt}`]}', '${data[`catg_${dt}`]}', '${data[`unit_${dt}`]}', '${
-          data[`code_${dt}`]
-        }', '${data[`words_${dt}`]}', '${user}', '${datetime}')`,
-        whr =
-          chk_dt.suc > 0 && chk_dt.msg.length > 0
-            ? `id = '${chk_dt.msg[0].id}'`
-            : null,
-        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
-      res_dt = await db_Insert(table_name, fields, values, whr, flag);
     }
-  }
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
     message: res_dt.msg,
   };
-  res.redirect(`/sus_disc?sec_id=${data.sec_id}&ind_id=${data.ind_id}`);
+  res.redirect(`/sus_disc?sec_id=${data.sec_id}&ind_id=${data.ind_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
 });
 
 DataCollectionRouter.get("/sus_disc_ajax", async (req, res) => {
   var data = req.query;
-  var res_dt = await getSusDiscList(data.sec_id, data.ind_id, 0);
+  var res_dt = await getSusDiscList(data.sec_id, data.ind_id, 0, data.flag);
   res_dt = {
     suc: res_dt.suc > 0 ? (res_dt.msg.length > 0 ? 1 : 2) : res_dt.suc,
     msg: res_dt.msg,
@@ -114,20 +171,24 @@ DataCollectionRouter.get("/sus_disc_ajax", async (req, res) => {
 });
 
 DataCollectionRouter.get("/act_metric", async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from(enc_dt, 'base64').toString();
+
   var selected = {
     sec_id: req.query.sec_id ? req.query.sec_id : 0,
     ind_id: req.query.ind_id ? req.query.ind_id : 0,
   };
-  var sec_data = await getSectorList(),
+  var sec_data = await getSectorList(0, flag),
     ind_list = { msg: [] };
   if (selected.sec_id > 0)
-    ind_list = await getIndustriesList(null, selected.sec_id);
+    ind_list = await getIndustriesList(null, selected.sec_id, flag);
   // console.log(ind_list);
   var data = {
     sec_data,
     ind_list,
     selected,
     header: "Activity Metrics",
+    flag,
   };
   res.render("data_collection/act_metric", data);
 });
@@ -140,15 +201,15 @@ DataCollectionRouter.post("/save_act_metric", async (req, res) => {
   let j = 1;
   if (Array.isArray(data.act_metric)) {
     for (let i = 0; i < data.act_metric.length; i++) {
-      var chk_whr = `sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND sl_no = ${j}`;
+      var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND sl_no = ${j}`;
       var chk_dt = await db_Select("id", "td_act_metrics", chk_whr, null);
 
       var table_name = `td_act_metrics`,
         fields =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
             ? `act_metric = '${data.act_metric[i]}', catg = '${data.catg[i]}', unit = '${data.unit[i]}', code = '${data.code[i]}', modified_by= '${user}', modified_dt = '${datetime}'`
-            : "(sec_id, ind_id, sl_no, act_metric, catg, unit, code, created_by, created_dt)",
-        values = `('${data.sec_id}', '${data.ind_id}', '${j}', '${data.act_metric[i]}', '${data.catg[i]}', '${data.unit[i]}', '${data.code[i]}', '${user}', '${datetime}')`,
+            : "(repo_flag, sec_id, ind_id, sl_no, act_metric, catg, unit, code, created_by, created_dt)",
+        values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${j}', '${data.act_metric[i]}', '${data.catg[i]}', '${data.unit[i]}', '${data.code[i]}', '${user}', '${datetime}')`,
         whr =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
             ? `id = '${chk_dt.msg[0].id}'`
@@ -158,15 +219,15 @@ DataCollectionRouter.post("/save_act_metric", async (req, res) => {
       j++;
     }
   } else {
-    var chk_whr = `sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND sl_no = ${j}`;
+    var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND sl_no = ${j}`;
     var chk_dt = await db_Select("id", "td_act_metrics", chk_whr, null);
 
     var table_name = `td_act_metrics`,
       fields =
         chk_dt.suc > 0 && chk_dt.msg.length > 0
           ? `act_metric = '${data.act_metric}', catg = '${data.catg}', unit = '${data.unit}', code = '${data.code}', modified_by= '${user}', modified_dt = '${datetime}'`
-          : "(sec_id, ind_id, sl_no, act_metric, catg, unit, code, created_by, created_dt)",
-      values = `('${data.sec_id}', '${data.ind_id}', '${j}', '${data.act_metric}', '${data.catg}', '${data.unit}', '${data.code}', '${user}', '${datetime}')`,
+          : "(repo_flag, sec_id, ind_id, sl_no, act_metric, catg, unit, code, created_by, created_dt)",
+      values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${j}', '${data.act_metric}', '${data.catg}', '${data.unit}', '${data.code}', '${user}', '${datetime}')`,
       whr =
         chk_dt.suc > 0 && chk_dt.msg.length > 0
           ? `id = '${chk_dt.msg[0].id}'`
@@ -179,13 +240,13 @@ DataCollectionRouter.post("/save_act_metric", async (req, res) => {
     type: res_dt.suc > 0 ? "success" : "danger",
     message: res_dt.msg,
   };
-  res.redirect(`/act_metric?sec_id=${data.sec_id}&ind_id=${data.ind_id}`);
+  res.redirect(`/act_metric?sec_id=${data.sec_id}&ind_id=${data.ind_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   // res.send(res_dt)
 });
 
 DataCollectionRouter.get("/get_act_metric_ajax", async (req, res) => {
   var data = req.query;
-  var res_dt = await getActMetrialDtls(data.sec_id, data.ind_id);
+  var res_dt = await getActMetrialDtls(data.sec_id, data.ind_id, data.flag);
   res_dt = {
     suc: res_dt.suc > 0 ? (res_dt.msg.length > 0 ? 1 : 2) : res_dt.suc,
     msg: res_dt.msg,
@@ -194,30 +255,39 @@ DataCollectionRouter.get("/get_act_metric_ajax", async (req, res) => {
 });
 
 DataCollectionRouter.get('/dynamic_entry_view', async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from(enc_dt, 'base64').toString();
+
   var req_data = req.query
-  var dynamic_data = await getDynamicData()
+  var dynamic_data = await getDynamicData(0, 0, 0, 0, flag)
   var data = {
     dynamic_data,
     header: "Dynamic Data List",
+    flag,
+    enc_dt
   };
   res.render("data_collection/dynamic_form/view", data);
 })
 
 DataCollectionRouter.get("/dynamic_entry", async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from(enc_dt, 'base64').toString();
+
   var selected = {
     sec_id: req.query.sec_id ? req.query.sec_id : 0,
     ind_id: req.query.ind_id ? req.query.ind_id : 0,
   };
-  var sec_data = await getSectorList(),
+  var sec_data = await getSectorList(0, flag),
     ind_list = { msg: [] };
   if (selected.sec_id > 0)
-    ind_list = await getIndustriesList(null, selected.sec_id);
+    ind_list = await getIndustriesList(null, selected.sec_id, flag);
   // console.log(ind_list);
   var data = {
     sec_data,
     ind_list,
     selected,
     header: "Date Collection",
+    flag
   };
   res.render("data_collection/dynamic_form/entry", data);
 });
@@ -233,7 +303,7 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
     row = [],
     dynamic_data = [];
 
-    console.log(data)
+    // console.log(data)
   
   for(let dt of data.section_id){
     var dynamic_data_obj = {}
@@ -251,7 +321,7 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
           const chunk = data[`table_${dt}_body`].slice(i, i + chunkSize);
           table_row.push({...chunk});
       }
-      console.log(table_row);
+      // console.log(table_row);
       dynamic_data_obj['table'] = {head: data[`table_${dt}_heading`], body: [...table_row], graph_type: data[`chartType_${dt}`]}
     }
     dynamic_data.push(dynamic_data_obj)
@@ -260,10 +330,10 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
     file_name = `${data.sec_id}_${data.ind_id}_${data.top_id}_${year}.json`
   fs.writeFileSync(path.join(__dirname, '../dynamic_data_set', file_name), JSON.stringify(dynamic_data), 'utf-8')
 
-  var chk_dt = await db_Select('id', 'td_data_collection', `dt_year = '${year}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = '${data.top_id}'`, null)
+  var chk_dt = await db_Select('id', 'td_data_collection', `repo_flag = '${data.flag}' AND dt_year = '${year}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = '${data.top_id}'`, null)
   
-  var fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `data_file_name = '${file_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(dt_year, sec_id, ind_id, top_id, data_file_name, created_by, created_dt)`,
-    values = `('${year}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${file_name}', '${user}', '${datetime}')`,
+  var fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `data_file_name = '${file_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(repo_flag, dt_year, sec_id, ind_id, top_id, data_file_name, created_by, created_dt)`,
+    values = `('${data.flag}', '${year}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${file_name}', '${user}', '${datetime}')`,
     whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = '${chk_dt.msg[0].id}'` : null, 
     flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert('td_data_collection', fields, values, whr, flag)

@@ -150,6 +150,8 @@
                     <div class="col-sm-12">
                         <button type="button" class="btn btn-pill btn-outline-success btn-air-success float-end" onclick="add_row()"><i class="icofont icofont-plus-circle"></i></button>
                     </div>
+
+                    <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
                     <div class="row">
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-pill btn-outline-success btn-air-success float-end">Save</button>
@@ -417,7 +419,7 @@
         $.ajax({
             method: "GET",
             url: "/get_ind_list_ajax",
-            data: { sec_id: $(this).val() },
+            data: { sec_id: $(this).val(), flag: $('#flag').val() },
             dataType: "html",
             beforeSend: function () {
             $(".loader-wrapper").show();
@@ -449,7 +451,7 @@
             $.ajax({
                 method: "GET",
                 url: "/get_ind_list_ajax",
-                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val() },
+                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
                 dataType: "html",
                 beforeSend: function () {
                     $(".loader-wrapper").show();

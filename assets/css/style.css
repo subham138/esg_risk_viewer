@@ -46286,3 +46286,27 @@ nav{
   background-color: #424f6f;
   height: 2px;
 }
+.mega-menu {
+  padding-top: 0px !important;
+  padding: 0px !important;
+}
+.cusANavLink{
+  border-radius: 0px !important;
+  color: #fff !important;
+}
+.submenu-title h5{
+  color: #fff !important;
+  font-size: 15px !important;
+}
+.submenu-title :hover{
+  background: var(--theme-secondary) !important;
+}
+.opensubmegamenu ul li a{
+  color: #fff !important;
+}
+.submenu-title.active{
+  background: var(--theme-secondary);
+}
+.opensubmegamenu ul li :hover {
+  background: var(--theme-secondary);
+}

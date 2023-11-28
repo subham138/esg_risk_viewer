@@ -64,7 +64,7 @@ const db_Delete = (table_name, whr) => {
 
 const db_Check = async (fields, table_name, whr) => {
   var sql = `SELECT ${fields} FROM ${table_name} WHERE ${whr}`;
-  console.log(sql);
+  // console.log(sql);
   return new Promise((resolve, reject) => {
     db.query(sql, (err, result) => {
       if (err) {
