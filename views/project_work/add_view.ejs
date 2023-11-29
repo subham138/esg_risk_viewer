@@ -58,26 +58,26 @@
                             </div>
                             <div class="col-md-12 row m-b-15">
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
-                                    <div class="u-step done" dt-for="IFRS">
+                                    <div class="u-step <%= flag == 'I' ? 'done' : 'disabled' %>" dt-for="IFRS">
                                         <div class="u-step-desc text-center"><span class="u-step-title">IFRS</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
-                                    <div class="u-step" dt-for="ESRS">
+                                    <div class="u-step <%= flag == 'E' ? 'done' : 'disabled' %>" dt-for="ESRS">
                                         <div class="u-step-desc text-center"><span class="u-step-title">ESRS</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
-                                    <div class="u-step" dt-for="GRI">
+                                    <div class="u-step <%= flag == 'G' ? 'done' : 'disabled' %>" dt-for="GRI">
                                         <div class="u-step-desc text-center"><span class="u-step-title">GRI</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
-                                    <div class="u-step" dt-for="SFDR">
-                                        <div class="u-step-desc text-center"><span class="u-step-title">SFDR</span>
+                                    <div class="u-step <%= flag == 'F' ? 'done' : 'disabled' %>" dt-for="GRI-F">
+                                        <div class="u-step-desc text-center"><span class="u-step-title">GRI - French</span>
                                         </div>
                                     </div>
                                 </div>
@@ -87,14 +87,14 @@
                                         </div>
                                     </div>
                                 </div> -->
-                                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
+                                <!-- <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 mt-2">
                                     <div class="u-step" dt-for="IFRS">
                                         <div class="u-step-desc text-center"><span class="u-step-title">Voluntary Reporting</span>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
-                            <div class="showHideTab" id="ifrs">
+                            <div class="showHideTab">
                                 <div class="col-md-8">
                                     <ul class="list-group list-group-flush">
                                         <% if(ind_name.topic_dt){
@@ -111,7 +111,7 @@
                                     <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary float-end" onclick="viewTopicData(0, <%= ind_name.id %>, <%= sec_name.id %>)">View All</button>
                                 </div>
                             </div>
-                            <div class="showHideTab" id="esrs" style="display: none;">
+                            <!-- <div class="showHideTab" id="esrs" style="display: none;">
                                 <div class="col-md-8">
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item">
@@ -156,7 +156,7 @@
                                 <div class="col-md-8">
                                     <p class="text-left text-danger h5">Coming Soon!</p>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                 </div>
@@ -166,11 +166,11 @@
 </div>
 
 <script>
-    var selectBtn='ifrs',
-        repoType = 'ifrs';
+    var selectBtn= '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f"))%>',
+        repoType = selectBtn;
     function viewTopicData(top_id, ind_id, sec_id){
         // window.open(`/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id: <%= proj_id %>}))}`, '_blank')
-        window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id:'<%= proj_id %>',proj_name:'<%= proj_name %>',repo_type: repoType}))}`
+        window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id,ind_id:ind_id,top_id:top_id,proj_id:'<%= proj_id %>',proj_name:'<%= proj_name %>',repo_type: repoType,flag:'<%= flag %>'}))}`
     }
 </script>
 <script>

@@ -2,19 +2,19 @@ const { db_Select, db_Insert } = require("./MasterModule");
 const dateFormat = require("dateformat");
 
 module.exports = {
-    getProjectList: (id=null, client_id, user_id=null) => {
+    getProjectList: (id=null, client_id, user_id=null, flag = 'I') => {
         return new Promise(async (resolve, reject) => {
             if(user_id > 0){
                 var select = 'b.id, b.project_name, b.sec_id, b.ind_id, b.last_access, b.last_accessed_by, b.business_act, b.location_busi_act',
                     table_name = 'td_user_project a, td_project b',
-                    whr = `a.project_id = b.id AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''}`,
+                    whr = `a.project_id = b.id AND b.repo_flag = '${flag}' AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''}`,
                     order = 'ORDER BY b.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 resolve(res_dt)
             }else{
                 var select = 'a.id, a.project_name, a.sec_id, a.ind_id, a.last_access, a.last_accessed_by, a.business_act, a.location_busi_act',
                     table_name = 'td_project a',
-                    whr = `a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
+                    whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
                     order = 'ORDER BY a.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 if(id > 0){
@@ -40,8 +40,8 @@ module.exports = {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
             var table_name = 'td_project',
-                fields = data.id > 0 ? `project_name = '${data.project_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(client_id, project_name, created_by, created_dt)`,
-                values = `('${client_id}', '${data.project_name}', '${user}', '${datetime}')`,
+                fields = data.id > 0 ? `project_name = '${data.project_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(repo_flag, client_id, project_name, created_by, created_dt)`,
+                values = `('${data.flag}', '${client_id}', '${data.project_name}', '${user}', '${datetime}')`,
                 whr = data.id > 0 ? `id = ${data.id}` : null,
                 flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -90,26 +90,26 @@ module.exports = {
             
             var select = 'id', 
                 table_name = 'td_project_work', 
-                whr = `sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND top_id = ${data.top_id} AND project_id = ${data.project_id} AND article_code = '${data.topicTilte}'`, 
+                whr = `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND top_id = ${data.top_id} AND project_id = ${data.project_id} AND article_code = '${data.topicTilte}'`, 
                 order = null;
             var chk_dt = await db_Select(select, table_name, whr, order)
 
             var table_name = 'td_project_work',
                 fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 
                 `article = '${data.txtEditorVal}', modified_by = '${user}', modified_dt = '${datetime}'` : 
-                `(sec_id, ind_id, top_id, project_id, article_code, article, user_id, created_by, created_dt)`,
-                values = `('${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${data.project_id}', '${data.topicTilte}', '${data.txtEditorVal}', '${user_id}', '${user}', '${datetime}')`,
+                `(repo_flag, sec_id, ind_id, top_id, project_id, article_code, article, user_id, created_by, created_dt)`,
+                values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${data.project_id}', '${data.topicTilte}', '${data.txtEditorVal}', '${user_id}', '${user}', '${datetime}')`,
                 whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
                 flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
             resolve(res_dt)
         })
     },
-    getSavedProjectWork: (sec_id, ind_id, top_id, project_id) => {
+    getSavedProjectWork: (sec_id, ind_id, top_id, project_id, flag) => {
         return new Promise(async (resolve, reject) => {
             var select = '*', 
                 table_name = 'td_project_work', 
-                whr = `sec_id = ${sec_id} AND ind_id = ${ind_id} ${top_id > 0 ? `AND top_id = ${top_id}` : ''} AND project_id = ${project_id}`, 
+                whr = `repo_flag = '${flag}' AND sec_id = ${sec_id} AND ind_id = ${ind_id} ${top_id > 0 ? `AND top_id = ${top_id}` : ''} AND project_id = ${project_id}`, 
                 order = null;
             var chk_dt = await db_Select(select, table_name, whr, order)
             resolve(chk_dt)

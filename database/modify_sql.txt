@@ -52,3 +52,17 @@ ALTER TABLE `td_ghg_emission`
 --
 ALTER TABLE `td_ghg_emission`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+<----------------------------- DONE ----------------------------->
+
+ALTER TABLE `md_sector` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `md_industries` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `md_industries_topics` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `md_busi_act` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `md_topic` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `md_topic_catg` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `td_act_metrics` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `td_data_collection` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `td_project_work` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `td_sus_dis_top_met` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;
+ALTER TABLE `td_project` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 'I' COMMENT 'I-> IFRS; E-> ESRS; G-> GRI; F-> French' AFTER `id`;

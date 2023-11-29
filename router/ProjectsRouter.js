@@ -22,24 +22,32 @@ path = require('path');
 // })
 
 ProjectRouter.get('/my_project', async (req, res) => {
+    var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, 'base64').toString();
+
     // var req_data = req.query
     var user_type = req.session.user.user_type,
         user_id = req.session.user.user_id;
 
-    var project_data = await getProjectList(0, req.session.user.client_id, user_type != 'A' && user_type != 'C' && user_type != 'S' ? user_id : 0)
+    var project_data = await getProjectList(0, req.session.user.client_id, user_type != 'A' && user_type != 'C' && user_type != 'S' ? user_id : 0, flag)
     var data = {
         user_type,
         project_data,
         header: "Project List",
+        enc_dt,
+        flag
     }
     res.render('projects/view', data)
 })
 
 ProjectRouter.get('/my_project_add', async (req, res) => {
+    var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, 'base64').toString();
+
     var id = req.query.id, project_data = [];
     var user_list = await getUserList(0, req.session.user.client_id)
     if(id > 0) {
-        project_data = await getProjectList(id, req.session.user.client_id, 0)
+        project_data = await getProjectList(id, req.session.user.client_id, 0, flag)
     }
     console.log(project_data);
     var data = {
@@ -49,6 +57,7 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
         header: "Project List",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",
+        flag
     };
     res.render("projects/add", data);
 })
@@ -60,7 +69,7 @@ ProjectRouter.post('/my_project_save', async (req, res) => {
         type: res_dt.suc > 0 ? "success" : "danger",
         message: res_dt.msg,
     };
-    res.redirect('/my_project')
+    res.redirect(`/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
 })
 
 ProjectRouter.post('/delete_my_project', async (req, res) => {
@@ -70,11 +79,14 @@ ProjectRouter.post('/delete_my_project', async (req, res) => {
 })
 
 ProjectRouter.get('/proj_work', async (req, res) => {
+    var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, 'base64').toString();
+
     var loc_list = await getLocationList(),
-        sec_data = await getSectorList(),
+        sec_data = await getSectorList(0, flag),
         ind_data = [],
         act_list = [];
-        var project_data = await getProjectList(req.query.id, req.session.user.client_id, 0)
+        var project_data = await getProjectList(req.query.id, req.session.user.client_id, 0, flag)
     var data = {
         id:0,
         proj_id: req.query.id,
@@ -87,13 +99,14 @@ ProjectRouter.get('/proj_work', async (req, res) => {
         header: "Project Work",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",
+        flag
     }
     res.render('project_work/add', data)
 })
 
 ProjectRouter.post('/save_proj_work', async (req, res) => {
     var data = req.body,
-        busi_data = await getBusiActList(0, data.sec_id, data.ind_id), busi_name = [],
+        busi_data = await getBusiActList(0, data.sec_id, data.ind_id, data.flag), busi_name = [],
         location_data = await getLocationList(), location_name = [],
         user_id = req.session.user.user_id,
         user_name = req.session.user.user_name,
@@ -144,10 +157,10 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
           type: "success",
           message: "Data saved successfully",
         };
-        res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id}), "utf8").toString('base64')}`);
+        res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id, flag: data.flag}), "utf8").toString('base64')}`);
     } else {
         req.session.message = { type: "danger", message: "Data not saved" };
-        res.redirect(`/proj_work?id=${data.proj_id}`);
+        res.redirect(`/proj_work?id=${data.proj_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
     }
 })
 
@@ -155,9 +168,9 @@ ProjectRouter.get('/proj_work_view', async (req, res) => {
     var enc_data = req.query.dt,
         data = Buffer.from(enc_data, "base64");
     data = JSON.parse(data)
-    var sec_data = await getSectorList(data.sec_id),
-        ind_data = await getIndustriesList(data.ind_id),
-        project_data = await getProjectList(data.proj_id, req.session.user.client_id);
+    var sec_data = await getSectorList(data.sec_id, data.flag),
+        ind_data = await getIndustriesList(data.ind_id, 0, data.flag),
+        project_data = await getProjectList(data.proj_id, req.session.user.client_id, 0, data.flag);
     // console.log(project_data);
 
     project_data = project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0] : null
@@ -174,7 +187,8 @@ ProjectRouter.get('/proj_work_view', async (req, res) => {
         user_type: req.session.user.user_type,
         header: "Project Work",
         sub_header: "Project Add/Edit",
-        header_url: "/my_project"
+        header_url: "/my_project",
+        flag: data.flag
     }
     res.render("project_work/add_view", res_data);
 })
@@ -183,12 +197,12 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var enc_data = req.query.enc_data, data_set = {};
     var data = Buffer.from(enc_data, "base64")
     data = JSON.parse(data);
-    var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id);
-    var susDistList = await getSusDiscList(data.sec_id, data.ind_id)
-    var metric = await getActMetrialDtls(data.sec_id, data.ind_id)
-    var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id)
+    var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id, data.flag);
+    var susDistList = await getSusDiscList(data.sec_id, data.ind_id, 0, data.flag)
+    var metric = await getActMetrialDtls(data.sec_id, data.ind_id, data.flag)
+    var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id, data.flag)
     var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
-    var allDynamicData = await getDynamicData(0, data.sec_id, data.ind_id, 0);
+    var allDynamicData = await getDynamicData(0, data.sec_id, data.ind_id, 0, data.flag);
     var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
     emi_type = {suc:0,msg:[]};
     var year_list=[], currDate = new Date();
@@ -225,7 +239,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
             }
         }
     }
-    console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
+    // console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
     var res_data = {
         top_id: data.top_id, 
         topName,
@@ -250,6 +264,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         header: "Project Work",
         sub_header: "Project View",
         header_url: "/my_project",
+        flag: data.flag
     };
     res.render("project_work/report_view", res_data);
     // res.send(res_data)

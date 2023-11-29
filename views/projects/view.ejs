@@ -29,7 +29,7 @@
                     <div class="row py-3">
                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
                         <div class="col-md-12">
-                            <a href="/my_project_add" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">Add New Project</a>
+                            <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">Add New Project</a>
                         </div>
                         <% } %>
                     </div>
@@ -53,7 +53,7 @@
                                     <td><%= dt.last_access %></td>
                                     <td>
                                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
-                                            <a href="/my_project_add?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                         <% }%>
@@ -86,9 +86,9 @@
 <script>
     function redirectToPage(id, sec_id, ind_id, bus_act){
         if(sec_id > 0 && ind_id > 0 && bus_act != ''){
-            window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id}))}`
+            window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
         }else{
-            window.location.href = `/proj_work?id=${id}`
+            window.location.href = `/proj_work?id=${id}&flag=<%= enc_dt %>`
         }
     }
 </script>

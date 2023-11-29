@@ -327,7 +327,7 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
     dynamic_data.push(dynamic_data_obj)
   }
   var year = dateFormat(new Date(), 'yyyy'),
-    file_name = `${data.sec_id}_${data.ind_id}_${data.top_id}_${year}.json`
+    file_name = `${data.flag}_${data.sec_id}_${data.ind_id}_${data.top_id}_${year}.json`
   fs.writeFileSync(path.join(__dirname, '../dynamic_data_set', file_name), JSON.stringify(dynamic_data), 'utf-8')
 
   var chk_dt = await db_Select('id', 'td_data_collection', `repo_flag = '${data.flag}' AND dt_year = '${year}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = '${data.top_id}'`, null)
@@ -341,7 +341,7 @@ DataCollectionRouter.post("/save_dynamic_entry", async (req, res) => {
     type: res_dt.suc > 0 ? "success" : "danger",
     message: res_dt.msg,
   };
-  res.redirect(`/dynamic_entry_view`);
+  res.redirect(`/dynamic_entry_view?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   // res.send(res_dt);
 });
 

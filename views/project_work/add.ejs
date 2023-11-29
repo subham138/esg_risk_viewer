@@ -72,6 +72,7 @@
                         </div>
                         <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                         <input type="hidden" name="proj_id" value="<%= proj_id > 0 ? proj_id : 0 %>">
+                        <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
                         <button class="btn btn-primary" type="submit">Submit</button>
                     </form>
                 </div>
@@ -93,7 +94,7 @@
         $.ajax({
             method:'GET',
             url: '/get_ind_list_ajax',
-            data: {sec_id: $(this).val()},
+            data: {sec_id: $(this).val(), flag: $('#flag').val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -131,7 +132,7 @@
             $.ajax({
                 method: "GET",
                 url: "/get_busi_act_ajax",
-                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val() },
+                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
                 dataType: "html",
                 beforeSend: function () {
                     $(".loader-wrapper").show();
