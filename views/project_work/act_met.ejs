@@ -1,0 +1,22 @@
+<table class="table" width="100%">
+    <thead>
+        <tr class="tbDynDt">
+            <th>Activity metric</th>
+            <th>Category</th>
+            <th>Unit of measure</th>
+            <th>Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if(metric.msg.length > 0){
+            metric.msg.forEach(dt => { %>
+                <tr class="hoverDynDtaTbl">
+                    <td><%= dt.act_metric %></td>
+                    <td><%= dt.catg %></td>
+                    <td><%= dt.unit %></td>
+                    <td><%= dt.code %></td>
+                </tr>
+            <% })
+        } %>
+    </tbody>
+</table>

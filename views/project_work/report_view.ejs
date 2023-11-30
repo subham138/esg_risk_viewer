@@ -102,72 +102,13 @@
                                                     <p class="dyn-col-head">Sustainability Disclosure Topics & Metrics</p>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <table class="table" width="100%">
-                                                        <thead>
-                                                            <tr class="tbDynDt">
-                                                                <th>General issue category (Industry agnostic)</th>
-                                                                <th>Disclosure topics (Industry specific)</th>
-                                                                <th>Metric</th>
-                                                                <th>Category</th>
-                                                                <th>Unit of measure</th>
-                                                                <th>Code</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <% if(susDistList.msg.length > 0){
-                                                                var rowSpan = 1
-                                                                var prevRes = ''
-                                                                var susModifyDt = susDistList.msg.map(dt => dt.code != '' && dt.code != 'null' && dt.code ? dt : null)
-                                                                susModifyDt = susModifyDt.filter(dt => dt != undefined)
-                                                                susModifyDt.forEach(dt => {
-                                                                    if(typeof(dt) === 'object'){
-                                                                    var nowRes = dt.top_id
-                                                                    %>
-                                                                    <tr class="hoverDynDtaTbl">
-                                                                        <% if(prevRes != nowRes){
-                                                                            prevRes = dt.top_id %>
-                                                                            <td class="topic_text" rowspan="<%= susModifyDt.filter(sdt => sdt.top_id == dt.top_id).length %>">
-                                                                                <%= dt.topic_name %>
-                                                                            </td>
-                                                                        <% } %>
-                                                                        <td><%= dt.ind_agn %></td>
-                                                                        <td><%= dt.metric %></td>
-                                                                        <td><%= dt.catg %></td>
-                                                                        <td><%= dt.unit %></td>
-                                                                        <td><%= dt.code %></td>
-                                                                    </tr>
-                                                                <% }})
-                                                            } %>
-                                                            <tr></tr>
-                                                        </tbody>
-                                                    </table>
+                                                    <%- include('sus_dis_top_met', {susDistList, flag}) %>
                                                 </div>
                                                 <div class="col-md-12 m-b-10">
                                                     <p class="dyn-col-head">Activity Metrics</p>
                                                 </div>
                                                 <div class="col-md-12 my-3">
-                                                    <table class="table" width="100%">
-                                                        <thead>
-                                                            <tr class="tbDynDt">
-                                                                <th>Activity metric</th>
-                                                                <th>Category</th>
-                                                                <th>Unit of measure</th>
-                                                                <th>Code</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <% if(metric.msg.length > 0){
-                                                                metric.msg.forEach(dt => { %>
-                                                                    <tr class="hoverDynDtaTbl">
-                                                                        <td><%= dt.act_metric %></td>
-                                                                        <td><%= dt.catg %></td>
-                                                                        <td><%= dt.unit %></td>
-                                                                        <td><%= dt.code %></td>
-                                                                    </tr>
-                                                                <% })
-                                                            } %>
-                                                        </tbody>
-                                                    </table>
+                                                    <%- include('act_met', {metric}) %>
                                                 </div>
                                             </div>
                                         </div>
@@ -202,140 +143,7 @@
                                         <div class="collapse show" id="exposi" aria-labelledby="exposi" data-bs-parent="#expoAccordionoc">
                                             <div class="row m-3">
                                                 <div class="col-md-12">
-                                                    <div class="default-according style-2" id="inExpoAccordionoc">
-                                                        <% if(allDynamicData.length > 0){
-                                                            var rowSpan = 1
-                                                            var prevRes = ''
-                                                            var dynDataLen = Object.keys(data_set).length
-                                                            allDynamicData.forEach(dt => {
-                                                            %>
-                                                            <div class="card">
-                                                                <div class="card-header bg-primary caruBackCol1">
-                                                                    <h5 class="mb-0">
-                                                                        <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#dynData_<%= dt.top_id %>" aria-expanded="true" aria-controls="collapse11"><%= dt.topic_name %></button>
-                                                                    </h5>
-                                                                </div>
-                                                                <div class="collapse" id="dynData_<%= dt.top_id %>" aria-labelledby="dynData_<%= dt.top_id %>" data-bs-parent="#accordionoc">
-                                                                    <% if(top_id == dt.top_id){ %>
-                                                                        <% if(resDt.length > 0){
-                                                                            var i = 1;
-                                                                            var j = 1;
-                                                                            resDt.forEach(dt => { %>
-                                                                                <div class="row m-3" id="dynamic_data_<%= j %>">
-                                                                                    <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
-                                                                                    <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
-                                                                                    <% if(dt.icon){ %>
-                                                                                        <div class="col-md-2">
-                                                                                            <img src="images/icons/<%= dt.icon %>.png" id="<%= dt.icon %>" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
-                                                                                        </div>
-                                                                                        <% if(dt.textarea){ %>
-                                                                                            <div class="col-md-10">
-                                                                                                <%= dt.textarea %>
-                                                                                            </div> 
-                                                                                    <% }}else{ %> 
-                                                                                        <% if(dt.textarea){ %>
-                                                                                            <div class="col-md-12">
-                                                                                                <%= dt.textarea %>
-                                                                                            </div>
-                                                                                    <% }} %>
-                                                                                    <% if(dt.table){ %>
-                                                                                        <div class="col-md-12 m-t-5">
-                                                                                            <table class="table m-t-5">
-                                                                                                <tr>
-                                                                                                    <% dt.table.head.forEach(tdt => { %>
-                                                                                                        <th><%= tdt %></th>
-                                                                                                    <% }) %>
-                                                                                                </tr>
-                                                                                                <tbody>
-                                                                                                    <% var table_data = [];
-                                                                                                        table_data.push(dt.table.head)
-                                                                                                        dt.table.body.forEach(trdt => {
-                                                                                                            table_data.push([...Object.values(trdt).map(dt => parseFloat(dt) ? Number(dt) : dt)])
-                                                                                                        %>
-                                                                                                        <tr>
-                                                                                                            <% Object.values(trdt).forEach(vdt => { %>
-                                                                                                                <td><%= vdt %></td>
-                                                                                                            <% }) %>
-                                                                                                        </tr>
-                                                                                                    <% }) %>
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    <% i++; } %>
-                                                                                </div>
-                                                                                <!-- <div class="row mt-3">
-                                                                                    <div class="col-md-12">
-                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-original-title title="Download Topics & Metrics" onclick="downloadPrf('dynamic_data_<%= j %>', 'Activity_Metrics')"><i class="icofont icofont-download"></i> Download</button>
-                                                                                    </div>
-                                                                                </div> -->
-                                                                        <% j++; })
-                                                                        } %>
-                                                                    <% }else if(dynDataLen > 0){
-                                                                        if(data_set[dt.top_id]){
-                                                                            var i = 1;
-                                                                            var j = 1;
-                                                                            data_set[dt.top_id].forEach(dt => { %>
-                                                                                <div class="row m-3" id="dynamic_data_<%= j %>">
-                                                                                    <% if(dt.heading){ %> <h4><%= dt.heading %></h4> <% } %>
-                                                                                    <% if(dt.sub_heading){ %> <h5><%= dt.sub_heading %></h5> <% } %>
-                                                                                    <% if(dt.icon){ %>
-                                                                                        <div class="col-md-2">
-                                                                                            <img src="images/icons/<%= dt.icon %>.png" id="<%= dt.icon %>" width="100" height="100" alt="" srcset="" style="border: black 1px solid;">
-                                                                                        </div>
-                                                                                        <% if(dt.textarea){ %>
-                                                                                            <div class="col-md-10">
-                                                                                                <%= dt.textarea %>
-                                                                                            </div> 
-                                                                                    <% }}else{ %> 
-                                                                                        <% if(dt.textarea){ %>
-                                                                                            <div class="col-md-12">
-                                                                                                <%= dt.textarea %>
-                                                                                            </div>
-                                                                                    <% }} %>
-                                                                                    <% if(dt.table){ %>
-                                                                                        <div class="col-md-12 m-t-5">
-                                                                                            <table class="table m-t-5">
-                                                                                                <tr>
-                                                                                                    <% dt.table.head.forEach(tdt => { %>
-                                                                                                        <th><%= tdt %></th>
-                                                                                                    <% }) %>
-                                                                                                </tr>
-                                                                                                <tbody>
-                                                                                                    <% var table_data = [];
-                                                                                                        table_data.push(dt.table.head)
-                                                                                                        dt.table.body.forEach(trdt => {
-                                                                                                            table_data.push([...Object.values(trdt).map(dt => parseFloat(dt) ? Number(dt) : dt)])
-                                                                                                        %>
-                                                                                                        <tr>
-                                                                                                            <% Object.values(trdt).forEach(vdt => { %>
-                                                                                                                <td><%= vdt %></td>
-                                                                                                            <% }) %>
-                                                                                                        </tr>
-                                                                                                    <% }) %>
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                    <% i++; } %>
-                                                                                </div>
-                                                                        <% })}else{ %>
-                                                                            <div class="row">
-                                                                                <div class="col-md-12 text-center p-3">
-                                                                                    <p class="h6 text-danger">No Data Available</p>
-                                                                                </div>
-                                                                            </div>
-                                                                       <% } %>
-                                                                    <% }else { %>
-                                                                        <div class="row">
-                                                                            <div class="col-md-12 text-center p-3">
-                                                                                <p class="h6 text-danger">No Data Available</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    <% } %>
-                                                                </div>
-                                                            </div>
-                                                            <% })
-                                                        } %>
-                                                    </div>
+                                                    <%- include('dynamic_data_exposer', {allDynamicData, data_set}) %>
                                                 </div>
                                             </div>
                                         </div>
@@ -356,248 +164,15 @@
                                 <div class="card">
                                     <div class="card-header bg-primary caruBackCol">
                                         <h5 class="mb-0">
-                                            <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#ifrs" aria-expanded="true" aria-controls="collapse11">Manage Disclosure Topics (IFRS)</button>
+                                            <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#ifrs" aria-expanded="true" aria-controls="collapse11">Manage Disclosure Topics (<%= flag == "I" ? "IFRS" : (flag == "E" ? "ESRS" : (flag == "G" ? "GRI" : "GRI-French"))%>)</button>
                                         </h5>
                                     </div>
                                     <div class="collapse" id="ifrs" aria-labelledby="ifrs" data-bs-parent="#editorAcord">
-                                        <div class="row">
-                                            <% if(user_type != 'V'){ %>
-                                                <div class="col-md-12 row mt-3" id="editorPrevDiv">
-                                                    <div class="col-md-10">&nbsp;</div>
-                                                    <div class="col-md-2">
-                                                        <button class="btn btn-pill btn-sm btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Add New Editor" onclick="AddEditor()"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add</span></button>
-                                                    </div>
-                                                </div>
-                                            <% } %>
-                                            <div id="editorDiv" class="row">
-                                                <% var filetrTopic = susDistList.msg.length > 0 ? susDistList.msg : []
-                                                    if(filetrTopic.length > 0){
-                                                        var prevRes = ''
-                                                        var ediR = 1
-                                                        filetrTopic.forEach(dt => {
-                                                            var getRes = editorData.filter(edt => edt.article_code == dt.code && edt.top_id==dt.top_id)
-                                                            var nowRes = dt.top_id
-                                                            %>
-                                                            <div id="editorNewDiv_<%= ediR %>" class="row m-t-10">
-                                                                <% if(prevRes != nowRes){
-                                                                    prevRes = dt.top_id %>
-                                                                    <p class="dyn-col-head"><%= dt.topic_name %></p>
-                                                                <% } %>
-                                                                <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-10 row">
-                                                                    <div class="col-md-1 ediDiv">
-                                                                        <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>">
-                                                                    </div>
-                                                                    <div class="col-md-12 colEditor">
-                                                                        <textarea id="editor<%= ediR %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
-                                                                    </div>
-                                                                </div>
-                                                                <% if(ai_tag_tool_flag != 'N'){
-                                                                    if(dt.words != '' && dt.words && dt.words != 'null'){
-                                                                    var word_list = dt.words.trim().split(',');
-                                                                    if(word_list.length > 0){ %>
-                                                                        <script>
-                                                                            wordList[<%= ediR %>] = '<%= dt.words %>';
-                                                                            // console.log(wordList)
-                                                                        </script>
-                                                                        <div class="col-md-4 row">
-                                                                            <div class="wordContainer">
-                                                                                <div class="wordHeader">
-                                                                                    <div class="u-step done">
-                                                                                        <div class="u-step-desc text-center">
-                                                                                            <span class="u-step-title">Check Alignment/Misalignment</span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="wordSubHeader">
-                                                                                    <p>ESG-related words included by your peers and not included in your text:</p>
-                                                                                </div>
-                                                                                <div class="wordCount">
-                                                                                    <span id="countMatchNum_<%= ediR %>">0</span> <span>words</span>
-                                                                                </div>
-                                                                                <div class="wordButton col-md-12 row" id="countMatch_<%= ediR %>">
-                                                                                <% word_list.forEach(dt => { %>
-                                                                                    <div class="col-md-6 mt-2">
-                                                                                        <div class="u-step">
-                                                                                            <div class="u-step-desc text-center"><span class="u-step-title"><%= dt %></span>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                <% }) %>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    <% } %>
-                                                                <% }} %>
-                                                                
-                                                                <script>
-                                                                    CKEDITOR
-                                                                    .replace('editor<%= ediR %>', {
-                                                                        on: {
-                                                                            contentDom: function( evt ) {
-                                                                                // Allow custom context menu only with table elemnts.
-                                                                                evt.editor.editable().on('contextmenu', function( contextEvent ) {
-                                                                                    var path = evt.editor.elementPath();
-                        
-                                                                                    if ( !path.contains( 'table' ) ) {
-                                                                                        contextEvent.cancel();
-                                                                                    }
-                                                                                }, null, null, 5 );
-                                                                            },
-                                                                            change: function(e){
-                                                                                // console.log(e.editor.getData());
-                                                                                var ai_flag = '<%= ai_tag_tool_flag %>';
-                                                                                if(ai_flag != 'N'){
-                                                                                    totCount[<%= ediR %>] = 0
-                                                                                    var editorVal = e.editor.getData()
-                                                                                    var plainText = $("<div>").html(editorVal).text();
-                                                                                    var txtArr = plainText.trim().split('\n').join(' ').split(' ')
-                                                                                    // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
-                                                                                    // console.log('len', txtArr);
-                                                                                    if(txtArr.length > 0){
-                                                                                        txtArr = [...new Set(txtArr)]
-                                                                                        // console.log(txtArr, 'TOt array');
-                                                                                        var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
-                                                                                        if(matchTxt.length > 0){
-                                                                                            // console.log(matchTxt, 'Match array');
-                                                                                            $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                                $(this).removeClass('done')
-                                                                                            })
-                                                                                            for(let dt of matchTxt){
-                                                                                                $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                                    // console.log($(this).text());
-                                                                                                    // if(matchTxt.includes($(this).text().trim().toLowerCase()))
-                                                                                                    if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
-                                                                                                        $(this).addClass('done')
-                                                                                                })
-                                                                                            }
-                                                                                        }else{
-                                                                                            $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                                $(this).removeClass('done')
-                                                                                            })
-                                                                                        }
-                                                                                        // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
-                                                                                        // console.log(totCount);
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    } );
-                                                                </script>
-                                                                <% if(user_type != 'V'){ %>
-                                                                    <div class="col-md-10">&nbsp;</div>
-                                                                    <div class="col-md-2 m-t-10">
-                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"></i> Save</button>
-                                                                    </div>
-                                                                <% } %>
-                                                            </div>
-                                                        <% ediR++; })
-                                                        var topList = [...filetrTopic.map(dt => dt.code)]
-                                                        if(editorData.length > 0){
-                                                            var i = ediR > 0 ? ediR + 1 : 1
-                                                            editorData.forEach(dt => {
-                                                                if(!topList.includes(dt.article_code)){ %>
-                                                                    <div id="editorNewDiv_<%= i %>" class="row mt-3">
-                                                                        <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-3 row">
-                                                                            <div class="col-md-1 ediDiv">
-                                                                                <div for="editor_topic_<%= i %>" class="editLabelBull"></div>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>">
-                                                                            </div>
-                                                                            <div class="col-md-12 colEditor">
-                                                                                <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"><%= dt.article %></textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                        <script>
-                                                                            CKEDITOR
-                                                                            .replace( 'editor<%= i %>', {
-                                                                                on: {
-                                                                                    contentDom: function( evt ) {
-                                                                                        // Allow custom context menu only with table elemnts.
-                                                                                        evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-                                                                                            var path = evt.editor.elementPath();
-                                    
-                                                                                            if ( !path.contains( 'table' ) ) {
-                                                                                                contextEvent.cancel();
-                                                                                            }
-                                                                                        }, null, null, 5 );
-                                                                                    }
-                                                                                }
-                                                                            } );
-                                                                        </script>
-                                                                        <% if(user_type != 'V'){ %>
-                                                                            <div class="col-md-10">&nbsp;</div>
-                                                                            <div class="col-md-2 m-t-10">
-                                                                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"> Save</i></button>
-                                                                            </div>
-                                                                        <% } %>
-                                                                    </div>
-                                                                <% }
-                                                            i++;})
-                                                        }
-                                                    }
-                                                %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header bg-primary caruBackCol">
-                                        <h5 class="mb-0">
-                                            <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#gri" aria-expanded="true" aria-controls="collapse11">Manage Disclosure Topics (GRI)</button>
-                                        </h5>
-                                    </div>
-                                    <div class="collapse" id="gri" aria-labelledby="gri" data-bs-parent="#editorAcord">
-                                        <div class="row">
-                                            <div class="col-md-12 text-center p-3">
-                                                <p class="h6 text-danger">No Data Available</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header bg-primary caruBackCol">
-                                        <h5 class="mb-0">
-                                            <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#tcfd" aria-expanded="true" aria-controls="collapse11">Manage Disclosure Topics (TCFD)</button>
-                                        </h5>
-                                    </div>
-                                    <div class="collapse" id="tcfd" aria-labelledby="tcfd" data-bs-parent="#editorAcord">
-                                        <div class="row">
-                                            <div class="col-md-12 text-center p-3">
-                                                <p class="h6 text-danger">No Data Available</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header bg-primary caruBackCol">
-                                        <h5 class="mb-0">
-                                            <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#esrs" aria-expanded="true" aria-controls="collapse11">Manage Disclosure Topics (ESRS)</button>
-                                        </h5>
-                                    </div>
-                                    <div class="collapse" id="esrs" aria-labelledby="esrs" data-bs-parent="#editorAcord">
-                                        <div class="row">
-                                            <div class="col-md-12 text-center p-3">
-                                                <p class="h6 text-danger">No Data Available</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header bg-primary caruBackCol">
-                                        <h5 class="mb-0">
-                                            <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#serc" aria-expanded="true" aria-controls="collapse11">Manage Disclosure Topics (SECR)</button>
-                                        </h5>
-                                    </div>
-                                    <div class="collapse" id="serc" aria-labelledby="serc" data-bs-parent="#editorAcord">
-                                        <div class="row">
-                                            <div class="col-md-12 text-center p-3">
-                                                <p class="h6 text-danger">No Data Available</p>
-                                            </div>
-                                        </div>
+                                        <% if(flag == 'I'){ %>
+                                            <%- include('man_dis_top', {susDistList, editorData, ai_tag_tool_flag, user_type}) %>
+                                        <% }else{ %>
+                                            <%- include('man_dis_top_other', {susDistList, editorData, ai_tag_tool_flag, user_type}) %>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>
@@ -1458,7 +1033,8 @@
                 sec_id: $('#sec_id').val(), 
                 ind_id: $('#ind_id').val(), 
                 top_id: top_id,
-                project_id: $('#project_id').val()
+                project_id: $('#project_id').val(),
+                flag: '<%= flag %>'
             },
             dataType: 'html',
             beforeSend: function(){
@@ -1793,5 +1369,21 @@
         })
         console.log(req_data);
     }
+</script>
+<script>
+    $('input[name="selSusDt"]').on('change', function(){
+        // console.log($('input[name="selSusDt"]:checked'))
+        $('.editorDiv').each(function(){
+            $(this).hide()
+        })
+        $('input[name="selSusDt"]:checked').each(function(){
+            var selVal = $(this).val()
+            $('.editorDiv').each(function(){
+                if($(this).attr('data-code') == selVal)
+                    $(this).show()
+            })
+            console.log($(this).val());
+        })
+    })
 </script>
 <%- include('../templates/footer.ejs') %>
