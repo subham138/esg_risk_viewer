@@ -103,6 +103,7 @@ MasterRouter.get("/ind_edit", async (req, res) => {
     topic,
     topic_catg,
     flag,
+    enc_dt
   });
 });
 
@@ -210,7 +211,7 @@ MasterRouter.get("/topic_catg_edit", async (req, res) => {
     data = await getTopicCatgList(id, flag);
   }
   // console.log(id);
-  res.render("master/topic_catg/add", { data, id: id, flag });
+  res.render("master/topic_catg/add", { data, id: id, flag, enc_dt });
 });
 
 MasterRouter.post("/topic_catg_save", async (req, res) => {
@@ -263,7 +264,7 @@ MasterRouter.get("/topic_edit", async (req, res) => {
   if (id > 0) {
     topic_data = await getTopicList(id, 0, flag);
   }
-  res.render("master/topic/add", { topic_data, catg_data, id: id, flag });
+  res.render("master/topic/add", { topic_data, catg_data, id: id, flag, enc_dt });
 });
 
 MasterRouter.post("/topic_save", async (req, res) => {
@@ -330,7 +331,7 @@ MasterRouter.get("/busi_act_edit", async (req, res) => {
     busi_data,
     header: "Business Activities (NACE)",
     sub_header: "Add/Edit Business Activities (NACE)",
-    header_url: "/busi_act",
+    header_url: `/busi_act?flag=${enc_dt}`,
     flag,
     id: id,
   };

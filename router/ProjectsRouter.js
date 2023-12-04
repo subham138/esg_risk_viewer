@@ -127,7 +127,7 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
         if(indx >= 0){
             busi_name.push(busi_data.msg[indx])
         }
-        busi_name = busi_name[0].busi_act_name
+        busi_name = Array.isArray(busi_name) ? (busi_name.length > 0 ? busi_name[0].busi_act_name : '') : (busi_name.busi_act_name ? busi_name.busi_act_name : '')
     }
 
     if(Array.isArray(data.location_id)){
@@ -144,7 +144,7 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
         if(indx >= 0){
             location_name.push(location_data.msg[indx])
         }
-        location_name = location_name[0].location_name
+        location_name = Array.isArray(location_name) ? (location_name.length > 0 ? location_name[0].location_name : '') : (location_name.location_name ? location_name.location_name : '')
     }
     var table_name = 'td_project', 
         fields = `last_access = '${datetime}', last_accessed_by = '${user_name}', sec_id = '${data.sec_id}', ind_id = '${data.ind_id}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"`, 
