@@ -1,4 +1,5 @@
 const { getCalTypeList, getCalAct, getCalEmiType, saveCalType, saveCalAct, saveCalEmiType, getUnitList, saveUnit, getCalEmiVal, saveCalEmiVal } = require('../modules/CalculatorModule');
+const { db_Delete } = require('../modules/MasterModule');
 
 const express = require('express'),
     CalculatorRouter = express.Router();
@@ -44,6 +45,17 @@ CalculatorRouter.post('/cal_type_edit', async (req, res) => {
         req.session.message = { type: "danger", message: "Data not saved" };
         res.redirect(data.id > 0 ? `/cal_type` : "/cal_type");
     }
+})
+
+CalculatorRouter.get('/cal_type_del', async (req, res) => {
+    var id = req.query.id
+    if (id > 0) {
+        var res_dt = await db_Delete('md_cal_type', `id = ${id}`);
+        req.session.message = { type: "danger", message: "Data deleted successfully" };
+    }else{
+        req.session.message = { type: "warning", message: "Data not deleted" };
+    }
+    res.redirect(`/cal_type`);
 })
 
 CalculatorRouter.get('/cal_act', async (req, res) => {
@@ -94,6 +106,17 @@ CalculatorRouter.post('/get_cal_act_ajax', async (req, res) => {
     var type_id = req.query.type_id
     var res_dt = await getCalAct(0, type_id)
     res.send(res_dt)
+})
+
+CalculatorRouter.get('/cal_act_del', async (req, res) => {
+    var id = req.query.id
+    if (id > 0) {
+        var res_dt = await db_Delete('md_cal_act', `id = ${id}`);
+        req.session.message = { type: "danger", message: "Data deleted successfully" };
+    }else{
+        req.session.message = { type: "warning", message: "Data not deleted" };
+    }
+    res.redirect(`/cal_act`);
 })
 
 CalculatorRouter.get('/cal_emi_type', async (req, res) => {
@@ -151,6 +174,17 @@ CalculatorRouter.post('/cal_emi_type_edit', async (req, res) => {
     }
 })
 
+CalculatorRouter.get('/cal_emi_type_del', async (req, res) => {
+    var id = req.query.id
+    if (id > 0) {
+        var res_dt = await db_Delete('md_cal_emi_type', `id = ${id}`);
+        req.session.message = { type: "danger", message: "Data deleted successfully" };
+    }else{
+        req.session.message = { type: "warning", message: "Data not deleted" };
+    }
+    res.redirect(`/cal_emi_type`);
+})
+
 CalculatorRouter.get('/unit', async (req, res) => {
     var data = await getUnitList()
     var view_data = {
@@ -191,6 +225,17 @@ CalculatorRouter.post('/unit_edit', async (req, res) => {
         req.session.message = { type: "danger", message: "Data not saved" };
         res.redirect(data.id > 0 ? `/unit` : "/unit");
     }
+})
+
+CalculatorRouter.get('/unit_del', async (req, res) => {
+    var id = req.query.id
+    if (id > 0) {
+        var res_dt = await db_Delete('md_unit', `id = ${id}`);
+        req.session.message = { type: "danger", message: "Data deleted successfully" };
+    }else{
+        req.session.message = { type: "warning", message: "Data not deleted" };
+    }
+    res.redirect(`/unit`);
 })
 
 CalculatorRouter.get('/cal_emi_val', async (req, res) => {
@@ -257,6 +302,17 @@ CalculatorRouter.post('/cal_emi_val_edit', async (req, res) => {
         req.session.message = { type: "danger", message: "Data not saved" };
         res.redirect(data.id > 0 ? `/cal_emi_val` : "/cal_emi_val");
     }
+})
+
+CalculatorRouter.get('/cal_emi_val_del', async (req, res) => {
+    var id = req.query.id
+    if (id > 0) {
+        var res_dt = await db_Delete('md_cal_emi_val', `type_id = ${data.type_id} AND act_id = ${data.act_id} AND emi_type_id = ${data.emi_type_id} AND repo_period = ${data.period}`);
+        req.session.message = { type: "danger", message: "Data deleted successfully" };
+    }else{
+        req.session.message = { type: "warning", message: "Data not deleted" };
+    }
+    res.redirect(`/cal_emi_type`);
 })
 
 module.exports = {CalculatorRouter}
