@@ -51,7 +51,7 @@
                                             <a onclick="routToNextPage('/unit_edit', JSON.stringify({id: '<%= dt.id %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
-                                            <a href="/unit_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                                            <a href="/unit_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
                                                 <i class="icofont icofont-ui-delete"></i> Delete
                                             </a>
                                             </td>

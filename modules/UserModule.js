@@ -30,7 +30,7 @@ module.exports = {
     },
     getClientList: (id=null) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.id, a.client_name, b.user_name, b.user_id, b.user_type, a.plan_type, a.plan_active_dt, DATEDIFF(a.plan_deactive_dt,a.plan_active_dt) AS diff_dt, a.ai_tag_tool_flag',
+            var select = 'a.id, a.client_name, b.user_name, b.user_id, b.user_type, a.plan_type, a.plan_active_dt, DATEDIFF(a.plan_deactive_dt,a.plan_active_dt) AS diff_dt, a.ai_tag_tool_flag, a.ghg_emi_flag, a.ifrs_flag, a.esrs_flag, a.gri_flag, a.gri_fr_flag',
             table_name = 'td_client a, md_user b',
             whr = `a.id=b.client_id AND b.user_type = 'C' ${id > 0 ? `AND a.id = ${id}` : ''}`,
             order = null;
@@ -45,9 +45,9 @@ module.exports = {
                 datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
             var table_name = 'td_client',
-                fields = data.id > 0 ? `client_name = '${data.client_name}', plan_type = 'N', ai_tag_tool_flag = '${data.ai_tag_tool_flag}', modified_by = '${user}', modified_dt = '${datetime}'`:
-                `(entry_dt, client_name, plan_type, ai_tag_tool_flag, created_by, created_dt)`,
-                values = `('${datetime}', '${data.client_name}', 'N', '${data.ai_tag_tool_flag}', '${user}', '${datetime}')`,
+                fields = data.id > 0 ? `client_name = '${data.client_name}', plan_type = 'N', ai_tag_tool_flag = '${data.ai_tag_tool_flag}', ghg_emi_flag = '${data.ghg_emi_flag}', ifrs_flag = '${data.ifrs_flag}', esrs_flag = '${data.esrs_flag}', gri_flag = '${data.gri_flag}', gri_fr_flag = '${data.gri_fr_flag}', modified_by = '${user}', modified_dt = '${datetime}'`:
+                `(entry_dt, client_name, plan_type, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, esrs_flag, gri_flag, gri_fr_flag, created_by, created_dt)`,
+                values = `('${datetime}', '${data.client_name}', 'N', '${data.ai_tag_tool_flag}', '${data.ghg_emi_flag}', '${data.ifrs_flag}', '${data.esrs_flag}', '${data.gri_flag}', '${data.gri_fr_flag}', '${user}', '${datetime}')`,
                 whr = data.id > 0 ? `id = ${data.id}` : null,
                 flag = data.id > 0 ? 1 : 0;
             var client_data = await db_Insert(table_name, fields, values, whr, flag)

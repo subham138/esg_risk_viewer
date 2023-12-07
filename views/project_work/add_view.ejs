@@ -19,12 +19,12 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col-md-6 text-center mb-4">
-                            <p class="pro-card-head">You are working on the project <b><%= proj_name %></b></p>
+                        <div class="col-md-10 text-center mb-4">
+                            <p class="pro-card-head">You are working on the project <b><%= proj_name %></b> using the <b><%= flag == "I" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) %> Framework</b></p>
                         </div>
                         <% if(user_type != 'V'){ %>
-                            <div class="col-md-6">
-                                <a href="/proj_work?id=<%= proj_id %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end">Modify</a>
+                            <div class="col-md-2">
+                                <a href="/proj_work?id=<%= proj_id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end">Modify</a>
                             </div>
                         <% } %>
                     </div>

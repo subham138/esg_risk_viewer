@@ -44,8 +44,8 @@
                         </select>
                     </div>
                 </div>
-                <div class="row m-4">
-                    <div class="col-md-4">
+                <div class="row mt-4">
+                    <div class="col-md-3">
                         <div class="media">
                         <label class="col-form-label m-r-10">AI Word Tag</label>
                         <div class="media-body text-end icon-state switch-outline">
@@ -56,8 +56,68 @@
                         </div>
                       </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">GHG Emissions</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="ghg_emi_flag" <%= id > 0 ? (client_data.msg[0].ghg_emi_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">IFRS</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="ifrs_flag" <%= id > 0 ? (client_data.msg[0].ifrs_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">ESRS</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="esrs_flag" <%= id > 0 ? (client_data.msg[0].esrs_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">GRI</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="gri_flag" <%= id > 0 ? (client_data.msg[0].gri_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">GRI-French</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="gri_fr_flag" <%= id > 0 ? (client_data.msg[0].gri_fr_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                 </div>
                 <input type="hidden" name="ai_tag_tool_flag" id="ai_flag" value="<%= id > 0 ? client_data.msg[0].ai_tag_tool_flag : '' %>">
+                <input type="hidden" name="ghg_emi_flag" id="ghg_emi_flag_val" value="<%= id > 0 ? client_data.msg[0].ghg_emi_flag : '' %>">
+                <input type="hidden" name="ifrs_flag" id="ifrs_flag_val" value="<%= id > 0 ? client_data.msg[0].ifrs_flag : '' %>">
+                <input type="hidden" name="esrs_flag" id="esrs_flag_val" value="<%= id > 0 ? client_data.msg[0].esrs_flag : '' %>">
+                <input type="hidden" name="gri_flag" id="gri_flag_val" value="<%= id > 0 ? client_data.msg[0].gri_flag : '' %>">
+                <input type="hidden" name="gri_fr_flag" id="gri_fr_flag_val" value="<%= id > 0 ? client_data.msg[0].gri_fr_flag : '' %>">
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                 <button class="btn btn-pill btn-outline-primary btn-air-primary" type="submit">Submit</button>
                 </form>
@@ -75,6 +135,51 @@
         }else{
             $('#ai_flag').val('Y')
             $('#ai_tag_tool_flag').attr('checked', 'checked')
+        }
+    })
+    $('#ghg_emi_flag').on('change', function(){
+        if($('#ghg_emi_flag').attr('checked')){
+            $('#ghg_emi_flag_val').val('N')
+            $('#ghg_emi_flag').removeAttr('checked')
+        }else{
+            $('#ghg_emi_flag_val').val('Y')
+            $('#ghg_emi_flag').attr('checked', 'checked')
+        }
+    })
+    $('#ifrs_flag').on('change', function(){
+        if($('#ifrs_flag').attr('checked')){
+            $('#ifrs_flag_val').val('N')
+            $('#ifrs_flag').removeAttr('checked')
+        }else{
+            $('#ifrs_flag_val').val('Y')
+            $('#ifrs_flag').attr('checked', 'checked')
+        }
+    })
+    $('#esrs_flag').on('change', function(){
+        if($('#esrs_flag').attr('checked')){
+            $('#esrs_flag_val').val('N')
+            $('#esrs_flag').removeAttr('checked')
+        }else{
+            $('#esrs_flag_val').val('Y')
+            $('#esrs_flag').attr('checked', 'checked')
+        }
+    })
+    $('#gri_flag').on('change', function(){
+        if($('#gri_flag').attr('checked')){
+            $('#gri_flag_val').val('N')
+            $('#gri_flag').removeAttr('checked')
+        }else{
+            $('#gri_flag_val').val('Y')
+            $('#gri_flag').attr('checked', 'checked')
+        }
+    })
+    $('#gri_fr_flag').on('change', function(){
+        if($('#gri_fr_flag').attr('checked')){
+            $('#gri_fr_flag_val').val('N')
+            $('#gri_fr_flag').removeAttr('checked')
+        }else{
+            $('#gri_fr_flag_val').val('Y')
+            $('#gri_fr_flag').attr('checked', 'checked')
         }
     })
 </script>

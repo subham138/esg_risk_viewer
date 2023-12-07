@@ -188,7 +188,8 @@ ProjectRouter.get('/proj_work_view', async (req, res) => {
         header: "Project Work",
         sub_header: "Project Add/Edit",
         header_url: "/my_project",
-        flag: data.flag
+        flag: data.flag,
+        enc_dt: encodeURIComponent(new Buffer.from(data.flag).toString('base64'))
     }
     res.render("project_work/add_view", res_data);
 })

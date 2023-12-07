@@ -119,6 +119,15 @@
     window.location.href = `${route}${params ? `?data=${encode ? window.btoa(params) : params}` : ''}`
   }
 </script>
+<script>
+  function checkDel(){
+    if(confirm('Do you want to delete permanently?')){
+      return true;
+    }else{
+      return false;
+    }
+  }
+</script>
 </body>
 
 </html>

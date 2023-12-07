@@ -50,12 +50,17 @@ UserRouter.post("/login", async (req, res) => {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         req.session.user = chk_dt.msg[0];
         if(chk_dt.msg[0].user_type != 'S'){
-          var select = "id, ai_tag_tool_flag",
+          var select = "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, esrs_flag, gri_flag, gri_fr_flag",
             table_name = "td_client",
             whr = `id = '${chk_dt.msg[0].client_id}'`,
             order = null;
           var client_dt = await db_Select(select, table_name, whr, order);
           req.session.user['ai_tag_tool_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].ai_tag_tool_flag : 'N') : 'N';
+          req.session.user['ghg_emi_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].ghg_emi_flag : 'N') : 'N';
+          req.session.user['ifrs_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].ifrs_flag : 'N') : 'N';
+          req.session.user['esrs_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].esrs_flag : 'N') : 'N';
+          req.session.user['gri_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].gri_flag : 'N') : 'N';
+          req.session.user['gri_fr_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].gri_fr_flag : 'N') : 'N';
         }
         req.session.videoPopUp = true;
         res.redirect("/dashboard");
