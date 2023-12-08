@@ -427,4 +427,107 @@ DataCollectionRouter.get('/get_dynamic_data_set_ajax', async (req, res) => {
   }
 })
 
+DataCollectionRouter.get("/sus_disc_info", async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from (enc_dt, 'base64').toString();
+
+  var selected = {
+    sec_id: req.query.sec_id ? req.query.sec_id : 0,
+    ind_id: req.query.ind_id ? req.query.ind_id : 0,
+  };
+  var sec_data = await getSectorList(0, flag),
+    ind_list = { msg: [] };
+  if (selected.sec_id > 0)
+    ind_list = await getIndustriesList(null, selected.sec_id, flag);
+  // console.log(ind_list);
+  var data = {
+    sec_data,
+    ind_list,
+    selected,
+    header: "Sustainability Disclosure Topics & Metrics User Guide Information",
+    flag,
+    enc_dt,
+  };
+  res.render("data_collection/sus_disc/sus_disc_info", data);
+});
+
+DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
+  var data = req.body,
+    res_dt,
+    user = "admin",
+    datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+    // console.log(data);
+    if(Array.isArray(data.top_id)){
+      for (let dt of data.top_id) {
+        // console.log(dt);
+        var j = 1;
+        // console.log(Array.isArray(data[`metric_${dt}`]));
+        if (Array.isArray(data[`code_${dt}`])) {
+          for (let i = 0; i < data[`code_${dt}`].length; i++) {
+            if(data[`info_title_${dt}`][i] != ''){
+              var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND code = '${data[`code_${dt}`][i]}'`;
+              // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+      
+              var table_name = `td_sus_dis_top_met`,
+                fields = `info_title = "${data[`info_title_${dt}`][i]}", info_desc = '${data[`info_desc_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+                values = null,
+                whr = chk_whr,
+                flag = 1;
+              res_dt = await db_Insert(table_name, fields, values, whr, flag);
+              j++;
+            }
+          }
+        } else {
+          if(data[`info_title_${dt}`] != ''){
+            var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND code = '${data[`code_${dt}`]}'`;
+            // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+            // console.log(chk_dt);
+            var table_name = `td_sus_dis_top_met`,
+              fields = `info_title = "${data[`info_title_${dt}`]}", info_desc = '${data[`info_desc_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+              values = null,
+              whr = chk_whr,
+              flag = 1;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag);
+          }
+        }
+      }
+    }else{
+      var dt = data.top_id
+      var j = 1;
+      if (Array.isArray(data[`metric_${dt}`])) {
+        for (let i = 0; i < data[`metric_${dt}`].length; i++) {
+          if(data[`info_title_${dt}`][i] != ''){
+            var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND code = '${data[`code_${dt}`][i]}'`;
+            // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+    
+            var table_name = `td_sus_dis_top_met`,
+              fields = `info_title = "${data[`info_title_${dt}`][i]}", info_desc = '${data[`info_desc_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+              values = null,
+              whr = chk_whr,
+              flag = 1;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag);
+            j++;
+          }
+        }
+      } else {
+        if(data[`info_title_${dt}`] != ''){
+          var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND code = '${data[`code_${dt}`]}'`;
+          // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
+          // console.log(chk_dt);
+          var table_name = `td_sus_dis_top_met`,
+            fields = `info_title = "${data[`info_title_${dt}`]}", info_desc = '${data[`info_desc_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+            values = null,
+            whr = chk_whr,
+            flag = 1;
+          res_dt = await db_Insert(table_name, fields, values, whr, flag);
+        }
+      }
+    }
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect(`/sus_disc_info?sec_id=${data.sec_id}&ind_id=${data.ind_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
+});
+
 module.exports = { DataCollectionRouter };

@@ -28,7 +28,20 @@
                             <div class="col-md-6">
                                 <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>">
                             </div>
-                            <div class="col-md-12 colEditor">
+                            <% if(dt.info_desc && dt.info_title){ %>
+                            <div class="col-md-12">
+                                <div class="editorHelpDiv readmore">
+                                    <div class="editorHelpHeader">
+                                        <%= dt.info_title %>
+                                    </div>
+                                    <div class="editorHelpContent">
+                                        <%- dt.info_desc %>
+                                    </div>
+                                    <span class="readmore-link"></span>
+                                </div>
+                            </div>
+                            <% } %>
+                            <div class="col-md-12 colEditor <%= dt.info_desc && dt.info_title ? '' : 'm-t-15' %>">
                                 <textarea id="editor<%= ediR %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
                             </div>
                         </div>

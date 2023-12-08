@@ -69,3 +69,5 @@ ALTER TABLE `td_project` ADD `repo_flag` ENUM('I','E','G','F') NOT NULL DEFAULT 
 <----------------------------- DONE ----------------------------->
 
 ALTER TABLE `td_client` ADD `ghg_emi_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `ai_tag_tool_flag`, ADD `ifrs_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `ghg_emi_flag`, ADD `esrs_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `ifrs_flag`, ADD `gri_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `esrs_flag`, ADD `gri_fr_flag` ENUM('Y','N') NOT NULL DEFAULT 'N' AFTER `gri_flag`;
+
+ALTER TABLE `td_sus_dis_top_met` ADD `info_title` TEXT NULL DEFAULT NULL AFTER `words`, ADD `info_desc` TEXT NULL DEFAULT NULL AFTER `info_title`;
