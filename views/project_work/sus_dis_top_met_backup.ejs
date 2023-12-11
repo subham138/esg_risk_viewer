@@ -1,6 +1,52 @@
+<table class="table" width="100%">
+    <thead>
+        <tr class="tbDynDt">
+            <th>General issue category (Industry agnostic)</th>
+            <%# if(flag != 'I'){ %>
+                <!-- <th></th> -->
+            <%# } %>
+            <th>Disclosure topics (Industry specific)</th>
+            <th>Metric</th>
+            <th>Category</th>
+            <th>Unit of measure</th>
+            <th>Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if(susDistList.msg.length > 0){
+            var rowSpan = 1, susI = 1;
+            var prevRes = ''
+            var susModifyDt = susDistList.msg.map(dt => dt.code != '' && dt.code != 'null' && dt.code ? dt : null)
+            susModifyDt = susModifyDt.filter(dt => dt != undefined)
+            susModifyDt.forEach(dt => {
+                if(typeof(dt) === 'object'){
+                var nowRes = dt.top_id
+                %>
+                <tr class="hoverDynDtaTbl">
+                    <% if(prevRes != nowRes){
+                        prevRes = dt.top_id %>
+                        <td class="topic_text" rowspan="<%= susModifyDt.filter(sdt => sdt.top_id == dt.top_id).length %>">
+                            <%= dt.topic_name %>
+                        </td>
+                    <% } %>
+                    <%# if(flag != 'I'){ %>
+                        <!-- <td><input id="selSusDt_<%= susI %>" name="selSusDt" value="<%= dt.code %>" type="checkbox"></td> -->
+                    <%# } %>
+                    <td><%= dt.ind_agn %></td>
+                    <td><%= dt.metric %></td>
+                    <td><%= dt.catg %></td>
+                    <td><%= dt.unit %></td>
+                    <td><%= dt.code %></td>
+                </tr>
+            <% } susI++; })
+        } %>
+        <tr></tr>
+    </tbody>
+</table>
+
 <div class="row m-t-15">
     <div class="col-md-12">
-        <p class="dyn-col-head">General Disclosures</p>
+        <p>General Disclosures</p>
     </div>
 <% if(susDistList.msg.length > 0){
     var rowSpan = 1, susI = 1;
@@ -26,7 +72,7 @@
 </div>
 <div class="row m-t-15">
     <div class="col-md-12">
-        <p class="dyn-col-head">Topics List</p>
+        <p>Topics List</p>
     </div>
     <div class="col-md-12">
         <div id="topicGenDis" class="row"></div>
