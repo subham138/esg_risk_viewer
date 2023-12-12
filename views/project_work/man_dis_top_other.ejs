@@ -28,6 +28,8 @@
                             <div class="col-md-6">
                                 <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>">
                             </div>
+                        </div>
+                        <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-10 row">
                             <% if(dt.info_desc && dt.info_title){ %>
                                 <div class="col-md-12">
                                     <div class="editorHelpDiv readmore">
