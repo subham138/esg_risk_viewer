@@ -117,9 +117,9 @@ module.exports = {
     },
     getGhgEmiList: (client_id, id = 0) => {
         return new Promise(async (resolve, reject) => {
-            var select = '*',
-                table_name = 'td_ghg_emission', 
-                whr = `client_id = ${client_id} ${id > 0 ? `AND id=${id}` : ''}`, 
+            var select = 'a.id, a.client_id, a.scope, a.entry_dt, a.user_id, a.sl_no, a.sec_id, b.type_name, a.act_id, c.act_name, a.emi_type_id, d.emi_name, a.repo_period, a.repo_month, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val',
+                table_name = 'td_ghg_emission a, md_cal_type b, md_cal_act c, md_cal_emi_type d', 
+                whr = `a.sec_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND client_id = ${client_id} ${id > 0 ? `AND id=${id}` : ''}`, 
                 order = null;
             var chk_dt = await db_Select(select, table_name, whr, order)
             resolve(chk_dt)

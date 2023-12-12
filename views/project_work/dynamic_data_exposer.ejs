@@ -6,9 +6,9 @@
         allDynamicData.forEach(dt => {
         %>
         <div class="card">
-            <div class="card-header bg-primary caruBackCol1">
+            <div class="card-header caruBackCol1">
                 <h5 class="mb-0">
-                    <button class="btn btn-link text-white" data-bs-toggle="collapse" data-bs-target="#dynData_<%= dt.top_id %>" aria-expanded="true" aria-controls="collapse11"><%= dt.topic_name %></button>
+                    <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#dynData_<%= dt.top_id %>" aria-expanded="true" aria-controls="collapse11"><%= dt.topic_name %></button>
                 </h5>
             </div>
             <div class="collapse" id="dynData_<%= dt.top_id %>" aria-labelledby="dynData_<%= dt.top_id %>" data-bs-parent="#accordionoc">

@@ -217,7 +217,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
             ghg_emi_data[dt] = ghg_emi_list.filter(fdt => fdt.scope == dt)
         }
     }
-    console.log(ghg_emi_data);
+    // console.log(ghg_emi_data);
     // console.log(parseInt(currDate.getFullYear()));
     for(let i = 0; i<=6; i++){
         // console.log(i, 'Year');

@@ -46188,7 +46188,10 @@ nav #mainnav .nav-menu{
   background-color: var(--theme-primary) !important;
 }
 .caruBackCol1{
-background-color: var(--theme-secondary) !important;
+/* background-color: var(--theme-secondary) !important; */
+  background-color: #fff !important;
+  border: 2px solid var(--theme-secondary);
+  box-shadow: 0 0.1rem 0rem var(--theme-secondary);
 }
 .form-check-input:checked {
   background-color: var(--theme-primary);
