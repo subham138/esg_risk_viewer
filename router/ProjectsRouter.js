@@ -56,7 +56,7 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
         project_data,
         header: "Project List",
         sub_header: "Project Add/Edit",
-        header_url: "/my_project",
+        header_url: `/my_project?flag=${enc_dt}`,
         flag
     };
     res.render("projects/add", data);
@@ -98,7 +98,7 @@ ProjectRouter.get('/proj_work', async (req, res) => {
         act_list,
         header: "Project Work",
         sub_header: "Project Add/Edit",
-        header_url: "/my_project",
+        header_url: `/my_project?flag=${enc_dt}`,
         flag
     }
     res.render('project_work/add', data)
@@ -187,7 +187,7 @@ ProjectRouter.get('/proj_work_view', async (req, res) => {
         user_type: req.session.user.user_type,
         header: "Project Work",
         sub_header: "Project Add/Edit",
-        header_url: "/my_project",
+        header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
         flag: data.flag,
         enc_dt: encodeURIComponent(new Buffer.from(data.flag).toString('base64'))
     }
@@ -264,7 +264,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         year_list,
         header: "Project Work",
         sub_header: "Project View",
-        header_url: "/my_project",
+        header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
         flag: data.flag
     };
     res.render("project_work/report_view", res_data);
