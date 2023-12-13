@@ -238,12 +238,13 @@
                                                                                                         <option selected="" value="">Select Section</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
-                                                                                                                var selected = '';
-                                                                                                                if(newGhgDt.length > 0)
-                                                                                                                    if(newGhgDt[0].sec_id == dt.id)
-                                                                                                                        selected = 'selected'; %>
+                                                                                                                if(dt.scope == 1){
+                                                                                                                    var selected = '';
+                                                                                                                    if(newGhgDt.length > 0)
+                                                                                                                        if(newGhgDt[0].sec_id == dt.id)
+                                                                                                                            selected = 'selected'; %>
                                                                                                                 <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
-                                                                                                            <% })
+                                                                                                            <% }})
                                                                                                         } %>
                                                                                                     </select>
                                                                                                 </div>
@@ -373,10 +374,11 @@
                                                                                     <select class="form-select" id="type_id_s1_1" name="type_id" required="" onchange="changeTypeId('s1',1)">
                                                                                         <option selected="" value="">Select Section</option>
                                                                                         <% if(type_list.length > 0){
-                                                                                            type_list.forEach(dt => { 
-                                                                                                var selected = ''; %>
-                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                            <% })
+                                                                                            type_list.forEach(dt => {
+                                                                                                if(dt.scope == 1){ 
+                                                                                                    var selected = ''; %>
+                                                                                                    <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
+                                                                                            <% }})
                                                                                         } %>
                                                                                     </select>
                                                                                 </div>
@@ -494,11 +496,12 @@
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
                                                                                                                 var selected = '';
-                                                                                                                if(newGhgDt.length > 0)
-                                                                                                                    if(newGhgDt[0].sec_id == dt.id)
-                                                                                                                        selected = 'selected'; %>
-                                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
-                                                                                                            <% })
+                                                                                                                if(dt.scope == 2){
+                                                                                                                    if(newGhgDt.length > 0)
+                                                                                                                        if(newGhgDt[0].sec_id == dt.id)
+                                                                                                                            selected = 'selected'; %>
+                                                                                                                    <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
+                                                                                                            <% }})
                                                                                                         } %>
                                                                                                     </select>
                                                                                                 </div>
@@ -630,9 +633,10 @@
                                                                                         <option selected="" value="">Select Section</option>
                                                                                         <% if(type_list.length > 0){
                                                                                             type_list.forEach(dt => { 
-                                                                                                var selected = ''; %>
-                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                            <% })
+                                                                                                if(dt.scope == 2){
+                                                                                                    var selected = ''; %>
+                                                                                                    <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
+                                                                                            <% }})
                                                                                         } %>
                                                                                     </select>
                                                                                 </div>
@@ -750,11 +754,12 @@
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
                                                                                                                 var selected = '';
+                                                                                                                if(dt.scope == 3){
                                                                                                                 if(newGhgDt.length > 0)
                                                                                                                     if(newGhgDt[0].sec_id == dt.id)
                                                                                                                         selected = 'selected'; %>
                                                                                                                 <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
-                                                                                                            <% })
+                                                                                                            <% }})
                                                                                                         } %>
                                                                                                     </select>
                                                                                                 </div>
@@ -886,9 +891,10 @@
                                                                                         <option selected="" value="">Select Section</option>
                                                                                         <% if(type_list.length > 0){
                                                                                             type_list.forEach(dt => { 
+                                                                                                if(dt.scope == 3){
                                                                                                 var selected = ''; %>
                                                                                                 <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                            <% })
+                                                                                            <% }})
                                                                                         } %>
                                                                                     </select>
                                                                                 </div>

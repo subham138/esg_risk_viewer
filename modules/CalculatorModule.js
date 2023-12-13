@@ -26,7 +26,7 @@ module.exports = {
     },
     getCalTypeList: (id = 0) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'id, type_name, type', 
+            var select = 'id, type_name, type, scope', 
             table_name = 'md_cal_type',
             whr = id > 0 ? `id = ${id}` : null,
             order = 'ORDER BY type_name';
@@ -38,9 +38,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_cal_type',
-            fields = data.id > 0 ? `type_name = '${data.type_name}', type = '${data.type}', modified_by = '${user}', modified_dt = '${datetime}'` : 
-            '(type_name, type, created_by, created_dt)',
-            values = `('${data.type_name}', '${data.type}', '${user}', '${datetime}')`,
+            fields = data.id > 0 ? `type_name = '${data.type_name}', type = '${data.type}', scope = '${data.scope}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+            '(type_name, type, scope, created_by, created_dt)',
+            values = `('${data.type_name}', '${data.type}', '${data.scope}', '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)

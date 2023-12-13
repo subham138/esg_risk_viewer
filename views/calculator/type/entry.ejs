@@ -30,6 +30,15 @@
                         <input class="form-control" id="type" name="type" type="text" value="<%= id > 0 ? (data.length > 0 ? data[0].type : '') : '' %>" required="">
                         <div class="valid-feedback">No Error</div>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="scope">Scope</label>
+                        <select class="form-select" id="scope" name="scope" required="">
+                            <option selected="" value="">Select One</option>
+                            <option <%= id > 0 ? (data.length > 0 ? (data[0].scope == 1 ? 'selected' : '') : '') : '' %> value="1">Scope 1</option>
+                            <option <%= id > 0 ? (data.length > 0 ? (data[0].scope == 2 ? 'selected' : '') : '') : '' %> value="2">Scope 2</option>
+                            <option <%= id > 0 ? (data.length > 0 ? (data[0].scope == 3 ? 'selected' : '') : '') : '' %> value="3">Scope 3</option>
+                        </select>
+                    </div>
                 </div>
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                 <button class="btn btn-pill btn-outline-primary btn-air-primary" type="submit">Submit</button>
