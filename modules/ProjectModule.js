@@ -90,7 +90,7 @@ module.exports = {
             
             var select = 'id', 
                 table_name = 'td_project_work', 
-                whr = `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND top_id = ${data.top_id} AND project_id = ${data.project_id} AND article_code = '${data.topicTilte}'`, 
+                whr = `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND top_id = ${data.top_id} AND project_id = ${data.project_id} AND article_code = "${data.topicTilte}"`, 
                 order = null;
             var chk_dt = await db_Select(select, table_name, whr, order)
 
@@ -98,7 +98,7 @@ module.exports = {
                 fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 
                 `article = '${data.txtEditorVal}', modified_by = '${user}', modified_dt = '${datetime}'` : 
                 `(repo_flag, sec_id, ind_id, top_id, project_id, article_code, article, user_id, created_by, created_dt)`,
-                values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${data.project_id}', '${data.topicTilte}', '${data.txtEditorVal}', '${user_id}', '${user}', '${datetime}')`,
+                values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${data.top_id}', '${data.project_id}', "${data.topicTilte}", '${data.txtEditorVal}', '${user_id}', '${user}', '${datetime}')`,
                 whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
                 flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -139,7 +139,7 @@ module.exports = {
                     var table_name = "td_ghg_emission",
                         fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `emi_type_unit_id = '${dt.emi_type_unit_id}', cal_val = '${dt.cal_val}', emi_fact_val = '${dt.emi_fact_val}', co_val = '${dt.co_val}', modified_by = '${user}', modified_dt = '${datetime}'` : 
                         '(client_id, scope, entry_dt, user_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)',
-                        values = `(${client_id}, '${data.scope}', '${nowDate}', '${user_id}', '${data.sl_no}', '${data.sec_id}', '${data.act_id}', '${data.emi_type_id}', '${data.repo_period}', '${dt.month}', '${dt.emi_type_unit_id}', '${dt.cal_val}', '${dt.emi_fact_val}', '${dt.co_val}', '${user}', '${datetime}')`,
+                        values = `(${client_id}, '${data.scope}', '${nowDate}', '${user_id}', '${data.sl_no}', '${data.sec_id}', '${data.act_id}', '${data.emi_type_id}', '${data.repo_period}', '${dt.month}', ${dt.emi_type_unit_id > 0 ? dt.emi_type_unit_id : 0}, ${dt.cal_val > 0 ? dt.cal_val : 0}, ${dt.emi_fact_val > 0 ? dt.emi_fact_val : 0}, ${dt.co_val > 0 ? dt.co_val : 0}, '${user}', '${datetime}')`,
                         whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
                         flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
                     res_dt = await db_Insert(table_name, fields, values, whr, flag)

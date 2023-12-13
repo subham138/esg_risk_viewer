@@ -44,8 +44,8 @@ MasterRouter.get("/sec_edit", async (req, res) => {
 MasterRouter.post("/sec_save", async (req, res) => {
   var data = req.body;
   var table_name = "md_sector",
-    fields = data.id > 0 ? `sec_name = '${data.sec_name}'` : "(repo_flag, sec_name)",
-    values = `('${data.flag}', '${data.sec_name}')`,
+    fields = data.id > 0 ? `sec_name = "${data.sec_name}"` : "(repo_flag, sec_name)",
+    values = `('${data.flag}', "${data.sec_name}")`,
     whr = data.id > 0 ? `id = ${data.id}` : null,
     flag = data.id > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
