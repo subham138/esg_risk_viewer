@@ -18,7 +18,6 @@ const db = mysql.createPool({
   database: "esg_risk_viewer",
 });
 
-
 db.getConnection((err, connection) => {
   if (err) console.log(err);
   connection.release();
