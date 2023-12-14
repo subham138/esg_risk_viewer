@@ -2,7 +2,7 @@ const { getSectorList, getIndustriesList, getBusiActList } = require('../modules
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert, db_Delete } = require('../modules/MasterModule');
-const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList } = require('../modules/ProjectModule');
+const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList, getActiveTopicList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 const dateFormat = require("dateformat");
 
@@ -211,6 +211,9 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     ghg_emi_list = ghg_emi_list.suc > 0 ? (ghg_emi_list.msg.length > 0 ? ghg_emi_list.msg : []) : [];
     var scope_list = ghg_emi_list.length > 0 ? ghg_emi_list.map(dt => dt.scope) : []
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
+    var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
+    console.log(act_top_catg_list);
+
     var ghg_emi_data = {};
     if(scope_list.length > 0){
         for(let dt of scope_list){
@@ -262,6 +265,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         emi_type: emi_type.suc > 0 ? emi_type.msg : [],
         ghg_emi_data,
         year_list,
+        act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
         header: "Project Work",
         sub_header: "Project View",
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,

@@ -147,5 +147,15 @@ module.exports = {
             }
             resolve(res_dt)
         })
+    },
+    getActiveTopicList: (ind_id, flag) => {
+        return new Promise(async (resolve, reject) => {
+            var select = `a.id, a.ind_id, a.topic_id, b.topic_name, b.topic_catg_id catg_id, c.catg_name, a.topic_flag`,
+            table_name = 'md_industries_topics a, md_topic b, md_topic_catg c',
+            whr = `a.topic_id=b.id AND a.repo_flag=b.repo_flag AND b.topic_catg_id=c.id AND a.repo_flag=c.repo_flag AND a.topic_flag = 'Y' AND a.ind_id = '${ind_id}' AND a.repo_flag = '${flag}'`,
+            order = null;
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
     }
 }
