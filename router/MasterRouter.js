@@ -272,9 +272,9 @@ MasterRouter.post("/topic_save", async (req, res) => {
   var table_name = "md_topic",
     fields =
       data.id > 0
-        ? `topic_catg_id = '${data.topic_catg_id}', topic_name = '${data.topic_name}'`
+        ? `topic_catg_id = '${data.topic_catg_id}', topic_name = "${data.topic_name}"`
         : "(repo_flag, topic_catg_id, topic_name)",
-    values = `('${data.flag}', '${data.topic_catg_id}', '${data.topic_name}')`,
+    values = `('${data.flag}', '${data.topic_catg_id}', "${data.topic_name}")`,
     whr = data.id > 0 ? `id = ${data.id}` : null,
     flag = data.id > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
