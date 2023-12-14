@@ -30,12 +30,12 @@
         console.log(allList);
         // console.log($('input[name="top_chk"]:checked'));
         $('#topicGenDis').empty();
+        $('.editorDiv').each(function(){
+            $(this).hide()
+        })
         $('input[name="top_chk"]:checked').each(function(){
             var newFilterTopic = allList.filter(dt => dt.topic_name == $(this).val())
             // console.log(newFilterTopic);
-            $('.editorDiv').each(function(){
-                $(this).hide()
-            })
             newFilterTopic.forEach(dt => {
                 // $('#topicGenDis').append(`
                 // <div class="col-md-3 m-t-10">
