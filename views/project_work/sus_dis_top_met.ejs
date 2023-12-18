@@ -4,7 +4,7 @@
     susModifyDt = susModifyDt.filter(dt => dt != undefined)
     var prevCatg = ''
     act_top_catg_list.forEach(dt => {
-        _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id).length > 0 ? 'checked' : '';
+        _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id && gdt.check_flag == 'Y').length > 0 ? 'checked' : '';
         var nowCatg = dt.catg_id %>
         <% if(prevCatg != nowCatg){
             prevCatg = dt.catg_id %>
@@ -35,14 +35,15 @@
     $('input[name="top_chk"]').on('change', function(){
         var allList = <%- JSON.stringify(susModifyDt) %>;
         var chkList = 1
-        console.log($(this).is(':checked'));
+        console.log(allList);
         $('#topicGenDis').empty();
         $('.editorDiv').each(function(){
             $(this).hide()
         })
         if($(this).is(':checked')){
             $('input[name="top_chk"]:checked').each(function(index, element){
-                var newFilterTopic = allList.filter(dt => dt.topic_name == $(this).val())
+                var newFilterTopic = allList.filter(dt => dt.topic_name == $(element).val())
+                console.log(newFilterTopic, $(element).val());
                 
                 var topicId = $(element).attr('dt-set-id')
                 $.ajax({
@@ -68,15 +69,30 @@
                     //     $(".loader-wrapper").hide();
                     // }
                 })
-                newFilterTopic.forEach(dt => {
-                    var selVal = dt.code
-                    $('.editorDiv').each(function(){
-                        if($(this).attr('data-code') == selVal)
-                            $(this).show()
+                console.log(newFilterTopic.length, 'length');
+                for(let dt of newFilterTopic){
+                    var selVal = dt.id
+                    console.log(selVal, 'sel_Val');
+                    $('.editorDiv').each(function(i, item){
+                        // console.log($(item).attr('data-id') == dt.id, 'Log');
+                        if($(item).attr('data-id') == dt.id){
+                            $(item).show()
+                        }
                     })
-                })
+                }
+                // newFilterTopic.forEach(dt => {
+                //     var selVal = dt.id
+                //     $('.editorDiv').each(function(i, item){
+                //         console.log($(item).attr('data-code'), selVal, ($(item).attr('data-code') == selVal));
+                //         if($(item).attr('data-id') == selVal){
+                //             console.log('HERE');
+                //             $(item).show()
+                //         }
+                //     })
+                // })
             })
         }else{
+            var topicId = $(this).attr('dt-set-id')
             $.ajax({
                 method:'POST',
                 url: '/change_dis_top_status',
@@ -84,7 +100,7 @@
                     top_id: topicId,
                     project_id: $('#project_id').val(),
                     flag: '<%= flag %>',
-                    status: 'Y'
+                    status: 'N'
                 },
                 dataType: 'html',
                 // beforeSend: function () {

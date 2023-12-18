@@ -157,7 +157,21 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
           type: "success",
           message: "Data saved successfully",
         };
-        res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id, flag: data.flag}), "utf8").toString('base64')}`);
+        // res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id, flag: data.flag}), "utf8").toString('base64')}`);
+        res.redirect(
+          `/project_report_view?enc_data=${Buffer.from(
+            JSON.stringify({
+              sec_id: data.sec_id,
+              ind_id: data.ind_id,
+              top_id: 0,
+              proj_id: data.proj_id,
+              proj_name: data.proj_name,
+              repo_type: data.flag == "I" ? "ifrs" : (data.flag == "E" ? "esrs" : (data.flag == "G" ? "gri" : "gri-f")),
+              flag: data.flag,
+            }),
+            "utf8"
+          ).toString("base64")}`
+        );
     } else {
         req.session.message = { type: "danger", message: "Data not saved" };
         res.redirect(`/proj_work?id=${data.proj_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
@@ -350,7 +364,7 @@ ProjectRouter.post('/save_ghg_emi_val', async (req, res) => {
 
 ProjectRouter.post('/change_dis_top_status', async (req, res) => {
     var data = req.body
-    var res_dt = await saveCheckedProjectFlag(data, req.session.user.user_name, active_flag)
+    var res_dt = await saveCheckedProjectFlag(data, req.session.user.user_name, data.status)
     res.send(res_dt)
 })
 

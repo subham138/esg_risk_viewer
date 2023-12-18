@@ -21,7 +21,7 @@
                     var getRes = editorData.filter(edt => edt.article_code == dt.code && edt.top_id==dt.top_id)
                     var nowRes = dt.top_id
                     %>
-                    <div id="editorNewDiv_<%= ediR %>" data-code="<%= dt.code %>" class="row m-t-10 editorDiv" style="display: none;">
+                    <div id="editorNewDiv_<%= ediR %>" data-code="<%= dt.code %>" data-id="<%= dt.id %>" class="row m-t-10 editorDiv" style="display: none;">
                         <% if(prevRes != nowRes){
                             prevRes = dt.top_id %>
                             <p class="dyn-col-head"><%= dt.topic_name %></p>

@@ -164,7 +164,7 @@ module.exports = {
             await db_Delete('td_project_checkd_topic', `repo_flag='${data.flag}' AND project_id = ${data.project_id}`)
             var table_name = "td_project_checkd_topic",
                 fields = '(repo_flag, project_id, topic_id, check_flag, created_by, created_dt)',
-                values = `('${data.flag}', '${data.project_id}', '${data.top_id}', 'Y', '${user}', '${datetime}')`,
+                values = `('${data.flag}', '${data.project_id}', '${data.top_id}', '${active_flag}', '${user}', '${datetime}')`,
                 whr = null,
                 flag = 0;
             res_dt = await db_Insert(table_name, fields, values, whr, flag)

@@ -46434,3 +46434,12 @@ nav{
   border: 1px solid #43a047;
   left: 5px
 }
+.section-menu.sticky-section-menu{
+  z-index: 1;
+  width: 75%;
+  position: fixed;
+  top: 82px;
+  background: #fff;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
