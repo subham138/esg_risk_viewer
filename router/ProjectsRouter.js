@@ -350,7 +350,7 @@ ProjectRouter.post('/save_ghg_emi_val', async (req, res) => {
 
 ProjectRouter.post('/change_dis_top_status', async (req, res) => {
     var data = req.body
-    var res_dt = await saveCheckedProjectFlag(data, req.session.user.user_name)
+    var res_dt = await saveCheckedProjectFlag(data, req.session.user.user_name, active_flag)
     res.send(res_dt)
 })
 

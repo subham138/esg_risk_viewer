@@ -158,7 +158,7 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    saveCheckedProjectFlag: (data, user) => {
+    saveCheckedProjectFlag: (data, user, active_flag) => {
         return new Promise(async (resolve, reject) => {
             var res_dt = '', datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             await db_Delete('td_project_checkd_topic', `repo_flag='${data.flag}' AND project_id = ${data.project_id}`)
