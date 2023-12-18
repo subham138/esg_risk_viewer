@@ -46423,12 +46423,13 @@ nav{
   width: 1.5em;
   height: 1.5em;
   right: 0;
-  margin-right: 5px;
-  left: auto;
+  /* margin-right: 5px; */
+  left: 5px;
 }
 .custom_checkbox input[type="checkbox"]:checked+label::before {
   line-height: 1.4 !important;
   background: #43a047;
   color: #fff;
   border: 1px solid #43a047;
+  left: 5px
 }
