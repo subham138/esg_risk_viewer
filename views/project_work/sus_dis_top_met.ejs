@@ -52,18 +52,18 @@
                     flag: '<%= flag %>'
                 },
                 dataType: 'html',
-                beforeSend: function () {
-                    $(".loader-wrapper").show();
-                },
+                // beforeSend: function () {
+                //     $(".loader-wrapper").show();
+                // },
                 success: function (data) {
                     console.log(data);
                 },
                 error: function (xhr, status, error) {
                     console.error('Error:', error);
                 },
-                complete: function () {
-                    $(".loader-wrapper").hide();
-                }
+                // complete: function () {
+                //     $(".loader-wrapper").hide();
+                // }
             })
             newFilterTopic.forEach(dt => {
                 var selVal = dt.code
