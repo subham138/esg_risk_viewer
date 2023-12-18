@@ -1,12 +1,19 @@
 <%- include('../templates/header.ejs') %>
-<script src="js/chart/google/google-chart-loader.js"></script>
+<script src="/js/chart/google/google-chart-loader.js"></script>
 
 <!-- morris-chart -->
-    <script src="js/chart/morris-chart/raphael.js"></script>
-    <script src="js/chart/morris-chart/morris.js"> </script>
-    <script src="js/chart/morris-chart/prettify.min.js"></script>
-    <script src="js/chart/morris-chart/morris.min.js"></script>
-    <script src="js/chart/morris-chart/morris-script.js"></script>
+    <script src="/js/chart/morris-chart/raphael.js"></script>
+    <script src="/js/chart/morris-chart/morris.js"> </script>
+    <script src="/js/chart/morris-chart/prettify.min.js"></script>
+    <script src="/js/chart/morris-chart/morris.min.js"></script>
+    <script src="/js/chart/morris-chart/morris-script.js"></script>
+<!-- END -->
+<!-- Reach TextEditor -->
+    <link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+    <script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+    <% if(flag == "F"){ %>
+        <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+    <% } %>
 <!-- END -->
 
 <style>
@@ -18,6 +25,7 @@
 <script>
     google.charts.load('current', {packages: ['corechart', 'bar', 'line']});
     var fun = {}, i = 1, wordList = {}, totCount ={};
+    var editorList= {};
 </script>
 <div class="container-fluid">
     <div class="page-header">
@@ -1118,8 +1126,8 @@
 <script>
     function saveEditorValue(id, top_id){
         var topicTitle = $('#editor_topic_'+id).val()
-        var txtEditorVal = CKEDITOR.instances['editor'+id].getData()
-        // console.log(topicTitle, txtEditorVal);
+        var txtEditorVal = editorList['div_editor_'+id].getHTMLCode()
+        console.log(topicTitle, txtEditorVal);
         $.ajax({
             method:'POST',
             url: '/save_editor_data',

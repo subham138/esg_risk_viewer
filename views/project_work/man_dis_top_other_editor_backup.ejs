@@ -1,8 +1,3 @@
-<style>
-    .rte-modern.rte-desktop.rte-toolbar-default {
-        min-width: 100% !important;
-    }
-</style>
 <div class="row">
     <% if(user_type != 'V'){ %>
         <div class="col-md-12 row mt-3" id="editorPrevDiv">
@@ -49,8 +44,7 @@
                                 </div>
                             <% } %>
                             <div class="col-md-12 colEditor <%= dt.info_desc && dt.info_title ? '' : 'm-t-15' %>">
-                                <div id="div_editor_<%= ediR %>"><%- getRes.length > 0 ? getRes[0].article : "" %></div>
-                                <!-- <textarea id="editor<%# ediR %>" name="editor" cols="30" rows="10"><%# getRes.length > 0 ? getRes[0].article : "" %></textarea> -->
+                                <textarea id="editor<%= ediR %>" name="editor" cols="30" rows="10"><%= getRes.length > 0 ? getRes[0].article : "" %></textarea>
                             </div>
                         </div>
                         <% if(ai_tag_tool_flag != 'N'){
@@ -92,46 +86,58 @@
                         <% }} %>
                         
                         <script>
-                            editorList['div_editor_<%= ediR %>'] = new RichTextEditor("#div_editor_<%= ediR %>");
-                            editorList['div_editor_<%= ediR %>'].attachEvent("change", function () {
-                                var textCount = editorList['div_editor_<%= ediR %>'].getPlainText();
-                                // console.log(textCount);
-                                var ai_flag = '<%= ai_tag_tool_flag %>';
-                                if(ai_flag != 'N'){
-                                    totCount[<%= ediR %>] = 0
-                                    // var editorVal = e.editor.getData()
-                                    // var plainText = $("<div>").html(editorVal).text();
-                                    var plainText = editorList['div_editor_<%= ediR %>'].getPlainText();
-                                    var txtArr = plainText.trim().split('\n').join(' ').split(' ')
-                                    // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
-                                    // console.log('len', txtArr);
-                                    if(txtArr.length > 0){
-                                        txtArr = [...new Set(txtArr)]
-                                        // console.log(txtArr, 'TOt array');
-                                        var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
-                                        if(matchTxt.length > 0){
-                                            // console.log(matchTxt, 'Match array');
-                                            $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                $(this).removeClass('done')
-                                            })
-                                            for(let dt of matchTxt){
-                                                $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                    // console.log($(this).text());
-                                                    // if(matchTxt.includes($(this).text().trim().toLowerCase()))
-                                                    if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
-                                                        $(this).addClass('done')
-                                                })
+                            CKEDITOR
+                            .replace('editor<%= ediR %>', {
+                                on: {
+                                    contentDom: function( evt ) {
+                                        // Allow custom context menu only with table elemnts.
+                                        evt.editor.editable().on('contextmenu', function( contextEvent ) {
+                                            var path = evt.editor.elementPath();
+
+                                            if ( !path.contains( 'table' ) ) {
+                                                contextEvent.cancel();
                                             }
-                                        }else{
-                                            $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                $(this).removeClass('done')
-                                            })
+                                        }, null, null, 5 );
+                                    },
+                                    change: function(e){
+                                        // console.log(e.editor.getData());
+                                        var ai_flag = '<%= ai_tag_tool_flag %>';
+                                        if(ai_flag != 'N'){
+                                            totCount[<%= ediR %>] = 0
+                                            var editorVal = e.editor.getData()
+                                            var plainText = $("<div>").html(editorVal).text();
+                                            var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                                            // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                                            // console.log('len', txtArr);
+                                            if(txtArr.length > 0){
+                                                txtArr = [...new Set(txtArr)]
+                                                // console.log(txtArr, 'TOt array');
+                                                var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
+                                                if(matchTxt.length > 0){
+                                                    // console.log(matchTxt, 'Match array');
+                                                    $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                        $(this).removeClass('done')
+                                                    })
+                                                    for(let dt of matchTxt){
+                                                        $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                            // console.log($(this).text());
+                                                            // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                                            if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                                                $(this).addClass('done')
+                                                        })
+                                                    }
+                                                }else{
+                                                    $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                        $(this).removeClass('done')
+                                                    })
+                                                }
+                                                // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                                                // console.log(totCount);
+                                            }
                                         }
-                                        // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
-                                        // console.log(totCount);
                                     }
                                 }
-                            });
+                            } );
                         </script>
                         <% if(user_type != 'V'){ %>
                             <div class="col-md-10">&nbsp;</div>
@@ -154,13 +160,26 @@
                                     <div class="col-md-6">
                                         <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>">
                                     </div>
-                                    <div class="col-md-12 colEditor m-t-15">
-                                        <div id="div_editor_<%= i %>"><%- dt.article %></div>
-                                        <!-- <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"><%= dt.article %></textarea> -->
+                                    <div class="col-md-12 colEditor">
+                                        <textarea id="editor<%= i %>" name="editor" cols="30" rows="10"><%= dt.article %></textarea>
                                     </div>
                                 </div>
                                 <script>
-                                    editorList['div_editor_<%= i %>'] = new RichTextEditor("#div_editor_<%= i %>");
+                                    CKEDITOR
+                                    .replace( 'editor<%= i %>', {
+                                        on: {
+                                            contentDom: function( evt ) {
+                                                // Allow custom context menu only with table elemnts.
+                                                evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+                                                    var path = evt.editor.elementPath();
+
+                                                    if ( !path.contains( 'table' ) ) {
+                                                        contextEvent.cancel();
+                                                    }
+                                                }, null, null, 5 );
+                                            }
+                                        }
+                                    } );
                                 </script>
                                 <% if(user_type != 'V'){ %>
                                     <div class="col-md-10">&nbsp;</div>

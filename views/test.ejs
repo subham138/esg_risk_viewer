@@ -1,0 +1,27 @@
+<!-- <link rel="stylesheet" href="/editor/res/style.css" /> -->
+<!-- <div class="hs-docs-content-divider"> -->
+		
+
+    <!--Include the JS & CSS-->
+    <link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+    <script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<!-- <script>RTE_DefaultConfig.url_base='richtexteditor'</script> -->
+<script type="text/javascript" src='/editor/richtexteditor/plugins/all_plugins.js'></script>
+<script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+    <div id="div_editor1">
+        <p>This is a default toolbar demo of Rich text editor.</p>
+        <p><img src='/editor/images/editor-image.png' /></p>
+    </div>
+
+    <script>
+        var editor1 = new RichTextEditor("#div_editor1");
+        //editor1.setHTMLCode("Use inline HTML or setHTMLCode to init the default content.");
+    </script>
+
+    
+<!-- </div> -->
+<div class="mt-4">
+    <button class="btn btn-sm btn-outline-primary btn-pill transition-3d-hover px-5" onclick="alert(editor1.getHTMLCode())">Show Html Code</button>
+</div>
+
+<!-- <script src="/editor/res/patch.js"></script> -->

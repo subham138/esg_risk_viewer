@@ -91,13 +91,13 @@ app.get("/", (req, res) => {
 });
 
 app.get('/test_lala', (req, res) => {
-  var enc = Buffer.from('F').toString('base64'),
-  dec = new Buffer.from(enc, 'base64').toString();
-  console.log(dec);
-  res.send(encodeURIComponent(enc))
+  // var enc = Buffer.from('F').toString('base64'),
+  // dec = new Buffer.from(enc, 'base64').toString();
+  // console.log(dec);
+  // res.send(encodeURIComponent(enc))
   // console.log(req.files);
   // res.send('LALA')
-  // res.render('test')
+  res.render('test')
 })
 
 app.use(UserRouter);

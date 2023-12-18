@@ -1,10 +1,23 @@
 <%- include('../../templates/header.ejs') %>
+<!-- Reach TextEditor -->
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+<script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<% if(flag == "F"){ %>
+    <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+<% } %>
+<!-- END -->
 <style>
   .topic_text {
     text-align: center;
     vertical-align: middle;
   }
+  .rte-modern.rte-desktop.rte-toolbar-default {
+    min-width: 100% !important;
+  }
 </style>
+<script>
+  var editorList = {};
+</script>
 <div class="container-fluid">
   <div class="page-header">
     <div class="row">
@@ -168,9 +181,12 @@
                                       <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>
                                       <td>${sus_dt.code}<input name="code_${dt.id}" type="hidden" value="${sus_dt.code}"></td>
                                       <td><input class="form-control" id="info_title_${dt.id}_1" name="info_title_${dt.id}" type="text" value="${sus_dt.info_title != null ? sus_dt.info_title : ''}"></td>
-                                      <td><div><textarea class="form-control" id="info_desc_${dt.id}_1" name="info_desc_${dt.id}" cols="30" rows="10">${sus_dt.info_desc != null ? sus_dt.info_desc : ''}</textarea></div></td>
+                                      <td><div>
+                                        <div id="info_desc_${dt.id}_1">${sus_dt.info_desc != null ? sus_dt.info_desc : ''}</div>
+                                        <textarea class="form-control" id="info_desc_text_${dt.id}_1" name="info_desc_${dt.id}" cols="30" rows="10" style="display:none;">${sus_dt.info_desc != null ? sus_dt.info_desc : ''}</textarea>
+                                        </div></td>
                                     </tr>`);
-                                    createEditor(`info_desc_${dt.id}_1`)
+                                    createEditor(`info_desc_${dt.id}_1`, `info_desc_text_${dt.id}_1`)
                                   }else{
                                       add_row(dt.id, k, sus_dt.info_title, sus_dt.info_desc, sus_dt.code)
                                   }
@@ -205,9 +221,12 @@
         ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
         <td>${code}<input name="code_${top_id}" type="hidden" value="${code}"></td>
         <td><input class="form-control" id="info_title_${top_id}_${id}" name="info_title_${top_id}" type="text" value="${info_title != null ? info_title : ''}"></td>
-        <td><div><textarea id="info_desc_${top_id}_${id}" name="info_desc_${top_id}" cols="30" rows="10">${info_desc != null ? info_desc : ''}</textarea></div></td>
+        <td><div>
+          <div id="info_desc_${top_id}_${id}">${info_desc != null ? info_desc : ''}</div>
+          <textarea id="info_desc_text_${top_id}_${id}" name="info_desc_${top_id}" cols="30" rows="10" style="display:none;">${info_desc != null ? info_desc : ''}</textarea>
+          </div></td>
     </tr>`);
-    createEditor(`info_desc_${top_id}_${id}`)
+    createEditor(`info_desc_${top_id}_${id}`, `info_desc_text_${top_id}_${id}`)
   }
 
   function add_row(top_id, id, info_title='', info_desc='', code='') {
@@ -218,21 +237,27 @@
     created_row(top_id, next_id, row, info_title, info_desc, code)
   }
 
-  function createEditor(id){
-    CKEDITOR
-      .replace(id, {
-        on: {
-          contentDom: function( evt ) {
-            // Allow custom context menu only with table elemnts.
-            evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-              var path = evt.editor.elementPath();
-                if ( !path.contains( 'table' ) ) {
-                  contextEvent.cancel();
-                }
-            }, null, null, 5 );
-          }
-        }
-      });
+  function createEditor(id, txt_id){
+    editorList[id] = new RichTextEditor(id);
+    editorList[id].attachEvent("change", function () {
+      console.log(editorList[id].getHTMLCode());
+      $(`#${txt_id}`).val(editorList[id].getHTMLCode())
+      $(`#${txt_id}`).text(editorList[id].getHTMLCode())
+    })
+    // CKEDITOR
+    //   .replace(id, {
+    //     on: {
+    //       contentDom: function( evt ) {
+    //         // Allow custom context menu only with table elemnts.
+    //         evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+    //           var path = evt.editor.elementPath();
+    //             if ( !path.contains( 'table' ) ) {
+    //               contextEvent.cancel();
+    //             }
+    //         }, null, null, 5 );
+    //       }
+    //     }
+    //   });
   }
 </script>
 
