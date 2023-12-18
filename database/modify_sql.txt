@@ -74,3 +74,6 @@ ALTER TABLE `td_sus_dis_top_met` ADD `info_title` TEXT NULL DEFAULT NULL AFTER `
 <----------------------------- DONE ----------------------------->
 
 ALTER TABLE `md_cal_type` ADD `scope` TINYINT(1) NOT NULL AFTER `type`;
+<----------------------------- DONE ----------------------------->
+
+CREATE TABLE `esg_risk_viewer`.`td_project_checkd_topic` (`id` INT(11) NOT NULL AUTO_INCREMENT , `repo_flag` ENUM('I', 'E', 'G', 'F') NOT NULL , `project_id` INT(11) NOT NULL , `topic_id` INT(11) NOT NULL , `created_by` VARCHAR(50) NULL DEFAULT NULL , `created_dt` DATETIME NULL DEFAULT NULL , `modified_by` VARCHAR(50) NULL DEFAULT NULL , `modified_dt` DATETIME NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;

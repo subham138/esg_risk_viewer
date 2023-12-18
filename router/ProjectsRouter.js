@@ -2,7 +2,7 @@ const { getSectorList, getIndustriesList, getBusiActList } = require('../modules
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert, db_Delete } = require('../modules/MasterModule');
-const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList, getActiveTopicList } = require('../modules/ProjectModule');
+const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList, getActiveTopicList, saveCheckedProjectFlag, getCheckedProjectTopList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 const dateFormat = require("dateformat");
 
@@ -212,6 +212,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var scope_list = ghg_emi_list.length > 0 ? ghg_emi_list.map(dt => dt.scope) : []
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
+    var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
     console.log(act_top_catg_list);
 
     var ghg_emi_data = {};
@@ -266,6 +267,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         ghg_emi_data,
         year_list,
         act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
+        get_checked_top_list: get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
         header: "Project Work",
         sub_header: "Project View",
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
@@ -344,6 +346,12 @@ ProjectRouter.post('/save_ghg_emi_val', async (req, res) => {
     }else{
         res.send({suc:0, msg: 'No data found'})
     }
+})
+
+ProjectRouter.post('/change_dis_top_status', async (req, res) => {
+    var data = req.body
+    var res_dt = await saveCheckedProjectFlag(data, req.session.user.user_name)
+    res.send(res_dt)
 })
 
 module.exports = {ProjectRouter}

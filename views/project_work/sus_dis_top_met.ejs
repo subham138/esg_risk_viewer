@@ -4,6 +4,7 @@
     susModifyDt = susModifyDt.filter(dt => dt != undefined)
     var prevCatg = ''
     act_top_catg_list.forEach(dt => {
+        _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id).length > 0 ? 'checked' : '';
         var nowCatg = dt.catg_id %>
         <% if(prevCatg != nowCatg){
             prevCatg = dt.catg_id %>
@@ -13,12 +14,19 @@
         <% } %>
         <div class="col-md-3 m-t-10">
             <div class="custom_checkbox checkbox">
-                <input type="checkbox" name="top_chk" id="top_chk_<%= dt.topic_id %>" value="<%= dt.topic_name %>">
+                <input type="checkbox" name="top_chk" id="top_chk_<%= dt.topic_id %>" dt-set-id="<%= dt.topic_id %>" value="<%= dt.topic_name %>" <%= _checked %>>
                 <label for="top_chk_<%= dt.topic_id %>">
                     <%= dt.topic_name %>
                 </label>
             </div>
         </div>
+        <% if(_checked == 'checked'){ %>
+            <script>
+                $(document).ready(function(){
+                    $('#top_chk_<%= dt.topic_id %>').change()
+                })
+            </script>
+        <% } %>
     <% })
 } %>
 </div>
@@ -27,27 +35,37 @@
     $('input[name="top_chk"]').on('change', function(){
         var allList = <%- JSON.stringify(susModifyDt) %>;
         var chkList = 1
-        // console.log(allList);
-        // console.log($('input[name="top_chk"]:checked'));
         $('#topicGenDis').empty();
         $('.editorDiv').each(function(){
             $(this).hide()
         })
-        $('input[name="top_chk"]:checked').each(function(){
+        $('input[name="top_chk"]:checked').each(function(index, element){
             var newFilterTopic = allList.filter(dt => dt.topic_name == $(this).val())
-            // console.log(newFilterTopic);
+            
+            var topicId = $(element).attr('dt-set-id')
+            $.ajax({
+                method:'POST',
+                url: '/change_dis_top_status',
+                data: {
+                    top_id: topicId,
+                    project_id: $('#project_id').val(),
+                    flag: '<%= flag %>'
+                },
+                dataType: 'html',
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                }
+            })
             newFilterTopic.forEach(dt => {
-                // $('#topicGenDis').append(`
-                // <div class="col-md-3 m-t-10">
-                //     <div class="custom_checkbox checkbox">
-                //         <input type="checkbox" name="selSusDt" id="selSusDt_${chkList}" value="${dt.code}">
-                //         <label for="selSusDt_${chkList}">
-                //             ${dt.code}
-                //         </label>
-                //     </div>
-                // </div>
-                // `)
-                // chkList++;
                 var selVal = dt.code
                 $('.editorDiv').each(function(){
                     if($(this).attr('data-code') == selVal)
@@ -55,19 +73,5 @@
                 })
             })
         })
-        // $('input[name="selSusDt"]').on('change', function(){
-        //     // console.log($('input[name="selSusDt"]:checked'))
-        //     $('.editorDiv').each(function(){
-        //         $(this).hide()
-        //     })
-        //     $('input[name="selSusDt"]:checked').each(function(){
-        //         var selVal = $(this).val()
-        //         $('.editorDiv').each(function(){
-        //             if($(this).attr('data-code') == selVal)
-        //                 $(this).show()
-        //         })
-        //         console.log($(this).val());
-        //     })
-        // })
     })
 </script>

@@ -1,4 +1,4 @@
-const { db_Select, db_Insert } = require("./MasterModule");
+const { db_Select, db_Insert, db_Delete } = require("./MasterModule");
 const dateFormat = require("dateformat");
 
 module.exports = {
@@ -153,6 +153,29 @@ module.exports = {
             var select = `a.id, a.ind_id, a.topic_id, b.topic_name, b.topic_catg_id catg_id, c.catg_name, a.topic_flag`,
             table_name = 'md_industries_topics a, md_topic b, md_topic_catg c',
             whr = `a.topic_id=b.id AND a.repo_flag=b.repo_flag AND b.topic_catg_id=c.id AND a.repo_flag=c.repo_flag AND a.topic_flag = 'Y' AND a.ind_id = '${ind_id}' AND a.repo_flag = '${flag}'`,
+            order = null;
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
+    },
+    saveCheckedProjectFlag: (data, user) => {
+        return new Promise(async (resolve, reject) => {
+            var res_dt = '', datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+            await db_Delete('td_project_checkd_topic', `repo_flag='${data.flag}' AND project_id = ${data.project_id}`)
+            var table_name = "td_project_checkd_topic",
+                fields = '(repo_flag, project_id, topic_id, check_flag, created_by, created_dt)',
+                values = `('${data.flag}', '${data.project_id}', '${data.top_id}', 'Y', '${user}', '${datetime}')`,
+                whr = null,
+                flag = 0;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag)
+            resolve(res_dt)
+        })
+    },
+    getCheckedProjectTopList: (id, flag, proj_id) => {
+        return new Promise(async (resolve, reject) => {
+            var select = `*`,
+            table_name = 'td_project_checkd_topic',
+            whr = id > 0 ? `id=${id}` : `repo_flag='${flag}' AND project_id='${proj_id}'`,
             order = null;
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
