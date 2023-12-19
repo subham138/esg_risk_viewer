@@ -40,7 +40,7 @@ module.exports = {
     },
     saveClientData: (data, user) => {
         return new Promise(async (resolve, reject) => {
-            console.log(data, data.ai_tag_tool_flag, 'data flag');
+            // console.log(data, data.ai_tag_tool_flag, 'data flag');
             var pass = bcrypt.hashSync(data.password, 10),
                 datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 

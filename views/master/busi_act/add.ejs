@@ -76,7 +76,7 @@
             },
             success: function(result){
                 var res = JSON.parse(result);
-                console.log(res);
+                // console.log(res);
                 $('#ind_id').empty();
                 $('#ind_id').append($('<option>', {value: '', text: 'Select Industries'}));
                 if(res.suc > 0 && res.msg.length > 0)

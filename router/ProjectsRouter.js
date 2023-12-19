@@ -49,7 +49,7 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
     if(id > 0) {
         project_data = await getProjectList(id, req.session.user.client_id, 0, flag)
     }
-    console.log(project_data);
+    // console.log(project_data);
     var data = {
         user_list,
         id,
@@ -227,7 +227,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
-    console.log(act_top_catg_list);
+    // console.log(act_top_catg_list);
 
     var ghg_emi_data = {};
     if(scope_list.length > 0){
@@ -353,7 +353,7 @@ ProjectRouter.get('/test', async (req, res) => {
 
 ProjectRouter.post('/save_ghg_emi_val', async (req, res) => {
     var data = req.body
-    console.log(data);
+    // console.log(data);
     if(data){
         var res_dt = await saveGhgEmi(data, req.session.user.id, req.session.user.user_name, req.session.user.client_id)
         res.send(res_dt);

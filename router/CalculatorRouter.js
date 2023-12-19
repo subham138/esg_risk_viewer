@@ -17,7 +17,7 @@ CalculatorRouter.get('/cal_type_edit', async (req, res) => {
     var dt = Buffer.from(req.query.data, "base64")
     dt = JSON.parse(dt);
     var id = dt.id;
-    console.log(dt);
+    // console.log(dt);
     var data = {suc:0,msg:[]}
     if(id > 0)
         data = await getCalTypeList(id)

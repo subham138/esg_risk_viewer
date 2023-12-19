@@ -35,7 +35,7 @@
     $('input[name="top_chk"]').on('change', function(){
         var allList = <%- JSON.stringify(susModifyDt) %>;
         var chkList = 1
-        console.log(allList);
+        // console.log(allList);
         $('#topicGenDis').empty();
         $('.editorDiv').each(function(){
             $(this).hide()
@@ -43,7 +43,7 @@
         if($(this).is(':checked')){
             $('input[name="top_chk"]:checked').each(function(index, element){
                 var newFilterTopic = allList.filter(dt => dt.topic_name == $(element).val())
-                console.log(newFilterTopic, $(element).val());
+                // console.log(newFilterTopic, $(element).val());
                 
                 var topicId = $(element).attr('dt-set-id')
                 $.ajax({
@@ -69,10 +69,10 @@
                     //     $(".loader-wrapper").hide();
                     // }
                 })
-                console.log(newFilterTopic.length, 'length');
+                // console.log(newFilterTopic.length, 'length');
                 for(let dt of newFilterTopic){
                     var selVal = dt.id
-                    console.log(selVal, 'sel_Val');
+                    // console.log(selVal, 'sel_Val');
                     $('.editorDiv').each(function(i, item){
                         // console.log($(item).attr('data-id') == dt.id, 'Log');
                         if($(item).attr('data-id') == dt.id){

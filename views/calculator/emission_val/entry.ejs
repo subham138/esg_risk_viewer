@@ -169,7 +169,7 @@
         })
     })
     $('#emi_type_id').on('change', function(){
-        console.log($('#repo_period').val());
+        // console.log($('#repo_period').val());
         if($('#repo_period').val() > 0){
             $('#repo_period').change()
         }else{
@@ -289,7 +289,7 @@
                     },
                     success: function (result) {
                         var res = JSON.parse(result);
-                        console.log(res);
+                        // console.log(res);
                         if (res.suc > 0 && res.msg.length > 0){
                             $(`#tr_${id}`).remove()
                         }
@@ -308,7 +308,7 @@
     function unitChange(e){
         if($('select[name="unit_id"]').length > 1)
             $('select[name="unit_id"]').each(function(){
-                console.log(e.target.id);
+                // console.log(e.target.id);
                 if(e.target.id != $(this).attr('id'))
                     if($(this).val() == e.target.value){
                         if(!confirm('This unit is already in use, if you save the previous value of the unit will be overwritten. Do you want to continue?')){

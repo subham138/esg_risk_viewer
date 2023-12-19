@@ -101,7 +101,7 @@
                                         
                                         <script>
                                             i = <%= i %>;
-                                            console.log('view', i);
+                                            // console.log('view', i);
                                             var table_data = <%- JSON.stringify(table_data) %>;
                                             // console.log(table_data);
                                             fun[`crate_bar_graph_${<%= i %>}`] = {
@@ -146,7 +146,7 @@
         function CreateBar(){
             let j = 1
             for(let key in fun){
-                console.log(fun[key]);
+                // console.log(fun[key]);
                 switch (fun[key].c) {
                     case 'b1':
                         $(`#stacked-bar-chart_${j}`).parent().hide()
@@ -223,7 +223,7 @@
                         }
                         var tbKeys = [...Object.keys(dataSet[0]).map(key => key != 'x' ? key : '')].filter(x => x).join(',')
                         tbKeys = tbKeys.split(',')
-                        console.log(dataSet, tbKeys);
+                        // console.log(dataSet, tbKeys);
                         Morris.Bar({
                             element: `stacked-bar-chart_${j}`,
                             data: dataSet,
@@ -250,7 +250,7 @@
 </script>
 <script>
     function editLabel(elm) {
-        console.log(elm);
+        // console.log(elm);
         var jelm = $(elm);
         var htmlElm = jelm[0];
         $(htmlElm).hide();

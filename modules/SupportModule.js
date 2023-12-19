@@ -13,7 +13,7 @@ module.exports = {
                     `${id > 0 ? `AND a.id = ${id}` : ''}`}`,
                 order = `ORDER BY a.tkt_date`;
             var res_dt = await db_Select(select, table_name, whr, order)
-            console.log(whr);
+            // console.log(whr);
             resolve(res_dt)
         })
     },

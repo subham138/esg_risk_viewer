@@ -119,7 +119,7 @@
       },
       success: function (result) {
         var res = JSON.parse(result);
-        console.log(res);
+        // console.log(res);
         $("#ind_id").empty();
         $("#data_set_view").hide()
         $("#suc_disc_table tbody >").remove()
@@ -225,7 +225,7 @@
   });
 
   function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name='', words=''){
-    console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
+    // console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
     $(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`).after(`<tr id="row_${top_id}_${id}">
         ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
         <td><input class="form-control" id="ind_agn_${top_id}_${id}" name="ind_agn_${top_id}" type="text" value="${ind_agn}"></td>

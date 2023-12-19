@@ -128,7 +128,7 @@
       },
       success: function (result) {
         var res = JSON.parse(result);
-        console.log(res);
+        // console.log(res);
         $("#ind_id").empty();
         $("#data_set_view").hide()
         $("#suc_disc_table tbody >").remove()
@@ -240,7 +240,7 @@
   function createEditor(id, txt_id){
     editorList[id] = new RichTextEditor(id);
     editorList[id].attachEvent("change", function () {
-      console.log(editorList[id].getHTMLCode());
+      // console.log(editorList[id].getHTMLCode());
       $(`#${txt_id}`).val(editorList[id].getHTMLCode())
       $(`#${txt_id}`).text(editorList[id].getHTMLCode())
     })

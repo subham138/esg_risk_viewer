@@ -82,7 +82,7 @@ DataCollectionRouter.post("/save_sus_disc", async (req, res) => {
         } else {
           var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
           var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
-          console.log(chk_dt);
+          // console.log(chk_dt);
           var table_name = `td_sus_dis_top_met`,
             fields =
               chk_dt.suc > 0 && chk_dt.msg.length > 0
@@ -132,7 +132,7 @@ DataCollectionRouter.post("/save_sus_disc", async (req, res) => {
       } else {
         var chk_whr = `repo_flag = '${data.flag}' AND sec_id = '${data.sec_id}' AND ind_id = '${data.ind_id}' AND top_id = ${dt} AND sl_no = ${j}`;
         var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
-        console.log(chk_dt);
+        // console.log(chk_dt);
         var table_name = `td_sus_dis_top_met`,
           fields =
             chk_dt.suc > 0 && chk_dt.msg.length > 0

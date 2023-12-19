@@ -16,7 +16,7 @@ SubsRouter.use((req, res, next) => {
 SubsRouter.get('/subscription', async (req, res) => {
     var client_id = req.session.user.client_id
     var client_dtls = await getClientList(client_id)
-    console.log(client_dtls);
+    // console.log(client_dtls);
     var data = {
         subs: client_dtls.suc > 0 && client_dtls.msg.length > 0 ? client_dtls.msg[0].plan_type : 'N',
         subs_dt: client_dtls.suc > 0 && client_dtls.msg.length > 0 ? client_dtls.msg[0].diff_dt : 0,

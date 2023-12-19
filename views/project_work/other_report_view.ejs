@@ -77,7 +77,7 @@
 <script>
     $(document).ready(function(){
         var reportType = '<%= repo_type %>';
-        console.log(reportType);
+        // console.log(reportType);
         $('.u-step').each(function(){
             if($(this).attr('dt-for').trim().split(' ').join('').toLowerCase() != reportType){
                 $(this).removeClass('done')

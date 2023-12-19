@@ -676,7 +676,6 @@
                                                                             var sc_len = ghg_emi_data['s3'].length / 12;
                                                                             for(let sc = 1; sc <= sc_len; sc++){
                                                                                 var newGhgDt = ghg_emi_data['s3'].filter(dt => dt.sl_no == sc && dt.scope == 's3')
-                                                                                console.log('cal', newGhgDt);
                                                                                 %>
                                                                                     <div class="row">
                                                                                         <div class="col-md-6 m-t-10">
@@ -1347,7 +1346,7 @@
             currMonth.push(months[monthCount])
             monthCount++;
         }
-        console.log(type_id,act_id,emi_type_id,repo_period,currMonth);
+        // console.log(type_id,act_id,emi_type_id,repo_period,currMonth);
         var m_i = 1
         for(let dt of currMonth){
             req_data.push({month: dt, emi_type_unit_id: $(`#emi_type_unit_id_${scope}_${m_i}_${id}`).val(), cal_val: $(`#cal_val_${scope}_${m_i}_${id}`).val(), emi_fact_val: $(`#emi_fact_val_${scope}_${m_i}_${id}`).val(), co_val: $(`#co_val_${scope}_${m_i}_${id}`).val()})
@@ -1373,7 +1372,7 @@
                 $('.loader-wrapper').hide()
             }
         })
-        console.log(req_data);
+        // console.log(req_data);
     }
 </script>
 <script>

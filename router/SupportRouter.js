@@ -41,7 +41,7 @@ SupportRouter.get('/support_edit', async (req, res) => {
         supportList = await getSupportList(id, userType, client_id, user_id)
         supportList = supportList.suc > 0 ? supportList.msg : [];
     }
-    console.log(supportList);
+    // console.log(supportList);
     var data = {
         client_name: id > 0 && userType == 'S' ? (supportList.length > 0 ? supportList[0].client_name : '') : (client_dtls.suc > 0 && client_dtls.msg.length > 0 ? client_dtls.msg[0].client_name : ''),
         user_name: id > 0 && userType == 'S' ? (supportList.length > 0 ? supportList[0].issued_by : '') : user_name,
