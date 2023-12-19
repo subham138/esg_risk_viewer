@@ -57,7 +57,7 @@
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                         <% }%>
-                                        <a class="btn btn-pill btn-outline-primary btn-air-primary" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.business_act %>')">
+                                        <a class="btn btn-pill btn-outline-primary btn-air-primary" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>')">
                                             <% if(user_type != 'V'){ %> 
                                                 <i class="icofont icofont-ui-settings"></i> Manage 
                                             <% }else{ %>
@@ -84,9 +84,10 @@
     </div>
 </div>
 <script>
-    function redirectToPage(id, sec_id, ind_id, bus_act){
-        if(sec_id > 0 && ind_id > 0 && bus_act != ''){
-            window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
+    function redirectToPage(id, sec_id, ind_id, proj_name){
+        if(sec_id > 0 && ind_id > 0){
+            window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id, ind_id:ind_id, top_id:0, proj_id:id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag:'<%= flag %>'}))}`
+            // window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
         }else{
             window.location.href = `/proj_work?id=${id}&flag=<%= enc_dt %>`
         }
