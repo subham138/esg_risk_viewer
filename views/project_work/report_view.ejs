@@ -1052,7 +1052,7 @@
 
 <script>
     function AddEditor(){
-        var editorLength = $('textarea[name="editor"]').length
+        var editorLength = $('.colEditor').length
         $('#editorDiv').append(`
         <div id="editorNewDiv_${editorLength+1}" class="row">
             <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-3 row">
@@ -1062,8 +1062,8 @@
                 <div class="col-md-6">
                     <input class="form-control" type="text" name="editor_topic" id="editor_topic_${editorLength+1}" placeholder="Enter Title">
                 </div>
-                <div class="col-md-12"> 
-                <textarea id="editor${editorLength+1}" name="editor" cols="30" rows="10"></textarea>
+                <div class="col-md-12 colEditor m-t-15">
+                    <div id="div_editor_${editorLength+1}"></div>
                 </div>
             </div>
             <div class="col-md-8">&nbsp;</div>
@@ -1075,21 +1075,7 @@
             </div>
         </div>
         `)
-        CKEDITOR
-        .replace( `editor${editorLength+1}`, {
-            on: {
-                contentDom: function( evt ) {
-                    // Allow custom context menu only with table elemnts.
-                    evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-                        var path = evt.editor.elementPath();
-
-                        if ( !path.contains( 'table' ) ) {
-                            contextEvent.cancel();
-                        }
-                    }, null, null, 5 );
-                }
-            }
-        } );
+        editorList[`div_editor_${editorLength+1}`] = new RichTextEditor(`#div_editor_${editorLength+1}`);
     }
 </script>
 
