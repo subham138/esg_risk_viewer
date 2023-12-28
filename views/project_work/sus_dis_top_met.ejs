@@ -4,7 +4,7 @@
     susModifyDt = susModifyDt.filter(dt => dt != undefined)
     var prevCatg = ''
     act_top_catg_list.forEach(dt => {
-        _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id && gdt.check_flag == 'Y').length > 0 ? 'checked' : '';
+        _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id && gdt.check_flag == 'N').length > 0 ? '' : 'checked';
         var nowCatg = dt.catg_id %>
         <% if(prevCatg != nowCatg){
             prevCatg = dt.catg_id %>

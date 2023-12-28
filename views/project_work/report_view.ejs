@@ -1430,7 +1430,7 @@
         $.ajax({
             method:'POST',
             url: '/save_ghg_emi_val',
-            data: {sl_no: id, scope, sec_id: type_id, act_id, emi_type_id, repo_period, req_data: JSON.stringify(req_data)},
+            data: {sl_no: id, scope, sec_id: type_id, act_id, emi_type_id, repo_period, req_data: JSON.stringify(req_data), proj_id: $('#project_id').val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()

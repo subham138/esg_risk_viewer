@@ -115,11 +115,11 @@ module.exports = {
             resolve(chk_dt)
         })
     },
-    getGhgEmiList: (client_id, id = 0) => {
+    getGhgEmiList: (client_id, id = 0, proj_id = 0) => {
         return new Promise(async (resolve, reject) => {
             var select = 'a.id, a.client_id, a.scope, a.entry_dt, a.user_id, a.sl_no, a.sec_id, b.type_name, a.act_id, c.act_name, a.emi_type_id, d.emi_name, a.repo_period, a.repo_month, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val',
                 table_name = 'td_ghg_emission a, md_cal_type b, md_cal_act c, md_cal_emi_type d', 
-                whr = `a.sec_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND client_id = ${client_id} ${id > 0 ? `AND id=${id}` : ''}`, 
+                whr = `a.sec_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND client_id = ${client_id} ${proj_id > 0 ? `AND project_id=${proj_id}` : ''} ${id > 0 ? `AND id=${id}` : ''}`, 
                 order = null;
             var chk_dt = await db_Select(select, table_name, whr, order)
             resolve(chk_dt)
@@ -133,13 +133,13 @@ module.exports = {
                 for (let dt of data.req_data){
                     var select = "id",
                       table_name = "td_ghg_emission",
-                      whr = `client_id = ${client_id} AND scope = '${data.scope}' AND sl_no = ${data.sl_no} AND sec_id = ${data.sec_id} AND act_id = ${data.act_id} AND emi_type_id = ${data.emi_type_id} AND repo_period = ${data.repo_period} AND repo_month = '${dt.month}'`,
+                      whr = `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.proj_id} AND sl_no = ${data.sl_no} AND sec_id = ${data.sec_id} AND act_id = ${data.act_id} AND emi_type_id = ${data.emi_type_id} AND repo_period = ${data.repo_period} AND repo_month = '${dt.month}'`,
                       order = null;
                     var chk_dt = await db_Select(select, table_name, whr, order)
                     var table_name = "td_ghg_emission",
                         fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `emi_type_unit_id = '${dt.emi_type_unit_id}', cal_val = '${dt.cal_val}', emi_fact_val = '${dt.emi_fact_val}', co_val = '${dt.co_val}', modified_by = '${user}', modified_dt = '${datetime}'` : 
-                        '(client_id, scope, entry_dt, user_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)',
-                        values = `(${client_id}, '${data.scope}', '${nowDate}', '${user_id}', '${data.sl_no}', '${data.sec_id}', '${data.act_id}', '${data.emi_type_id}', '${data.repo_period}', '${dt.month}', ${dt.emi_type_unit_id > 0 ? dt.emi_type_unit_id : 0}, ${dt.cal_val > 0 ? dt.cal_val : 0}, ${dt.emi_fact_val > 0 ? dt.emi_fact_val : 0}, ${dt.co_val > 0 ? dt.co_val : 0}, '${user}', '${datetime}')`,
+                        '(client_id, scope, project_id, entry_dt, user_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)',
+                        values = `(${client_id}, '${data.scope}', '${data.proj_id}', '${nowDate}', '${user_id}', '${data.sl_no}', '${data.sec_id}', '${data.act_id}', '${data.emi_type_id}', '${data.repo_period}', '${dt.month}', ${dt.emi_type_unit_id > 0 ? dt.emi_type_unit_id : 0}, ${dt.cal_val > 0 ? dt.cal_val : 0}, ${dt.emi_fact_val > 0 ? dt.emi_fact_val : 0}, ${dt.co_val > 0 ? dt.co_val : 0}, '${user}', '${datetime}')`,
                         whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
                         flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
                     res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -153,7 +153,7 @@ module.exports = {
             var select = `a.id, a.ind_id, a.topic_id, b.topic_name, b.topic_catg_id catg_id, c.catg_name, a.topic_flag`,
             table_name = 'md_industries_topics a, md_topic b, md_topic_catg c',
             whr = `a.topic_id=b.id AND a.repo_flag=b.repo_flag AND b.topic_catg_id=c.id AND a.repo_flag=c.repo_flag AND a.topic_flag = 'Y' AND a.ind_id = '${ind_id}' AND a.repo_flag = '${flag}'`,
-            order = null;
+            order = 'ORDER BY a.topic_id';
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
         })

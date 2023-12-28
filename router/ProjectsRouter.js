@@ -221,7 +221,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
     emi_type = {suc:0,msg:[]};
     var year_list=[], currDate = new Date();
-    var ghg_emi_list = await getGhgEmiList(req.session.user.client_id)
+    var ghg_emi_list = await getGhgEmiList(req.session.user.client_id, 0, data.proj_id)
     ghg_emi_list = ghg_emi_list.suc > 0 ? (ghg_emi_list.msg.length > 0 ? ghg_emi_list.msg : []) : [];
     var scope_list = ghg_emi_list.length > 0 ? ghg_emi_list.map(dt => dt.scope) : []
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
