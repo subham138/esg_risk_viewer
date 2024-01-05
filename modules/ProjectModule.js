@@ -161,12 +161,13 @@ module.exports = {
     saveCheckedProjectFlag: (data, user, active_flag) => {
         return new Promise(async (resolve, reject) => {
             var res_dt = '', datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
-            await db_Delete('td_project_checkd_topic', `repo_flag='${data.flag}' AND project_id = ${data.project_id}`)
+            var chk_dt = await db_Select('id', 'td_project_checkd_topic', `repo_flag = '${data.flag}' AND project_id = '${data.project_id}' AND topic_id = '${data.top_id}'`, null);
+            // await db_Delete('td_project_checkd_topic', `repo_flag='${data.flag}' AND project_id = ${data.project_id}`)
             var table_name = "td_project_checkd_topic",
-                fields = '(repo_flag, project_id, topic_id, check_flag, created_by, created_dt)',
-                values = `('${data.flag}', '${data.project_id}', '${data.top_id}', '${active_flag}', '${user}', '${datetime}')`,
-                whr = null,
-                flag = 0;
+                fields = chk_dt.suc > 0 ? (chk_dt.msg.length > 0 ? `check_flag = '${active_flag}'` : '(repo_flag, project_id, topic_id, check_flag, created_by, created_dt)') : '(repo_flag, project_id, topic_id, check_flag, created_by, created_dt)',
+                values = chk_dt.suc > 0 ? (chk_dt.msg.length > 0 ? null : `('${data.flag}', '${data.project_id}', '${data.top_id}', '${active_flag}', '${user}', '${datetime}')`) : `('${data.flag}', '${data.project_id}', '${data.top_id}', '${active_flag}', '${user}', '${datetime}')`,
+                whr = chk_dt.suc > 0 ? (chk_dt.msg.length > 0 ? `repo_flag = '${data.flag}' AND project_id = '${data.project_id}' AND topic_id = '${data.top_id}'` : null) : null,
+                flag = chk_dt.suc > 0 ? (chk_dt.msg.length > 0 ? 1 : 0) : 0;
             res_dt = await db_Insert(table_name, fields, values, whr, flag)
             resolve(res_dt)
         })

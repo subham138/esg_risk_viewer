@@ -1,121 +1,91 @@
 <div class="row m-t-15">
-<% if(act_top_catg_list.length > 0){
-    var susModifyDt = susDistList.msg.map(dt => dt.code != '' && dt.code != 'null' && dt.code ? dt : null)
-    susModifyDt = susModifyDt.filter(dt => dt != undefined)
-    var prevCatg = ''
-    act_top_catg_list.forEach(dt => {
-        _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id && gdt.check_flag == 'N').length > 0 ? '' : 'checked';
-        var nowCatg = dt.catg_id %>
-        <% if(prevCatg != nowCatg){
-            prevCatg = dt.catg_id %>
-            <div class="col-md-12">
-                <p class="dyn-col-head"><%= dt.catg_name %></p>
+    <% if(act_top_catg_list.length > 0){
+        var susModifyDt = susDistList.msg.map(dt => dt.code != '' && dt.code != 'null' && dt.code ? dt : null)
+        susModifyDt = susModifyDt.filter(dt => dt != undefined)
+        var prevCatg = ''
+        act_top_catg_list.forEach(dt => {
+            _checked = get_checked_top_list.filter(gdt => gdt.topic_id == dt.topic_id && gdt.check_flag == 'Y').length > 0 ? 'checked' : '';
+            var nowCatg = dt.catg_id %>
+            <% if(prevCatg != nowCatg){
+                prevCatg = dt.catg_id %>
+                <div class="col-md-12">
+                    <p class="dyn-col-head"><%= dt.catg_name %></p>
+                </div>
+            <% } %>
+            <div class="col-md-3 m-t-10">
+                <div class="custom_checkbox checkbox">
+                    <input type="checkbox" name="top_chk" id="top_chk_<%= dt.topic_id %>" dt-set-id="<%= dt.topic_id %>" value="<%= dt.topic_name %>" <%= _checked %>>
+                    <label for="top_chk_<%= dt.topic_id %>">
+                        <%= dt.topic_name %>
+                    </label>
+                </div>
             </div>
-        <% } %>
-        <div class="col-md-3 m-t-10">
-            <div class="custom_checkbox checkbox">
-                <input type="checkbox" name="top_chk" id="top_chk_<%= dt.topic_id %>" dt-set-id="<%= dt.topic_id %>" value="<%= dt.topic_name %>" <%= _checked %>>
-                <label for="top_chk_<%= dt.topic_id %>">
-                    <%= dt.topic_name %>
-                </label>
-            </div>
-        </div>
-        <% if(_checked == 'checked'){ %>
-            <script>
-                $(document).ready(function(){
-                    $('#top_chk_<%= dt.topic_id %>').change()
-                })
-            </script>
-        <% } %>
-    <% })
-} %>
-</div>
-
-<script>
-    $('input[name="top_chk"]').on('change', function(){
-        var allList = <%- JSON.stringify(susModifyDt) %>;
-        var chkList = 1
-        // console.log(allList);
-        $('#topicGenDis').empty();
-        $('.editorDiv').each(function(){
-            $(this).hide()
-        })
-        if($(this).is(':checked')){
-            $('input[name="top_chk"]:checked').each(function(index, element){
-                var newFilterTopic = allList.filter(dt => dt.topic_name == $(element).val())
-                // console.log(newFilterTopic, $(element).val());
-                
-                var topicId = $(element).attr('dt-set-id')
-                $.ajax({
-                    method:'POST',
-                    url: '/change_dis_top_status',
-                    data: {
-                        top_id: topicId,
-                        project_id: $('#project_id').val(),
-                        flag: '<%= flag %>',
-                        status: 'Y'
-                    },
-                    dataType: 'html',
-                    // beforeSend: function () {
-                    //     $(".loader-wrapper").show();
-                    // },
-                    success: function (data) {
-                        console.log(data);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error:', error);
-                    },
-                    // complete: function () {
-                    //     $(".loader-wrapper").hide();
-                    // }
-                })
-                // console.log(newFilterTopic.length, 'length');
-                for(let dt of newFilterTopic){
-                    var selVal = dt.id
-                    // console.log(selVal, 'sel_Val');
-                    $('.editorDiv').each(function(i, item){
-                        // console.log($(item).attr('data-id') == dt.id, 'Log');
-                        if($(item).attr('data-id') == dt.id){
-                            $(item).show()
-                        }
+            <% if(_checked == 'checked'){ %>
+                <script>
+                    $(document).ready(function(){
+                        show_hide_mdt_list()
                     })
-                }
-                // newFilterTopic.forEach(dt => {
-                //     var selVal = dt.id
-                //     $('.editorDiv').each(function(i, item){
-                //         console.log($(item).attr('data-code'), selVal, ($(item).attr('data-code') == selVal));
-                //         if($(item).attr('data-id') == selVal){
-                //             console.log('HERE');
-                //             $(item).show()
-                //         }
-                //     })
-                // })
+                </script>
+            <% } %>
+        <% })
+    } %>
+    </div>
+    
+    <script>
+        $('input[name="top_chk"]').on('change', function(){
+            console.log($(this).val(), $(this).attr('dt-set-id'));
+            var allList = <%- JSON.stringify(susModifyDt) %>;
+            var chkList = 1
+            // console.log(allList);
+            $('#topicGenDis').empty();
+            $('.editorDiv').each(function(){
+                $(this).hide()
             })
-        }else{
-            var topicId = $(this).attr('dt-set-id')
+
             $.ajax({
                 method:'POST',
                 url: '/change_dis_top_status',
                 data: {
-                    top_id: topicId,
+                    top_id: $(this).attr('dt-set-id'),
                     project_id: $('#project_id').val(),
                     flag: '<%= flag %>',
-                    status: 'N'
+                    status: $(this).is(':checked') ? 'Y' : 'N'
                 },
                 dataType: 'html',
-                // beforeSend: function () {
-                //     $(".loader-wrapper").show();
-                // },
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
                 success: function (data) {
                     console.log(data);
                 },
                 error: function (xhr, status, error) {
                     console.error('Error:', error);
                 },
-                // complete: function () {
-                //     $(".loader-wrapper").hide();
-                // }
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                }
+            })
+
+            if($(this).is(':checked')){
+                show_hide_mdt_list()
+            }
+        })
+
+        function show_hide_mdt_list(){
+            var allList = <%- JSON.stringify(susModifyDt) %>;
+            $('input[name="top_chk"]:checked').each(function(index, element){
+                var newFilterTopic = allList.filter(dt => dt.topic_name == $(element).val())
+                
+                var topicId = $(element).attr('dt-set-id')
+                console.log(topicId);
+                for(let dt of newFilterTopic){
+                    var selVal = dt.id
+                    $('.editorDiv').each(function(i, item){
+                        if($(item).attr('data-id') == dt.id){
+                            $(item).show()
+                        }
+                    })
+                }
             })
         }
-    })
-</script>
+    </script>
