@@ -7341,7 +7341,7 @@ table tbody .border-bottom-warning td {
 
 .sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu > li a span.cusSpanNavLink{display: none;}
 .sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu > li a .according-menu{display: none;}
-
+.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu > li .nav-submenu{display: none !important;}
 /* .sidebar-icon-only .page-wrapper .page-body-wrapper .page-body {
   width: calc(100% - 70px);
 } */
