@@ -84,12 +84,16 @@
 // toggle sidebar
 
 
-$('.toggle-sidebar').click(function() {   
-  $('.main-nav').toggleClass('close_icon');
-  $('.page-main-header').toggleClass('close_icon');
+// $('.toggle-sidebar').click(function() {   
+//   $('.main-nav').toggleClass('close_icon');
+//   $('.page-main-header').toggleClass('close_icon');
+// });
+
+
+$('.toggleSidebarTogle').click(function() {   
+  $('body').toggleClass('sidebar-icon-only');
+//   $('.page-main-header').toggleClass('close_icon');
 });
-
-
 
 //responsive sidebar
 var $window = $(window);
