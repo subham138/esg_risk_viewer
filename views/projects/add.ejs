@@ -17,24 +17,29 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-            <div class="card-body">
+            <div class="card-body card_body_Cus">
                 <form method="POST" action="/my_project_save" class="needs-validation">
                 <div class="row mb-2">
-                    <div class="col-md-12">
+                    <div class="col-md-4">
                         <label class="form-label" for="project_name">Project Name</label>
                         <input class="form-control" id="project_name" name="project_name" type="text" value="<%= id > 0 ? project_data.msg[0].project_name : '' %>" required="">
                         <div class="valid-feedback">No Error</div>
                     </div>
                 </div>
                 <div class="row my-4">
-                    <div class="col-md-12">
+                    <!-- <div class="col-md-12"> -->
+                        <div class="p-0">
                         <table class="table" id="table">
                             <thead>
                                 <tr>
-                                    <th>User</th>
-                                    <th>
-                                        <button type="button" class="btn btn-pill btn-outline-primary btn-air-primary" onclick="add_tb_row()"><i class="icofont icofont-plus-circle"></i></button>
+                                    <th> <label class="form-label user_add">User 
+                                        <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" onclick="add_tb_row()">
+                                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                        </button></label> 
                                     </th>
+                                    <!-- <th>
+                                        
+                                    </th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -43,7 +48,8 @@
                                     let i = 1
                                     project_data.msg[0].user_list.forEach(udt => { %>
                                         <tr id="tr_<%= i %>">
-                                            <td>
+                                            <td class="tableTd_add_main">
+                                                <div class="tableTd_add">
                                                 <select class="form-select" id="user_id_<% i %>" name="user_id" required="">
                                                     <option selected="" value="">Select User</option>
                                                     <% if(user_list.msg.length > 0){
@@ -56,16 +62,20 @@
                                                         <% })
                                                     } %>
                                                 </select>
+                                            </div>
+                                            <% if(i > 1){ %>
+                                                <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i>fff</button>
+                                            <% } %>
                                             </td>
-                                            <td>
-                                                <% if(i > 1){ %>
-                                                    <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i></button>
-                                                <% } %>
-                                            </td>
+                                            <!-- <td>
+                                                
+                                            </td> -->
                                         </tr>
                                 <% i++; })}else{ %>
                                 <tr id="tr_1">
-                                    <td>
+                                    <td class="tableTd_add_main">
+                                        <div class="tableTd_add">
+                                        
                                         <select class="form-select" id="user_id_1" name="user_id" required="">
                                             <option selected="" value="">Select User</option>
                                             <% if(user_list.msg.length > 0){
@@ -78,12 +88,15 @@
                                                 <% })
                                             } %>
                                         </select>
+                                    
                                     </td>
-                                    <td></td>
+                                </div>
+                                    <!-- <td></td> -->
                                 </tr>
                                 <% }}else{ %>
                                     <tr id="tr_1">
-                                        <td>
+                                        <td class="tableTd_add_main">
+                                            <div class="tableTd_add">
                                             <select class="form-select" id="user_id_1" name="user_id" required="">
                                                 <option selected="" value="">Select User</option>
                                                 <% if(user_list.msg.length > 0){
@@ -96,8 +109,9 @@
                                                     <% })
                                                 } %>
                                             </select>
+                                        </div>
                                         </td>
-                                        <td></td>
+                                        <!-- <td></td> -->
                                     </tr>
                                 <% } %>
                             </tbody>
@@ -119,7 +133,8 @@
         var next_id = $(`#table tbody tr`).length + 1
         $(`#table tbody:last`).append(`
         <tr id="tr_${next_id}">
-            <td>
+            <td class="tableTd_add_main">
+                <div class="tableTd_add">
                 <select class="form-select" id="user_id_${next_id}" name="user_id" required="">
                     <option selected="" value="">Select User</option>
                     <% if(user_list.msg.length > 0){
@@ -132,11 +147,13 @@
                         <% })
                     } %>
                 </select>
+                </div>
+                <div class="tableTd_add_btn">
+                    <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
+                onclick="del_row(${next_id})"><i class="icofont icofont-trash"></i></button>
+                </div>
             </td>
-            <td>
-                <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" 
-                onclick="del_row(${next_id})"><i class="icofont icofont-trash"></i></button>    
-            </td>
+            
         </tr>
         `);
     }
