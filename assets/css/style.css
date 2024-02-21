@@ -46435,12 +46435,27 @@ nav{
   margin-bottom: 20px;
 } */
 
-.wordCount {
+/* .wordCount {
   padding: 15px;
   background: #d2d4e0;
   border-radius: 50px;
   font-size: 15px;
   font-weight: 600;
+  margin-bottom: 20px;
+  border: #316379 solid 1px;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+} */
+
+.wordCount {
+  padding: 40px;
+  /* background: #d2d4e0; */
+  border-radius: 50px;
+  font-size: 24px;
+  font-weight: 500;
   margin-bottom: 20px;
   border: #316379 solid 1px;
   width: 100px;
@@ -46623,3 +46638,4 @@ nav{
   padding-top: 10px;
   padding-bottom: 10px;
 }
+

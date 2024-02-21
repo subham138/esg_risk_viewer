@@ -13,10 +13,11 @@
       <div class="login-card">
         <form class="theme-form login-form" action="/login" method="POST">
           <% if(message){ %>
-          <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert">
-            <i data-feather="clock"></i>
-            <p><%= message.message %></p>
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+          <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 34vw;">
+           
+            <p style=" text-align: center;
+            font-size: 17px;"> <i data-feather="clock"></i>&nbsp;&nbsp;<%= message.message %></p>
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close" style="top: 5px;color: #e2c636;"></button>
           </div>
           <% } %>
           <!-- <img width="100%" height="100%" src="images/logo/ESG_logo_trans.png" alt=""> -->

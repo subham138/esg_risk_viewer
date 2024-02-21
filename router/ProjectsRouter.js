@@ -227,7 +227,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
-    // console.log(act_top_catg_list);
+    // console.log(susDistList);
 
     var ghg_emi_data = {};
     if(scope_list.length > 0){
