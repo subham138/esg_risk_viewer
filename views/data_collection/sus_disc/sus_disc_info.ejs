@@ -1,7 +1,29 @@
 <%- include('../../templates/header.ejs') %>
 <!-- Reach TextEditor -->
-<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css"/>
 <script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<script type="text/javascript" src='/editor/richtexteditor/plugins/all_plugins.js'></script>
+<script>
+  var editorCfg = {}
+    editorCfg.galleryImages = [
+      "/images/icons/colored/1.png",
+      "/images/icons/colored/2.png",
+      "/images/icons/colored/3.png",
+      "/images/icons/colored/4.png",
+      "/images/icons/colored/5.png",
+      "/images/icons/colored/6.png",
+      "/images/icons/colored/7.png",
+      "/images/icons/colored/8.png",
+      "/images/icons/colored/9.png",
+      "/images/icons/colored/10.png",
+      "/images/icons/colored/11.png",
+      "/images/icons/colored/12.png",
+      "/images/icons/colored/13.png",
+      "/images/icons/colored/14.png",
+      "/images/icons/colored/15.png",
+      "/images/icons/colored/16.png",
+    ];
+</script>
 <% if(flag == "F"){ %>
     <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
 <% } %>
@@ -238,7 +260,8 @@
   }
 
   function createEditor(id, txt_id){
-    editorList[id] = new RichTextEditor(id);
+
+    editorList[id] = new RichTextEditor(id, editorCfg);
     editorList[id].attachEvent("change", function () {
       // console.log(editorList[id].getHTMLCode());
       $(`#${txt_id}`).val(editorList[id].getHTMLCode())

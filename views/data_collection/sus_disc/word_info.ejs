@@ -1,0 +1,274 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3><%= header %></h3>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><%= header %></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <% if(message){ %>
+        <div
+          class="alert alert-<%= message.type %> dark alert-dismissible fade show"
+          role="alert"
+        >
+          <i data-feather="clock"></i>
+          <p><%= message.message %></p>
+          <button
+            class="btn-close"
+            type="button"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+        <% } %>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <form action="/save_sus_disc_info" method="post">
+            <div class="row g-3 py-3">
+              <div class="col-md-6">
+                <label class="form-label" for="sec_id">Sector</label>
+                <select class="form-select" id="sec_id" name="sec_id" required="">
+                  <option selected="" value="">Select Sector</option>
+                  <% if(sec_data.msg.length > 0){ 
+                      sec_data.msg.forEach(dt => { 
+                          var _selected = ''; 
+                          if(dt.id == selected.sec_id) _selected = 'selected'; 
+                  %>
+                  <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                  <% }) } %>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="ind_id">Industries</label>
+                <select class="form-select" id="ind_id" name="ind_id" required="">
+                  <option selected="" value="">Select Industries</option>
+                  <% if(ind_list.msg.length > 0){ 
+                      ind_list.msg.forEach(dt => { 
+                          var _selected = ''; 
+                          if(dt.id == selected.ind_id) _selected = 'selected'; 
+                  %>
+                  <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
+                  <% }) } %>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="code_id">Code List</label>
+                <select class="form-select" id="code_id" name="code_id" required="">
+                  <option selected="" value="">Select Code</option>
+                  <%# if(ind_list.msg.length > 0){ 
+                      ind_list.msg.forEach(dt => { 
+                          var _selected = ''; 
+                          if(dt.id == selected.ind_id) _selected = 'selected'; 
+                  %>
+                  <!-- <option value="<%# dt.id %>" <%# _selected %>><%# dt.ind_name %></option> -->
+                  <%# }) } %>
+                </select>
+              </div>
+            </div>
+            <div class="row py-3" id="data_set_view" style="display: none">
+                <div class="col-md-12">
+                  <table class="table" id="suc_disc_table">
+                    <thead>
+                      <tr>
+                        <th>Words</th>
+                        <th>Info</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                  <button
+                    class="btn btn-pill btn-outline-success btn-air-success my-3 float-end"
+                    type="submit"
+                  >
+                    Save
+                  </button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+    var code_list = []
+    $("#sec_id").on("change", function () {
+      $.ajax({
+        method: "GET",
+        url: "/get_ind_list_ajax",
+        data: { sec_id: $(this).val(), flag: $('#flag').val() },
+        dataType: "html",
+        beforeSend: function () {
+          $(".loader-wrapper").show();
+        },
+        success: function (result) {
+          var res = JSON.parse(result);
+          // console.log(res);
+          $("#ind_id").empty();
+          $("#data_set_view").hide()
+          $("#suc_disc_table tbody >").remove()
+          $("#ind_id").append(
+            $("<option>", { value: "", text: "Select Industries" })
+          );
+          if (res.suc > 0 && res.msg.length > 0)
+            $.each(res.msg, function (i, item) {
+              $("#ind_id").append(
+                $("<option>", { value: item.id, text: item.ind_name })
+              );
+            });
+        },
+        complete: function () {
+          $(".loader-wrapper").hide();
+        },
+      });
+    });
+</script>
+<script>
+    $("#ind_id").on("change", function () {
+      $.ajax({
+        method: "GET",
+        url: "/get_sus_dis_top_code_ajax",
+        data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+        dataType: "html",
+        beforeSend: function () {
+          $(".loader-wrapper").show();
+        },
+        success: function (result) {
+          var res = JSON.parse(result);
+          $("#code_id").empty();
+          $("#code_id").append(
+            $("<option>", { value: "", text: "Select Code" })
+          );
+          code_list.length = 0
+          if (res.suc > 0 && res.msg.length > 0){
+            code_list = res.msg
+              $.each(res.msg, function (i, item) {
+                $("#code_id").append(
+                  $("<option>", { value: item.id, text: item.code })
+                );
+              });
+          }
+        },
+        complete: function () {
+          $(".loader-wrapper").hide();
+        },
+      });
+    });
+
+    $('#code_id').on('change', function(){
+        if(code_list.length > 0){
+            var sel_code = code_list.filter(dt => dt.id == $(this).val())
+            var word_array = sel_code[0].words.split(',')
+            console.log(word_array);
+            if(word_array.length > 0){
+                $.ajax({
+                    method: "GET",
+                    url: "/get_sus_disc_word_info",
+                    data: { id: $(this).val() },
+                    dataType: "html",
+                    beforeSend: function () {
+                        $(".loader-wrapper").show();
+                    },
+                    success: function(result){
+                        var res = JSON.parse(result);
+                        var i = 1
+                        word_array.forEach(wdt => {
+                            if(res.suc > 0 && res.msg.length > 0){
+                                var word_info_list = res.msg.filter(dt => dt.word == wdt)
+                                if(word_info_list.length > 0){
+                                    var k = 0
+                                    word_info_list.forEach(dt => {
+                                        if(k == 0)
+                                            createRow(dt.id, i, wdt, dt.info, word_info_list.length, true)
+                                        else
+                                            createRow(dt.id, i, wdt, dt.info, word_info_list.length, false)
+                                        k++  
+                                    })
+                                }else{
+                                    createRow(dt.id, i)
+                                }
+                            }
+                            i++
+                        })
+                    },
+                    complete: function () {
+                        $(".loader-wrapper").hide();
+                    },
+                })
+            }
+        }
+    })
+
+    function createRow(id = 0, seq = 0, word = '', info = null, totRow = 1, isFirst = false){
+        if(isFirst){
+            $("#suc_disc_table tbody").append(`
+                <tr id="row_${id}">
+                    <td rowspan="${totRow}">${word}</td>
+                    <td>
+                        <div>
+                            <div id="info_${id}_${seq}">${info != null ? info : ''}</div>
+                            <textarea class="form-control" id="info_text_${id}_${seq}" name="info_${id}" cols="30" rows="10" style="display:none;">${info != null ? info : ''}</textarea>
+                        </div>
+                    </td>
+                    <td><button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${id}, ${seq})"><i class="icofont icofont-plus-circle"></i></button></td>
+                </tr>
+            `)
+        }else{
+            $("#suc_disc_table tbody").append(`
+                <tr id="row_${id}">
+                    <td>
+                        <div>
+                            <div id="info_${id}_${seq}">${info != null ? info : ''}</div>
+                            <textarea class="form-control" id="info_text_${id}_${seq}" name="info_${id}" cols="30" rows="10" style="display:none;">${info != null ? info : ''}</textarea>
+                        </div>
+                    </td>
+                    <td><button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${id}, ${seq})"><i class="icofont icofont-trash"></i></button></td>
+                </tr>
+            `)
+        }
+    }
+  
+    function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name='', words=''){
+      // console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
+      $(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`).after(`<tr id="row_${top_id}_${id}">
+          ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
+          <td><input class="form-control" id="ind_agn_${top_id}_${id}" name="ind_agn_${top_id}" type="text" value="${ind_agn}"></td>
+          <td><input class="form-control" id="metric_${top_id}_${id}" name="metric_${top_id}" type="text" value="${metric}"></td>
+          <td><input class="form-control" id="catg_${top_id}_${id}" name="catg_${top_id}" type="text" value="${catg}"></td>
+          <td><input class="form-control" id="unit_${top_id}_${id}" name="unit_${top_id}" type="text" value="${unit}"></td>
+          <td><input class="form-control" id="code_${top_id}_${id}" name="code_${top_id}" type="text" value="${code}"></td>
+          <td><textarea class="form-control" id="words_${top_id}_${id}" name="words_${top_id}" type="text" rows="3">${words}</textarea></td>
+          <td>${prev_id > 0 ? `<button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${top_id}, ${id})"><i class="icofont icofont-trash"></i></button>` : `<button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${top_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>`}</td>
+      </tr>`);
+    }
+  
+    function add_row(top_id, id, ind_agn='', metric='', catg='', unit='', code='', words='') {
+      var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
+      let next_id = row + 1;
+      $(`#first_top_td_${top_id}`).removeAttr("rowspan");
+      $(`#first_top_td_${top_id}`).attr("rowspan", next_id);
+      created_row(top_id, next_id, row, ind_agn, metric, catg, unit, code, '', words)
+    }
+  
+    function remove_row(top_id, id) {
+      var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
+      let prev_id = row - 1;
+      $(`#first_top_td_${top_id}`).removeAttr("rowspan");
+      $(`#first_top_td_${top_id}`).attr("rowspan", prev_id);
+      $(`#row_${top_id}_${id}`).remove();
+    }
+  </script>
+<%- include('../../templates/footer.ejs') %>

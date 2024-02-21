@@ -9,6 +9,7 @@ const {
   getSusDiscList,
   getActMetrialDtls,
   getDynamicData,
+  getSusDisTopCodeList,
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select } = require("../modules/MasterModule");
 
@@ -529,5 +530,40 @@ DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
   };
   res.redirect(`/sus_disc_info?sec_id=${data.sec_id}&ind_id=${data.ind_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
 });
+
+DataCollectionRouter.get('/sus_disc_word_info', async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from (enc_dt, 'base64').toString();
+
+  var selected = {
+    sec_id: req.query.sec_id ? req.query.sec_id : 0,
+    ind_id: req.query.ind_id ? req.query.ind_id : 0,
+    code: req.query.code ? req.query.code : 0,
+  };
+  var sec_data = await getSectorList(0, flag),
+    ind_list = { msg: [] },
+    code_list = {msg: []};
+  if (selected.sec_id > 0){
+    ind_list = await getIndustriesList(null, selected.sec_id, flag);
+    code_list = await getSusDisTopCodeList(0, selected.sec_id, selected.ind_id, 0, flag)
+  }
+  // console.log(ind_list);
+  var data = {
+    sec_data,
+    ind_list,
+    selected,
+    code_list,
+    header: "Sustainability Disclosure Topics & Metrics Word Information",
+    flag,
+    enc_dt,
+  };
+  res.render("data_collection/sus_disc/word_info", data);
+})
+
+DataCollectionRouter.get('/get_sus_dis_top_code_ajax', async (req, res) => {
+  var data = req.query
+  var code_list = await getSusDisTopCodeList(0, data.sec_id, data.ind_id, 0, data.flag)
+  res.send(code_list)
+})
 
 module.exports = { DataCollectionRouter };

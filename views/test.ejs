@@ -13,8 +13,14 @@
         <p><img src='/editor/images/editor-image.png' /></p>
     </div>
 
+    <div id="div_editor2">
+        <p>This is a default toolbar demo of Rich text editor.</p>
+        <p><img src='/editor/images/editor-image.png' /></p>
+    </div>
+
     <script>
-        var editor1 = new RichTextEditor("#div_editor1");
+        var editor1 = new RichTextEditor("#div_editor1", { skin: "rounded-corner", toolbar: "basic" });
+        var editor2 = new RichTextEditor("#div_editor2", { skin: "rounded-corner", toolbar: "basic" });
         //editor1.setHTMLCode("Use inline HTML or setHTMLCode to init the default content.");
     </script>
 

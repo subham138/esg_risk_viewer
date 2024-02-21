@@ -30,5 +30,15 @@ module.exports = {
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
         })
+    },
+    getSusDisTopCodeList: (id=0, sec_id = null, ind_id = null, topic_id = null, flag = 'I') => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'a.id, a.code, a.words',
+            table_name = 'td_sus_dis_top_met a',
+            whr = `a.words is NOT null AND a.words != '' AND a.repo_flag = '${flag}' ${id > 0 ? `AND a.id = ${id}` : ''} ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''} ${ind_id > 0 ? `AND a.ind_id = ${ind_id}` : ''} ${topic_id > 0 ? `AND a.top_id = ${topic_id}` : ''}`,
+            order = 'ORDER BY a.sl_no';
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
     }
 }
