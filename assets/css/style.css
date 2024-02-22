@@ -3562,6 +3562,9 @@ table tbody .border-bottom-warning td {
   position: absolute;
   top: calc(50vh - 75px);
   left: calc(50vw - 75px);
+  background-image: url(/images/favicon_new.ico);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .loader-wrapper .theme-loader .loader-p:before {
@@ -12992,7 +12995,8 @@ strong~p {
 }
 
 .alert-success.dark {
-  background-color: #1b4c43;
+  /* background-color: #1b4c43; */
+  background-color: #186671;
   border-color: #1b4c43;
   color: #fafafa;
 }
@@ -46435,12 +46439,27 @@ nav{
   margin-bottom: 20px;
 } */
 
-.wordCount {
+/* .wordCount {
   padding: 15px;
   background: #d2d4e0;
   border-radius: 50px;
   font-size: 15px;
   font-weight: 600;
+  margin-bottom: 20px;
+  border: #316379 solid 1px;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+} */
+
+.wordCount {
+  padding: 40px;
+  /* background: #d2d4e0; */
+  border-radius: 50px;
+  font-size: 24px;
+  font-weight: 500;
   margin-bottom: 20px;
   border: #316379 solid 1px;
   width: 100px;
@@ -46622,4 +46641,22 @@ nav{
   background: #fff;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.err-message{
+  text-align: center;
+  font-size: 17px;
+}
+
+.loader-box .loader-17 {
+  background-color: #fff;
+  background-image: url("/images/favicon_new.ico");
+}
+
+.loader-box .loader-17:before {
+  background-color: #316379;
+}
+
+.loader-box .loader-17:after {
+  background-color: #316379;
 }

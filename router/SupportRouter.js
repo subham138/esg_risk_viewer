@@ -68,7 +68,7 @@ SupportRouter.post('/support_save', async (req, res) => {
     if (res_dt.suc > 0) {
         req.session.message = {
           type: "success",
-          message: "Data saved successfully",
+          message: "Saved successfully",
         };
         res.redirect("/support");
     } else {

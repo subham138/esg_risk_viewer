@@ -52,7 +52,7 @@ MasterRouter.post("/sec_save", async (req, res) => {
   if (res_dt.suc > 0) {
     req.session.message = {
       type: "success",
-      message: "Data saved successfully",
+      message: "Saved successfully",
     };
     res.redirect(`/sector?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   } else {
@@ -184,7 +184,7 @@ MasterRouter.post("/ind_save", async (req, res) => {
   if (res_dt.suc > 0) {
     req.session.message = {
       type: "success",
-      message: "Data saved successfully",
+      message: "Saved successfully",
     };
     res.redirect(`/industries?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   } else {
@@ -225,7 +225,7 @@ MasterRouter.post("/topic_catg_save", async (req, res) => {
   if (res_dt.suc > 0) {
     req.session.message = {
       type: "success",
-      message: "Data saved successfully",
+      message: "Saved successfully",
     };
     res.redirect(`/topic_catg?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   } else {
@@ -281,7 +281,7 @@ MasterRouter.post("/topic_save", async (req, res) => {
   if (res_dt.suc > 0) {
     req.session.message = {
       type: "success",
-      message: "Data saved successfully",
+      message: "Saved successfully",
     };
     res.redirect(`/topic?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   } else {
@@ -352,7 +352,7 @@ MasterRouter.post("/busi_act_save", async (req, res) => {
   if (res_dt.suc > 0) {
     req.session.message = {
       type: "success",
-      message: "Data saved successfully",
+      message: "Saved successfully",
     };
     res.redirect(`/busi_act?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
   } else {

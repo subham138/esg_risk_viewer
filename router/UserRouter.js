@@ -67,12 +67,12 @@ UserRouter.post("/login", async (req, res) => {
       } else {
         req.session.message = {
           type: "warning",
-          message: "Please check your user-id or password",
+          message: "Please check your username or password",
         };
         res.redirect("/login");
       }
     } else {
-      req.session.message = { type: "warning", message: "UserId not exist" };
+      req.session.message = { type: "warning", message: "Incorrect username" };
       res.redirect("/login");
     }
   } else {
