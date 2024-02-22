@@ -41,11 +41,11 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getWordInfo: (id=0, top_id = 0) => {
+    getWordInfo: (id=0, top_id = 0, word = '') => {
         return new Promise(async (resolve, reject) => {
             var select = 'id, sus_dis_top_met_id, word, sl_no, info',
             table_name = 'td_sus_dis_top_word_info',
-            whr = id > 0 ? `id = ${id}` : (top_id > 0 ? `sus_dis_top_met_id = ${top_id}` : ''),
+            whr = id > 0 ? `id = ${id}` : (top_id > 0 ? `sus_dis_top_met_id = ${top_id}` : (word != '' ? `word = '${word}'` : '') ),
             order = 'ORDER BY sl_no';
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)

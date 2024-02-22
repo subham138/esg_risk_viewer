@@ -123,7 +123,7 @@
                                                 <% word_list.forEach(dt => { %>
                                                     <div class="col-md-6 mt-2">
                                                         <div class="u-step">
-                                                            <div class="u-step-desc text-center"><span class="u-step-title"><%= dt %></span>
+                                                            <div class="u-step-desc text-center" onclick="stepClick('<%= dt %>')"><span class="u-step-title"><%= dt %></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -236,4 +236,26 @@
         }
         // $(`#ai_check_${id}`).toggle();
        }
+</script>
+
+<script>
+    function stepClick(word){
+        $.ajax({
+            method: "GET",
+            url: "/get_sus_disc_word_info_ajax",
+            data: { word: word.toString().trim() },
+            dataType: "html",
+            beforeSend: function () {
+                $(".loader-wrapper").show();
+            },
+            success: function(result){
+                var res = JSON.parse(result)
+                console.log(res);
+            },
+            complete: function () {
+                $(".loader-wrapper").hide();
+            },
+        })
+        alert(word)
+    }
 </script>
