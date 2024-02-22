@@ -155,7 +155,7 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
     if (res_dt.suc > 0) {
         req.session.message = {
           type: "success",
-          message: "Data saved successfully",
+          message: "Saved successfully",
         };
         // res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id, flag: data.flag}), "utf8").toString('base64')}`);
         res.redirect(

@@ -3562,6 +3562,9 @@ table tbody .border-bottom-warning td {
   position: absolute;
   top: calc(50vh - 75px);
   left: calc(50vw - 75px);
+  background-image: url(/images/favicon_new.ico);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .loader-wrapper .theme-loader .loader-p:before {
@@ -12992,7 +12995,8 @@ strong~p {
 }
 
 .alert-success.dark {
-  background-color: #1b4c43;
+  /* background-color: #1b4c43; */
+  background-color: #186671;
   border-color: #1b4c43;
   color: #fafafa;
 }
@@ -46639,3 +46643,20 @@ nav{
   padding-bottom: 10px;
 }
 
+.err-message{
+  text-align: center;
+  font-size: 17px;
+}
+
+.loader-box .loader-17 {
+  background-color: #fff;
+  background-image: url("/images/favicon_new.ico");
+}
+
+.loader-box .loader-17:before {
+  background-color: #316379;
+}
+
+.loader-box .loader-17:after {
+  background-color: #316379;
+}
