@@ -1,4 +1,4 @@
-const { db_Select } = require("./MasterModule")
+const { db_Select, db_Insert } = require("./MasterModule")
 
 module.exports = {
     getSusDiscList: (sec_id, ind_id, top_id, flag = 'I') => {
@@ -38,6 +38,42 @@ module.exports = {
             whr = `a.words is NOT null AND a.words != '' AND a.repo_flag = '${flag}' ${id > 0 ? `AND a.id = ${id}` : ''} ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''} ${ind_id > 0 ? `AND a.ind_id = ${ind_id}` : ''} ${topic_id > 0 ? `AND a.top_id = ${topic_id}` : ''}`,
             order = 'ORDER BY a.sl_no';
             var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
+    },
+    getWordInfo: (id=0, top_id = 0) => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'id, sus_dis_top_met_id, word, sl_no, info',
+            table_name = 'td_sus_dis_top_word_info',
+            whr = id > 0 ? `id = ${id}` : (top_id > 0 ? `sus_dis_top_met_id = ${top_id}` : ''),
+            order = 'ORDER BY sl_no';
+            var res_dt = await db_Select(select, table_name, whr, order)
+            resolve(res_dt)
+        })
+    },
+    saveWordInfo: (data) => {
+        return new Promise(async (resolve, reject) => {
+            var res_dt = {}
+            for(let wrd_id of data.word_name_id){
+                if(Array.isArray(data[`info_${wrd_id}`])){
+                    var i = 0
+                    for(let dt of data[`info_${wrd_id}`]){
+                        var table_name = 'td_sus_dis_top_word_info',
+                            fields = data[`info_id_${wrd_id}`][i] > 0 ? `word = '${data.word_name[wrd_id-1]}', sl_no = ${i+1}, info = '${dt.split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
+                            values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${dt.split("'").join("\\'")}')`,
+                            whr = data[`info_id_${wrd_id}`][i] > 0 ? `id = ${data[`info_id_${wrd_id}`][i] > 0}` : null,
+                            flag = data[`info_id_${wrd_id}`][i] > 0 ? 1 : 0;
+                        res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                    }
+                }else{
+                  var table_name = 'td_sus_dis_top_word_info',
+                    fields = data[`info_id_${wrd_id}`] > 0 ? `word = '${data.word_name[wrd_id-1]}', sl_no = ${i+1}, info = '${dt.split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
+                    values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${data[`info_${wrd_id}`].split("'").join("\\'")}')`,
+                    whr = data[`info_id_${wrd_id}`] > 0 ? `id = ${data[`info_id_${wrd_id}`] > 0}` : null,
+                    flag = data[`info_id_${wrd_id}`] > 0 ? 1 : 0;
+                  res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                }
+            }
             resolve(res_dt)
         })
     }

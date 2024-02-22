@@ -10,6 +10,8 @@ const {
   getActMetrialDtls,
   getDynamicData,
   getSusDisTopCodeList,
+  getWordInfo,
+  saveWordInfo,
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select } = require("../modules/MasterModule");
 
@@ -564,6 +566,22 @@ DataCollectionRouter.get('/get_sus_dis_top_code_ajax', async (req, res) => {
   var data = req.query
   var code_list = await getSusDisTopCodeList(0, data.sec_id, data.ind_id, 0, data.flag)
   res.send(code_list)
+})
+
+DataCollectionRouter.get('/get_sus_disc_word_info_ajax', async (req, res) => {
+  var data = req.query
+  var res_dt = await getWordInfo(0, data.top_id)
+  res.send(res_dt)
+})
+
+DataCollectionRouter.post('/save_word_info', async (req, res) => {
+  var data = req.body
+  var res_dt = await saveWordInfo(data)
+    req.session.message = {
+      type: res_dt.suc > 0 ? "success" : "danger",
+      message: res_dt.msg,
+    };
+  res.redirect(`/sus_disc_word_info?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
 })
 
 module.exports = { DataCollectionRouter };
