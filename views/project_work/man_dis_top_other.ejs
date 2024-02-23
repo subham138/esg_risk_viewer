@@ -68,11 +68,13 @@
                                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                               <div class="modal-content">
                                                 <div class="modal-body" style="color: black;">
-                                                    <div class="editorHelpHeader">
-                                                        <%= dt.info_title %>
-                                                    </div>
-                                                    <div class="editorHelpContent">
-                                                        <%- dt.info_desc %>
+                                                    <div class="card card-absolute">
+                                                        <div class="card-header bg-secondary">
+                                                            <h5 class="text-white">"<%= dt.info_title %>"</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <%- dt.info_desc %>
+                                                        </div>
                                                     </div>
                                                   <button class="btn btn-primary" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal">OK</button>
                                                 </div>
@@ -224,6 +226,135 @@
 </div>
 
 <script>
+    // $(function(){
+    //     var numOfItems = $('.card-content .card').length,
+    //         limitPerPage = 1,
+    //         totalPages = numOfItems,
+    //         peginationSize = 3,
+    //         currentPage;
+    // })
+    var numOfItems = 0,
+        limitPerPage = 1,
+        totalPages = numOfItems,
+        peginationSize = 3,
+        currentPage;
+
+    function showPage(whichPage, modal = undefined){
+        console.log(totalPages, 'TOT PAGE', $('.card-content .card').length);
+        if(whichPage < 1 || whichPage > totalPages) return false;
+        currentPage = whichPage
+        if (modal){
+            modal.find('.card-content .card').hide().slice((currentPage - 1) * limitPerPage, currentPage * limitPerPage).show()
+            modal.find('.pagination li').slice(1, -1).remove()
+            console.log(totalPages, currentPage, peginationSize, 'lalala');
+            getPageList(totalPages, currentPage, peginationSize).forEach(item => {
+                // $('<li>').addClass('page-item').toggleClass('active', item === currentPage)
+                // .append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)'}).text(item || '...').insertBefore(modal.find('.next-page')))
+                var liItem = $('<li>').addClass('page-item').addClass(item ? 'current-page' : 'dots').toggleClass('active', item === currentPage)
+                .append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)'}).text(item || '...'))
+                console.log(liItem, 'Li Item');
+                liItem.insertBefore(modal.find('.next-page'))
+            })
+            modal.find('.previous-page').toggleClass('disabled', currentPage === 1)
+            modal.find('.next-page').toggleClass('disabled', currentPage === totalPages)
+        }else{
+            $('.card-content .card').hide().slice((currentPage - 1) * limitPerPage, currentPage * limitPerPage).show()
+            $('.pagination li').slice(1, -1).remove()
+            getPageList(totalPages, currentPage, peginationSize).forEach(item => {
+                var liItem = $('<li>').addClass('page-item').addClass(item ? 'current-page' : 'dots').toggleClass('active', item === currentPage)
+                .append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)'}).text(item || '...'))
+                liItem.insertBefore('.next-page')
+            })
+            $('.previous-page').toggleClass('disabled', currentPage === 1)
+            $('.next-page').toggleClass('disabled', currentPage === totalPages)
+        }
+        return true;
+    }
+    $(document).on('click', '.pagination li.current-page:not(.active)', function(){
+        console.log('Not Here');
+        return showPage(+$(this).text())
+    })
+    function modalGoNext(){
+        console.log(currentPage, 'Next click');
+        return showPage(currentPage + 1)
+    }
+    function modalGoPrev(){
+        return showPage(currentPage - 1)
+    }
+</script>
+
+<script>
+    function makeModal(header, info){
+        var card = ''
+        info.forEach(dt=>{
+            card = card + `<div class="card card-absolute">
+                <div class="card-header bg-secondary">
+                <h5 class="text-white">"${dt.word}"</h5>
+                </div>
+                <div class="card-body">
+                ${dt.info}
+                </div>
+            </div>`
+        })
+
+        var modalContent = `
+        <div class="modal fade" id="wordInfoModal" tabindex="-1" role="dialog" aria-labelledby="wordInfoModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body" style="color: black;">
+                        <div class="editorHelpContent">
+                            <div class="card-content" style="display:none;">${card}</div>
+                            <nav aria-label="...">
+                                <ul class="pagination justify-content-end pagination-primary">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal" onclick="closeWordModal()">Close</button> 
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        return new Promise((resolve, reject) => {
+            resolve(modalContent)
+        });
+    }
+
+    function getPageList(totalPage, page, maxLength){
+        function range(start, end){
+            return Array.from(Array(end - start + 1), (_, i) => i + start)
+        }
+
+        var sideWidth = maxLength < 9 ? 1 : 2,
+            leftWidth = (maxLength - sideWidth * 2 - 3) >> 1,
+            rightWidth = (maxLength - sideWidth * 2 - 3) >> 1;
+
+        console.log(totalPage, maxLength, sideWidth, leftWidth, rightWidth, 'Create List');
+        
+        if(totalPage <= maxLength){
+            console.log(range(1, totalPage), 'Range');
+            return range(1, totalPage)
+        }
+
+        if(page <= maxLength - sideWidth - 1 - rightWidth){
+            return range(1, maxLength-sideWidth).concat(0, range(totalPage-sideWidth+1, totalPage))
+        }
+
+        if(page >= maxLength - sideWidth - 1 - rightWidth){
+            return range(1, sideWidth).concat(0, range(totalPage-sideWidth-1-rightWidth-leftWidth, totalPage))
+        }
+
+        return range(1, sideWidth).concat(0, range(page-leftWidth, page+rightWidth), 0, range(totalPage-sideWidth+1, totalPage))
+    }
+
+    function closeWordModal(){
+        $('#wordInfoModal').remove()
+    }
+</script>
+
+<script>
     function showHideAi(id){
         if(!$(`#ai_check_${id}`).is(':visible')){
             $('#ai_tool_main_div_'+id).removeClass('col-md-12')
@@ -248,14 +379,32 @@
             beforeSend: function () {
                 $(".loader-wrapper").show();
             },
-            success: function(result){
+            success: async function(result) {
                 var res = JSON.parse(result)
                 console.log(res);
+                if(res.suc > 0){
+                    if(res.msg.length > 0){
+                        var m1 = $(await makeModal(word.toString().trim(), res.msg));
+                        m1.modal('show');
+                        numOfItems = m1.find('.card-content .card').length;
+                        limitPerPage = 1;
+                        totalPages = numOfItems;
+                        peginationSize = numOfItems > 5 ? 5 : numOfItems;
+
+                        console.log($('.card-content .card').length, numOfItems, currentPage);
+                        m1.find('.pagination').append(
+                            $('<li>').addClass('page-item').addClass('previous-page').append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)', onclick: 'modalGoPrev()'}).text('Prev')),
+                            $('<li>').addClass('page-item').addClass('next-page').append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)', onclick: 'modalGoNext()'}).text('Next'))
+                        )
+                        m1.find('.card-content').show()
+                        showPage(1, m1)
+                    }
+                }
             },
             complete: function () {
                 $(".loader-wrapper").hide();
             },
         })
-        alert(word)
+        // alert(word)
     }
 </script>

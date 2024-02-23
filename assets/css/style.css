@@ -46346,8 +46346,8 @@ nav #mainnav .nav-menu{
 .caruBackCol1{
 /* background-color: var(--theme-secondary) !important; */
   background-color: #fff !important;
-  border: 2px solid var(--theme-secondary);
-  box-shadow: 0 0.1rem 0rem var(--theme-secondary);
+  border: 1px solid #4c216d;
+  box-shadow: 0 0.02rem 0rem #4c216d;
 }
 .form-check-input:checked {
   background-color: var(--theme-primary);
@@ -46660,3 +46660,30 @@ nav{
 .loader-box .loader-17:after {
   background-color: #316379;
 }
+
+.infoCalLeb {
+  color: #316379;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.infoCalVal {
+  color: #381850;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.cal-tot-div {
+  width: 30%;
+  padding: 10px;
+  border: 1px solid #316379;
+  float: right;
+  margin-top: 10px;
+}
+
+.tot-cal-val {
+  font-size: 20px;
+  font-weight: 600;
+  color: #381850;
+}
+

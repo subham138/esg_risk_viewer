@@ -172,7 +172,7 @@
                                                             <div class="col-md-12">
                                                                 <div class="default-according style-2" id="inghg">
                                                                     <div class="card">
-                                                                        <div class="card-header caruBackCol1">
+                                                                        <div class="card-header caruBackCol1 text-center">
                                                                             <h5 class="mb-0">
                                                                                 <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_1" aria-expanded="true" aria-controls="collapse11">Scope 1</button>
                                                                             </h5>
@@ -201,7 +201,7 @@
                                                                                                     <div class="card">
                                                                                                         <div class="card-header caruBackCol1">
                                                                                                             <h5 class="mb-0">
-                                                                                                                <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#s1_cal_<%= sc %>" aria-expanded="true" aria-controls="collapse11"><%= newGhgDt[0].type_name %> - <%= newGhgDt[0].act_name %> - <%= newGhgDt[0].emi_name %> - <%= tot_co_val_label %> kg CO2e since <%= fullMonths[newGhgDt[0].repo_month] %></button>
+                                                                                                                <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#s1_cal_<%= sc %>" aria-expanded="true" aria-controls="collapse11"><span class="infoCalLeb"><%= newGhgDt[0].type_name %> - <%= newGhgDt[0].act_name %> - <%= newGhgDt[0].emi_name %> -</span><span class="infoCalVal"> <%= tot_co_val_label %> kg CO2e </span><span class="infoCalLeb">since <%= fullMonths[newGhgDt[0].repo_month] %></span></button>
                                                                                                             </h5>
                                                                                                         </div>
                                                                                                         <div class="collapse" id="s1_cal_<%= sc %>" aria-labelledby="s1_cal_<%= sc %>" data-bs-parent="#accordionoc">
@@ -320,15 +320,18 @@
                                                                                                                                         })
                                                                                                                                     </script>
                                                                                                                                 <%  nextCalField++; }) %> 
-                                                                                                                                    <tr>
+                                                                                                                                    <!-- <tr>
                                                                                                                                         <td colspan="2">Total</td>
-                                                                                                                                        <td><span id="tot_cal_val_s1_<%= sc %>"><%= tot_cal_val %></span></td>
+                                                                                                                                        <td><span id="tot_cal_val_s1_<%# sc %>"><%# tot_cal_val %></span></td>
                                                                                                                                         <td></td>
-                                                                                                                                        <td><span id="tot_co_val_s1_<%= sc %>"><%= tot_co_val %></span></td>
-                                                                                                                                    </tr>
+                                                                                                                                        <td><span id="tot_co_val_s1_<%# sc %>"><%# tot_co_val %></span></td>
+                                                                                                                                    </tr> -->
                                                                                                                             <% } %>
                                                                                                                         </tbody>
                                                                                                                     </table>
+                                                                                                                    <div class="container cal-tot-div">
+                                                                                                                        <p class="tot-cal-val"><%= tot_co_val %> Kg of CO2e</p>
+                                                                                                                    </div>
                                                                                                                 </div>
                                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                                     <div class="col-md-10"></div>
@@ -433,7 +436,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="card">
-                                                                        <div class="card-header caruBackCol1">
+                                                                        <div class="card-header caruBackCol1 text-center">
                                                                             <h5 class="mb-0">
                                                                                 <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_2" aria-expanded="true" aria-controls="collapse11">Scope 2</button>
                                                                             </h5>
@@ -691,7 +694,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="card">
-                                                                        <div class="card-header caruBackCol1">
+                                                                        <div class="card-header caruBackCol1 text-center">
                                                                             <h5 class="mb-0">
                                                                                 <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_3" aria-expanded="true" aria-controls="collapse11">Scope 3</button>
                                                                             </h5>
