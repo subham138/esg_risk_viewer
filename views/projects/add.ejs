@@ -64,7 +64,10 @@
                                                 </select>
                                             </div>
                                             <% if(i > 1){ %>
-                                                <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i>fff</button>
+                                                <div class="tableTd_add_btn">
+                                                    <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
+                                                        onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i></button>
+                                                </div>
                                             <% } %>
                                             </td>
                                             <!-- <td>
@@ -120,7 +123,11 @@
                 </div>
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                 <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
-                <button class="btn btn-pill btn-outline-primary btn-air-primary" type="submit">Submit</button>
+                <div class="row">
+                    <div class="col-md-7">
+                        <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
+                    </div>
+                </div>
                 </form>
             </div>
             </div>

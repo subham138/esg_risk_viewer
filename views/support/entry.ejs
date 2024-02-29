@@ -20,6 +20,7 @@
             <div class="card-body card_body_Cus">
                 <form method="POST" action="/support_save" class="needs-validation">
                 <div class="row g-3 py-3">
+                    <% console.log(supportList) %>
                     <div class="col-md-4">
                         <p>
                             <span class="fw-bold">Date:</span> 
@@ -38,9 +39,26 @@
                         <p><span class="fw-bold">Created By:</span> <span class="ml-2"><%= user_name %></span></p>
                         <input type="hidden" name="user_id" value="<%= user_id %>">
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="issue_title">Title</label>
+                        <input class="form-control" id="issue_title" name="issue_title" type="text" value="<%= id > 0 ? (supportList.length > 0 ? supportList[0].issue_title : '') : '' %>" required="" <%= user_type == 'S' ? 'readonly' : '' %>>
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                    <% if(id > 0){
+                        if(support_msg.length > 1){
+                            support_msg.forEach(dt => { %>
+                                <div class="col-md-12">
+                                    <label class="infoCalLeb"><%= dt.log_entry_by %> (<%= dateFormat(dt.log_dt, 'dd/mm/yyyy HH:MM:ss') %>): </label> <br>
+                                    <span><%= dt.log_dtls %></span>
+                                </div>
+                                <hr>
+                            <% })
+                        }
+                    } %>
+                    <input type="hidden" name="msg_id" value="<%= id > 0 ? (user.user_type == 'S' ? (support_msg.length > 0 ? (support_msg[support_msg.length - 1].log_entry_user_type != 'A' ? 0 : support_msg[support_msg.length - 1].id) : 0) : (supportList[0].tkt_status == 'P' ? (support_msg.length > 0 ? (support_msg[support_msg.length - 1].log_entry_user_type != 'U' ? 0 : support_msg[support_msg.length - 1].id) : 0) : 0)) : 0 %>">
                     <div class="col-md-12">
                         <label class="form-label" for="issue">Issue</label>
-                        <textarea class="form-control" id="issue" name="issue" rows="3"><%= id > 0 ? (supportList.length > 0 ? supportList[0].issue : '') : '' %></textarea>
+                        <textarea class="form-control" id="issue" name="issue" rows="3" <%= user_type == 'S' ? 'readonly' : '' %>><%= id > 0 ? (supportList.length > 0 ? (user.user_type != 'S' ? (supportList[0].tkt_status == 'P' ? supportList[0].issue : '') : supportList[0].issue) : '') : '' %></textarea>
                     </div>
                     <% if(user_type == 'S'){ %>
                     <div class="col-md-6">
@@ -49,7 +67,7 @@
                             <option selected="" value="">Select Status</option>
                             <option value="P" <%= id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'P' ? 'selected' : '') : '') : '' %>>Pending</option>
                             <option value="S" <%= id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'S' ? 'selected' : '') : '') : '' %>>Resolved</option>
-                            <option value="R" <%= id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'R' ? 'selected' : '') : '') : '' %>>Rejected</option>
+                            <!-- <option value="R" <%# id > 0 ? (supportList.length > 0 ? (supportList[0].tkt_status == 'R' ? 'selected' : '') : '') : '' %>>Rejected</option> -->
                         </select>
                     </div>
                     <div class="col-md-12">

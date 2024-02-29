@@ -28,7 +28,7 @@
                 <div class="card-body card_body_Cus">
                     <div class="row">
                         <div class="top_radio_sec">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="support_tb" id="support_tb_p" value="P" checked>
                                 <label class="form-check-label" for="support_tb_p">
@@ -36,7 +36,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="support_tb" id="support_tb_s" value="S">
                                 <label class="form-check-label" for="support_tb_s">
@@ -44,17 +44,17 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <!-- <div class="col-md-2">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="support_tb" id="support_tb_r" value="R">
                                 <label class="form-check-label" for="support_tb_r">
                                     Rejected
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
                         <% if(user_type != 'S'){ %>
-                        <div class="col-md-3 my-2 text-end">
-                            <a href="/support_edit?id=0" class="btn btn-pill btn_right btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Create a new support" data-bs-original-title="Edit">Create a new support</a>
+                        <div class="col-md-8 my-2 text-end">
+                            <a href="/support_edit?id=0" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Create a new support" data-bs-original-title="Edit">Create a new support</a>
                         </div>
                         <% } %>
                         </div>
@@ -62,11 +62,12 @@
 
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="display" id="basic-1">
+                                <table class="display" id="cust-data-tab">
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Tkt No</th>
+                                            <th>Subject</th>
                                             <th>Date</th>
                                             <% if(user_type == 'S'){ %>
                                                 <th>Client Name</th>
@@ -82,6 +83,7 @@
                                         <tr>
                                             <td><%= i %></td>
                                             <td><%= dt.tkt_no %></td>
+                                            <td><%= dt.issue_title %></td>
                                             <td><%= dateFormat(dt.tkt_date, 'dd/mm/yyyy HH:MM:ss') %></td>
                                             <% if(user_type == 'S'){ %>
                                                 <td><%= dt.client_name %></td>
@@ -112,7 +114,9 @@
     </div>
 </div>
 
+<script src="/js/datatable/datatables/jquery.dataTables.min.js"></script>
 <script>
+    var table = $('#cust-data-tab').DataTable()
     $('input[name="support_tb"]').on('change', function() {
         // alert()
         var flag = $('input[name="support_tb"]:checked').val();
@@ -128,32 +132,66 @@
             success: function (result) {
                 var res = JSON.parse(result);
                 // console.log(res);
-                $("#basic-1 tbody").empty();
-
+                // $("#basic-1 tbody").empty();
+                table.clear().draw();
                 if (res.suc > 0 && res.msg.length > 0){
-                    $.each(res.msg, function (i, dt) {
+                    var i = 0
+                    var res = res.msg.map(dt => {
+                        var result = [];
                         var tkt_date = new Date(dt.tkt_date)
-                        $("#basic-1 tbody").append(`
-                        <tr>
-                            <td>${++i}</td>
-                            <td>${dt.tkt_no}</td>
-                            <td>${tkt_date.getDate()}/${tkt_date.getMonth()}/${tkt_date.getFullYear()} ${tkt_date.getHours()}:${tkt_date.getMinutes()}:${tkt_date.getSeconds()}</td>
-                            <% if(user_type == 'S'){ %>
-                            <td>${dt.client_name}</td>
-                            <% } %>
-                            <td><span class="${dt.tkt_status == 'P' ? 'text-warning' : (dt.tkt_status == 'S' ? 'text-success' : 'text-danger') }">${ dt.tkt_status == 'P' ? 'Pending' : (dt.tkt_status == 'S' ? 'Solved' : 'Rejected') }</span></td>
-                            <td><a href="/support_edit?id=${dt.id}" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                                <i class="icofont icofont-ui-edit"></i> Edit
-                                </a>
-                                <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
-                                    <i class="icofont icofont-ui-delete"></i> Delete
-                                </a> -->
-                            </td>
-                        </tr>`);
-                    });
+                        result.push(++i)
+                        result.push(dt.tkt_no)
+                        result.push(dt.issue_title)
+                        result.push(`${tkt_date.getDate()}/${tkt_date.getMonth()}/${tkt_date.getFullYear()} ${tkt_date.getHours()}:${tkt_date.getMinutes()}:${tkt_date.getSeconds()}`)
+                        <% if(user_type == 'S'){ %>
+                            result.push(dt.client_name)
+                        <% } %>
+                        result.push(`<span class="${dt.tkt_status == 'P' ? 'text-warning' : (dt.tkt_status == 'S' ? 'text-success' : 'text-danger') }">${ dt.tkt_status == 'P' ? 'Pending' : (dt.tkt_status == 'S' ? 'Solved' : 'Rejected') }</span>`)
+                        result.push(`<a href="/support_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                    <i class="icofont icofont-ui-edit"></i> Edit
+                                </a>`)
+                        return result;
+                    })
+                    // console.log(res);
+                    table.rows.add(res);
+                    table.draw();
+                    // $.each(res.msg, function (i, dt) {
+                    //     var tkt_date = new Date(dt.tkt_date)
+                    //     var result = []
+                    //     result.push(++i)
+                    //     result.push(dt.tkt_no)
+                    //     result.push(dt.issue_title)
+                    //     result.push(`${tkt_date.getDate()}/${tkt_date.getMonth()}/${tkt_date.getFullYear()} ${tkt_date.getHours()}:${tkt_date.getMinutes()}:${tkt_date.getSeconds()}`)
+                    //     <% if(user_type == 'S'){ %>
+                    //         result.push(dt.client_name)
+                    //     <% } %>
+                    //     result.push($(`<span class="${dt.tkt_status == 'P' ? 'text-warning' : (dt.tkt_status == 'S' ? 'text-success' : 'text-danger') }">${ dt.tkt_status == 'P' ? 'Pending' : (dt.tkt_status == 'S' ? 'Solved' : 'Rejected') }</span>`))
+                    //     result.push($(`<a href="/support_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                    //                 <i class="icofont icofont-ui-edit"></i> Edit
+                    //             </a>`))
+                    //     // $("#basic-1 tbody").append(`
+                    //     // <tr>
+                    //     //     <td>${++i}</td>
+                    //     //     <td>${dt.tkt_no}</td>
+                    //     //     <td>${dt.issue_title}</td>
+                    //     //     <td>${tkt_date.getDate()}/${tkt_date.getMonth()}/${tkt_date.getFullYear()} ${tkt_date.getHours()}:${tkt_date.getMinutes()}:${tkt_date.getSeconds()}</td>
+                    //     //     <% if(user_type == 'S'){ %>
+                    //     //     <td>${dt.client_name}</td>
+                    //     //     <% } %>
+                    //     //     <td><span class="${dt.tkt_status == 'P' ? 'text-warning' : (dt.tkt_status == 'S' ? 'text-success' : 'text-danger') }">${ dt.tkt_status == 'P' ? 'Pending' : (dt.tkt_status == 'S' ? 'Solved' : 'Rejected') }</span></td>
+                    //     //     <td>
+                    //     //         <a href="/support_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                    //     //             <i class="icofont icofont-ui-edit"></i> Edit
+                    //     //         </a>
+                    //     //         <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                    //     //             <i class="icofont icofont-ui-delete"></i> Delete
+                    //     //         </a> -->
+                    //     //     </td>
+                    //     // </tr>`);
+                    // });
                 }else{
                     $("#basic-1 tbody").append(`<tr>
-                                    <td class="text-center text-danger" colspan="5">No Data Found</td>
+                                    <td class="text-center text-danger" colspan="6">No Data Found</td>
                                 </tr>`)
                 }
             },

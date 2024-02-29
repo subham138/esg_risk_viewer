@@ -35,7 +35,7 @@
                                 <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
                             </div> -->
                             <div class="col-md-5">
-                                <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>">
+                                <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>" <%= user.user_type == 'V' ? 'disabled' : '' %>>
                             </div>
                             <% if(dt.info_desc && dt.info_title){ %>
                             <div class="col-md-1">
@@ -144,6 +144,9 @@
                         
                         <script>
                             editorList['div_editor_<%= ediR %>'] = new RichTextEditor("#div_editor_<%= ediR %>");
+                            <% if(user.user_type == 'V'){ %>
+                                editorList['div_editor_<%= ediR %>'].setReadOnly(true);
+                            <% } %>
                             editorList['div_editor_<%= ediR %>'].attachEvent("change", function () {
                                 var textCount = editorList['div_editor_<%= ediR %>'].getPlainText();
                                 // console.log(textCount);
@@ -203,7 +206,7 @@
                                         <div for="editor_topic_<%= i %>" class="editLabelBull"></div>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>">
+                                        <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>" <%= user.user_type == 'V' ? 'disabled' : '' %>>
                                     </div>
                                     <div class="col-md-12 colEditor m-t-15">
                                         <div id="div_editor_<%= i %>"><%- dt.article %></div>
@@ -212,6 +215,9 @@
                                 </div>
                                 <script>
                                     editorList['div_editor_<%= i %>'] = new RichTextEditor("#div_editor_<%= i %>");
+                                    <% if(user.user_type == 'V'){ %>
+                                        editorList['div_editor_<%= i %>'].setReadOnly(true);
+                                    <% } %>
                                 </script>
                                 <% if(user_type != 'V'){ %>
                                     <div class="col-md-10">&nbsp;</div>

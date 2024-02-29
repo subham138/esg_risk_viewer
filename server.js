@@ -91,13 +91,16 @@ app.get("/", (req, res) => {
 });
 
 app.get('/test_lala', (req, res) => {
+  const bcrypt = require('bcrypt')
+  var pass = bcrypt.hashSync('1234', 10)
   // var enc = Buffer.from('F').toString('base64'),
   // dec = new Buffer.from(enc, 'base64').toString();
   // console.log(dec);
   // res.send(encodeURIComponent(enc))
   // console.log(req.files);
   // res.send('LALA')
-  res.render('test')
+  res.send(pass)
+  // res.render('test')
 })
 
 app.use(UserRouter);

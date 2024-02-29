@@ -35,10 +35,12 @@ SupportRouter.get('/support_edit', async (req, res) => {
         user_id = req.session.user.id,
         user_name = req.session.user.user_name,
         id = req.query.id,
-        client_dtls = await getClientList(client_id)
+        client_dtls = await getClientList(client_id),
+        support_msg = [];
     var supportList = []
     if(id > 0){
         supportList = await getSupportList(id, userType, client_id, user_id)
+        support_msg = supportList.suc > 0 ? (supportList.msg_dt ? supportList.msg_dt : []) : []
         supportList = supportList.suc > 0 ? supportList.msg : [];
     }
     // console.log(supportList);
@@ -48,6 +50,7 @@ SupportRouter.get('/support_edit', async (req, res) => {
         user_type: userType,
         user_id,
         supportList,
+        support_msg,
         client_id,
         id,
         header: "Support Log",

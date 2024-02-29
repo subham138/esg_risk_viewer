@@ -54,7 +54,7 @@
                                 <tr>
                                     <td><%= i %></td>
                                     <td><%= dt.project_name %></td>
-                                    <td><%= dt.last_access %></td>
+                                    <td><%= dt.last_access != '' ? dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss') : '' %></td>
                                     <td>
                                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
                                             <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">

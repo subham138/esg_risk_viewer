@@ -35,7 +35,8 @@ ProjectRouter.get('/my_project', async (req, res) => {
         project_data,
         header: "Project List",
         enc_dt,
-        flag
+        flag,
+        dateFormat
     }
     res.render('projects/view', data)
 })

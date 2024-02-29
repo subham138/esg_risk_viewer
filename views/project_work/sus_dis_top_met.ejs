@@ -14,7 +14,7 @@
             <% } %>
             <div class="col-md-3 m-t-10">
                 <div class="custom_checkbox checkbox">
-                    <input type="checkbox" name="top_chk" id="top_chk_<%= dt.topic_id %>" dt-set-id="<%= dt.topic_id %>" value="<%= dt.topic_name %>" <%= _checked %>>
+                    <input type="checkbox" name="top_chk" id="top_chk_<%= dt.topic_id %>" dt-set-id="<%= dt.topic_id %>" value="<%= dt.topic_name %>" <%= _checked %> <%= user.user_type == 'V' ? 'disabled' : '' %>>
                     <label for="top_chk_<%= dt.topic_id %>">
                         <%= dt.topic_name %>
                     </label>

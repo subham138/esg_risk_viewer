@@ -1,0 +1,21 @@
+.btn-custom{
+    background: none;
+    color: #000;
+    border: 2px solid #7030A0;
+}
+.btn-custom:hover {
+    background: #7030A0;
+    color: #fff;
+}
+textarea{
+    border-radius: 15px !important;
+}
+.custom-span-card{
+    border: none;
+}
+.custom-span-card .card-header.caruBackCol1{
+    border-radius: 10px !important;
+}
+.collapse{
+    border-radius: 10px !important;
+}
