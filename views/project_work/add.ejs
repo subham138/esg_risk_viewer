@@ -33,7 +33,7 @@
                     <form method="POST" action="/save_proj_work" class="needs-validation">
                         <div class="row g-3 py-3">
                             <div class="col-md-6">
-                                <p class="borderdLabel" for="sec_id">Sector</p>
+                                <label for="sec_id">Sector</label>
                                 <select class="form-select" id="sec_id" name="sec_id" required="">
                                     <option selected="" value="">Select Sector</option>
                                     <% if(sec_data.msg.length > 0){
@@ -47,7 +47,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <p class="borderdLabel" for="ind_id">Industry</p>
+                                <label for="ind_id">Industry</label>
                                 <select class="form-select" id="ind_id" name="ind_id" required="">
                                     <option selected="" value="">Select Industry</option>
                                 </select>
@@ -59,7 +59,7 @@
                             </select>
                             </div> -->
                             <div class="col-md-12 select2-drpdwn mb-2">
-                                <p class="borderdLabel" for="location_id">Locations of Business Activities</p>
+                                <label for="location_id">Locations of Business Activities</label>
                                 <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                     <option value="">Select Location</option>
                                     <% if(loc_list.msg.length > 0){

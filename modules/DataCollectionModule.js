@@ -67,9 +67,9 @@ module.exports = {
                     }
                 }else{
                   var table_name = 'td_sus_dis_top_word_info',
-                    fields = data[`info_id_${wrd_id}`] > 0 ? `word = '${data.word_name[wrd_id-1]}', sl_no = ${i+1}, info = '${dt.split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
+                    fields = data[`info_id_${wrd_id}`] > 0 ? `word = '${data.word_name[wrd_id-1]}', info = '${data[`info_${wrd_id}`].split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
                     values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${data[`info_${wrd_id}`].split("'").join("\\'")}')`,
-                    whr = data[`info_id_${wrd_id}`] > 0 ? `id = ${data[`info_id_${wrd_id}`] > 0}` : null,
+                    whr = data[`info_id_${wrd_id}`] > 0 ? `id = ${data[`info_id_${wrd_id}`]}` : null,
                     flag = data[`info_id_${wrd_id}`] > 0 ? 1 : 0;
                   res_dt = await db_Insert(table_name, fields, values, whr, flag)
                 }

@@ -276,7 +276,11 @@
                   </div>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_new_row(${id}, ${seq})"><i class="icofont icofont-plus-circle"></i></button>
+                  <div class="tableTd_add_btn">
+                    <button type="button" class="btn btn_UR" 
+                    onclick="add_new_row(${id}, ${seq})"><i class="icofont icofont-plus-circle" style="font-size: 20px;"></i></button>
+                  </div>
+                  <!-- <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_new_row(${id}, ${seq})"><i class="icofont icofont-plus-circle"></i></button> -->
                 </td>
               </tr>
             `)
@@ -291,7 +295,11 @@
                 </div>
               </td>
               <td>
-                <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_one_row(${id}, ${seq})"><i class="icofont icofont-trash"></i></button>
+                <div class="tableTd_add_btn">
+                  <button type="button" class="btn btn_UR" 
+                  onclick="remove_one_row(${id}, ${seq})"><i class="icofont icofont-trash" style="font-size: 20px;"></i></button>
+                </div>
+                <!-- <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_one_row(${id}, ${seq})"><i class="icofont icofont-trash"></i></button> -->
               </td>
             `)
         }

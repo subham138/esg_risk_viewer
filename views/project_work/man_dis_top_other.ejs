@@ -31,28 +31,36 @@
                                 prevRes = dt.top_id %>
                                 <p class="dyn-col-head dyn_col_head_Cus_UR_2"><%= dt.topic_name %></p>
                             <% } %>
+                        </div>
+                        <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-10 row">
                             <!-- <div class="col-md-1 ediDiv">
-                                <div for="editor_topic_<%= ediR %>" class="editLabelBull"></div>
+                                <div for="editor_topic_<%# ediR %>" class="editLabelBull"></div>
                             </div> -->
-                            <div class="col-md-5">
+                            <div class="<%= dt.info_desc && dt.info_title ? 'col-md-10' : 'col-md-12' %>">
                                 <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>" <%= user.user_type == 'V' ? 'disabled' : '' %>>
                             </div>
                             <% if(dt.info_desc && dt.info_title){ %>
-                            <div class="col-md-1">
-                                <i class="fa fa-info-circle" data-bs-toggle="modal" data-bs-target="#man_dis_top_info_<%= ediR %>" style="font-size: 22px;margin-top: 10px; cursor: pointer;"></i>
+                            <div class="col-md-1" style="display: flex; align-items: center; flex-direction: column; justify-content: center;">
+                                <i class="icon-info-alt" data-bs-toggle="modal" data-bs-target="#man_dis_top_info_<%= ediR %>" style="font-size: 22px; cursor: pointer;"></i>
                             </div>
                             <% } %>
-                            <% if(ai_tag_tool_flag != 'N'){ %>
-                                <div class="col-md-2">
+                        </div>
+                        <% if(ai_tag_tool_flag != 'N'){ %>
+                            <div class="col-md-4">
+                                <div class="ai-sugg-grp">
+                                    <img class="ai-btn-img" src="\images\favicon_new.ico">
+                                    <button class="btn btn-pill btn-custom text-center" style="width: 13vw;" onclick="showHideAi('<%= ediR %>')">ESGReportAssist</button>
+                                </div>
+                                <!-- <div class="col-md-2">
                                     <div class="m-b-10">
-                                        <img class="img" src="\images\favicon_new.ico" height="50%" width="50%" style="margin-left: 31vw;">
+                                        
                                     </div>  
                                 </div>
                                 <div class="col-md-4">
-                                    <button class="btn btn-pill btn-outline-primary text-center" style="width: 13vw;margin-left: 27vw;" onclick="showHideAi('<%= ediR %>')">ESGReportAssist</button>
-                                </div>
-                            <% } %>
-                        </div>
+                                    
+                                </div> -->
+                            </div>
+                        <% } %>
                         <div class="col-md-12 m-l-8 row" id="ai_tool_main_div_<%= ediR %>">
                             <% if(dt.info_desc && dt.info_title){ %>
                                 <!-- <div class="col-md-12">
@@ -67,9 +75,9 @@
                                     </div>
                                 </div> -->
                                 <div class="col-md-12">
-                                        <div class="modal fade" id="man_dis_top_info_<%= ediR %>" tabindex="-1" role="dialog" aria-labelledby="man_dis_top_info_<%= ediR %>" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                              <div class="modal-content">
+                                    <div class="modal fade" id="man_dis_top_info_<%= ediR %>" tabindex="-1" role="dialog" aria-labelledby="man_dis_top_info_<%= ediR %>" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+                                            <div class="modal-content">
                                                 <div class="modal-body" style="color: black;">
                                                     <div class="card card-absolute">
                                                         <div class="card-header bg-secondary">
@@ -79,14 +87,14 @@
                                                             <%- dt.info_desc %>
                                                         </div>
                                                     </div>
-                                                  <button class="btn btn-primary" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal">OK</button>
+                                                    <button class="btn btn-custom" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal">OK</button>
                                                 </div>
-                                              </div>
                                             </div>
-                                          </div>
+                                        </div>
+                                    </div>
                                 </div>
                             <% } %>
-                            <div class="col-md-12 colEditor <%= dt.info_desc && dt.info_title ? '' : 'm-t-15' %>">
+                            <div class="col-md-12 colEditor m-t-15">
                                 <div id="div_editor_<%= ediR %>"><%- getRes.length > 0 ? getRes[0].article : "" %></div>
                                 <!-- <textarea id="editor<%# ediR %>" name="editor" cols="30" rows="10"><%# getRes.length > 0 ? getRes[0].article : "" %></textarea> -->
                             </div>
@@ -99,7 +107,7 @@
                                     wordList[<%= ediR %>] = '<%= dt.words %>';
                                     // console.log(wordList)
                                 </script>
-                                <div class="col-md-4">
+                                <div class="col-md-4 m-t-10">
                                     <div class="row">
                                         <!-- <div class="col-md-4">
                                             <div class="m-b-10">
@@ -122,12 +130,12 @@
                                                     <p>ESG-related words included by your peers and not included in your text:</p>
                                                 </div>
                                                 <div class="wordCount">
-                                                    <span id="countMatchNum_<%= ediR %>" class="centered">0</span>
+                                                    <span id="countMatchNum_<%= ediR %>" class="centered word-count-num">0</span>
                                                 </div>
                                                 <div class="wordButton col-md-12 row" id="countMatch_<%= ediR %>">
                                                 <% word_list.forEach(dt => { %>
                                                     <div class="col-md-6 mt-2">
-                                                        <div class="u-step">
+                                                        <div class="u-step ai-btn">
                                                             <div class="u-step-desc text-center" onclick="stepClick('<%= dt %>')"><span class="u-step-title"><%= dt %></span>
                                                             </div>
                                                         </div>
@@ -190,7 +198,7 @@
                         <% if(user_type != 'V'){ %>
                             <div class="col-md-10">&nbsp;</div>
                             <div class="col-md-2 m-t-10">
-                                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"></i> Save</button>
+                                <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save m-r-10"></i> Save</button>
                             </div>
                         <% } %>
                     </div>
@@ -222,7 +230,7 @@
                                 <% if(user_type != 'V'){ %>
                                     <div class="col-md-10">&nbsp;</div>
                                     <div class="col-md-2 m-t-10">
-                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"> Save</i></button>
+                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"> Save</i></button>
                                     </div>
                                 <% } %>
                             </div>
@@ -255,7 +263,7 @@
         if (modal){
             modal.find('.card-content .card').hide().slice((currentPage - 1) * limitPerPage, currentPage * limitPerPage).show()
             modal.find('.pagination li').slice(1, -1).remove()
-            console.log(totalPages, currentPage, peginationSize, 'lalala');
+            // console.log(totalPages, currentPage, peginationSize, 'lalala');
             getPageList(totalPages, currentPage, peginationSize).forEach(item => {
                 // $('<li>').addClass('page-item').toggleClass('active', item === currentPage)
                 // .append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)'}).text(item || '...').insertBefore(modal.find('.next-page')))
@@ -301,14 +309,16 @@
                 <h5 class="text-white">"${dt.word}"</h5>
                 </div>
                 <div class="card-body">
-                ${dt.info}
+                    <div class="typed-out">
+                        ${dt.info}
+                    </div>
                 </div>
             </div>`
         })
 
         var modalContent = `
         <div class="modal fade" id="wordInfoModal" tabindex="-1" role="dialog" aria-labelledby="wordInfoModal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                     <div class="modal-body" style="color: black;">
                         <div class="editorHelpContent">
@@ -320,7 +330,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal" onclick="closeWordModal()">Close</button> 
+                        <button class="btn btn-custom" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal" onclick="closeWordModal()">Close</button> 
                     </div>
                 </div>
             </div>
