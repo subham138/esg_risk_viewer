@@ -55,8 +55,8 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var res_dt = {}
             for(let wrd_id of data.word_name_id){
+                var i = 0
                 if(Array.isArray(data[`info_${wrd_id}`])){
-                    var i = 0
                     for(let dt of data[`info_${wrd_id}`]){
                         var table_name = 'td_sus_dis_top_word_info',
                             fields = data[`info_id_${wrd_id}`][i] > 0 ? `word = '${data.word_name[wrd_id-1]}', sl_no = ${i+1}, info = '${dt.split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
@@ -66,12 +66,16 @@ module.exports = {
                         res_dt = await db_Insert(table_name, fields, values, whr, flag)
                     }
                 }else{
-                  var table_name = 'td_sus_dis_top_word_info',
-                    fields = data[`info_id_${wrd_id}`] > 0 ? `word = '${data.word_name[wrd_id-1]}', info = '${data[`info_${wrd_id}`].split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
-                    values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${data[`info_${wrd_id}`].split("'").join("\\'")}')`,
-                    whr = data[`info_id_${wrd_id}`] > 0 ? `id = ${data[`info_id_${wrd_id}`]}` : null,
-                    flag = data[`info_id_${wrd_id}`] > 0 ? 1 : 0;
-                  res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                    if(data[`info_${wrd_id}`] != ''){
+                        var table_name = 'td_sus_dis_top_word_info',
+                            fields = data[`info_id_${wrd_id}`] > 0 ? `word = '${data.word_name[wrd_id-1]}', info = '${data[`info_${wrd_id}`].split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
+                            values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${data[`info_${wrd_id}`].split("'").join("\\'")}')`,
+                            whr = data[`info_id_${wrd_id}`] > 0 ? `id = ${data[`info_id_${wrd_id}`]}` : null,
+                            flag = data[`info_id_${wrd_id}`] > 0 ? 1 : 0;
+                        res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                    }else{
+                        res_dt = {suc: res_dt.suc ? res_dt.suc : 0, msg: res_dt.msg ? res_dt.msg : 'No Info found..'}
+                    }
                 }
             }
             resolve(res_dt)
