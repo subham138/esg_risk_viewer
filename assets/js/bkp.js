@@ -92,6 +92,7 @@ $toggle_nav_top.click(function() {
   $nav = $('.main-nav');
   $nav.toggleClass('close_icon');
   $header.toggleClass('close_icon');
+  console.log('here');
 });
 
 $( window ).resize(function() {
@@ -103,6 +104,7 @@ $( window ).resize(function() {
     $nav = $('.main-nav');
     $nav.toggleClass('close_icon');
     $header.toggleClass('close_icon');
+    $('footer').toggleClass('close_nav')
   });
 });
 

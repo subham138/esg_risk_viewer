@@ -86,3 +86,31 @@ textarea {
     font-style: italic;
     font-size: 30px;
 }
+tbody tr:hover td {
+    background: #f1f1f1 !important;
+}
+
+.btn_align{
+    margin-left: 53vw;
+    bottom: 38px;
+}
+
+.align{
+    margin-left: 42vw;
+    bottom: 38px;
+}
+
+.default-according .card .btn-link {
+    color: #7030a0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.default-according .card .card-header {
+    border-bottom: 1px solid #381951;
+}
+
+footer.close_nav{
+    width: calc(100% - 4.3vw);
+    float: right;
+}

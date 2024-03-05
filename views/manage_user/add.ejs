@@ -60,19 +60,19 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="active_flag" id="active_flag_y" value="Y" <%= id > 0 ? (user_data.msg[0].active_flag == 'Y' ? 'checked' : '') : 'checked' %>>
                             <label class="form-check-label" for="active_flag_y">
-                                Active
+                                Active user
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="active_flag" id="active_flag_n" value="N" <%= id > 0 ? (user_data.msg[0].active_flag == 'N' ? 'checked' : '') : '' %>>
                             <label class="form-check-label" for="active_flag_n">
-                                De-Active
+                                Deactive user
                             </label>
                         </div>
                     </div>
                     <div class="col-md-6 text-end">
                         <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                <button class="btn btn-pill btn-outline-primary btn-air-primary" type="submit">Submit</button>
+                <button class="btn btn-pill btn-custom" type="submit">Submit</button>
                     </div>
                 </div>
                 

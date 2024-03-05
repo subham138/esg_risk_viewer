@@ -90,8 +90,9 @@
 // });
 
 
-$('.toggleSidebarTogle').click(function() {   
+$('.toggleSidebarTogle').click(function() {
   $('body').toggleClass('sidebar-icon-only');
+  $('footer').toggleClass('close_nav')
 //   $('.page-main-header').toggleClass('close_icon');
 });
 

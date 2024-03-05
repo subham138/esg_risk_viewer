@@ -11,7 +11,7 @@
         <div class="col-md-12 row mt-3" id="editorPrevDiv">
             <div class="col-md-10">&nbsp;</div>
             <div class="col-md-2">
-                <button class="btn btn-pill btn-sm btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Add New Editor" onclick="AddEditor()"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add</span></button>
+                <button class="btn btn-pill btn-sm btn-custom float-end text-center" data-bs-original-title title="Add New Editor" onclick="AddEditor()"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add</span></button>
             </div>
         </div>
     <% } %>
@@ -26,7 +26,7 @@
                     %>
                     <div id="editorNewDiv_<%= ediR %>" data-code="<%= dt.code %>" data-id="<%= dt.id %>" class="row m-t-10 editorDiv" style="display: none;">
                         
-                        <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-8 p-r-50 row">
+                        <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-8 p-r-15 row">
                             <% if(prevRes != nowRes){
                                 prevRes = dt.top_id %>
                                 <p class="dyn-col-head dyn_col_head_Cus_UR_2"><%= dt.topic_name %></p>
@@ -36,7 +36,7 @@
                             <!-- <div class="col-md-1 ediDiv">
                                 <div for="editor_topic_<%# ediR %>" class="editLabelBull"></div>
                             </div> -->
-                            <div class="<%= dt.info_desc && dt.info_title ? 'col-md-10' : 'col-md-12' %>">
+                            <div class="<%= dt.info_desc && dt.info_title ? 'col-md-11' : 'col-md-12' %>">
                                 <input class="form-control" type="text" name="editor_topic_<%= dt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= dt.code %>" <%= user.user_type == 'V' ? 'disabled' : '' %>>
                             </div>
                             <% if(dt.info_desc && dt.info_title){ %>
@@ -46,7 +46,7 @@
                             <% } %>
                         </div>
                         <% if(ai_tag_tool_flag != 'N'){ %>
-                            <div class="col-md-4">
+                            <div class="col-md-4 align">
                                 <div class="ai-sugg-grp">
                                     <img class="ai-btn-img" src="\images\favicon_new.ico">
                                     <button class="btn btn-pill btn-custom text-center" style="width: 13vw;" onclick="showHideAi('<%= ediR %>')">ESGReportAssist</button>
@@ -94,7 +94,7 @@
                                     </div>
                                 </div>
                             <% } %>
-                            <div class="col-md-12 colEditor m-t-15">
+                            <div class="col-md-12 colEditor m-t-15" style="bottom: 2vw;">
                                 <div id="div_editor_<%= ediR %>"><%- getRes.length > 0 ? getRes[0].article : "" %></div>
                                 <!-- <textarea id="editor<%# ediR %>" name="editor" cols="30" rows="10"><%# getRes.length > 0 ? getRes[0].article : "" %></textarea> -->
                             </div>
@@ -127,14 +127,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="wordSubHeader">
-                                                    <p>ESG-related words included by your peers and not included in your text:</p>
+                                                    <p>Click on a word to see how your peers manage this disclosure topic</p>
                                                 </div>
                                                 <div class="wordCount">
                                                     <span id="countMatchNum_<%= ediR %>" class="centered word-count-num">0</span>
                                                 </div>
                                                 <div class="wordButton col-md-12 row" id="countMatch_<%= ediR %>">
                                                 <% word_list.forEach(dt => { %>
-                                                    <div class="col-md-6 mt-2">
+                                                    <div class="col-md-4 mt-2">
                                                         <div class="u-step ai-btn">
                                                             <div class="u-step-desc text-center" onclick="stepClick('<%= dt %>')"><span class="u-step-title"><%= dt %></span>
                                                             </div>
@@ -197,7 +197,7 @@
                         </script>
                         <% if(user_type != 'V'){ %>
                             <div class="col-md-10">&nbsp;</div>
-                            <div class="col-md-2 m-t-10">
+                            <div class="col-md-2 m-t-10 btn_align">
                                 <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save m-r-10"></i> Save</button>
                             </div>
                         <% } %>
@@ -209,11 +209,11 @@
                     editorData.forEach(dt => {
                         if(!topList.includes(dt.article_code)){ %>
                             <div id="editorNewDiv_<%= i %>" class="row mt-3">
-                                <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-3 row">
-                                    <div class="col-md-1 ediDiv">
-                                        <div for="editor_topic_<%= i %>" class="editLabelBull"></div>
-                                    </div>
-                                    <div class="col-md-6">
+                                <div class="col-md-12 m-3 row">
+                                    <!-- <div class="col-md-1 ediDiv">
+                                        <div for="editor_topic_<%# i %>" class="editLabelBull"></div>
+                                    </div> -->
+                                    <div class="col-md-8 m-l-10">
                                         <input type="text" class="form-control" name="editor_topic" id="editor_topic_<%= i %>" value="<%= dt.article_code %>" <%= user.user_type == 'V' ? 'disabled' : '' %>>
                                     </div>
                                     <div class="col-md-12 colEditor m-t-15">
@@ -229,8 +229,8 @@
                                 </script>
                                 <% if(user_type != 'V'){ %>
                                     <div class="col-md-10">&nbsp;</div>
-                                    <div class="col-md-2 m-t-10">
-                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save"> Save</i></button>
+                                    <div class="col-md-2 m-t-10 btn_align">
+                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= i %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save m-r-10"> &nbsp;&nbsp; Save</i></button>
                                     </div>
                                 <% } %>
                             </div>

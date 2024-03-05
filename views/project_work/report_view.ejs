@@ -181,14 +181,14 @@
                                                                             <div class="row">
                                                                                 <div class="col-md-12 text-center p-3 row">
                                                                                     <div class="col-md-12 row mt-1">
-                                                                                        <div class="col-md-10"></div>
+                                                                                        <div class="col-md-8"></div>
                                                                                         <% if(user_type != 'V'){ %>
-                                                                                            <div class="col-md-2">
-                                                                                                <button class="btn btn-pill btn-sm btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s1')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add</span></button>
+                                                                                            <div class="col-md-4">
+                                                                                                <button class="btn btn-pill btn-sm btn-custom float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s1')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add New Emission Source</span></button>
                                                                                             </div>
                                                                                         <% } %>
                                                                                     </div>
-                                                                                    <div class="col-md-12 m-t-10" id="calDetails_s1">
+                                                                                    <div class="col-md-12 m-t-10 p-l-20 p-r-20" id="calDetails_s1">
                                                                                         <% if('s1' in ghg_emi_data){
                                                                                             var sc_len = ghg_emi_data['s1'].length / 12;
                                                                                             for(let sc = 1; sc <= sc_len; sc++){
@@ -207,9 +207,9 @@
                                                                                                         <div class="collapse" id="s1_cal_<%= sc %>" aria-labelledby="s1_cal_<%= sc %>" data-bs-parent="#accordionoc">
                                                                                                             <div class="row p-2">
                                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="type_id_s1_<%= sc %>">Section</label>
+                                                                                                                    <label class="form-label float-start" for="type_id_s1_<%= sc %>">Emission source</label>
                                                                                                                     <select class="form-select" id="type_id_s1_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s1','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                                        <option selected="" value="">Please select emission source</option>
                                                                                                                         <% if(type_list.length > 0){
                                                                                                                             type_list.forEach(dt => { 
                                                                                                                                 if(dt.scope == 1){
@@ -231,7 +231,7 @@
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="act_id_s1_<%= sc %>">Activity</label>
                                                                                                                     <select class="form-select" id="act_id_s1_<%= sc %>" name="act_id" required="" onchange="changeActId('s1','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                                        <option selected="" value="">Please select activity</option>
                                                                                                                         <% if(act_list.length > 0){
                                                                                                                             act_list.forEach(dt => { 
                                                                                                                                 var selected = ''; %>
@@ -253,9 +253,9 @@
                                                                                                                     </select>
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="repo_period_s1_<%= sc %>">Reporting period</label>
+                                                                                                                    <label class="form-label float-start" for="repo_period_s1_<%= sc %>">Reporting Period</label>
                                                                                                                     <select class="form-select" id="repo_period_s1_<%= sc %>" name="repo_period" required="">
-                                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                                        <option selected="" value="">Please select year</option>
                                                                                                                         <% if(year_list.length > 0){
                                                                                                                             year_list.forEach(dt => { 
                                                                                                                                 var selected = '';
@@ -270,7 +270,7 @@
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="strt_month_s1_<%= sc %>">Start Month</label>
                                                                                                                     <select class="form-select" id="strt_month_s1_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s1','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                                        <option selected="" value="">Please select start month</option>
                                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                                         if(months.length > 0){
                                                                                                                             months.forEach(dt => { 
@@ -336,7 +336,7 @@
                                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                                     <div class="col-md-10"></div>
                                                                                                                     <div class="col-md-2 m-t-10">
-                                                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s1','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s1','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
                                                                                                                     </div>
                                                                                                                 <% } %>
                                                                                                             </div>
@@ -347,9 +347,9 @@
                                                                                         }else{ %>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="type_id_s1_1">Section</label>
+                                                                                                    <label class="form-label float-start" for="type_id_s1_1">Emission source</label>
                                                                                                     <select class="form-select" id="type_id_s1_1" name="type_id" required="" onchange="changeTypeId('s1',1)">
-                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                        <option selected="" value="">Please select emission source</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => {
                                                                                                                 if(dt.scope == 1){ 
@@ -362,7 +362,7 @@
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="act_id_s1_1">Activity</label>
                                                                                                     <select class="form-select" id="act_id_s1_1" name="act_id" required="" onchange="changeActId('s1',1)">
-                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                        <option selected="" value="">Please select activity</option>
                                                                                                         <% if(act_list.length > 0){
                                                                                                             act_list.forEach(dt => { 
                                                                                                                 var selected = ''; %>
@@ -384,9 +384,9 @@
                                                                                                     </select>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="repo_period_s1_1">Reporting period</label>
+                                                                                                    <label class="form-label float-start" for="repo_period_s1_1">Reporting Period</label>
                                                                                                     <select class="form-select" id="repo_period_s1_1" name="repo_period" required="">
-                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                        <option selected="" value="">Please select year</option>
                                                                                                         <% if(year_list.length > 0){
                                                                                                             year_list.forEach(dt => { 
                                                                                                                 var selected = ''; %>
@@ -398,7 +398,7 @@
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="strt_month_s1_1">Start Month</label>
                                                                                                     <select class="form-select" id="strt_month_s1_1" name="strt_month" required="" onchange="calSelectMonth('s1',1)">
-                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                        <option selected="" value="">Please select start month</option>
                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                         if(months.length > 0){
                                                                                                             months.forEach(dt => { 
@@ -425,7 +425,7 @@
                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                     <div class="col-md-10"></div>
                                                                                                     <div class="col-md-2 m-t-10">
-                                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s1',1)"><i class="icofont icofont-save"> Save</i></button>
+                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s1',1)"><i class="icofont icofont-save"> Save</i></button>
                                                                                                     </div>
                                                                                                 <% } %>
                                                                                             </div>
@@ -445,14 +445,14 @@
                                                                             <div class="row">
                                                                                 <div class="col-md-12 text-center p-3 row">
                                                                                     <div class="col-md-12 row mt-1">
-                                                                                        <div class="col-md-10"></div>
+                                                                                        <div class="col-md-8"></div>
                                                                                         <% if(user_type != 'V'){ %>
-                                                                                            <div class="col-md-2">
-                                                                                                <button class="btn btn-pill btn-sm btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s2')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add</span></button>
+                                                                                            <div class="col-md-4">
+                                                                                                <button class="btn btn-pill btn-sm btn-custom float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s2')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add New Emission Source</span></button>
                                                                                             </div>
                                                                                         <% } %>
                                                                                     </div>
-                                                                                    <div class="col-md-12" id="calDetails_s2">
+                                                                                    <div class="col-md-12 m-t-10 p-l-20 p-r-20" id="calDetails_s2">
                                                                                         <% if('s2' in ghg_emi_data){
                                                                                             var sc_len = ghg_emi_data['s2'].length / 12;
                                                                                             for(let sc = 1; sc <= sc_len; sc++){
@@ -467,9 +467,9 @@
                                                                                                         <div class="collapse" id="calSpan" aria-labelledby="calSpan" data-bs-parent="#accordionoc">
                                                                                                             <div class="row">
                                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="type_id_s2_<%= sc %>">Section</label>
+                                                                                                                    <label class="form-label float-start" for="type_id_s2_<%= sc %>">Emission source</label>
                                                                                                                     <select class="form-select" id="type_id_s2_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s2','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                                        <option selected="" value="">Please select emission source</option>
                                                                                                                         <% if(type_list.length > 0){
                                                                                                                             type_list.forEach(dt => { 
                                                                                                                                 var selected = '';
@@ -491,7 +491,7 @@
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="act_id_s2_<%= sc %>">Activity</label>
                                                                                                                     <select class="form-select" id="act_id_s2_<%= sc %>" name="act_id" required="" onchange="changeActId('s2','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                                        <option selected="" value="">Please select activity</option>
                                                                                                                         <% if(act_list.length > 0){
                                                                                                                             act_list.forEach(dt => { 
                                                                                                                                 var selected = ''; %>
@@ -513,9 +513,9 @@
                                                                                                                     </select>
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="repo_period_s2_<%= sc %>">Reporting period</label>
+                                                                                                                    <label class="form-label float-start" for="repo_period_s2_<%= sc %>">Reporting Period</label>
                                                                                                                     <select class="form-select" id="repo_period_s2_<%= sc %>" name="repo_period" required="">
-                                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                                        <option selected="" value="">Please select year</option>
                                                                                                                         <% if(year_list.length > 0){
                                                                                                                             year_list.forEach(dt => { 
                                                                                                                                 var selected = '';
@@ -530,7 +530,7 @@
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="strt_month_s2_<%= sc %>">Start Month</label>
                                                                                                                     <select class="form-select" id="strt_month_s2_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s2','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                                        <option selected="" value="">Please select start month</option>
                                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                                         if(months.length > 0){
                                                                                                                             months.forEach(dt => { 
@@ -593,7 +593,7 @@
                                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                                     <div class="col-md-10"></div>
                                                                                                                     <div class="col-md-2 m-t-10">
-                                                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s2','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s2','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
                                                                                                                     </div>
                                                                                                                 <% } %>
                                                                                                             </div>
@@ -605,9 +605,9 @@
                                                                                         }else{ %>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="type_id_s2_1">Section</label>
+                                                                                                    <label class="form-label float-start" for="type_id_s2_1">Emission source</label>
                                                                                                     <select class="form-select" id="type_id_s2_1" name="type_id" required="" onchange="changeTypeId('s2',1)">
-                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                        <option selected="" value="">Please select emission source</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
                                                                                                                 if(dt.scope == 2){
@@ -620,7 +620,7 @@
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="act_id_s2_1">Activity</label>
                                                                                                     <select class="form-select" id="act_id_s2_1" name="act_id" required="" onchange="changeActId('s2',1)">
-                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                        <option selected="" value="">Please select activity</option>
                                                                                                         <% if(act_list.length > 0){
                                                                                                             act_list.forEach(dt => { 
                                                                                                                 var selected = ''; %>
@@ -642,9 +642,9 @@
                                                                                                     </select>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="repo_period_s2_1">Reporting period</label>
+                                                                                                    <label class="form-label float-start" for="repo_period_s2_1">Reporting Period</label>
                                                                                                     <select class="form-select" id="repo_period_s2_1" name="repo_period" required="">
-                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                        <option selected="" value="">Please select year</option>
                                                                                                         <% if(year_list.length > 0){
                                                                                                             year_list.forEach(dt => { 
                                                                                                                 var selected = ''; %>
@@ -656,7 +656,7 @@
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="strt_month_s2_1">Start Month</label>
                                                                                                     <select class="form-select" id="strt_month_s2_1" name="strt_month" required="" onchange="calSelectMonth('s2',1)">
-                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                        <option selected="" value="">Please select start month</option>
                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                         if(months.length > 0){
                                                                                                             months.forEach(dt => { 
@@ -683,7 +683,7 @@
                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                     <div class="col-md-10"></div>
                                                                                                     <div class="col-md-2 m-t-10">
-                                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s2',1)"><i class="icofont icofont-save"> Save</i></button>
+                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s2',1)"><i class="icofont icofont-save"> Save</i></button>
                                                                                                     </div>
                                                                                                 <% } %>
                                                                                             </div>
@@ -703,14 +703,14 @@
                                                                             <div class="row">
                                                                                 <div class="col-md-12 text-center p-3 row">
                                                                                     <div class="col-md-12 row mt-1">
-                                                                                        <div class="col-md-10"></div>
+                                                                                        <div class="col-md-8"></div>
                                                                                         <% if(user_type != 'V'){ %>
-                                                                                            <div class="col-md-2">
-                                                                                                <button class="btn btn-pill btn-sm btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s3')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add</span></button>
+                                                                                            <div class="col-md-4">
+                                                                                                <button class="btn btn-pill btn-sm btn-custom float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s3')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;Add New Emission Source</span></button>
                                                                                             </div>
                                                                                         <% } %>
                                                                                     </div>
-                                                                                    <div class="col-md-12" id="calDetails_s3">
+                                                                                    <div class="col-md-12 m-t-10 p-l-20 p-r-20" id="calDetails_s3">
                                                                                         <% if('s3' in ghg_emi_data){
                                                                                             var sc_len = ghg_emi_data['s3'].length / 12;
                                                                                             for(let sc = 1; sc <= sc_len; sc++){
@@ -725,9 +725,9 @@
                                                                                                         <div class="collapse" id="calSpan" aria-labelledby="calSpan" data-bs-parent="#accordionoc">
                                                                                                             <div class="row">
                                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="type_id_s3_<%= sc %>">Section</label>
+                                                                                                                    <label class="form-label float-start" for="type_id_s3_<%= sc %>">Emission source</label>
                                                                                                                     <select class="form-select" id="type_id_s3_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s3','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                                        <option selected="" value="">Please select emission source</option>
                                                                                                                         <% if(type_list.length > 0){
                                                                                                                             type_list.forEach(dt => { 
                                                                                                                                 var selected = '';
@@ -749,7 +749,7 @@
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="act_id_s3_<%= sc %>">Activity</label>
                                                                                                                     <select class="form-select" id="act_id_s3_<%= sc %>" name="act_id" required="" onchange="changeActId('s3','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                                        <option selected="" value="">Please select activity</option>
                                                                                                                         <% if(act_list.length > 0){
                                                                                                                             act_list.forEach(dt => { 
                                                                                                                                 var selected = ''; %>
@@ -771,9 +771,9 @@
                                                                                                                     </select>
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="repo_period_s3_<%= sc %>">Reporting period</label>
+                                                                                                                    <label class="form-label float-start" for="repo_period_s3_<%= sc %>">Reporting Period</label>
                                                                                                                     <select class="form-select" id="repo_period_s3_<%= sc %>" name="repo_period" required="">
-                                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                                        <option selected="" value="">Please select year</option>
                                                                                                                         <% if(year_list.length > 0){
                                                                                                                             year_list.forEach(dt => { 
                                                                                                                                 var selected = '';
@@ -788,7 +788,7 @@
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="strt_month_s3_<%= sc %>">Start Month</label>
                                                                                                                     <select class="form-select" id="strt_month_s3_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s3','<%= sc %>')">
-                                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                                        <option selected="" value="">Please select start month</option>
                                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                                         if(months.length > 0){
                                                                                                                             months.forEach(dt => { 
@@ -851,7 +851,7 @@
                                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                                     <div class="col-md-10"></div>
                                                                                                                     <div class="col-md-2 m-t-10">
-                                                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
+                                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3','<%= sc %>')"><i class="icofont icofont-save"> Save</i></button>
                                                                                                                     </div>
                                                                                                                 <% } %>
                                                                                                             </div>
@@ -863,9 +863,9 @@
                                                                                         }else{ %>
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="type_id_s3_1">Section</label>
+                                                                                                    <label class="form-label float-start" for="type_id_s3_1">Emission source</label>
                                                                                                     <select class="form-select" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)">
-                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                        <option selected="" value="">Please select emission source</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
                                                                                                                 if(dt.scope == 3){
@@ -878,7 +878,7 @@
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="act_id_s3_1">Activity</label>
                                                                                                     <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)">
-                                                                                                        <option selected="" value="">Select Section</option>
+                                                                                                        <option selected="" value="">Please select activity</option>
                                                                                                         <% if(act_list.length > 0){
                                                                                                             act_list.forEach(dt => { 
                                                                                                                 var selected = ''; %>
@@ -900,9 +900,9 @@
                                                                                                     </select>
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="repo_period_s3_1">Reporting period</label>
+                                                                                                    <label class="form-label float-start" for="repo_period_s3_1">Reporting Period</label>
                                                                                                     <select class="form-select" id="repo_period_s3_1" name="repo_period" required="">
-                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                        <option selected="" value="">Please select year</option>
                                                                                                         <% if(year_list.length > 0){
                                                                                                             year_list.forEach(dt => { 
                                                                                                                 var selected = ''; %>
@@ -914,7 +914,7 @@
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="strt_month_s3_1">Start Month</label>
                                                                                                     <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)">
-                                                                                                        <option selected="" value="">Select One</option>
+                                                                                                        <option selected="" value="">Please select start month</option>
                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                         if(months.length > 0){
                                                                                                             months.forEach(dt => { 
@@ -941,7 +941,7 @@
                                                                                                 <% if(user_type != 'V'){ %>
                                                                                                     <div class="col-md-10"></div>
                                                                                                     <div class="col-md-2 m-t-10">
-                                                                                                        <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3',1)"><i class="icofont icofont-save"> Save</i></button>
+                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3',1)"><i class="icofont icofont-save"> Save</i></button>
                                                                                                     </div>
                                                                                                 <% } %>
                                                                                             </div>
@@ -1052,11 +1052,11 @@
         var editorLength = $('.colEditor').length
         $('#editorDiv').append(`
         <div id="editorNewDiv_${editorLength+1}" class="row">
-            <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-3 row">
+            <div class="col-md-12 m-3 row">
                 <div class="col-md-1">
                     <label for="" class="mb-3"> Title</label>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-7">
                     <input class="form-control" type="text" name="editor_topic" id="editor_topic_${editorLength+1}" placeholder="Enter Title">
                 </div>
                 <div class="col-md-12 colEditor m-t-15">
@@ -1065,10 +1065,10 @@
             </div>
             <div class="col-md-8">&nbsp;</div>
             <div class="col-md-2">
-                <button class="btn btn-pill btn-outline-primary btn-air-primary float-end text-center" data-bs-original-title title="Save" onclick="saveEditorValue(${editorLength+1}, 0)"><i class="icofont icofont-save"> Save</i></button>
+                <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveEditorValue(${editorLength+1}, 0)"><i class="icofont icofont-save">&nbsp;&nbsp; Save</i></button>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-pill btn-outline-danger btn-air-danger float-end ml-2 text-center" data-bs-original-title title="Save" onclick="deleteEdotor(${editorLength+1})"><i class="icofont icofont-trash"> Delete</i></button>
+                <button class="btn btn-pill btn-custom float-end ml-2 text-center" data-bs-original-title title="Save" onclick="deleteEdotor(${editorLength+1})"><i class="icofont icofont-trash">&nbsp;&nbsp; Delete</i></button>
             </div>
         </div>
         `)
@@ -1262,9 +1262,9 @@
         <hr class="calSeparetor">
         <div class="row m-t-15">
             <div class="col-md-6 m-t-10">
-                <label class="form-label float-start" for="type_id_${scope}_${nextCalField}">Section</label>
+                <label class="form-label float-start" for="type_id_${scope}_${nextCalField}">Emission source</label>
                 <select class="form-select" id="type_id_${scope}_${nextCalField}" name="type_id" required="" onchange="changeTypeId('${scope}', ${nextCalField})">
-                    <option selected="" value="">Select Section</option>
+                    <option selected="" value="">Please select emission source</option>
                     <% if(type_list.length > 0){
                         type_list.forEach(dt => { 
                             var selected = ''; %>
@@ -1276,7 +1276,7 @@
             <div class="col-md-6 m-t-10">
                 <label class="form-label float-start" for="act_id_${scope}_${nextCalField}">Activity</label>
                 <select class="form-select" id="act_id_${scope}_${nextCalField}" name="act_id" required="" onchange="changeActId('${scope}', ${nextCalField})">
-                    <option selected="" value="">Select Section</option>
+                    <option selected="" value="">Please select activity</option>
                     <% if(act_list.length > 0){
                         act_list.forEach(dt => { 
                             var selected = ''; %>
@@ -1298,9 +1298,9 @@
                 </select>
             </div>
             <div class="col-md-6 m-t-10">
-                <label class="form-label float-start" for="repo_period_${scope}_${nextCalField}">Reporting period</label>
+                <label class="form-label float-start" for="repo_period_${scope}_${nextCalField}">Reporting Period</label>
                 <select class="form-select" id="repo_period_${scope}_${nextCalField}" name="repo_period" required="">
-                    <option selected="" value="">Select One</option>
+                    <option selected="" value="">Please select year</option>
                     <% if(year_list.length > 0){
                         year_list.forEach(dt => { 
                             var selected = ''; %>
@@ -1312,7 +1312,7 @@
             <div class="col-md-6 m-t-10">
                 <label class="form-label float-start" for="strt_month_${scope}_${nextCalField}">Start Month</label>
                 <select class="form-select" id="strt_month_${scope}_${nextCalField}" name="strt_month" required="" onchange="calSelectMonth('${scope}', ${nextCalField})">
-                    <option selected="" value="">Select One</option>
+                    <option selected="" value="">Please select start month</option>
                     <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                     if(months.length > 0){
                         months.forEach(dt => { 

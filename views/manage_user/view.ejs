@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="display" id="basic-1">
+                        <table class="display" id="user_table">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -98,6 +98,13 @@
     </div>
 </div>
 <script>
+    $(document).ready(function(){
+        $('#user_table').DataTable({
+            "paging":   true,
+            "ordering": true,
+            "info":     false
+        })
+    })
     $('input[name="show_flag"]').on('change', function() {
         // alert()
         var flag = $('input[name="show_flag"]:checked').val();

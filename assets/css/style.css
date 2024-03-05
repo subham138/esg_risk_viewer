@@ -15511,7 +15511,7 @@ ul.navCustom_UR li.nav-item a.nav-link{border: #316379 solid 1px;}
     margin: 20px 0 10px 0 !important;
     text-decoration: none !important;
     border-radius: 5px;
-    color: #381850;
+    color: #7030A0;
     font-size: 18px;
     font-weight: 900;
   }
@@ -32805,9 +32805,9 @@ body.dark-sidebar .main-navbar ul.nav-pills .nav-item .nav-link {
 
 .u-step-title {
   margin-bottom: 0;
-  font-size: 15px;
-  color: #526069;
-  font-weight: 600;
+  font-size: 12px;
+  color: #000;
+  font-weight: 400;
 }
 
 .u-step-desc {
@@ -46373,7 +46373,7 @@ nav #mainnav .nav-menu{
 .caruBackCol1{
 /* background-color: var(--theme-secondary) !important; */
   background-color: #fff !important;
-  border: 1px solid #4c216d;
+  border: 2px solid #4c216d;
   box-shadow: 0 0.02rem 0rem #4c216d;
 }
 .form-check-input:checked {
@@ -46482,15 +46482,15 @@ nav{
 } */
 
 .wordCount {
-  padding: 40px;
+  padding: 30px;
   /* background: #d2d4e0; */
   border-radius: 50px;
   font-size: 24px;
   font-weight: 500;
   margin-bottom: 20px;
-  border: #316379 solid 1px;
-  width: 100px;
-  height: 100px;
+  border: #316377 solid 1px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   text-align: center;
@@ -46690,14 +46690,14 @@ nav{
 
 .infoCalLeb {
   color: #316379;
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .infoCalVal {
-  color: #381850;
+  color: #7030a0;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .cal-tot-div {
