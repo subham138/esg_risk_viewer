@@ -1,4 +1,5 @@
-const { db_Select, db_Insert } = require("./MasterModule")
+const { db_Select, db_Insert } = require("./MasterModule"),
+dateFormat = require('dateformat');
 
 module.exports = {
     getSusDiscList: (sec_id, ind_id, top_id, flag = 'I') => {
@@ -41,35 +42,89 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getWordInfo: (id=0, top_id = 0, word = '') => {
+    getWordInfo: (id=0, top_id = 0, bus_id = 0, word = '', bus_id_list = 0) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'id, sus_dis_top_met_id, word, sl_no, info',
-            table_name = 'td_sus_dis_top_word_info',
-            whr = id > 0 ? `id = ${id}` : (top_id > 0 ? `sus_dis_top_met_id = ${top_id}` : (word != '' ? `word = '${word}'` : '') ),
-            order = 'ORDER BY sl_no';
-            var res_dt = await db_Select(select, table_name, whr, order)
-            resolve(res_dt)
+            if(word != ''){
+                var select = 'a.id, a.sus_dis_top_met_id, a.word, a.sl_no, a.info, a.bus_id, b.busi_act_name',
+                table_name = 'td_sus_dis_top_word_info a, md_busi_act b',
+                whr = `a.bus_id = b.id AND a.word = '${word}'`,
+                order = 'ORDER BY a.bus_id, a.sl_no';
+                var res_dt = await db_Select(select, table_name, whr, order)
+                resolve(res_dt)
+            }else{
+                var select = 'id, sus_dis_top_met_id, word, sl_no, info',
+                table_name = 'td_sus_dis_top_word_info',
+                whr = id > 0 ? `id = ${id}` : (top_id > 0 ? `sus_dis_top_met_id = ${top_id} ${bus_id > 0 ? `AND bus_id = ${bus_id}` : ''}` : (word != '' ? `word = '${word}'` : '') ),
+                order = 'ORDER BY sl_no';
+                var res_dt = await db_Select(select, table_name, whr, order)
+                resolve(res_dt)
+            }
         })
     },
-    saveWordInfo: (data) => {
+    getCopyLatestWordInfoSet: (top_id) => {
+        return new Promise(async (resolve, reject) => {
+            var select = 'MAX(created_dt) max_dt',
+            table_name = 'td_sus_dis_top_word_info',
+            whr = `sus_dis_top_met_id = ${top_id}`,
+            order = null;
+            var chk_dt = await db_Select(select, table_name, whr, order)
+            console.log(chk_dt);
+            if(chk_dt.suc > 0){
+                if(chk_dt.msg.length > 0){
+                    var select = 'DISTINCT bus_id, created_dt',
+                    table_name = 'td_sus_dis_top_word_info',
+                    whr = `sus_dis_top_met_id = ${top_id} AND created_dt = '${dateFormat(chk_dt.msg[0].max_dt, 'yyyy-mm-dd HH:MM:ss')}'`,
+                    order = `ORDER BY created_dt DESC LIMIT 1`;
+                    var bus_dt = await db_Select(select, table_name, whr, order)
+                    console.log(bus_dt);
+                    if(bus_dt.suc > 0){
+                        if(bus_dt.msg.length > 0){
+                            var select = 'id, sus_dis_top_met_id, word, sl_no, info',
+                            table_name = 'td_sus_dis_top_word_info',
+                            whr = `sus_dis_top_met_id = ${top_id} AND bus_id = ${bus_dt.msg[0].bus_id}`,
+                            order = 'ORDER BY sl_no';
+                            var res_dt = await db_Select(select, table_name, whr, order)
+                            console.log(res_dt);
+                            resolve(res_dt)
+                        }else{
+                            resolve({suc: 0, msg: 'No Data Found'})
+                        }
+                    }else{
+                        resolve(bus_dt)
+                    }
+                }else{
+                    resolve({suc: 0, msg: 'No Data Found'})
+                }
+            }else{
+                resolve(chk_dt)
+            }
+        })
+    },
+    saveWordInfo: (data, user) => {
         return new Promise(async (resolve, reject) => {
             var res_dt = {}
+            var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             for(let wrd_id of data.word_name_id){
                 var i = 0
                 if(Array.isArray(data[`info_${wrd_id}`])){
                     for(let dt of data[`info_${wrd_id}`]){
-                        var table_name = 'td_sus_dis_top_word_info',
-                            fields = data[`info_id_${wrd_id}`][i] > 0 ? `word = '${data.word_name[wrd_id-1]}', sl_no = ${i+1}, info = '${dt.split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
-                            values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${dt.split("'").join("\\'")}')`,
-                            whr = data[`info_id_${wrd_id}`][i] > 0 ? `id = ${data[`info_id_${wrd_id}`][i] > 0}` : null,
-                            flag = data[`info_id_${wrd_id}`][i] > 0 ? 1 : 0;
-                        res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                        // console.log(i, data[`info_id_${wrd_id}`][i], ' ----->>>>> INFO ID');
+                        // console.log(i, dt, ' ----->>>>> INFO');
+                        if(dt != ''){
+                            var table_name = 'td_sus_dis_top_word_info',
+                                fields = data[`info_id_${wrd_id}`][i] > 0 ? `bus_id = '${data.bus_id}', word = '${data.word_name[wrd_id-1]}', sl_no = ${i+1}, info = '${dt.split("'").join("\\'")}', modified_by = '${user}', modified_dt = '${datetime}'` : '(sus_dis_top_met_id, bus_id, word, sl_no, info, created_by, created_dt)',
+                                values = `(${data.code_id}, '${data.bus_id}', '${data.word_name[wrd_id-1]}', ${i+1}, '${dt.split("'").join("\\'")}', '${user}', '${datetime}')`,
+                                whr = data[`info_id_${wrd_id}`][i] > 0 ? `id = ${data[`info_id_${wrd_id}`][i]}` : null,
+                                flag = data[`info_id_${wrd_id}`][i] > 0 ? 1 : 0;
+                            res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                            i++
+                        }
                     }
                 }else{
                     if(data[`info_${wrd_id}`] != ''){
                         var table_name = 'td_sus_dis_top_word_info',
-                            fields = data[`info_id_${wrd_id}`] > 0 ? `word = '${data.word_name[wrd_id-1]}', info = '${data[`info_${wrd_id}`].split("'").join("\\'")}'` : '(sus_dis_top_met_id, word, sl_no, info)',
-                            values = `(${data.code_id}, '${data.word_name[wrd_id-1]}', ${i+1}, '${data[`info_${wrd_id}`].split("'").join("\\'")}')`,
+                            fields = data[`info_id_${wrd_id}`] > 0 ? `bus_id = '${data.bus_id}', word = '${data.word_name[wrd_id-1]}', info = '${data[`info_${wrd_id}`].split("'").join("\\'")}', modified_by = '${user}', modified_dt = '${datetime}'` : '(sus_dis_top_met_id, bus_id, word, sl_no, info, created_by, created_dt)',
+                            values = `(${data.code_id}, '${data.bus_id}', '${data.word_name[wrd_id-1]}', ${i+1}, '${data[`info_${wrd_id}`].split("'").join("\\'")}', '${user}', '${datetime}')`,
                             whr = data[`info_id_${wrd_id}`] > 0 ? `id = ${data[`info_id_${wrd_id}`]}` : null,
                             flag = data[`info_id_${wrd_id}`] > 0 ? 1 : 0;
                         res_dt = await db_Insert(table_name, fields, values, whr, flag)

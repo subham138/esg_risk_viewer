@@ -108,7 +108,7 @@ ProjectRouter.get('/proj_work', async (req, res) => {
 ProjectRouter.post('/save_proj_work', async (req, res) => {
     var data = req.body,
         busi_data = await getBusiActList(0, data.sec_id, data.ind_id, data.flag), busi_name = [],
-        location_data = await getLocationList(), location_name = [],
+        location_data = await getLocationList(), location_name = [], bus_id_list = '',
         user_id = req.session.user.user_id,
         user_name = req.session.user.user_name,
         datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
@@ -122,6 +122,7 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
         }
         busi_name = [...busi_name.map(dt=> dt.busi_act_name)]
         busi_name = busi_name.join(',')
+        bus_id_list = data.bus_id.join(',')
         // console.log(busi_name);
     }else{
         var indx = busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex(idt => idt.id == data.bus_id) : -1
@@ -129,6 +130,7 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
             busi_name.push(busi_data.msg[indx])
         }
         busi_name = Array.isArray(busi_name) ? (busi_name.length > 0 ? busi_name[0].busi_act_name : '') : (busi_name.busi_act_name ? busi_name.busi_act_name : '')
+        bus_id_list = data.bus_id
     }
 
     if(Array.isArray(data.location_id)){
@@ -148,7 +150,7 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
         location_name = Array.isArray(location_name) ? (location_name.length > 0 ? location_name[0].location_name : '') : (location_name.location_name ? location_name.location_name : '')
     }
     var table_name = 'td_project', 
-        fields = `last_access = '${datetime}', last_accessed_by = '${user_name}', sec_id = '${data.sec_id}', ind_id = '${data.ind_id}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"`, 
+        fields = `last_access = '${datetime}', last_accessed_by = '${user_name}', sec_id = '${data.sec_id}', ind_id = '${data.ind_id}', bus_act_id = '${bus_id_list}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"`, 
         values = null, 
         whr = `id = ${data.proj_id}`, 
         flag = 1;
@@ -228,6 +230,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
+    // var 
     // console.log(susDistList);
 
     var ghg_emi_data = {};

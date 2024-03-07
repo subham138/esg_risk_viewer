@@ -104,6 +104,19 @@
                 </select>
               </div>
               <div class="col-md-6">
+                <label class="form-label" for="bus_id">Business Activities</label>
+                <select class="form-select" id="bus_id" name="bus_id" required="">
+                  <option selected="" value="">Select Business Activities</option>
+                  <% if(ind_list.msg.length > 0){ 
+                      ind_list.msg.forEach(dt => { 
+                          var _selected = ''; 
+                          if(dt.id == selected.bus_id) _selected = 'selected'; 
+                  %>
+                  <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
+                  <% })} %>
+                </select>
+              </div>
+              <div class="col-md-6">
                 <label class="form-label" for="code_id">Code List</label>
                 <select class="form-select" id="code_id" name="code_id" required="">
                   <option selected="" value="">Select Code</option>
@@ -121,6 +134,9 @@
                 <div class="col-md-12">
                   <table class="table" id="suc_disc_table">
                     <thead>
+                      <tr>
+                        <th colspan="3"><button type="button" class="btn btn-custom float-end" id="copy_dt_btn">Copy all data from other Business Activities</button></th>
+                      </tr>
                       <tr>
                         <th>Words</th>
                         <th>Info</th>
@@ -212,6 +228,7 @@
     });
 
     $('#code_id').on('change', function(){
+      if($('#bus_id').val() > 0){
         if(code_list.length > 0){
             var sel_code = code_list.filter(dt => dt.id == $(this).val())
             var word_array = sel_code[0].words.split(',')
@@ -220,14 +237,14 @@
                 $.ajax({
                     method: "GET",
                     url: "/get_sus_disc_word_info_ajax",
-                    data: { top_id: $(this).val() },
+                    data: { top_id: $(this).val(), bus_id: $('#bus_id').val() },
                     dataType: "html",
                     beforeSend: function () {
                         $(".loader-wrapper").show();
                     },
                     success: function(result){
                       $('#data_set_view').show()
-                      $("#suc_disc_table tbody >").remove()
+                      $("#suc_disc_table tbody").empty()
                         var res = JSON.parse(result);
                         var i = 1
                         word_array.forEach(wdt => {
@@ -257,6 +274,10 @@
                 })
             }
         }
+      }else{
+        alert('Please select Business Activities')
+        $('#code_id').val('')
+      }
     })
 
     function createRow(id = 0, seq = 0, info_id = 0, word = '', info = null, totRow = 1, isFirst = false){
@@ -314,31 +335,113 @@
         $(`#${txt_id}`).text(editorList[id].getHTMLCode())
       })
     }
-  </script>
+</script>
 
-  <script>
-    function add_new_row(id, seq, isAdd = true, info_id = 0, info = null){
-      var next_row = 0
-      if(isAdd){
-        var row = $(`#word_row_${id}`).attr('rowspan')
-        next_row = parseInt(row) + 1
-        $(`#word_row_${id}`).removeAttr('rowspan')
-        $(`#word_row_${id}`).attr('rowspan', next_row)
-      }else{
-        next_row = seq
-      }
-  
-      createRow(id, next_row, info_id, '', info)
+<script>
+  function add_new_row(id, seq, isAdd = true, info_id = 0, info = null){
+    var next_row = 0
+    if(isAdd){
+      var row = $(`#word_row_${id}`).attr('rowspan')
+      next_row = parseInt(row) + 1
+      $(`#word_row_${id}`).removeAttr('rowspan')
+      $(`#word_row_${id}`).attr('rowspan', next_row)
+    }else{
+      next_row = seq
     }
-  
-    function remove_one_row(id, row_id){
-      if(confirm('Do you want to delete permanently?')){
-        var row = parseInt($(`#word_row_${id}`).attr("rowspan"));
-        let prev_id = row - 1;
-        $(`#word_row_${id}`).removeAttr("rowspan");
-        $(`#word_row_${id}`).attr("rowspan", prev_id);
-        $(`#row_${id}_${row_id}`).remove();
+
+    createRow(id, next_row, info_id, '', info)
+  }
+
+  function remove_one_row(id, row_id){
+    if(confirm('Do you want to delete permanently?')){
+      var row = parseInt($(`#word_row_${id}`).attr("rowspan"));
+      let prev_id = row - 1;
+      $(`#word_row_${id}`).removeAttr("rowspan");
+      $(`#word_row_${id}`).attr("rowspan", prev_id);
+      $(`#row_${id}_${row_id}`).remove();
+    }
+  }
+</script>
+<script>
+  $("#ind_id").on("change", function () {
+    $.ajax({
+      method: "GET",
+      url: "/get_busi_act_ajax",
+      data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+      dataType: "html",
+      beforeSend: function () {
+        $(".loader-wrapper").show();
+      },
+      success: function (result) {
+        var res = JSON.parse(result);
+        var res = JSON.parse(result);
+        $("#bus_id").empty();
+        $("#bus_id").append(
+          $("<option>", { value: "", text: "Select Code" })
+        );
+        if (res.suc > 0 && res.msg.length > 0){
+          $.each(res.msg, function (i, item) {
+            $("#bus_id").append(
+              $("<option>", { value: item.id, text: item.busi_act_name })
+            );
+          });
+        }
+      },
+      complete: function () {
+        $(".loader-wrapper").hide();
+      },
+    });
+  });
+</script>
+
+<script>
+  $('#copy_dt_btn').on('click', function(){
+    if(confirm('Do you want to copy?')){
+      var sel_code = code_list.filter(dt => dt.id == $(`#code_id`).val())
+      var word_array = sel_code[0].words.split(',')
+      console.log(word_array);
+      if(word_array.length > 0){
+        $.ajax({
+          method: "GET",
+          url: "/copy_word_info_ajax",
+          data: { top_id: $(`#code_id`).val() },
+          dataType: "html",
+          beforeSend: function () {
+            $(".loader-wrapper").show();
+          },
+          success: function(result){
+            // $('#data_set_view').show()
+            $("#suc_disc_table tbody").empty()
+            var res = JSON.parse(result);
+            var i = 1
+            word_array.forEach(wdt => {
+              if(res.suc > 0 && res.msg.length > 0){
+                var word_info_list = res.msg.filter(dt => dt.word == wdt.toString().trim())
+                if(word_info_list.length > 0){
+                  var k = 1
+                  word_info_list.forEach(dt => {
+                    if(k == 1)
+                      createRow(i, k, 0, wdt.toString().trim(), dt.info, word_info_list.length, true)
+                    else
+                      add_new_row(i, k, false, 0, dt.info)
+                    k++  
+                  })
+                }else{
+                  createRow(i, 1, 0, wdt.toString().trim(), '', 1, true)
+                }
+              }else{
+                createRow(i, 1, 0, wdt.toString().trim(), '', 1, true)
+              }
+              i++
+            })
+            res.suc == 0 ? alert(res.msg) : ''
+          },
+          complete: function () {
+              $(".loader-wrapper").hide();
+          },
+        })
       }
     }
-  </script>
+  })
+</script>
 <%- include('../../templates/footer.ejs') %>

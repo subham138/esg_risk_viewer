@@ -12,6 +12,7 @@ const {
   getSusDisTopCodeList,
   getWordInfo,
   saveWordInfo,
+  getCopyLatestWordInfoSet,
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select } = require("../modules/MasterModule");
 
@@ -540,6 +541,7 @@ DataCollectionRouter.get('/sus_disc_word_info', async (req, res) => {
   var selected = {
     sec_id: req.query.sec_id ? req.query.sec_id : 0,
     ind_id: req.query.ind_id ? req.query.ind_id : 0,
+    bus_id: req.query.bus_id ? req.query.bus_id : 0,
     code: req.query.code ? req.query.code : 0,
   };
   var sec_data = await getSectorList(0, flag),
@@ -570,13 +572,21 @@ DataCollectionRouter.get('/get_sus_dis_top_code_ajax', async (req, res) => {
 
 DataCollectionRouter.get('/get_sus_disc_word_info_ajax', async (req, res) => {
   var data = req.query
-  var res_dt = await getWordInfo(0, data.top_id, data.word ? data.word : '')
+  var res_dt = await getWordInfo(0, data.top_id, data.bus_id, data.word ? data.word : '')
+  res.send(res_dt)
+})
+
+DataCollectionRouter.get('/copy_word_info_ajax', async (req, res) => {
+  var data = req.query
+  var res_dt = await getCopyLatestWordInfoSet(data.top_id)
   res.send(res_dt)
 })
 
 DataCollectionRouter.post('/save_word_info', async (req, res) => {
   var data = req.body
-  var res_dt = await saveWordInfo(data)
+  var user = req.session.user.user_name
+  // console.log(data);
+  var res_dt = await saveWordInfo(data, user)
     req.session.message = {
       type: res_dt.suc > 0 ? "success" : "danger",
       message: res_dt.msg,
