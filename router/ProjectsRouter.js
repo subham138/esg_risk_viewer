@@ -230,8 +230,8 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
-    // var 
-    // console.log(susDistList);
+    var project_data = await getProjectList(data.proj_id, req.session.user.client_id, 0, data.flag);
+    console.log(project_data);
 
     var ghg_emi_data = {};
     if(scope_list.length > 0){
@@ -286,6 +286,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         year_list,
         act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
         get_checked_top_list: get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
+        project_data: project_data.suc > 0 ? project_data.msg : [],
         header: "Project Work",
         sub_header: "Project View",
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,

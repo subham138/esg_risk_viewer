@@ -47,7 +47,7 @@ module.exports = {
             if(word != ''){
                 var select = 'a.id, a.sus_dis_top_met_id, a.word, a.sl_no, a.info, a.bus_id, b.busi_act_name',
                 table_name = 'td_sus_dis_top_word_info a, md_busi_act b',
-                whr = `a.bus_id = b.id AND a.word = '${word}'`,
+                whr = `a.bus_id = b.id AND a.word = '${word}' AND bus_id IN (${bus_id_list})`,
                 order = 'ORDER BY a.bus_id, a.sl_no';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 resolve(res_dt)

@@ -390,10 +390,11 @@
 
 <script>
     function stepClick(word){
+        var bas_id_list = '<%= project_data.length > 0 ? project_data[0].bus_act_id : 0 %>';
         $.ajax({
             method: "GET",
             url: "/get_sus_disc_word_info_ajax",
-            data: { word: word.toString().trim() },
+            data: { word: word.toString().trim(), bus_id: bas_id_list },
             dataType: "html",
             beforeSend: function () {
                 $(".loader-wrapper").show();

@@ -572,7 +572,7 @@ DataCollectionRouter.get('/get_sus_dis_top_code_ajax', async (req, res) => {
 
 DataCollectionRouter.get('/get_sus_disc_word_info_ajax', async (req, res) => {
   var data = req.query
-  var res_dt = await getWordInfo(0, data.top_id, data.bus_id, data.word ? data.word : '')
+  var res_dt = await getWordInfo(0, data.top_id, data.bus_id, data.word ? data.word : '', data.bus_id ? data.bus_id : 0)
   res.send(res_dt)
 })
 
