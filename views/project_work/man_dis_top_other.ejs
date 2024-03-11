@@ -94,7 +94,7 @@
                                     </div>
                                 </div>
                             <% } %>
-                            <div class="col-md-12 colEditor m-t-15" style="bottom: 2vw;">
+                            <div class="col-md-12 colEditor m-t-15">
                                 <div id="div_editor_<%= ediR %>"><%- getRes.length > 0 ? getRes[0].article : "" %></div>
                                 <!-- <textarea id="editor<%# ediR %>" name="editor" cols="30" rows="10"><%# getRes.length > 0 ? getRes[0].article : "" %></textarea> -->
                             </div>
@@ -119,13 +119,13 @@
                                         </div>           -->
                                         <div class="col-md-12">
                                             <div class="wordContainer" id="ai_check_<%= ediR %>" style="display: none;">
-                                                <div class="wordHeader">
+                                                <!-- <div class="wordHeader">
                                                     <div class="u-step done">
                                                         <div class="u-step-desc text-center">
                                                             <span class="u-step-title">Check Alignment/Misalignment</span>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="wordSubHeader">
                                                     <p>Click on a word to see how your peers manage this disclosure topic</p>
                                                 </div>
@@ -196,8 +196,8 @@
                             });
                         </script>
                         <% if(user_type != 'V'){ %>
-                            <div class="col-md-10">&nbsp;</div>
-                            <div class="col-md-2 m-t-10 btn_align">
+                            <div class="col-md-9">&nbsp;</div>
+                            <div class="col-md-3 m-t-10 btn_align">
                                 <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save <%= dt.code %>" onclick="saveEditorValue('<%= ediR %>', '<%= top_id > 0 ? top_id : dt.top_id %>')"><i class="icofont icofont-save m-r-10"></i> Save</button>
                             </div>
                         <% } %>

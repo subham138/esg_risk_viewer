@@ -29,7 +29,7 @@
                 <div class="row my-4">
                     <!-- <div class="col-md-12"> -->
                         <div class="p-0">
-                        <table class="table" id="table">
+                        <table class="table custom-table-user" id="table" width="50%">
                             <thead>
                                 <tr>
                                     <th> <label class="form-label user_add">User 
@@ -49,7 +49,7 @@
                                     project_data.msg[0].user_list.forEach(udt => { %>
                                         <tr id="tr_<%= i %>">
                                             <td class="tableTd_add_main">
-                                                <div class="tableTd_add">
+                                                <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
                                                 <select class="form-select" id="user_id_<% i %>" name="user_id" required="">
                                                     <option selected="" value="">Select User</option>
                                                     <% if(user_list.msg.length > 0){
@@ -62,7 +62,7 @@
                                                         <% })
                                                     } %>
                                                 </select>
-                                            </div>
+                                                </div>
                                             <% if(i > 1){ %>
                                                 <div class="tableTd_add_btn">
                                                     <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
@@ -77,7 +77,7 @@
                                 <% i++; })}else{ %>
                                 <tr id="tr_1">
                                     <td class="tableTd_add_main">
-                                        <div class="tableTd_add">
+                                        <div class="tableTd_add m-r-40">
                                         
                                         <select class="form-select" id="user_id_1" name="user_id" required="">
                                             <option selected="" value="">Select User</option>
@@ -99,7 +99,7 @@
                                 <% }}else{ %>
                                     <tr id="tr_1">
                                         <td class="tableTd_add_main">
-                                            <div class="tableTd_add">
+                                            <div class="tableTd_add m-r-40">
                                             <select class="form-select" id="user_id_1" name="user_id" required="">
                                                 <option selected="" value="">Select User</option>
                                                 <% if(user_list.msg.length > 0){
@@ -118,16 +118,24 @@
                                     </tr>
                                 <% } %>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                                        <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                                        <button class="btn btn-pill btn-custom float-end m-r-40" type="submit">Submit</button>
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
-                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
-                <div class="row">
+                
+                <!-- <div class="row">
                     <div class="col-md-7">
                         <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
                     </div>
-                </div>
+                </div> -->
                 </form>
             </div>
             </div>

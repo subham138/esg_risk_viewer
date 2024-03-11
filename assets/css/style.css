@@ -15470,11 +15470,11 @@ label {
   color: #333;
 }
 
-form .col-md-6 label{color: #000000; font-weight: 900; font-size: 16px;}
-.form-label{color: #000000; font-weight: 900; font-size: 16px;}
+form .col-md-6 label{color: #000; font-weight: 900; font-size: 16px;}
+.form-label{color: #000; font-weight: 900; font-size: 16px;}
 
 .user_add{display: flex;}
-.user_add i{font-size: 22px; margin-left: 15px; color: #000000;}
+.user_add i{font-size: 22px; margin-left: 15px; color: #000;}
 .user_add button:focus{background: none !important;}
 
 .tableTd_add_main{width: 100%; display: flex;}
@@ -46402,7 +46402,8 @@ nav #mainnav .nav-menu{
   vertical-align: middle;
 }
 .colEditor{
-  padding-right: 30px;
+  /* padding-right: 30px; */
+  padding-right: 0px;
   /* padding-top: 15px; */
 }
 .colEditor .cke{

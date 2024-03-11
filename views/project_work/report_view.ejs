@@ -208,7 +208,7 @@
                                                                                                             <div class="row p-2">
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="type_id_s1_<%= sc %>">Emission source</label>
-                                                                                                                    <select class="form-select" id="type_id_s1_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s1','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="type_id_s1_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s1','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select emission source</option>
                                                                                                                         <% if(type_list.length > 0){
                                                                                                                             type_list.forEach(dt => { 
@@ -230,7 +230,7 @@
                                                                                                                 </script>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="act_id_s1_<%= sc %>">Activity</label>
-                                                                                                                    <select class="form-select" id="act_id_s1_<%= sc %>" name="act_id" required="" onchange="changeActId('s1','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="act_id_s1_<%= sc %>" name="act_id" required="" onchange="changeActId('s1','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select activity</option>
                                                                                                                         <% if(act_list.length > 0){
                                                                                                                             act_list.forEach(dt => { 
@@ -242,7 +242,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="emi_type_id_s1_<%= sc %>">Emission Type</label>
-                                                                                                                    <select class="form-select" id="emi_type_id_s1_<%= sc %>" name="emi_type_id" required="">
+                                                                                                                    <select class="form-select" id="emi_type_id_s1_<%= sc %>" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select an emission type</option>
                                                                                                                         <% if(emi_type.length > 0){
                                                                                                                             emi_type.forEach(dt => { 
@@ -254,7 +254,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="repo_period_s1_<%= sc %>">Reporting Period</label>
-                                                                                                                    <select class="form-select" id="repo_period_s1_<%= sc %>" name="repo_period" required="">
+                                                                                                                    <select class="form-select" id="repo_period_s1_<%= sc %>" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select year</option>
                                                                                                                         <% if(year_list.length > 0){
                                                                                                                             year_list.forEach(dt => { 
@@ -269,7 +269,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="strt_month_s1_<%= sc %>">Start Month</label>
-                                                                                                                    <select class="form-select" id="strt_month_s1_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s1','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="strt_month_s1_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s1','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select start month</option>
                                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                                         if(months.length > 0){
@@ -306,11 +306,11 @@
                                                                                                                                     <tr>
                                                                                                                                         <td><%= gdt.repo_month %></td>
                                                                                                                                         <td>
-                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s1_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s1', '<%= sc %>', '<%= nextCalField %>')">
+                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s1_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s1', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                                                 <option selected="" value="">Please select unit of measurement</option>
                                                                                                                                             </select>
                                                                                                                                         </td>
-                                                                                                                                        <td><input class="form-control" id="cal_val_s1_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                                        <td><input class="form-control" id="cal_val_s1_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>></td>
                                                                                                                                         <td><input class="form-control" id="emi_fact_val_s1_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
                                                                                                                                         <td><input class="form-control" id="co_val_s1_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')"></td>
                                                                                                                                     </tr>
@@ -348,7 +348,7 @@
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="type_id_s1_1">Emission source</label>
-                                                                                                    <select class="form-select" id="type_id_s1_1" name="type_id" required="" onchange="changeTypeId('s1',1)">
+                                                                                                    <select class="form-select" id="type_id_s1_1" name="type_id" required="" onchange="changeTypeId('s1',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select emission source</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => {
@@ -361,7 +361,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="act_id_s1_1">Activity</label>
-                                                                                                    <select class="form-select" id="act_id_s1_1" name="act_id" required="" onchange="changeActId('s1',1)">
+                                                                                                    <select class="form-select" id="act_id_s1_1" name="act_id" required="" onchange="changeActId('s1',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select activity</option>
                                                                                                         <% if(act_list.length > 0){
                                                                                                             act_list.forEach(dt => { 
@@ -373,7 +373,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="emi_type_id_s1_1">Emission Type</label>
-                                                                                                    <select class="form-select" id="emi_type_id_s1_1" name="emi_type_id" required="">
+                                                                                                    <select class="form-select" id="emi_type_id_s1_1" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select an emission type</option>
                                                                                                         <% if(emi_type.length > 0){
                                                                                                             emi_type.forEach(dt => { 
@@ -385,7 +385,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="repo_period_s1_1">Reporting Period</label>
-                                                                                                    <select class="form-select" id="repo_period_s1_1" name="repo_period" required="">
+                                                                                                    <select class="form-select" id="repo_period_s1_1" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select year</option>
                                                                                                         <% if(year_list.length > 0){
                                                                                                             year_list.forEach(dt => { 
@@ -397,7 +397,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="strt_month_s1_1">Start Month</label>
-                                                                                                    <select class="form-select" id="strt_month_s1_1" name="strt_month" required="" onchange="calSelectMonth('s1',1)">
+                                                                                                    <select class="form-select" id="strt_month_s1_1" name="strt_month" required="" onchange="calSelectMonth('s1',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select start month</option>
                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                         if(months.length > 0){
@@ -468,7 +468,7 @@
                                                                                                             <div class="row">
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="type_id_s2_<%= sc %>">Emission source</label>
-                                                                                                                    <select class="form-select" id="type_id_s2_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s2','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="type_id_s2_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s2','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select emission source</option>
                                                                                                                         <% if(type_list.length > 0){
                                                                                                                             type_list.forEach(dt => { 
@@ -490,7 +490,7 @@
                                                                                                                 </script>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="act_id_s2_<%= sc %>">Activity</label>
-                                                                                                                    <select class="form-select" id="act_id_s2_<%= sc %>" name="act_id" required="" onchange="changeActId('s2','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="act_id_s2_<%= sc %>" name="act_id" required="" onchange="changeActId('s2','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select activity</option>
                                                                                                                         <% if(act_list.length > 0){
                                                                                                                             act_list.forEach(dt => { 
@@ -502,7 +502,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="emi_type_id_s2_<%= sc %>">Emission Type</label>
-                                                                                                                    <select class="form-select" id="emi_type_id_s2_<%= sc %>" name="emi_type_id" required="">
+                                                                                                                    <select class="form-select" id="emi_type_id_s2_<%= sc %>" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select an emission type</option>
                                                                                                                         <% if(emi_type.length > 0){
                                                                                                                             emi_type.forEach(dt => { 
@@ -514,7 +514,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="repo_period_s2_<%= sc %>">Reporting Period</label>
-                                                                                                                    <select class="form-select" id="repo_period_s2_<%= sc %>" name="repo_period" required="">
+                                                                                                                    <select class="form-select" id="repo_period_s2_<%= sc %>" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select year</option>
                                                                                                                         <% if(year_list.length > 0){
                                                                                                                             year_list.forEach(dt => { 
@@ -529,7 +529,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="strt_month_s2_<%= sc %>">Start Month</label>
-                                                                                                                    <select class="form-select" id="strt_month_s2_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s2','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="strt_month_s2_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s2','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select start month</option>
                                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                                         if(months.length > 0){
@@ -566,11 +566,11 @@
                                                                                                                                     <tr>
                                                                                                                                         <td><%= gdt.repo_month %></td>
                                                                                                                                         <td>
-                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s2_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s2', '<%= sc %>', '<%= nextCalField %>')">
+                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s2_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s2', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                                                 <option selected="" value="">Please select unit of measurement</option>
                                                                                                                                             </select>
                                                                                                                                         </td>
-                                                                                                                                        <td><input class="form-control" id="cal_val_s2_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s2', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                                        <td><input class="form-control" id="cal_val_s2_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s2', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>></td>
                                                                                                                                         <td><input class="form-control" id="emi_fact_val_s2_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
                                                                                                                                         <td><input class="form-control" id="co_val_s2_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s2', '<%= sc %>', '<%= nextCalField %>')"></td>
                                                                                                                                     </tr>
@@ -606,7 +606,7 @@
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="type_id_s2_1">Emission source</label>
-                                                                                                    <select class="form-select" id="type_id_s2_1" name="type_id" required="" onchange="changeTypeId('s2',1)">
+                                                                                                    <select class="form-select" id="type_id_s2_1" name="type_id" required="" onchange="changeTypeId('s2',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select emission source</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
@@ -619,7 +619,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="act_id_s2_1">Activity</label>
-                                                                                                    <select class="form-select" id="act_id_s2_1" name="act_id" required="" onchange="changeActId('s2',1)">
+                                                                                                    <select class="form-select" id="act_id_s2_1" name="act_id" required="" onchange="changeActId('s2',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select activity</option>
                                                                                                         <% if(act_list.length > 0){
                                                                                                             act_list.forEach(dt => { 
@@ -631,7 +631,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="emi_type_id_s2_1">Emission Type</label>
-                                                                                                    <select class="form-select" id="emi_type_id_s2_1" name="emi_type_id" required="">
+                                                                                                    <select class="form-select" id="emi_type_id_s2_1" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select an emission type</option>
                                                                                                         <% if(emi_type.length > 0){
                                                                                                             emi_type.forEach(dt => { 
@@ -643,7 +643,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="repo_period_s2_1">Reporting Period</label>
-                                                                                                    <select class="form-select" id="repo_period_s2_1" name="repo_period" required="">
+                                                                                                    <select class="form-select" id="repo_period_s2_1" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select year</option>
                                                                                                         <% if(year_list.length > 0){
                                                                                                             year_list.forEach(dt => { 
@@ -655,7 +655,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="strt_month_s2_1">Start Month</label>
-                                                                                                    <select class="form-select" id="strt_month_s2_1" name="strt_month" required="" onchange="calSelectMonth('s2',1)">
+                                                                                                    <select class="form-select" id="strt_month_s2_1" name="strt_month" required="" onchange="calSelectMonth('s2',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select start month</option>
                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                         if(months.length > 0){
@@ -726,7 +726,7 @@
                                                                                                             <div class="row">
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="type_id_s3_<%= sc %>">Emission source</label>
-                                                                                                                    <select class="form-select" id="type_id_s3_<%= sc %>" name="type_id" required="" onchange="changeTypeId('s3','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="type_id_s3_<%= sc %>" name="type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %> onchange="changeTypeId('s3','<%= sc %>')">
                                                                                                                         <option selected="" value="">Please select emission source</option>
                                                                                                                         <% if(type_list.length > 0){
                                                                                                                             type_list.forEach(dt => { 
@@ -748,7 +748,7 @@
                                                                                                                 </script>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="act_id_s3_<%= sc %>">Activity</label>
-                                                                                                                    <select class="form-select" id="act_id_s3_<%= sc %>" name="act_id" required="" onchange="changeActId('s3','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="act_id_s3_<%= sc %>" name="act_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %> onchange="changeActId('s3','<%= sc %>')">
                                                                                                                         <option selected="" value="">Please select activity</option>
                                                                                                                         <% if(act_list.length > 0){
                                                                                                                             act_list.forEach(dt => { 
@@ -760,7 +760,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="emi_type_id_s3_<%= sc %>">Emission Type</label>
-                                                                                                                    <select class="form-select" id="emi_type_id_s3_<%= sc %>" name="emi_type_id" required="">
+                                                                                                                    <select class="form-select" id="emi_type_id_s3_<%= sc %>" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select an emission type</option>
                                                                                                                         <% if(emi_type.length > 0){
                                                                                                                             emi_type.forEach(dt => { 
@@ -772,7 +772,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="repo_period_s3_<%= sc %>">Reporting Period</label>
-                                                                                                                    <select class="form-select" id="repo_period_s3_<%= sc %>" name="repo_period" required="">
+                                                                                                                    <select class="form-select" id="repo_period_s3_<%= sc %>" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select year</option>
                                                                                                                         <% if(year_list.length > 0){
                                                                                                                             year_list.forEach(dt => { 
@@ -787,7 +787,7 @@
                                                                                                                 </div>
                                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                                     <label class="form-label float-start" for="strt_month_s3_<%= sc %>">Start Month</label>
-                                                                                                                    <select class="form-select" id="strt_month_s3_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s3','<%= sc %>')">
+                                                                                                                    <select class="form-select" id="strt_month_s3_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s3','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                         <option selected="" value="">Please select start month</option>
                                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                                         if(months.length > 0){
@@ -824,11 +824,11 @@
                                                                                                                                     <tr>
                                                                                                                                         <td><%= gdt.repo_month %></td>
                                                                                                                                         <td>
-                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s3_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s3', '<%= sc %>', '<%= nextCalField %>')">
+                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s3_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s3', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                                                                 <option selected="" value="">Please select unit of measurement</option>
                                                                                                                                             </select>
                                                                                                                                         </td>
-                                                                                                                                        <td><input class="form-control" id="cal_val_s3_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                                        <td><input class="form-control" id="cal_val_s3_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>></td>
                                                                                                                                         <td><input class="form-control" id="emi_fact_val_s3_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
                                                                                                                                         <td><input class="form-control" id="co_val_s3_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')"></td>
                                                                                                                                     </tr>
@@ -864,7 +864,7 @@
                                                                                             <div class="row">
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="type_id_s3_1">Emission source</label>
-                                                                                                    <select class="form-select" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)">
+                                                                                                    <select class="form-select" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select emission source</option>
                                                                                                         <% if(type_list.length > 0){
                                                                                                             type_list.forEach(dt => { 
@@ -877,7 +877,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="act_id_s3_1">Activity</label>
-                                                                                                    <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)">
+                                                                                                    <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select activity</option>
                                                                                                         <% if(act_list.length > 0){
                                                                                                             act_list.forEach(dt => { 
@@ -889,7 +889,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="emi_type_id_s3_1">Emission Type</label>
-                                                                                                    <select class="form-select" id="emi_type_id_s3_1" name="emi_type_id" required="">
+                                                                                                    <select class="form-select" id="emi_type_id_s3_1" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select an emission type</option>
                                                                                                         <% if(emi_type.length > 0){
                                                                                                             emi_type.forEach(dt => { 
@@ -901,7 +901,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="repo_period_s3_1">Reporting Period</label>
-                                                                                                    <select class="form-select" id="repo_period_s3_1" name="repo_period" required="">
+                                                                                                    <select class="form-select" id="repo_period_s3_1" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select year</option>
                                                                                                         <% if(year_list.length > 0){
                                                                                                             year_list.forEach(dt => { 
@@ -913,7 +913,7 @@
                                                                                                 </div>
                                                                                                 <div class="col-md-6 m-t-10">
                                                                                                     <label class="form-label float-start" for="strt_month_s3_1">Start Month</label>
-                                                                                                    <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)">
+                                                                                                    <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
                                                                                                         <option selected="" value="">Please select start month</option>
                                                                                                         <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                                                                                                         if(months.length > 0){
