@@ -98,8 +98,9 @@
     </div>
 </div>
 <script>
+    var table;
     $(document).ready(function(){
-        $('#user_table').DataTable({
+        table = $('#user_table').DataTable({
             "paging":   true,
             "ordering": true,
             "info":     false
@@ -118,23 +119,39 @@
             },
             success: function (result) {
                 var res = JSON.parse(result);
-                // console.log(res);
-                $("#basic-1 tbody").empty();
+                console.log(res, 'Result');
+                // $("#basic-1 tbody").empty();
+                table.clear().draw();
 
                 if (res.suc > 0 && res.msg.length > 0){
-                    $.each(res.msg, function (i, dt) {
-                        $("#basic-1 tbody").append(`
-                        <tr>
-                            <td>${++i}</td>
-                            <td>${dt.user_name}</td>
-                            <td>${dt.user_id}</td>
-                            <td>${res.user_type_list[dt.user_type]}</td>
-                            <td><a href="/manage_user_edit?id=${dt.id}" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                    var i = 0
+                    var tab_res = res.msg.map(dt => {
+                        var tab_field = []
+                        tab_field.push(++i)
+                        tab_field.push(dt.user_name)
+                        tab_field.push(dt.user_id)
+                        tab_field.push(res.user_type_list[dt.user_type])
+                        tab_field.push(`<a href="/manage_user_edit?id=${dt.id}" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                 <i class="icofont icofont-ui-edit"></i> Edit
-                            </a>
-                            </td>
-                        </tr>`);
-                    });
+                            </a>`)
+                        return tab_field;
+                    })
+                    console.log(tab_res);
+                    table.rows.add(tab_res);
+                    table.draw();
+                    // $.each(res.msg, function (i, dt) {
+                    //     $("#basic-1 tbody").append(`
+                    //     <tr>
+                    //         <td>${++i}</td>
+                    //         <td>${dt.user_name}</td>
+                    //         <td>${dt.user_id}</td>
+                    //         <td>${res.user_type_list[dt.user_type]}</td>
+                    //         <td><a href="/manage_user_edit?id=${dt.id}" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                    //             <i class="icofont icofont-ui-edit"></i> Edit
+                    //         </a>
+                    //         </td>
+                    //     </tr>`);
+                    // });
                 }else{
                     $("#basic-1 tbody").append(`<tr>
                                     <td class="text-center text-danger" colspan="5">No Data Found</td>

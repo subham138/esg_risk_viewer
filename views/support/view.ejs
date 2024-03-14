@@ -152,43 +152,9 @@
                                 </a>`)
                         return result;
                     })
-                    // console.log(res);
+                    
                     table.rows.add(res);
                     table.draw();
-                    // $.each(res.msg, function (i, dt) {
-                    //     var tkt_date = new Date(dt.tkt_date)
-                    //     var result = []
-                    //     result.push(++i)
-                    //     result.push(dt.tkt_no)
-                    //     result.push(dt.issue_title)
-                    //     result.push(`${tkt_date.getDate()}/${tkt_date.getMonth()}/${tkt_date.getFullYear()} ${tkt_date.getHours()}:${tkt_date.getMinutes()}:${tkt_date.getSeconds()}`)
-                    //     <% if(user_type == 'S'){ %>
-                    //         result.push(dt.client_name)
-                    //     <% } %>
-                    //     result.push($(`<span class="${dt.tkt_status == 'P' ? 'text-warning' : (dt.tkt_status == 'S' ? 'text-success' : 'text-danger') }">${ dt.tkt_status == 'P' ? 'Pending' : (dt.tkt_status == 'S' ? 'Solved' : 'Rejected') }</span>`))
-                    //     result.push($(`<a href="/support_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                    //                 <i class="icofont icofont-ui-edit"></i> Edit
-                    //             </a>`))
-                    //     // $("#basic-1 tbody").append(`
-                    //     // <tr>
-                    //     //     <td>${++i}</td>
-                    //     //     <td>${dt.tkt_no}</td>
-                    //     //     <td>${dt.issue_title}</td>
-                    //     //     <td>${tkt_date.getDate()}/${tkt_date.getMonth()}/${tkt_date.getFullYear()} ${tkt_date.getHours()}:${tkt_date.getMinutes()}:${tkt_date.getSeconds()}</td>
-                    //     //     <% if(user_type == 'S'){ %>
-                    //     //     <td>${dt.client_name}</td>
-                    //     //     <% } %>
-                    //     //     <td><span class="${dt.tkt_status == 'P' ? 'text-warning' : (dt.tkt_status == 'S' ? 'text-success' : 'text-danger') }">${ dt.tkt_status == 'P' ? 'Pending' : (dt.tkt_status == 'S' ? 'Solved' : 'Rejected') }</span></td>
-                    //     //     <td>
-                    //     //         <a href="/support_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                    //     //             <i class="icofont icofont-ui-edit"></i> Edit
-                    //     //         </a>
-                    //     //         <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
-                    //     //             <i class="icofont icofont-ui-delete"></i> Delete
-                    //     //         </a> -->
-                    //     //     </td>
-                    //     // </tr>`);
-                    // });
                 }else{
                     $("#basic-1 tbody").append(`<tr>
                                     <td class="text-center text-danger" colspan="6">No Data Found</td>
