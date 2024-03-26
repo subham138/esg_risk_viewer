@@ -369,6 +369,7 @@ MasterRouter.get('/get_busi_act_ajax', async (req, res) => {
 
 MasterRouter.get("/busi_act_del", async (req, res) => {
   var id = req.query.id,
+  data= req.query,
     res_dt;
   if (id > 0) {
     res_dt = await db_Delete('md_busi_act', `id = ${id}`);
