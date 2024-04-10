@@ -11,7 +11,7 @@
 <!-- Reach TextEditor -->
     <link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
     <script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
-    <% if(flag == "F"){ %>
+    <% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
         <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
     <% } %>
 <!-- END -->
@@ -62,7 +62,7 @@
                             <p class="pro-card-head">
                                 <span class="fw-normal">You are working on the project <b><%= projName %></b> using the</span> 
                                 <br>
-                                <span class="pro-card-cont fw-normal"><b><%= flag == "I" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) %></b> Framework</span>
+                                <span class="pro-card-cont fw-normal"><b><%= flag == "I" || flag == "IF" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" || flag == "EF" || flag == "EV" || flag == "EVF" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) %></b> Framework</span>
                             </p>
                         </div>
                     </div>

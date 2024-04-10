@@ -5,6 +5,27 @@
 <script type="text/javascript" src='/editor/richtexteditor/plugins/all_plugins.js'></script>
 <script>
   var editorCfg = {}
+  <% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
+    editorCfg.galleryImages = [
+      "/images/icons/colored/french/1.png",
+      "/images/icons/colored/french/2.png",
+      "/images/icons/colored/french/3.png",
+      "/images/icons/colored/french/4.png",
+      "/images/icons/colored/french/5.png",
+      "/images/icons/colored/french/6.png",
+      "/images/icons/colored/french/7.png",
+      "/images/icons/colored/french/8.png",
+      "/images/icons/colored/french/9.png",
+      "/images/icons/colored/french/10.png",
+      "/images/icons/colored/french/11.png",
+      "/images/icons/colored/french/12.png",
+      "/images/icons/colored/french/13.png",
+      "/images/icons/colored/french/14.png",
+      "/images/icons/colored/french/15.png",
+      "/images/icons/colored/french/16.png",
+      "/images/icons/colored/french/17.png",
+    ];
+  <% }else{ %>
     editorCfg.galleryImages = [
       "/images/icons/colored/1.png",
       "/images/icons/colored/2.png",
@@ -22,9 +43,11 @@
       "/images/icons/colored/14.png",
       "/images/icons/colored/15.png",
       "/images/icons/colored/16.png",
+      "/images/icons/colored/17.png",
     ];
+  <% } %>
 </script>
-<% if(flag == "F"){ %>
+<% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
     <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
 <% } %>
 <!-- END -->

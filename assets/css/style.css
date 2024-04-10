@@ -46715,3 +46715,7 @@ nav{
   color: #381850;
 }
 
+header.main-nav{
+  height: 88% !important;
+  /* overflow: scroll; */
+}

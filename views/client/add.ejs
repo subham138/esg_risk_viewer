@@ -80,10 +80,54 @@
                     </div>
                     <div class="col-md-3">
                         <div class="media">
+                        <label class="col-form-label m-r-10">IFRS - French</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="ifrs_fr_flag" <%= id > 0 ? (client_data.msg[0].ifrs_fr_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
                         <label class="col-form-label m-r-10">ESRS</label>
                         <div class="media-body text-end icon-state switch-outline">
                           <label class="switch">
                             <input type="checkbox" id="esrs_flag" <%= id > 0 ? (client_data.msg[0].esrs_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">ESRS - French</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="esrs_fr_flag" <%= id > 0 ? (client_data.msg[0].esrs_fr_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">ESRS VSME</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="esrs_vsme_flag" <%= id > 0 ? (client_data.msg[0].esrs_vsme_flag == 'Y' ? 'checked' : '') : '' %>>
+                            <span class="switch-state bg-primary"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="media">
+                        <label class="col-form-label m-r-10">ESRS VSME - French</label>
+                        <div class="media-body text-end icon-state switch-outline">
+                          <label class="switch">
+                            <input type="checkbox" id="esrs_vsme_fr_flag" <%= id > 0 ? (client_data.msg[0].esrs_vsme_fr_flag == 'Y' ? 'checked' : '') : '' %>>
                             <span class="switch-state bg-primary"></span>
                           </label>
                         </div>
