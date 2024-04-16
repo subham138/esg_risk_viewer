@@ -1,0 +1,296 @@
+<%- include('./templates/header.ejs') %>
+<style>
+    .rte-modern.rte-desktop.rte-toolbar-default {
+        min-width: 100% !important;
+    }
+
+    .rte-toolbar-desktop {
+        display: inline !important;
+    }
+</style>
+<style>
+    .msg-cont {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .msg_auth {
+        margin-left: 15px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .msg-body {
+        margin-left: 45px;
+        font-size: 16px;
+        font-weight: 400;
+    }
+
+    .message {
+        display: flex;
+        align-items: left;
+        margin-bottom: 10px;
+    }
+
+    .received {
+        justify-content: flex-start;
+        flex-direction: column;
+    }
+
+    .typing {
+        justify-content: flex-start;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #555;
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: dot-animation 1s infinite;
+    }
+
+    @keyframes dot-animation {
+
+        0%,
+        20% {
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+</style>
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+<script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<script>
+    var editorList = {};
+</script>
+<% 
+    var userNameArr = user.user_name ? user.user_name.split(' ') : [];
+    var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? Array.from(userNameArr[1])[0] : ''}` : 'U' 
+%>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>
+                    <%= header %>
+                </h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item">
+                        <%= header %>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body card_body_Cus">
+                    <div id="editorNewDiv_1" class="row m-t-10 editorDiv">
+
+                        <div class="col-md-8 m-l-8 p-r-15 row">
+                            <p class="dyn-col-head dyn_col_head_Cus_UR_2">1. The organization and its reporting
+                                practices</p>
+                        </div>
+                        <div class="col-md-8 m-l-10 row">
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="editor_topic_442" id="editor_topic_1"
+                                    value="2-1 Organizational details">
+                            </div>
+                        </div>
+                        <div class="col-md-4 align">
+                            <div class="ai-sugg-grp">
+                                <img class="ai-btn-img" src="\images\favicon_new.ico">
+                                <button class="btn btn-pill btn-custom text-center" style="width: 13vw;"
+                                    onclick="openAiModal('1')">ESGReportAssist</button>
+                            </div>
+                        </div>
+                        <div class="col-md-12 m-l-8 row" id="ai_tool_main_div_1">
+                            <div class="col-md-12 colEditor m-t-15">
+                                <div id="div_editor_1"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="modal fade" id="man_dis_top_info_1" tabindex="-1" role="dialog"
+                                aria-labelledby="man_dis_top_info_1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+                                    role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body" style="color: black;">
+                                            <div class="card card-absolute">
+                                                <div class="card-header bg-secondary">
+                                                    <h5 class="text-white">"AI Generator"</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div id="message_container">
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <input class="form-control" type="text" name="type_text" id="type_text" placeholder="Type here...">
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <button class="btn btn-success" id="send_msg">Send</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-custom" type="button"
+                                                style="width: 6vw;float: inline-end;"
+                                                data-bs-dismiss="modal">OK</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <script>
+                            editorList['div_editor_1'] = new RichTextEditor("#div_editor_1");
+                            editorList['div_editor_1'].attachEvent("change", function () {
+                                var textCount = editorList['div_editor_1'].getPlainText();
+                                // console.log(textCount);
+                                var ai_flag = 'Y';
+                                if (ai_flag != 'N') {
+                                    totCount[1] = 0
+                                    // var editorVal = e.editor.getData()
+                                    // var plainText = $("<div>").html(editorVal).text();
+                                    var plainText = editorList['div_editor_1'].getPlainText();
+                                    var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                                    // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                                    // console.log('len', txtArr);
+                                    if (txtArr.length > 0) {
+                                        txtArr = [...new Set(txtArr)]
+                                        // console.log(txtArr, 'TOt array');
+                                        var matchTxt = txtArr.filter(dt => increseCount(dt, '1'))
+                                        if (matchTxt.length > 0) {
+                                            // console.log(matchTxt, 'Match array');
+                                            $('#countMatch_1 .u-step').each(function () {
+                                                $(this).removeClass('done')
+                                            })
+                                            for (let dt of matchTxt) {
+                                                $('#countMatch_1 .u-step').each(function () {
+                                                    // console.log($(this).text());
+                                                    // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                                    if ($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                                        $(this).addClass('done')
+                                                })
+                                            }
+                                        } else {
+                                            $('#countMatch_1 .u-step').each(function () {
+                                                $(this).removeClass('done')
+                                            })
+                                        }
+                                        // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                                        // console.log(totCount);
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAiModal(id) {
+        $(`#man_dis_top_info_${id}`).modal('toggle');
+    }
+    function typeWriter(text, i, typingElement) {
+        if (i < text.length) {
+            typingElement.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(function () {
+                typeWriter(text, i, typingElement);
+            }, Math.random() * 20); // Adjust typing speed here
+        } else {
+            // Add a class to signify typing animation is finished
+            typingElement.innerHTML = '<div class="m-t-10"></div>'
+            typingElement.classList.add('finished');
+        }
+    }
+    $('#send_msg').click(async function(){
+        var text = $('#type_text').val()
+        var user_char = '<%= userNameAvt.toUpperCase() %>';
+        if(text != ''){
+            $('#message_container').append(`
+            <div class="message received">
+                <div class="msg-cont">
+                    <div class="circle" style="height: 30px; width: 30px;">
+                        <span class="initials"
+                            style="font-size: calc(var(--avatar-size) / 4);font-weight: 500;">
+                            ${user_char}
+                        </span>
+                    </div>
+                    <p class="msg_auth">You</p>
+                </div>
+                <p class="msg-body">${text}</p>
+            </div>
+            <div class="typing m-t-10">
+                <div class="msg-cont">
+                    <div class="circle" style="height: 30px; width: 30px;">
+                        <span class="initials"
+                            style="font-size: calc(var(--avatar-size) / 4);font-weight: 500;">E</span>
+                    </div>
+                    <p class="msg_auth">AI ESG Bot</p>
+                </div>
+                <div class="message msg-body m-t-10" id="message_body">
+                    <div class="dot" style="display:none;"></div>
+                    <div class="dot" style="display:none;"></div>
+                    <div class="dot" style="display:none;"></div>
+                </div>
+            </div>
+            `)
+            $(this).attr('disabled', true)
+            $(".dot").show()
+            $('#message_body').empty()
+            $('#message_body').append(`<div id="typing-text"></div>`)
+            $.ajax({
+                method: "POST",
+                url: "/send_ai_data",
+                data: {},
+                dataType: "html",
+                beforeSend: function () {
+                    $(".dot").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result);
+                    if(res.suc > 0 && res.msg.length > 0){
+                        for(let dt of res.msg){
+                            if(dt.page_content.length > 5 && dt.metadata.page > 0){
+                                var textElement = document.getElementById('typing-text')
+                                var text = dt.page_content
+                                typeWriter(text, 0, textElement)
+                            }
+                        }
+                    }
+                    
+                },
+                complete: function () {
+                    $(".dot").hide();
+                },
+            })
+            // var text = "We’ve reduced the size of our overall estate, lowering our carbon footprint. Our \nhybrid approach to work means we’ve greatly reduced the emissions we produce \nfrom commuting. To further reduce travel emissions, in 2023 we introduced an \nelectric car scheme for staff alongside an existing cycle to work scheme. In our \nBristol office, we use motion-controlled lighting to save unnecessary electricity, \nas well as generating our own electricity through solar power.\nWe have an Environmental Policy outlining our commitment to continually \nimproving our environmental performance. Across the next year we aim \nto develop an environmental management system to ISO14001 standard. \nThis will help guide action across key environmental impact areas, such as \nconsumption, waste, biodiversity and travel."
+            // $('#message_body').empty()
+            // $('#message_body').append(`<div id="typing-text"></div>`)
+            // var textElement = document.getElementById('typing-text')
+            // await typeWriter(text, 0, textElement)
+            // $(this).removeAttr('disabled')
+            // alert(text)
+        }
+    })
+</script>
+<%- include('./templates/footer.ejs') %>
