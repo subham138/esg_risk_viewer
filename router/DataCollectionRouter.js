@@ -473,7 +473,7 @@ DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
               // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
       
               var table_name = `td_sus_dis_top_met`,
-                fields = `info_title = "${data[`info_title_${dt}`][i]}", info_desc = '${data[`info_desc_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+                fields = `info_title = "${data[`info_title_${dt}`][i]}", info_desc = '${data[`info_desc_${dt}`][i] != '' ? data[`info_desc_${dt}`][i].split("'").join("\\'") : ""}', modified_by= '${user}', modified_dt = '${datetime}'`,
                 values = null,
                 whr = chk_whr,
                 flag = 1;
@@ -487,7 +487,7 @@ DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
             // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
             // console.log(chk_dt);
             var table_name = `td_sus_dis_top_met`,
-              fields = `info_title = "${data[`info_title_${dt}`]}", info_desc = '${data[`info_desc_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+              fields = `info_title = "${data[`info_title_${dt}`]}", info_desc = '${data[`info_desc_${dt}`] != '' ? data[`info_desc_${dt}`].split("'").join("\\'") : ''}', modified_by= '${user}', modified_dt = '${datetime}'`,
               values = null,
               whr = chk_whr,
               flag = 1;
@@ -505,7 +505,7 @@ DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
             // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
     
             var table_name = `td_sus_dis_top_met`,
-              fields = `info_title = "${data[`info_title_${dt}`][i]}", info_desc = '${data[`info_desc_${dt}`][i]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+              fields = `info_title = "${data[`info_title_${dt}`][i]}", info_desc = '${data[`info_desc_${dt}`][i] != '' ? data[`info_desc_${dt}`][i].split("'").join("\\'") : ''}', modified_by= '${user}', modified_dt = '${datetime}'`,
               values = null,
               whr = chk_whr,
               flag = 1;
@@ -519,7 +519,7 @@ DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
           // var chk_dt = await db_Select("id", "td_sus_dis_top_met", chk_whr, null);
           // console.log(chk_dt);
           var table_name = `td_sus_dis_top_met`,
-            fields = `info_title = "${data[`info_title_${dt}`]}", info_desc = '${data[`info_desc_${dt}`]}', modified_by= '${user}', modified_dt = '${datetime}'`,
+            fields = `info_title = "${data[`info_title_${dt}`]}", info_desc = '${data[`info_desc_${dt}`] != '' ? data[`info_desc_${dt}`].split("'").join("\\'") : ''}', modified_by= '${user}', modified_dt = '${datetime}'`,
             values = null,
             whr = chk_whr,
             flag = 1;
