@@ -159,7 +159,11 @@
                 <input type="hidden" name="ai_tag_tool_flag" id="ai_flag" value="<%= id > 0 ? client_data.msg[0].ai_tag_tool_flag : '' %>">
                 <input type="hidden" name="ghg_emi_flag" id="ghg_emi_flag_val" value="<%= id > 0 ? client_data.msg[0].ghg_emi_flag : '' %>">
                 <input type="hidden" name="ifrs_flag" id="ifrs_flag_val" value="<%= id > 0 ? client_data.msg[0].ifrs_flag : '' %>">
+                <input type="hidden" name="ifrs_fr_flag" id="ifrs_fr_flag_val" value="<%= id > 0 ? client_data.msg[0].ifrs_fr_flag : '' %>">
                 <input type="hidden" name="esrs_flag" id="esrs_flag_val" value="<%= id > 0 ? client_data.msg[0].esrs_flag : '' %>">
+                <input type="hidden" name="esrs_fr_flag" id="esrs_fr_flag_val" value="<%= id > 0 ? client_data.msg[0].esrs_fr_flag : '' %>">
+                <input type="hidden" name="esrs_vsme_flag" id="esrs_vsme_flag_val" value="<%= id > 0 ? client_data.msg[0].esrs_vsme_flag : '' %>">
+                <input type="hidden" name="esrs_vsme_fr_flag" id="esrs_vsme_fr_flag_val" value="<%= id > 0 ? client_data.msg[0].esrs_vsme_fr_flag : '' %>">
                 <input type="hidden" name="gri_flag" id="gri_flag_val" value="<%= id > 0 ? client_data.msg[0].gri_flag : '' %>">
                 <input type="hidden" name="gri_fr_flag" id="gri_fr_flag_val" value="<%= id > 0 ? client_data.msg[0].gri_fr_flag : '' %>">
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
@@ -199,6 +203,15 @@
             $('#ifrs_flag').attr('checked', 'checked')
         }
     })
+    $('#ifrs_fr_flag').on('change', function(){
+        if($('#ifrs_fr_flag').attr('checked')){
+            $('#ifrs_fr_flag_val').val('N')
+            $('#ifrs_fr_flag').removeAttr('checked')
+        }else{
+            $('#ifrs_fr_flag_val').val('Y')
+            $('#ifrs_fr_flag').attr('checked', 'checked')
+        }
+    })
     $('#esrs_flag').on('change', function(){
         if($('#esrs_flag').attr('checked')){
             $('#esrs_flag_val').val('N')
@@ -206,6 +219,33 @@
         }else{
             $('#esrs_flag_val').val('Y')
             $('#esrs_flag').attr('checked', 'checked')
+        }
+    })
+    $('#esrs_fr_flag').on('change', function(){
+        if($('#esrs_fr_flag').attr('checked')){
+            $('#esrs_fr_flag_val').val('N')
+            $('#esrs_fr_flag').removeAttr('checked')
+        }else{
+            $('#esrs_fr_flag_val').val('Y')
+            $('#esrs_fr_flag').attr('checked', 'checked')
+        }
+    })
+    $('#esrs_vsme_flag').on('change', function(){
+        if($('#esrs_vsme_flag').attr('checked')){
+            $('#esrs_vsme_flag_val').val('N')
+            $('#esrs_vsme_flag').removeAttr('checked')
+        }else{
+            $('#esrs_vsme_flag_val').val('Y')
+            $('#esrs_vsme_flag').attr('checked', 'checked')
+        }
+    })
+    $('#esrs_vsme_fr_flag').on('change', function(){
+        if($('#esrs_vsme_fr_flag').attr('checked')){
+            $('#esrs_vsme_fr_flag_val').val('N')
+            $('#esrs_vsme_fr_flag').removeAttr('checked')
+        }else{
+            $('#esrs_vsme_fr_flag_val').val('Y')
+            $('#esrs_vsme_fr_flag').attr('checked', 'checked')
         }
     })
     $('#gri_flag').on('change', function(){
