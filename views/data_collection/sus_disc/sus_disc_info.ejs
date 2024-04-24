@@ -206,17 +206,20 @@
       },
       success: function (result) {
         var res = JSON.parse(result);
-        // console.log(res);
+        console.log(res, 'DATATAATATATATATATTATATATA');
         // $('#ind_id').empty();
         // $('#ind_id').append($('<option>', {value: '', text: 'Select Industries'}));
         if (res.suc > 0 && res.msg.length > 0) {
             $("#data_set_view").show();
+            console.log(res.msg[0].topic_dt, 'topic_dt');
             if (res.msg[0].topic_dt) {
                 $.get("/sus_disc_ajax", {flag: $('#flag').val()}).done((data) => {
+                  console.log(data, 'Table data');
                   $("#suc_disc_table tbody").empty()
                     if (data.suc == 1) {
                         $.each(res.msg[0].topic_dt, function (i, dt) {
                             var sus_data = data.msg.filter((sus_dt) => sus_dt.top_id == dt.id);
+                            console.log(dt.id, sus_data, 'LALALALLALALALALAL');
                             var k = 0
                             if(sus_data.length > 0){
                               $.each(sus_data, function (j, sus_dt) {
@@ -238,10 +241,11 @@
                                   }
                                   k++;
                               })
-                            }else{
-                                $("#suc_disc_table tbody").empty()
-                                $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1"><td colspan="4" class="text-daneger text-center">NO DATA FOUND</td></tr>`);
                             }
+                            // else{
+                            //     $("#suc_disc_table tbody").empty()
+                            //     $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1"><td colspan="4" class="text-daneger text-center">NO DATA FOUND</td></tr>`);
+                            // }
                         });
                     }else{
                         $("#suc_disc_table tbody").empty()
