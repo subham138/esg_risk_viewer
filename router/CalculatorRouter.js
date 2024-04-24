@@ -103,7 +103,7 @@ CalculatorRouter.post('/cal_act_edit', async (req, res) => {
 })
 
 CalculatorRouter.post('/get_cal_act_ajax', async (req, res) => {
-    var type_id = req.query.type_id
+    var type_id = req.body.type_id
     var res_dt = await getCalAct(0, type_id)
     res.send(res_dt)
 })
@@ -129,8 +129,8 @@ CalculatorRouter.get('/cal_emi_type', async (req, res) => {
 })
 
 CalculatorRouter.post('/get_cal_emi_type_ajax', async (req, res) => {
-    var type_id = req.query.type_id,
-    act_id = req.query.act_id;
+    var type_id = req.body.type_id,
+    act_id = req.body.act_id;
     var res_dt = await getCalEmiType(0, type_id, act_id)
     res.send(res_dt)
 })
