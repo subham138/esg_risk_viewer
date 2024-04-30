@@ -7,6 +7,21 @@
     .rte-toolbar-desktop {
         display: inline !important;
     }
+    .wordListName {
+        margin-bottom: 10px;
+        border: 1px solid #7131a1;
+        text-align: center;
+        padding: 5px;
+        border-radius: 5px;
+        background: #7131a1;
+        color: white;
+        margin-right: 5px;
+    }
+    .wordListName:hover {
+        cursor: pointer;
+        background: #56078f;
+        border: 1px solid #56078f;
+    }
 </style>
 <style>
     .msg-cont {
@@ -138,6 +153,18 @@
                                                 </div>
                                                 <div class="card-footer">
                                                     <div class="row">
+                                                        <div class="col-md-12">
+                                                            <p>Word Suggestion:</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <% var words = 'policies, description, disclosures, performance, fees, statistics, resolutions, discussion, outcome';
+                                                        var word_list = words.split(', ')
+                                                        word_list.forEach(dt => { %>
+                                                            <div class="col-md-2 wordListName"><span onclick="inputText('<%= dt %>')"><%= dt %></span></div>
+                                                        <% }) %>
+                                                    </div>
+                                                    <div class="row">
                                                         <div class="col-md-8">
                                                             <input class="form-control" type="text" name="type_text" id="type_text" placeholder="Type here...">
                                                         </div>
@@ -148,7 +175,7 @@
                                                 </div>
                                             </div>
                                             <button class="btn btn-custom" type="button"
-                                                style="width: 6vw;float: inline-end;"
+                                                style="width: 8vw;float: inline-end;"
                                                 data-bs-dismiss="modal">OK</button>
                                         </div>
                                     </div>
@@ -163,7 +190,7 @@
                                 // console.log(textCount);
                                 var ai_flag = 'Y';
                                 if (ai_flag != 'N') {
-                                    totCount[1] = 0
+                                    // totCount[1] = 0
                                     // var editorVal = e.editor.getData()
                                     // var plainText = $("<div>").html(editorVal).text();
                                     var plainText = editorList['div_editor_1'].getPlainText();
@@ -209,20 +236,36 @@
     function openAiModal(id) {
         $(`#man_dis_top_info_${id}`).modal('toggle');
     }
-    function typeWriter(text, i, typingElement) {
-        if (i < text.length) {
-            typingElement.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(function () {
-                typeWriter(text, i, typingElement);
-            }, Math.random() * 20); // Adjust typing speed here
-        } else {
-            // Add a class to signify typing animation is finished
-            typingElement.innerHTML = '<div class="m-t-10"></div>'
-            typingElement.classList.add('finished');
+    function typeWriter(text, i, typingElement = '', id, line_break=false, counter) {
+        if(line_break){
+            var li = $('<li>', {id: `li_${counter}`})
+                $('#typing-text-1').append(li)
         }
+
+        $(`#li_${counter}`).append(text);
+        $(`#li_${counter}`).append($('<button>', {type: 'button', on: {click: function(){
+            appendText(text)
+        }}, class: 'btn btn-primary float-end m-b-10', text: 'Add to editor'}))
+
+        // if (i < text.length) {
+
+        //     console.log(text.charAt(i));
+        //     // typingElement.innerHTML += text.charAt(i);
+        //     $(`#li_${counter}`).append(text.charAt(i));
+        //     i++;
+        //     setTimeout(function () {
+        //         typeWriter(text, i, typingElement, id, false, counter);
+        //     }, Math.random() * 20); // Adjust typing speed here
+        // } else {
+        //     $(`#li_${counter}`).append($('<button>', {type: 'button', on: {click: function(){
+        //         appendText(text)
+        //     }}, class: 'btn btn-primary float-end m-b-10', text: 'Add to editor'}))
+        //     // Add a class to signify typing animation is finished
+        //     // typingElement.innerHTML = '<div class="m-t-10"></div>'
+        //     // typingElement.classList.add('finished');
+        // }
     }
-    $('#send_msg').click(async function(){
+    $('#send_msg').on('click', async function(){
         var text = $('#type_text').val()
         var user_char = '<%= userNameAvt.toUpperCase() %>';
         if(text != ''){
@@ -257,7 +300,8 @@
             $(this).attr('disabled', true)
             $(".dot").show()
             $('#message_body').empty()
-            $('#message_body').append(`<div id="typing-text"></div>`)
+            $('#message_body').append($('<ul>', {id: 'typing-text-1'}))
+
             $.ajax({
                 method: "POST",
                 url: "/send_ai_data",
@@ -267,17 +311,27 @@
                     $(".dot").show();
                 },
                 success: function (result) {
-                    var res = JSON.parse(result);
+                    var res = JSON.parse(result),
+                        tot_len = res.msg.length,
+                        curr_len = 1;
                     if(res.suc > 0 && res.msg.length > 0){
                         for(let dt of res.msg){
                             if(dt.page_content.length > 5 && dt.metadata.page > 0){
                                 var textElement = document.getElementById('typing-text')
                                 var text = dt.page_content
-                                typeWriter(text, 0, textElement)
+                                typeWriter(text, 0, textElement, 1, true, curr_len)
                             }
+                            curr_len++;
+                            // if(curr_len == 5) break;
                         }
+                        if(tot_len == curr_len) $(this).removeAttr('disabled')
+                    }else{
+                        var li = $('<li>', {id: `li_1`})
+                        $('#typing-text-1').append(li)
+                        $(`#li_1`).append("No data found");
                     }
-                    
+                    $('#type_text').val('')
+                    $('#send_msg').removeAttr('disabled')
                 },
                 complete: function () {
                     $(".dot").hide();
@@ -292,5 +346,15 @@
             // alert(text)
         }
     })
+
+    function appendText(text){  
+        editorList['div_editor_1'].insertText(text)
+        $(`#man_dis_top_info_1`).modal('toggle')
+    }
+
+    function inputText(text){
+        $('#type_text').val(text)
+        $('#send_msg').click()
+    }
 </script>
 <%- include('./templates/footer.ejs') %>
