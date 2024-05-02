@@ -6,64 +6,6 @@
         display: inline !important;
     }
 </style>
-<style>
-    .msg-cont {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-    }
-
-    .msg_auth {
-        margin-left: 15px;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .msg-body {
-        margin-left: 45px;
-        font-size: 16px;
-        font-weight: 400;
-    }
-
-    .message {
-        display: flex;
-        align-items: left;
-        margin-bottom: 10px;
-    }
-
-    .received {
-        justify-content: flex-start;
-        flex-direction: column;
-    }
-
-    .typing {
-        justify-content: flex-start;
-    }
-
-    .dot {
-        width: 8px;
-        height: 8px;
-        background-color: #555;
-        border-radius: 50%;
-        margin: 0 2px;
-        animation: dot-animation 1s infinite;
-    }
-
-    @keyframes dot-animation {
-
-        0%,
-        20% {
-            opacity: 0;
-        }
-
-        50% {
-            opacity: 1;
-        }
-    }
-</style>
-<% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
-var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? Array.from(userNameArr[1])[0] : ''}` : 'U' %>
 <div class="row">
     <% if(user_type != 'V'){ %>
         <div class="col-md-12 row mt-3" id="editorPrevDiv">
@@ -103,15 +45,11 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                             </div>
                             <% } %>
                         </div>
-                        <% if(ai_tag_tool_flag != 'N'){
-                            var word_list = []
-                            if(dt.words != '' && dt.words && dt.words != 'null'){
-                                word_list = dt.words.trim().split(',');
-                            } %>
+                        <% if(ai_tag_tool_flag != 'N'){ %>
                             <div class="col-md-4 align">
                                 <div class="ai-sugg-grp">
                                     <img class="ai-btn-img" src="\images\favicon_new.ico">
-                                    <button class="btn btn-pill btn-custom text-center" style="width: 13vw;" onclick="showHideAi('<%= ediR %>', '<%= JSON.stringify(word_list) %>')">ESGReportAssist</button>
+                                    <button class="btn btn-pill btn-custom text-center" style="width: 13vw;" onclick="showHideAi('<%= ediR %>')">ESGReportAssist</button>
                                 </div>
                                 <!-- <div class="col-md-2">
                                     <div class="m-b-10">
@@ -363,92 +301,12 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
 </script>
 
 <script>
-    function feedText(word, id) {
-        $('#type_text').val(word)
-        // $('#send_msg').click()
-        genSugg(word, id)
-    }
-    function makeAiModal(words, id){
-        var user_char = '<%= userNameAvt.toUpperCase() %>';
-        var text = $('#type_text').val()
-        var word_div = ''
-        for(let dt of JSON.parse(words)){
-            word_div = word_div + `<div class="col-md-2 mt-2">
-                <div class="u-step ai-btn">
-                    <div class="u-step-desc text-center" onclick="feedText('${dt}', ${id})"><span class="u-step-title">${dt}</span>
-                    </div>
-                </div>
-            </div>`
-        }
-
-        var modalContent = `
-        <div class="modal fade" id="wordInfoModal" tabindex="-1" role="dialog" aria-labelledby="wordInfoModal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                    <div class="modal-body" style="color: black;">
-                        <div class="card card-absolute">
-                            <div class="card-header bg-secondary">
-                                <h5 class="text-white">"ESG Bot"</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row ai_word_res_container" id="ai_word_res_container_1" style="display:none;">
-                                    <div class="message received">
-                                        <div class="msg-cont">
-                                            <div class="circle" style="height: 30px; width: 30px;">
-                                                <span class="initials"
-                                                    style="font-size: calc(var(--avatar-size) / 4);font-weight: 500;">
-                                                    ${user_char}
-                                                </span>
-                                            </div>
-                                            <p class="msg_auth">You</p>
-                                        </div>
-                                        <p class="msg-body" id="user_written_text">${text}</p>
-                                    </div>
-                                    <div class="typing m-t-10">
-                                        <div class="msg-cont">
-                                            <div class="circle" style="height: 30px; width: 30px;">
-                                                <span class="initials"
-                                                    style="font-size: calc(var(--avatar-size) / 4);font-weight: 500;">E</span>
-                                            </div>
-                                            <p class="msg_auth">AI ESG Bot</p>
-                                        </div>
-                                        <div class="message msg-body m-t-10" id="message_body">
-                                            <div class="dot"></div>
-                                            <div class="dot"></div>
-                                            <div class="dot"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="wordButton col-md-12 row">${word_div}</div>
-                                <div class="row m-t-10">
-                                    <div class="col-md-8">
-                                        <input class="form-control" type="text" name="type_text" id="type_text" placeholder="Type here...">
-                                    </div>
-                                    <div class="col-md-1">
-                                        <button class="btn btn-success" type="button" id="send_msg" onclick="genSugg()" disabled>Send</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-custom" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal" onclick="closeWordModal()">Close</button> 
-                    </div>
-                </div>
-            </div>
-        </div>`;
-
-        return new Promise((resolve, reject) => {
-            resolve(modalContent)
-        });
-    }
     function makeModal(header, info){
         var card = ''
         info.forEach(dt=>{
             card = card + `<div class="card card-absolute">
                 <div class="card-header bg-secondary">
+                <h5 class="text-white">"${dt.word}" <small>(${dt.busi_act_name})</small></h5>
                 <h5 class="text-white">"${dt.word}" <small>(${dt.busi_act_name})</small></h5>
                 </div>
                 <div class="card-body">
@@ -514,84 +372,19 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
     function closeWordModal(){
         $('#wordInfoModal').remove()
     }
-
-    function genSugg(word, id) {
-        // var word = $('#type_text').val()
-        // console.log(word);
-        if(word != ''){
-            var bas_id_list = '<%= project_data.length > 0 ? project_data[0].bus_act_id : 0 %>';
-            var tot_modal_row = $('.ai_word_res_container .received').length
-            $.ajax({
-                method: "GET",
-                url: "/get_sus_disc_word_info_ajax",
-                data: { word: word.toString().trim(), bus_id: bas_id_list },
-                dataType: "html",
-                beforeSend: function () {
-                    $(`#ai_word_res_container_${tot_modal_row}`).show()
-                },
-                success: async function(result) {
-                    var res = JSON.parse(result)
-                    console.log(res);
-                    if(res.suc > 0){
-                        if(res.msg.length > 0){
-                            // $(`#ai_word_res_container_${tot_modal_row} #message_body`)
-                            $(`#ai_word_res_container_${tot_modal_row} #message_body`).empty()
-                            $(`#ai_word_res_container_${tot_modal_row} #user_written_text`).text(word)
-                            var ul = $('<ul>')
-                            for(let dt of res.msg){
-                                var li = $('<li>').append($('<p>').append(dt.info))
-                                var div = $('<div>', {class: 'row'})
-                                    div.append($('<div>', {class: 'col-md-8'}).append($('<label>').append(`Refference: ${dt.busi_act_name}`)))
-                                    div.append($('<div>', {class: 'col-md-4'}).append($('<button>', {type: 'button', on: {click: function(){ appendText(dt.info, id) }}, class: 'btn btn-primary float-end m-b-10', text: 'Add to editor'})))
-                                    li.append(div)
-                                    li.append($('<hr>'))
-                                ul.append(li)
-                            }
-                            $(`#ai_word_res_container_${tot_modal_row} #message_body`).append(ul)
-                            // var m1 = $(await makeModal(word.toString().trim(), res.msg));
-                            // m1.modal('show');
-                            // numOfItems = m1.find('.card-content .card').length;
-                            // limitPerPage = 1;
-                            // totalPages = numOfItems;
-                            // peginationSize = numOfItems > 5 ? 5 : numOfItems;
-
-                            // console.log($('.card-content .card').length, numOfItems, currentPage);
-                            // m1.find('.pagination').append(
-                            //     $('<li>').addClass('page-item').addClass('previous-page').append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)', onclick: 'modalGoPrev()'}).text('Prev')),
-                            //     $('<li>').addClass('page-item').addClass('next-page').append($('<a>').addClass('page-link').attr({href: 'javascript:void(0)', onclick: 'modalGoNext()'}).text('Next'))
-                            // )
-                            // m1.find('.card-content').show()
-                            // showPage(1, m1)
-                        }
-                    }
-                },
-                complete: function () {
-                    $(".loader-wrapper").hide();
-                },
-            })
-        }
-    }
-    function appendText(info, id){
-        editorList[`div_editor_${id}`].setHTMLCode(info)
-        $('#wordInfoModal').modal('toggle');
-        $('#wordInfoModal').remove()
-    }
 </script>
 
 <script>
-    async function showHideAi(id, words){
-        // console.log(id, JSON.parse(words));
-        var m1 = $(await makeAiModal(words, id));
-        m1.modal('show');
-        // if(!$(`#ai_check_${id}`).is(':visible')){
-        //     $('#ai_tool_main_div_'+id).removeClass('col-md-12')
-        //     $('#ai_tool_main_div_'+id).addClass('col-md-8')
-        //     $(`#ai_check_${id}`).show()
-        // }else{
-        //     $('#ai_tool_main_div_'+id).removeClass('col-md-8')
-        //     $('#ai_tool_main_div_'+id).addClass('col-md-12')
-        //     $(`#ai_check_${id}`).hide()
-        // }
+    function showHideAi(id){
+        if(!$(`#ai_check_${id}`).is(':visible')){
+            $('#ai_tool_main_div_'+id).removeClass('col-md-12')
+            $('#ai_tool_main_div_'+id).addClass('col-md-8')
+            $(`#ai_check_${id}`).show()
+        }else{
+            $('#ai_tool_main_div_'+id).removeClass('col-md-8')
+            $('#ai_tool_main_div_'+id).addClass('col-md-12')
+            $(`#ai_check_${id}`).hide()
+        }
         // $(`#ai_check_${id}`).toggle();
        }
 </script>
