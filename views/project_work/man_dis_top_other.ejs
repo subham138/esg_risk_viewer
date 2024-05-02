@@ -541,8 +541,8 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                             for(let dt of res.msg){
                                 var li = $('<li>').append($('<p>').append(dt.info))
                                 var div = $('<div>', {class: 'row'})
-                                    div.append($('<div>', {class: 'col-md-8'}).append($('<label>').append(`Refference: ${dt.busi_act_name}`)))
-                                    div.append($('<div>', {class: 'col-md-4'}).append($('<button>', {type: 'button', on: {click: function(){ appendText(dt.info, id) }}, class: 'btn btn-primary float-end m-b-10', text: 'Add to editor'})))
+                                    div.append($('<div>', {class: 'col-md-8'}).append($('<label>').append(`Reference: ${dt.busi_act_name}`)))
+                                    div.append($('<div>', {class: 'col-md-4'}).append($('<button>', {type: 'button', on: {click: function(){ appendText(dt.info, id) }}, class: 'btn btn-custom float-end m-b-10', text: 'Add to editor'})))
                                     li.append(div)
                                     li.append($('<hr>'))
                                 ul.append(li)
