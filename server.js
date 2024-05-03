@@ -262,6 +262,42 @@ app.post('/send_ai_data', (req, res) => {
   // res.send({suc: 1, msg: data})
 })
 
+app.get('/data_int', async (req, res) => {
+  const { db_Select, db_Insert } = require("./modules/MasterModule");
+  var data = req.query, res_arr = [];
+  var all_dt = await db_Select('a.repo_flag, a.sec_id, a.ind_id, a.top_id, a.sl_no, a.ind_agn, a.metric, a.catg, a.unit, a.code, a.words, a.info_title, a.info_desc, a.created_by, a.created_dt, a.modified_by, a.modified_dt, b.topic_id ind_top_id', 'td_sus_dis_top_met a, md_industries_topics b, md_topic c', `a.top_id = b.id AND b.topic_id=c.id AND a.ind_id = ${data.frm_ind_id} AND a.repo_flag = '${data.repo_flag}'`, null)
+  // console.log(all_dt);
+  if(all_dt.suc > 0){
+    var all_ind_id = await db_Select('DISTINCT a.ind_id, b.sec_id', 'md_industries_topics a, md_industries b', `a.ind_id=b.id AND a.repo_flag ='${data.repo_flag}'`, null)
+    if(all_ind_id.suc > 0 && all_ind_id.msg.length > 0){
+      for(ind_id of all_ind_id.msg){
+        var chk_dt = await db_Select('count(id) tot_row', 'td_sus_dis_top_met', `ind_id = ${ind_id.ind_id} AND repo_flag = '${data.repo_flag}'`, null)
+        if(chk_dt.msg[0].tot_row != all_dt.msg.length){
+          for(let dt of all_dt.msg){
+            var frm_ind_top_dt = await db_Select('id, ind_id, topic_id', 'md_industries_topics', `ind_id = ${ind_id.ind_id} AND topic_id = ${dt.ind_top_id}`, null)
+            if(frm_ind_top_dt.suc > 0 && frm_ind_top_dt.msg.length > 0){
+              var chk = await db_Select('count(id) tot_row', 'td_sus_dis_top_met', `ind_id = ${ind_id.ind_id} AND repo_flag = '${data.repo_flag}' AND top_id = '${frm_ind_top_dt.msg[0].id}' AND sl_no = '${dt.sl_no}'`, null)
+
+              var table_name = 'td_sus_dis_top_met',
+                fields = chk.suc > 0 && chk.msg[0].tot_row > 0 ? `repo_flag = '${dt.repo_flag}', sec_id = '${ind_id.sec_id}', ind_id = '${ind_id.ind_id}', top_id = '${frm_ind_top_dt.msg[0].id}', sl_no = '${dt.sl_no}', ind_agn = '${dt.ind_agn}', metric = '${dt.metric}', catg = '${dt.catg}', unit = '${dt.unit}', code = '${dt.code}', words = '${dt.words}', info_title = '${dt.info_title}', info_desc = '${dt.info_desc.split("'").join("\\'")}', created_by = '${dt.created_by}', created_dt = '${dt.created_dt}'` : `(repo_flag, sec_id, ind_id, top_id, sl_no, ind_agn, metric, catg, unit, code, words, info_title, info_desc, created_by, created_dt)`,
+                values = `('${dt.repo_flag}', '${ind_id.sec_id}', '${ind_id.ind_id}', '${frm_ind_top_dt.msg[0].id}', '${dt.sl_no}', '${dt.ind_agn}', '${dt.metric}', '${dt.catg}', '${dt.unit}', '${dt.code}', '${dt.words}', '${dt.info_title}', '${dt.info_desc.split("'").join("\\'")}', '${dt.created_by}', '${dt.created_dt}')`,
+                whr = chk.suc > 0 && chk.msg[0].tot_row > 0 ? `ind_id = ${ind_id.ind_id} AND repo_flag = '${data.repo_flag}' AND top_id = '${frm_ind_top_dt.msg[0].id}' AND sl_no = '${dt.sl_no}'` : null,
+                flag = chk.suc > 0 && chk.msg[0].tot_row > 0 ? 1 : 0;
+
+              var set_res = await db_Insert(table_name, fields, values, whr, flag)
+              // console.log(set_res);
+              res_arr.push(set_res)
+              res.write(JSON.stringify(frm_ind_top_dt.msg[0]))
+            }
+          }
+        }
+      }
+    }
+  }
+  // res.json(res_arr)
+  res.end('END')
+})
+
 app.use(UserRouter);
 app.use(MasterRouter);
 app.use(DataCollectionRouter)
