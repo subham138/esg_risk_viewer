@@ -299,6 +299,32 @@ app.get('/data_int', async (req, res) => {
   res.end('END')
 })
 
+app.get('/data_bus_int', async (req, res) => {
+  const { db_Select, db_Insert } = require("./modules/MasterModule"),
+    dateFormat = require("dateformat");
+  var data = req.query,
+  name_arr = [];
+  var all_bus_act = await db_Select('b.ind_name, a.repo_flag, a.busi_act_name', 'md_busi_act a, md_industries b', `a.ind_id=b.id AND a.repo_flag = '${data.frm_repo_id}'`, null)
+  if(all_bus_act.suc > 0 && all_bus_act.msg.length > 0){
+    for(let dt of all_bus_act.msg){
+      var ind_dtls = await db_Select('id, sec_id', 'md_industries', `TRIM(ind_name) = "${dt.ind_name.trim()}" AND repo_flag = '${data.to_repo_flag}'`, null)
+      if(ind_dtls.suc > 0 && ind_dtls.msg.length > 0){
+        var chk = await db_Select('count(id) tot_row', 'md_busi_act', `ind_id = '${ind_dtls.msg[0].id}' AND sec_id = '${ind_dtls.msg[0].sec_id}' AND repo_flag = '${data.to_repo_flag}'`, null)
+        var table_name = 'md_busi_act',
+        fields = chk.suc > 0 && chk.msg[0].tot_row > 0 ? `sec_id = '${ind_dtls.msg[0].sec_id}', ind_id = '${ind_dtls.msg[0].id}', busi_act_name = '${dt.busi_act_name}', created_by = 'admin', created_dt = '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}'` : '(repo_flag, sec_id, ind_id, busi_act_name, created_by, created_dt)',
+        values = `('${data.to_repo_flag}', '${ind_dtls.msg[0].sec_id}', '${ind_dtls.msg[0].id}', '${dt.busi_act_name}', 'admin', '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
+        whr = `ind_id = '${ind_dtls.msg[0].id}' AND sec_id = '${ind_dtls.msg[0].sec_id}' AND repo_flag = '${data.to_repo_flag}'`,
+        flag = chk.suc > 0 && chk.msg[0].tot_row > 0 ? 1 : 0;
+        await db_Insert(table_name, fields, values, whr, flag)
+      }else{
+        name_arr.push({ind_name: dt.ind_name.trim(), busi_act_name: dt.busi_act_name})
+      }
+      // console.log();
+    }
+  }
+  res.send(name_arr)
+})
+
 app.use(UserRouter);
 app.use(MasterRouter);
 app.use(DataCollectionRouter)
