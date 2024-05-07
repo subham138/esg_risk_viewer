@@ -177,7 +177,7 @@
                                                                                 <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_1" aria-expanded="true" aria-controls="collapse11">Scope 1</button>
                                                                             </h5>
                                                                         </div>
-                                                                        <div class="collapse" id="scope_1" aria-labelledby="scope_1" data-bs-parent="#accordionoc">
+                                                                        <div class="collapse show ghg-emi-tab-row" id="scope_1" aria-labelledby="scope_1" data-bs-parent="#accordionoc">
                                                                             <div class="row">
                                                                                 <div class="col-md-12 text-center p-3 row">
                                                                                     <div class="col-md-12 row mt-1">
@@ -1479,6 +1479,37 @@
             $('.section-menu').removeClass('sticky-section-menu')
         }                
         });
+    })
+</script>
+
+<script>
+    $('.nav-link[role="tab"]').on('click', function(e){
+        console.log(e.target.id, 'lalala');
+        var id = e.target.id, element = '', text = '', trigger_fung = false;
+        switch (id) {
+            case 'dis-top-tab':
+                element = document.querySelector(`#${id}-row`)
+                text = `Select disclosure topics.`
+                trigger_fung = true
+                break;
+            case 'msg-dis-top-tab':
+                element = document.querySelector(`.${id}-row`)
+                text = `Here you can manage material sustainability topics.`
+                trigger_fung = true
+                break;
+            case 'ghg-emi-tab':
+                element = document.querySelector(`.${id}-row`)
+                text = `Here, you can add your activities values to calculate the organisation’s GHG emissions.`
+                trigger_fung = true
+                break;
+            default:
+                trigger_fung = false
+                break;
+        }
+        if (trigger_fung)
+            setTimeout(() => {
+                triggerTour(element, text)
+            }, 200);
     })
 </script>
 <%- include('../templates/footer.ejs') %>

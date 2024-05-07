@@ -166,6 +166,7 @@
                             if(sus_data.length > 0){
                                 $.each(sus_data, function (j, sus_dt) {
                                     if(k==0){
+                                      console.log(dt, sus_dt, 'lalalala');
                                         // created_row(dt.id, 1, 0, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code, dt.topic_name)
                                         $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1">
                                             <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>
@@ -178,7 +179,8 @@
                                             <td><button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button></td>
                                         </tr>`);
                                     }else{
-                                        add_row(dt.id, k, sus_dt.ind_agn, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code, sus_dt.words != 'null' && sus_dt.words ? sus_dt.words : '')
+                                      console.log(sus_dt.id, 'llulululul');
+                                        add_row(dt.id, k, sus_dt.ind_agn, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code, sus_dt.words != 'null' && sus_dt.words ? sus_dt.words : '', sus_dt.id)
                                     }
                                     k++;
                                 })
@@ -224,7 +226,7 @@
     });
   });
 
-  function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name='', words=''){
+  function created_row(top_id, id, prev_id = 0, ind_agn='', metric='', catg='', unit='', code='', topic_name='', words='', sus_id = 0){
     // console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
     $(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`).after(`<tr id="row_${top_id}_${id}">
         ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
@@ -234,24 +236,43 @@
         <td><input class="form-control" id="unit_${top_id}_${id}" name="unit_${top_id}" type="text" value="${unit}"></td>
         <td><input class="form-control" id="code_${top_id}_${id}" name="code_${top_id}" type="text" value="${code}"></td>
         <td><textarea class="form-control" id="words_${top_id}_${id}" name="words_${top_id}" type="text" rows="3">${words}</textarea></td>
-        <td>${prev_id > 0 ? `<button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${top_id}, ${id})"><i class="icofont icofont-trash"></i></button>` : `<button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${top_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>`}</td>
+        <td>${prev_id > 0 ? `<button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${top_id}, ${id}, ${sus_id})"><i class="icofont icofont-trash"></i></button>` : `<button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${top_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>`}</td>
     </tr>`);
   }
 
-  function add_row(top_id, id, ind_agn='', metric='', catg='', unit='', code='', words='') {
+  function add_row(top_id, id, ind_agn='', metric='', catg='', unit='', code='', words='', sus_id = 0) {
     var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
     let next_id = row + 1;
     $(`#first_top_td_${top_id}`).removeAttr("rowspan");
     $(`#first_top_td_${top_id}`).attr("rowspan", next_id);
-    created_row(top_id, next_id, row, ind_agn, metric, catg, unit, code, '', words)
+    created_row(top_id, next_id, row, ind_agn, metric, catg, unit, code, '', words, sus_id)
   }
 
-  function remove_row(top_id, id) {
-    var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
-    let prev_id = row - 1;
-    $(`#first_top_td_${top_id}`).removeAttr("rowspan");
-    $(`#first_top_td_${top_id}`).attr("rowspan", prev_id);
-    $(`#row_${top_id}_${id}`).remove();
+  function remove_row(top_id, id, sus_id) {
+    if(confirm('Are you sure, you want to delete permanently?')){
+      var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
+      let prev_id = row - 1;
+      if(sus_id > 0){
+        $.ajax({
+          method: "POST",
+          url: "/sus_disc_del_ajax",
+          data: { id: sus_id },
+          dataType: "html",
+          beforeSend: function () {
+            $(".loader-wrapper").show();
+          },
+          success: function (result) {
+            var res = JSON.parse(result);
+          },
+          complete: function () {
+            $(".loader-wrapper").hide();
+          },
+        })
+      }
+      $(`#first_top_td_${top_id}`).removeAttr("rowspan");
+      $(`#first_top_td_${top_id}`).attr("rowspan", prev_id);
+      $(`#row_${top_id}_${id}`).remove();
+    }
   }
 </script>
 

@@ -14,7 +14,7 @@ const {
   saveWordInfo,
   getCopyLatestWordInfoSet,
 } = require("../modules/DataCollectionModule");
-const { db_Insert, db_Select } = require("../modules/MasterModule");
+const { db_Insert, db_Select, db_Delete } = require("../modules/MasterModule");
 
 DataCollectionRouter.use((req, res, next) => {
   var user = req.session.user;
@@ -173,6 +173,12 @@ DataCollectionRouter.get("/sus_disc_ajax", async (req, res) => {
   };
   res.send(res_dt);
 });
+
+DataCollectionRouter.post('/sus_disc_del_ajax', async (req, res) => {
+  var data = req.body
+  var res_dt = await db_Delete('td_sus_dis_top_met', `id = ${data.id}`)
+  res.send(res_dt)
+})
 
 DataCollectionRouter.get("/act_metric", async (req, res) => {
   var enc_dt = req.query.flag,

@@ -12,14 +12,14 @@ module.exports = {
                 var res_dt = await db_Select(select, table_name, whr, order)
                 resolve(res_dt)
             }else{
-                var select = 'a.id, a.project_name, a.sec_id, a.ind_id, a.last_access, a.last_accessed_by, a.business_act, a.bus_act_id, a.location_busi_act',
-                    table_name = 'td_project a',
-                    whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
+                var select = 'a.id, a.project_name, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.last_access, a.last_accessed_by, a.business_act, a.bus_act_id, a.location_busi_act',
+                    table_name = 'td_project a, md_sector b, md_industries c',
+                    whr = `a.sec_id=b.id AND a.repo_flag=b.repo_flag AND a.ind_id=c.id AND a.repo_flag=c.repo_flag AND a.sec_id=c.sec_id AND a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
                     order = 'ORDER BY a.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 if(id > 0){
                     if(res_dt.suc > 0 && res_dt.msg.length > 0){
-                        var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_name',
+                        var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_type, b.user_name',
                             table_name = 'td_user_project a, md_user b',
                             whr = `a.user_id=b.id AND a.client_id = '${client_id}' AND a.project_id = '${res_dt.msg[0].id}'`,
                             order = null;

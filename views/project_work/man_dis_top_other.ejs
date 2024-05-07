@@ -82,7 +82,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                     var getRes = editorData.filter(edt => edt.article_code == dt.code && edt.top_id==dt.top_id)
                     var nowRes = dt.top_id
                     %>
-                    <div id="editorNewDiv_<%= ediR %>" data-code="<%= dt.code %>" data-id="<%= dt.id %>" class="row m-t-10 editorDiv" style="display: none;">
+                    <div id="editorNewDiv_<%= ediR %>" data-code="<%= dt.code %>" data-id="<%= dt.id %>" class="row m-t-10 editorDiv msg-dis-top-tab-row" style="display: none;">
                         
                         <div class="<%= ai_tag_tool_flag != 'N' ? 'col-md-8' : 'col-md-12' %> m-l-8 p-r-15 row">
                             <% if(prevRes != nowRes){

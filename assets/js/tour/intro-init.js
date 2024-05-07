@@ -2,7 +2,7 @@
     "use strict";
     var intro_start = {
         init: function() {
-            introJs().start();
+            introJs().setOption("dontShowAgain", true).start();
         }
     };
     intro_start.init()

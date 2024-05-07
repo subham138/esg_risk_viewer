@@ -193,6 +193,20 @@ MasterRouter.post("/ind_save", async (req, res) => {
   }
 });
 
+MasterRouter.get("/ind_del", async (req, res) => {
+  var id = req.query.id, res_dt, flag = req.query.flag;
+  if (id > 0) {
+    res_dt = await db_Delete('md_industries', `id = ${id}`);
+    if(res_dt.suc > 0){
+      await db_Delete('md_industries_topics', `ind_id = ${id}`);
+    }
+    req.session.message = { type: "danger", message: "Data deleted successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not saved" };
+  }
+  res.redirect(`/industries?flag=${flag}`);
+});
+
 MasterRouter.get("/topic_catg", async (req, res) => {
   var enc_dt = req.query.flag,
   flag = new Buffer.from(enc_dt, 'base64').toString();

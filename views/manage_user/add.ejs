@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-            <div class="card-body card_body_Cus">
+            <div class="card-body card_body_Cus" id="manage_user_save">
                 <form method="POST" action="/manage_user_save" class="needs-validation">
                 <div class="row g-3 py-3">
                     <div class="col-md-6">
@@ -82,5 +82,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        setTimeout(() => {
+            triggerTour(document.querySelector('#manage_user_save'), `Here you can create users and assign roles. “Admin Users” have the same rights as you (including to add/remove users). “Editors” can create new, and manage existing projects they are assigned to. “Viewers” can view and download existing projects.`)
+        }, 400);
+    })
+</script>
 
 <%- include('../templates/footer.ejs') %>

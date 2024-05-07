@@ -364,6 +364,34 @@ tr.introjs-showElement > td, tr.introjs-showElement > th {
   z-index: 1;
   opacity: 0; }
 
+  .introjs-dontShowAgain {
+    /* padding-left: 20px;
+    padding-right: 20px; */
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.introjs-dontShowAgain input {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 2px;
+    display: inline;
+    width: 15px;
+    height: 15px;
+}
+.introjs-dontShowAgain label {
+    font-size: 14px;
+    display: inline-block;
+    font-weight: 400;
+    margin: 0 0 0 5px;
+    padding: 0;
+    /* background-color: #fff; */
+    color: #ffffff;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 @-webkit-keyframes introjspulse {
   0% {
     -webkit-transform: scale(0);

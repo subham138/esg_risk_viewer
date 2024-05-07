@@ -31,7 +31,7 @@
                         <div class="top_radio_sec">
                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
                         <div class="col-md-12">
-                            <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">Add New Project</a>
+                            <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit" id="my_project_add" data-step="1">Add New Project</a>
                         </div>
                         <% } %>
                         </div>
@@ -55,7 +55,7 @@
                                     <td><%= i %></td>
                                     <td><%= dt.project_name %></td>
                                     <td><%= dt.last_access != '' ? dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss') : '' %></td>
-                                    <td>
+                                    <td <% if(i == 1){ %> id="my_project_td" <% } %>>
                                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
                                             <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
@@ -96,5 +96,12 @@
             window.location.href = `/proj_work?id=${id}&flag=<%= enc_dt %>`
         }
     }
+    $(document).ready(function(){
+        var element = [document.querySelector('#my_project_add'), document.querySelector('#my_project_td')],
+        text = [`Create a new project under any reporting framework.`, `“Edit” allows you to change project name, assign new users or delete existing users for this project. “Manage” allows you to manage this project. “View” allows you to preview and download the project report.`]
+        setTimeout(() => {
+            triggerTour(element, text)
+        }, 200);
+    })
 </script>
 <%- include('../templates/footer.ejs') %>
