@@ -93,13 +93,15 @@ app.get("/", (req, res) => {
 app.get('/test_lala', (req, res) => {
   const bcrypt = require('bcrypt')
   var pass = bcrypt.hashSync('1234', 10)
-  // var enc = Buffer.from('F').toString('base64'),
+  var dateFormat = require('dateformat')
+  var enc = Buffer.from(JSON.stringify({email_id: 'subham@gmail.com', url_time: '2024-05-08 16:28:56'})).toString('base64')
+  console.log({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')});
   // dec = new Buffer.from(enc, 'base64').toString();
   // console.log(dec);
   // res.send(encodeURIComponent(enc))
   // console.log(req.files);
   // res.send('LALA')
-  res.send(pass)
+  res.send(enc)
   // res.render('test')
 })
 
@@ -357,7 +359,7 @@ app.get('/test_report', async (req, res) => {
             ghg_emi_data[dt] = ghg_emi_list.filter(fdt => fdt.scope == dt)
         }
     }
-    // console.log(ghg_emi_data);
+    console.log(ghg_emi_data, data.proj_id);
     // console.log(parseInt(currDate.getFullYear()));
     for(let i = 0; i<=6; i++){
         // console.log(i, 'Year');

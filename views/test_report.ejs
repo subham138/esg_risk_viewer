@@ -55,6 +55,7 @@
     <script src="/js/jquery-3.5.1.min.js"></script>
 </head>
 <body>
+    <% var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'}; %>
     <div class="page-body">
         <div class="container-fluid">
             <div class="logo-report">
@@ -309,12 +310,10 @@
                         <% var new_chk_list = chk_list.filter(fdt => fdt.catg_name == dt); %>
                             <div class="row">
                                 <% if(new_chk_list.length > 0){
-                                    console.log(new_chk_list, 'HERE')
                                     new_chk_list.forEach(chkDt => { %>
                                         <div class="col-md-12"><p><%= chkDt.data.topic_name %></p></div>
                                     <% var sPrevRes = '',
                                         newManDisList = susModifyDt.filter(fdt => fdt.topic_name == chkDt.data.topic_name);
-                                        console.log(newManDisList.length, 'LALALA')
                                         newManDisList.forEach(sdt => {
                                             var sNowRes = sdt.top_id 
                                             var getRes = editorData.filter(edt => edt.article_code == sdt.code && edt.top_id==sdt.top_id)
@@ -343,6 +342,14 @@
                     <div class="col-md-12">
                         <p class="report-sub-head">Scope 1</p>
                     </div>
+                    <p>Start Month: <%= 's1' in ghg_emi_data ? (ghg_emi_data['s1'].length > 0 ? fullMonths[ghg_emi_data['s1'][0].repo_month] : '') : '' %></p>
+                    <table class="table-bordered m-5">
+                        <tr>
+                            <th>Emission source</th>
+                            <th>Activity</th>
+                            <th>Emission Type</th>
+                            <th>Total Kg CO2e</th>
+                        </tr>
                     <% if('s1' in ghg_emi_data){
                         var sc_len = ghg_emi_data['s1'].length / 12;
                         for(let sc = 1; sc <= sc_len; sc++){
@@ -350,40 +357,91 @@
                             if(newGhgDt.length > 0){
                                 var tot_co_val_label = 0;
                                 newGhgDt.forEach(dt => tot_co_val_label += dt.co_val)
-                                var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'}; %>
-                            <p>Start Month: <%= fullMonths[newGhgDt[0].repo_month] %></p>
-                            <table>
-                                <tr>
-                                    <th>Emission source</th>
-                                    <th>Activity</th>
-                                    <th>Emission Type</th>
-                                    <th>Total Kg CO2e</th>
-                                </tr>
-                                <% if(newGhgDt.length > 0){
-                                    var nextCalField = 1;
-                                    var tot_cal_val = 0,
-                                        tot_co_val = 0;
-                                    newGhgDt.forEach(gdt => {
-                                        gdt.cal_val > 0 ? tot_cal_val += gdt.cal_val : ''
-                                        gdt.co_val > 0 ? tot_co_val += gdt.co_val : ''
-                                        %>
-                                        <tr>
-                                            <td><%= gdt.repo_month %></td>
-                                            <td>
-                                                <select class="form-select" id="emi_type_unit_id_s1_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s1', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                    <option selected="" value="">Please select unit of measurement</option>
-                                                </select>
-                                            </td>
-                                            <td><input class="form-control" id="cal_val_s1_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>></td>
-                                            <td><input class="form-control" id="emi_fact_val_s1_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
-                                            <td><input class="form-control" id="co_val_s1_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s1', '<%= sc %>', '<%= nextCalField %>')"></td>
-                                        </tr>
-                                    <%  nextCalField++; }) %>
-                                <% } %>
-                            </table>
+                                %>
+                            <tr>
+                                <td><%= newGhgDt[0].type_name %></td>
+                                <td><%= newGhgDt[0].act_name %></td>
+                                <td><%= newGhgDt[0].emi_name %></td>
+                                <td><%= tot_co_val_label %></td>
+                            </tr>
                             <% }
                         }
-                    } %>
+                    }else{ %>
+                        <tr>
+                            <td colspan="4" class="text-center">No data found</td>
+                        </tr>
+                    <% } %>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="report-sub-head">Scope 2</p>
+                    </div>
+                    <p>Start Month: <%= 's2' in ghg_emi_data ? (ghg_emi_data['s2'].length > 0 ? fullMonths[ghg_emi_data['s2'][0].repo_month] : '') : '' %></p>
+                    <table class="table-bordered m-5">
+                        <tr>
+                            <th>Emission source</th>
+                            <th>Activity</th>
+                            <th>Emission Type</th>
+                            <th>Total Kg CO2e</th>
+                        </tr>
+                    <% if('s2' in ghg_emi_data){
+                        var sc_len = ghg_emi_data['s2'].length / 12;
+                        for(let sc = 1; sc <= sc_len; sc++){
+                            var newGhgDt = ghg_emi_data['s2'].filter(dt => dt.sl_no == sc && dt.scope == 's2')
+                            if(newGhgDt.length > 0){
+                                var tot_co_val_label = 0;
+                                newGhgDt.forEach(dt => tot_co_val_label += dt.co_val)
+                                %>
+                            <tr>
+                                <td><%= newGhgDt[0].type_name %></td>
+                                <td><%= newGhgDt[0].act_name %></td>
+                                <td><%= newGhgDt[0].emi_name %></td>
+                                <td><%= tot_co_val_label %></td>
+                            </tr>
+                            <% }
+                        }
+                    }else{ %>
+                        <tr>
+                            <td colspan="4" class="text-center">No data found</td>
+                        </tr>
+                    <% } %>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="report-sub-head">Scope 3</p>
+                    </div>
+                    <p>Start Month: <%= 's3' in ghg_emi_data ? (ghg_emi_data['s3'].length > 0 ? fullMonths[ghg_emi_data['s3'][0].repo_month] : '') : '' %></p>
+                    <table class="table-bordered m-5">
+                        <tr>
+                            <th>Emission source</th>
+                            <th>Activity</th>
+                            <th>Emission Type</th>
+                            <th>Total Kg CO2e</th>
+                        </tr>
+                    <% if('s3' in ghg_emi_data){
+                        var sc_len = ghg_emi_data['s3'].length / 12;
+                        for(let sc = 1; sc <= sc_len; sc++){
+                            var newGhgDt = ghg_emi_data['s3'].filter(dt => dt.sl_no == sc && dt.scope == 's3')
+                            if(newGhgDt.length > 0){
+                                var tot_co_val_label = 0;
+                                newGhgDt.forEach(dt => tot_co_val_label += dt.co_val)
+                                %>
+                            <tr>
+                                <td><%= newGhgDt[0].type_name %></td>
+                                <td><%= newGhgDt[0].act_name %></td>
+                                <td><%= newGhgDt[0].emi_name %></td>
+                                <td><%= tot_co_val_label %></td>
+                            </tr>
+                            <% }
+                        }
+                    }else{ %>
+                        <tr>
+                            <td colspan="4" class="text-center">No data found</td>
+                        </tr>
+                    <% } %>
+                    </table>
                 </div>
             </div>
         </div>

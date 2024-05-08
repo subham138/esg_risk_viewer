@@ -1,7 +1,7 @@
 const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
-const { db_Insert, db_Delete } = require('../modules/MasterModule');
+const { db_Insert, db_Delete, USER_TYPE_LIST } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList, getActiveTopicList, saveCheckedProjectFlag, getCheckedProjectTopList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 const dateFormat = require("dateformat");
@@ -371,6 +371,89 @@ ProjectRouter.post('/change_dis_top_status', async (req, res) => {
     var data = req.body
     var res_dt = await saveCheckedProjectFlag(data, req.session.user.user_name, data.status)
     res.send(res_dt)
+})
+
+ProjectRouter.get('/report_full_view', async (req, res) => {
+    var enc_data = req.query.enc_data, data_set = {};
+    var data = Buffer.from(enc_data, "base64")
+    data = JSON.parse(data);
+    var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id, data.flag);
+    var susDistList = await getSusDiscList(data.sec_id, data.ind_id, 0, data.flag)
+    var metric = await getActMetrialDtls(data.sec_id, data.ind_id, data.flag)
+    var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id, data.flag)
+    var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
+    var allDynamicData = await getDynamicData(0, data.sec_id, data.ind_id, 0, data.flag);
+    var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
+    emi_type = {suc:0,msg:[]};
+    var year_list=[], currDate = new Date();
+    var ghg_emi_list = await getGhgEmiList(1, 0, data.proj_id)
+    ghg_emi_list = ghg_emi_list.suc > 0 ? (ghg_emi_list.msg.length > 0 ? ghg_emi_list.msg : []) : [];
+    var scope_list = ghg_emi_list.length > 0 ? ghg_emi_list.map(dt => dt.scope) : []
+    scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
+    var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
+    var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
+    var project_data = await getProjectList(data.proj_id, 1, 0, data.flag);
+    // console.log(project_data);
+
+    var ghg_emi_data = {};
+    if(scope_list.length > 0){
+        for(let dt of scope_list){
+            ghg_emi_data[dt] = ghg_emi_list.filter(fdt => fdt.scope == dt)
+        }
+    }
+    console.log(ghg_emi_data, data.proj_id);
+    // console.log(parseInt(currDate.getFullYear()));
+    for(let i = 0; i<=6; i++){
+        // console.log(i, 'Year');
+        year_list.push(parseInt(currDate.getFullYear()) - i)
+    }
+    allDynamicData = allDynamicData.suc > 0 ? allDynamicData.msg : ''
+    // console.log(resDt);
+    if (resDt.suc > 0 && resDt.msg.length > 0) {
+        if(resDt.msg.length == 1){
+            if (resDt.msg[0].data_file_name) {
+                resDt = fs.readFileSync(path.join('dynamic_data_set', resDt.msg[0].data_file_name), 'utf-8')
+                resDt = JSON.parse(resDt)
+            }
+        }else{
+            for(let dt of resDt.msg){
+                if(dt.data_file_name != ''){
+                    var dynData = fs.readFileSync(path.join('dynamic_data_set', dt.data_file_name), 'utf-8')
+                    data_set[dt.top_id] = JSON.parse(dynData)
+                }
+            }
+        }
+    }
+    // console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
+    var res_data = {
+        top_id: data.top_id, 
+        topName,
+        sec_id: data.sec_id,
+        ind_id: data.ind_id,
+        project_id: data.proj_id,
+        projName: data.proj_name,
+        repo_type: data.repo_type,
+        resDt,
+        susDistList,
+        metric,
+        editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
+        data_set,
+        allDynamicData,
+        type_list: type_list.suc > 0 ? type_list.msg : [],
+        act_list: act_list.suc > 0 ? act_list.msg : [],
+        emi_type: emi_type.suc > 0 ? emi_type.msg : [],
+        ghg_emi_data,
+        year_list,
+        act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
+        get_checked_top_list: get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
+        project_data: project_data.suc > 0 ? project_data.msg : [],
+        header: "Project Work",
+        sub_header: "Project View",
+        header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
+        flag: data.flag,
+        user_type_master: USER_TYPE_LIST
+    };
+    res.render('project_work/report_view_template', res_data)
 })
 
 module.exports = {ProjectRouter}

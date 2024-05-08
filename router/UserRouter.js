@@ -1,8 +1,9 @@
 const express = require("express"),
   UserRouter = express.Router(),
-  bcrypt = require("bcrypt");
+  bcrypt = require("bcrypt"),
+  dateFormat = require('dateformat');
 
-const { db_Select, USER_TYPE_LIST } = require("../modules/MasterModule");
+const { db_Select, USER_TYPE_LIST, db_Insert } = require("../modules/MasterModule");
 const {
   getUserList,
   saveUser,
@@ -11,13 +12,18 @@ const {
 } = require("../modules/UserModule");
 
 UserRouter.use((req, res, next) => {
-  // console.log(req.url);
-  if (req.url != "/login") {
-    var user = req.session.user;
-    if (user) {
-      next();
-    } else {
-      res.redirect("/login");
+  if (req.url != "/login" && req.url != "/forgot_pass") {
+    var url = req.url.split('?')
+    var currUrl = url.length > 0 ? url[0] : ''
+    if(currUrl != "/reset_pass"){
+      var user = req.session.user;
+      if (user) {
+        next();
+      } else {
+        res.redirect("/login");
+      }
+    }else{
+      next()
     }
   } else {
     next();
@@ -90,6 +96,93 @@ UserRouter.get("/log_out", (req, res) => {
   req.session.destroy();
   res.redirect("/login");
 });
+
+UserRouter.get('/forgot_pass', (req, res) => {
+  res.render('pages/forgot_password')
+})
+
+UserRouter.post('/forgot_pass', async (req, res) => {
+  var data = req.body
+  var select = "id, client_id, user_name, user_id, user_type, active_flag",
+    table_name = "md_user",
+    whr = `user_id = '${data.email}'`,
+    order = null;
+  var chk_dt = await db_Select(select, table_name, whr, order);
+  if(chk_dt.suc > 0){
+    if(chk_dt.msg.length > 0){
+      if(chk_dt.msg[0].active_flag == 'Y'){
+        req.session.message = {
+          type: "success",
+          message: "Link has been send to your registered email id.",
+        };
+        res.redirect("/login");
+      }else{
+        req.session.message = {
+          type: "warning",
+          message: "Your account is deactivated. Please contact with admin.",
+        };
+        res.redirect("/forgot_pass");
+      }
+    }else{
+      req.session.message = {
+        type: "warning",
+        message: "Please enter your valid registered email id",
+      };
+      res.redirect("/forgot_pass");
+    }
+  }else{
+    req.session.message = {
+      type: "warning",
+      message: "Something went wrong. Please try again after some time.",
+    };
+    res.redirect("/forgot_pass");
+  }
+})
+
+UserRouter.get('/reset_pass', (req, res) => {
+  var enc_dt = req.query.enc_dt
+  var data = Buffer.from(enc_dt, "base64")
+  data = JSON.parse(data);
+  var link_date = new Date(data.url_time),
+  nowDate = new Date(),
+  maxTime = 2;
+  var hours = Math.abs(link_date.getTime() - nowDate.getTime()) / 36e5;
+  console.log(hours, 'Hour');
+  if(hours <= maxTime){
+    res.render('pages/forgot_pass_entry', {email: data.email_id})
+  }else{
+    req.session.message = {
+      type: "warning",
+      message: "Link expired.",
+    };
+    res.redirect("/login");
+  }
+})
+
+UserRouter.post('/reset_pass', async (req, res) => {
+  var data = req.body
+  var pass = bcrypt.hashSync(data.pass, 10),
+    datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+  var table_name = 'md_user',
+    fields = `password = '${pass}', modified_by = '${data.email}', modified_dt = '${datetime}'`,
+    values = null,
+    whr = `user_id = '${data.email}'`,
+    flag = 1;
+  var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  if(res_dt.suc > 0){
+    req.session.message = {
+      type: "success",
+      message: "Password update successfully",
+    };
+    res.redirect("/login");
+  }else{
+    req.session.message = {
+      type: "warning",
+      message: "Password not update successfully",
+    };
+    res.redirect("/login");
+  }
+})
 
 UserRouter.get("/client", async (req, res) => {
   var client_data = await getClientList();

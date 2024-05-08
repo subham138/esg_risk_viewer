@@ -61,12 +61,15 @@
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                         <% }%>
-                                        <a class="btn btn_UR btn-outline-primary btn-air-primary" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>')">
+                                        <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', 'project_report_view')">
                                             <% if(user_type != 'V'){ %> 
                                                 <i class="icofont icofont-ui-settings"></i> Manage 
                                             <% }else{ %>
                                                 <i class="icofont icofont-eye-alt"></i> View 
                                             <% } %>
+                                        </a>
+                                        <a class="btn btn_UR btn-outline-primary btn-air-primary" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', 'report_full_view')">
+                                            <i class="icofont icofont-eye-alt"></i> Report View 
                                         </a>
                                     <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
                                         <i class="icofont icofont-ui-delete"></i> Delete
@@ -88,9 +91,9 @@
     </div>
 </div>
 <script>
-    function redirectToPage(id, sec_id, ind_id, proj_name){
+    function redirectToPage(id, sec_id, ind_id, proj_name, route){
         if(sec_id > 0 && ind_id > 0){
-            window.location.href = `/project_report_view?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id, ind_id:ind_id, top_id:0, proj_id:id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag:'<%= flag %>'}))}`
+            window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({sec_id:sec_id, ind_id:ind_id, top_id:0, proj_id:id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag:'<%= flag %>'}))}`
             // window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
         }else{
             window.location.href = `/proj_work?id=${id}&flag=<%= enc_dt %>`

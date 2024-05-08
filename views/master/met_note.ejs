@@ -1,0 +1,55 @@
+<%- include('../templates/header.ejs') %>
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+<script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
+    <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+<% } %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3><%= header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><%= header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Zero Configuration  Starts-->
+        <div class="col-sm-12">
+            <% if(message){ %>
+                <div class="alert alert-<%= message.type %> dark alert-dismissible fade show" role="alert">
+                  <i data-feather="clock"></i>
+                  <p><%= message.message %></p>
+                  <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 colEditor">
+                            <div id="met_note_text"><%- data.length > 0 ? data[0].met_note : "" %></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Zero Configuration  Ends-->
+    </div>
+</div>
+<script>
+    var editor = new RichTextEditor("#met_note_text");
+    function delItem(){
+        if(confirm('Do you want to delete?')){
+            return true
+        }else{
+            return false
+        }
+    }
+</script>
+<%- include('../templates/footer.ejs') %>

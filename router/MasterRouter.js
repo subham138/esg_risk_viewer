@@ -394,5 +394,18 @@ MasterRouter.get("/busi_act_del", async (req, res) => {
   res.redirect(`/busi_act?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
 });
 
+MasterRouter.get('/met_note', async (req, res) => {
+  var enc_dt = req.query.flag,
+  flag = new Buffer.from(enc_dt, 'base64').toString();
+  var data = await db_Select('*', 'md_met_note', `flag='${flag}'`, null)
+  // console.log(data);
+  res.render("master/met_note", {
+    data: data.suc > 0 ? data.msg : [],
+    header: "Methodology Notes",
+    flag,
+    enc_dt
+  });
+})
+
 
 module.exports = { MasterRouter };
