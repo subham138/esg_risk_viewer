@@ -31,11 +31,21 @@
             <% } %>
             <div class="card">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12 colEditor">
-                            <div id="met_note_text"><%- data.length > 0 ? data[0].met_note : "" %></div>
+                    <form action="/met_note" method="POST">
+                        <div class="row">
+                            <div class="col-md-12 colEditor">
+                                <div id="met_note_text"><%- data.length > 0 ? data[0].met_note : "" %></div>
+                                <textarea name="met_note" id="met_note" style="display: none;"></textarea>
+                            </div>
                         </div>
-                    </div>
+                        <div class="row m-t-15">
+                            <div class="col-md-12 text-center">
+                                <input type="hidden" name="id" value="<%= data.length > 0 ? data[0].id : 0 %>">
+                                <input type="hidden" name="flag" value="<%= flag %>">
+                                <button type="submit" class="btn btn-pill btn-custom">Save</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -44,6 +54,9 @@
 </div>
 <script>
     var editor = new RichTextEditor("#met_note_text");
+    editor.attachEvent("change", function () {
+        $('#met_note').val(editor.getHTMLCode())
+    })
     function delItem(){
         if(confirm('Do you want to delete?')){
             return true

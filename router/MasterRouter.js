@@ -407,5 +407,23 @@ MasterRouter.get('/met_note', async (req, res) => {
   });
 })
 
+MasterRouter.post('/met_note', async (req, res) => {
+  var data = req.body,
+  user_name = req.session.user.user_name,
+  datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+  var table_name = 'md_met_note', 
+  fields = data.id > 0 ? `met_note = '${data.met_note != '' ? data.met_note.split("'").join("\\'") : ""}', modified_by = '${user_name}', modified_dt = '${datetime}'` : '(flag, met_note, created_by, created_dt)', 
+  values = `('${data.flag}', '${data.met_note != '' ? data.met_note.split("'").join("\\'") : ""}', '${user_name}', '${datetime}')`, 
+  whr = data.id > 0 ? `id = ${data.id}` : null, 
+  flag = data.id > 0 ? 1 : 0;
+  var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  if (res_dt.suc > 0) {
+    req.session.message = { type: "success", message: "Saved successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not saved" };
+  }
+  res.redirect(`/met_note?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
+})
+
 
 module.exports = { MasterRouter };
