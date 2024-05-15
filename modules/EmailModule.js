@@ -14,8 +14,8 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// const project_url = 'https://esgriskviewer.com/';
-const project_url = 'https://localhost:3000/';
+const project_url = 'https://esgriskviewer.com/';
+// const project_url = 'https://localhost:3000/';
 
 // const SendUserEmail = (emailId) => {
 const SendUserEmail = (emailId, user_name, enc_dt) => {
