@@ -11,7 +11,7 @@
     </div>
     <div class="col-12">
       <div class="login-card">
-        <form class="theme-form login-form" action="/login" method="POST">
+        <form class="theme-form login-form" id="loginForm" action="/login" method="POST">
           <% if(message){ %>
           <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
            
@@ -57,20 +57,20 @@
               <div class="form-group mt-3">
                 <!-- <label>Email Address</label> -->
                 <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-user"></i></span>
-                  <input class="form-control loginInput" type="email" name="email" required="" placeholder="Username">
+                  <input class="form-control loginInput" type="email" name="email" id="logEmail" required="" placeholder="Username">
                 </div>
               </div>
               <div class="form-group">
                 <!-- <label>Password</label> -->
                 <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
-                  <input class="form-control loginInput" type="password" name="password" required="" placeholder="Password">
+                  <input class="form-control loginInput" type="password" name="password" id="logPass" required="" placeholder="Password">
                   <div class="show-hide"><span class="showPass"><i class="icofont icofont-eye"></i></span></div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="row">
                   <div class="col-md-12">
-                    <button class="btn btn-primary btn-block lginBtn" type="submit">Sign in</button>
+                    <button class="btn btn-primary btn-block lginBtn" id="signInBtn" type="button">Sign in</button>
                   </div>
                 </div>
               </div>
@@ -101,4 +101,30 @@
       </div>
     </div>
   </div>
+<!-- PIN MODAL-->
+  <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <center><label><b>ENTER 4-DIGIT OTP</b></label></center>
+          <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4"><input type="password" class="form-control-lg" id="pincode-input1"></div>
+            <div class="col-4"></div>
+          </div>
+          <input type="hidden" id="pin">
+          <div class="row">
+            <div class="col-md-12 text-end mt-3 mb-2">Haven't received? <a href="#">Resend..</a></div>
+          </div>
+          <center class="pt-3">
+            <div class="bg-warning">
+              <i class="fa fa-exclamation-circle text-white pr-1" aria-hidden="true"></i> 
+              OTP has been send to your registered email Id.
+            </div>
+          </center>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- CLOSE PIN MODAL-->
 <%- include('../templates/login_footer.ejs') %>

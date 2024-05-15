@@ -1,4 +1,4 @@
-const { getSectorList, getIndustriesList, getBusiActList } = require('../modules/AdminModule');
+const { getSectorList, getIndustriesList, getBusiActList, getMetNote } = require('../modules/AdminModule');
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
 const { db_Insert, db_Delete, USER_TYPE_LIST } = require('../modules/MasterModule');
@@ -393,6 +393,7 @@ ProjectRouter.get('/report_full_view', async (req, res) => {
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
     var project_data = await getProjectList(data.proj_id, 1, 0, data.flag);
+    var met_note_dtls = await getMetNote(0, data.flag)
     // console.log(project_data);
 
     var ghg_emi_data = {};
@@ -401,7 +402,7 @@ ProjectRouter.get('/report_full_view', async (req, res) => {
             ghg_emi_data[dt] = ghg_emi_list.filter(fdt => fdt.scope == dt)
         }
     }
-    console.log(ghg_emi_data, data.proj_id);
+    // console.log(ghg_emi_data, data.proj_id);
     // console.log(parseInt(currDate.getFullYear()));
     for(let i = 0; i<=6; i++){
         // console.log(i, 'Year');
@@ -447,6 +448,7 @@ ProjectRouter.get('/report_full_view', async (req, res) => {
         act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
         get_checked_top_list: get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
         project_data: project_data.suc > 0 ? project_data.msg : [],
+        met_note: met_note_dtls.suc > 0 ? met_note_dtls.msg : [],
         header: "Project Work",
         sub_header: "Project View",
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,

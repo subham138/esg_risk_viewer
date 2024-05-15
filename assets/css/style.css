@@ -46719,3 +46719,19 @@ header.main-nav{
   height: 88% !important;
   /* overflow: scroll; */
 }
+
+.pas-eye{
+  top: 50%;
+  position: absolute;
+  right: 30px;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  text-transform: capitalize;
+  z-index: 2;
+}
+
+.show-pass {
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--theme-primary);
+}

@@ -66,4 +66,15 @@ const getBusiActList = (id = null, sec_id = null, ind_id = null, flag = 'I') => 
     })
 }
 
-module.exports = {getSectorList, getIndustriesList, getTopicCatgList, getTopicList, getBusiActList}
+const getMetNote = (id = 0, flag = 'I') => {
+    return new Promise(async (resolve, reject) => {
+        var select = 'id, flag, met_note',
+        table_name = 'md_met_note',
+        whr = `flag = '${flag}' ${id > 0 ? `AND id = ${id}` : ''}`, 
+        order = null;
+        var res_dt = await db_Select(select, table_name, whr, order)
+        resolve(res_dt)
+    })
+}
+
+module.exports = {getSectorList, getIndustriesList, getTopicCatgList, getTopicList, getBusiActList, getMetNote}

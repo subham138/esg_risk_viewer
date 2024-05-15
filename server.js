@@ -90,12 +90,15 @@ app.get("/", (req, res) => {
   }
 });
 
-app.get('/test_lala', (req, res) => {
+app.get('/test_lala',async (req, res) => {
+  const {SendUserEmail} = require('./modules/EmailModule')
   const bcrypt = require('bcrypt')
   var pass = bcrypt.hashSync('1234', 10)
   var dateFormat = require('dateformat')
-  var enc = Buffer.from(JSON.stringify({email_id: 'subham@gmail.com', url_time: '2024-05-08 16:28:56'})).toString('base64')
+  var enc = Buffer.from(JSON.stringify({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')})).toString('base64')
   console.log({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')});
+  var email = await SendUserEmail('suvrajit@synergicsoftek.com', 'Suvrajit Banerjee', encodeURIComponent(enc))
+  console.log(email);
   // dec = new Buffer.from(enc, 'base64').toString();
   // console.log(dec);
   // res.send(encodeURIComponent(enc))

@@ -3,6 +3,7 @@ const express = require("express"),
   bcrypt = require("bcrypt"),
   dateFormat = require('dateformat');
 
+const { SendUserEmail, sendOtp } = require("../modules/EmailModule");
 const { db_Select, USER_TYPE_LIST, db_Insert } = require("../modules/MasterModule");
 const {
   getUserList,
@@ -12,7 +13,7 @@ const {
 } = require("../modules/UserModule");
 
 UserRouter.use((req, res, next) => {
-  if (req.url != "/login" && req.url != "/forgot_pass") {
+  if (req.url != "/login" && req.url != "/forgot_pass" && req.url != '/chk_user_login') {
     var url = req.url.split('?')
     var currUrl = url.length > 0 ? url[0] : ''
     if(currUrl != "/reset_pass"){
@@ -92,6 +93,45 @@ UserRouter.post("/login", async (req, res) => {
   // res.send(data)
 });
 
+UserRouter.post('/chk_user_login', async (req, res) => {
+  var data = req.body, res_dt = '';
+  // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
+  var select = "id, client_id, user_name, user_id, password, user_type, active_flag",
+    table_name = "md_user",
+    whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
+    order = null;
+  var chk_dt = await db_Select(select, table_name, whr, order);
+  if (chk_dt.suc > 0) {
+    // console.log(await bcrypt.compare(data.password, chk_dt.msg[0].password));
+    if (chk_dt.msg.length > 0) {
+      if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
+        var otp = Math.floor(1111 + Math.random() * 9999);
+        console.log(otp);
+        req.session.message = {otp: otp}
+        var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
+        if(send_email.suc > 0){
+          res_dt = {suc: 1, msg: chk_dt.msg[0], pin: otp}
+        }else{
+          res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
+        }
+      } else {
+        res_dt = {suc: 0, msg: "Please check your username or password"}
+        req.session.message = {
+          type: "warning",
+          message: "Please check your username or password",
+        };
+      }
+    } else {
+      res_dt = {suc: 0, msg: "Incorrect username"}
+      req.session.message = { type: "warning", message: "Incorrect username" };
+    }
+  } else {
+    res_dt = {suc: 0, msg: chk_dt.msg}
+    req.session.message = { type: "danger", message: chk_dt.msg };
+  }
+  res.send(res_dt)
+})
+
 UserRouter.get("/log_out", (req, res) => {
   req.session.destroy();
   res.redirect("/login");
@@ -111,10 +151,19 @@ UserRouter.post('/forgot_pass', async (req, res) => {
   if(chk_dt.suc > 0){
     if(chk_dt.msg.length > 0){
       if(chk_dt.msg[0].active_flag == 'Y'){
-        req.session.message = {
-          type: "success",
-          message: "Link has been send to your registered email id.",
-        };
+        var enc_dt = Buffer.from(JSON.stringify({email_id: data.email, url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')})).toString('base64')
+        var email_send = await SendUserEmail(data.email, chk_dt.msg[0].user_name, encodeURIComponent(enc_dt))
+        if(email_send.suc > 0){
+          req.session.message = {
+            type: "success",
+            message: "Link has been send to your registered email id.",
+          };
+        }else{
+          req.session.message = {
+            type: "warning",
+            message: "Email not send please try again after some time.",
+          };
+        }
         res.redirect("/login");
       }else{
         req.session.message = {
@@ -141,7 +190,7 @@ UserRouter.post('/forgot_pass', async (req, res) => {
 
 UserRouter.get('/reset_pass', (req, res) => {
   var enc_dt = req.query.enc_dt
-  var data = Buffer.from(enc_dt, "base64")
+  var data = Buffer.from(decodeURIComponent(enc_dt), "base64")
   data = JSON.parse(data);
   var link_date = new Date(data.url_time),
   nowDate = new Date(),

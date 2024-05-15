@@ -13,11 +13,37 @@
  <script src="js/bootstrap/popper.min.js"></script>
  <script src="js/bootstrap/bootstrap.min.js"></script>
  <!-- Plugins JS start-->
+ <script src="js/sweet-alert/sweetalert.min.js"></script>
+ <!-- <script src="js/sweet-alert/app.js"></script> -->
+ <!-- Plugins JS start-->
  <!-- Plugins JS Ends-->
  <!-- Theme js-->
  <script src="js/script.js"></script>
+ <script src="js/theme-customizer/customizer.js"></script>
  <!-- login js-->
  <!-- Plugin used-->
+ <link href="css/pincode-input.css" rel="stylesheet">
+<script type="text/javascript" src="js/pincode-input.js"></script>
+<script>
+    $(document).ready(function() {
+        var key = ''
+        $('#modal-default').on('keydown', function(event) {
+            key = ''
+            if (event.key === "Escape") {
+                key = event.key
+                console.log('HERE');
+                event.preventDefault();  // Prevent the default action of the Escape key
+                event.stopPropagation(); // Stop the event from bubbling 
+            }
+        });
+
+        $('#modal-default').on('hide.bs.modal', function (e) {
+            if (key === "Escape") {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
  <script>
     $('.showPass').on('click', function(){
         if($('input[name="password"]').attr('type') == 'password'){
@@ -33,6 +59,77 @@
         }
         
     })
+ </script>
+ <script>
+    $('.show-pass i').on('click', function(){
+        var input_type = $(this).parent().parent().parent().find('input').attr('type'),
+        input_id = $(this).parent().parent().parent().find('input').attr('id');
+        if(input_type != 'text'){
+            $(`#${input_id}`).removeAttr('type')
+            $(`#${input_id}`).attr('type', 'text')
+            $(this).removeClass('icofont-eye')
+            $(this).addClass('icofont-eye-blocked')
+        }else{
+            $(`#${input_id}`).removeAttr('type')
+            $(`#${input_id}`).attr('type', 'password')
+            $(this).removeClass('icofont-eye-blocked')
+            $(this).addClass('icofont-eye')
+        }
+      console.log();
+    })
+ </script>
+ <script>
+    $('#signInBtn').on('click', function(){
+        $.ajax({
+            method:'POST',
+            url: '/chk_user_login',
+            data: {email: $('#logEmail').val(), password: $('#logPass').val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                if(res.suc > 0){
+                    if(res.msg.user_type != 'S'){
+                        $('#modal-default').modal('show');
+                        $.fn.modal.prototype.constructor.Constructor.Default.keyboard = false;
+                        var pin = res.pin;
+                        console.log(pin, 'PIN');
+                        $('#pincode-input1').pincodeInput({
+                            hidedigits: false, complete: function (value, e, errorElement) {
+                                $("#pincode-callback").html("This is the 'complete' callback firing. Current value: " + value);
+                                if (value != pin) {
+                                    $(errorElement).html("You Have Entered An Incorrect PIN");
+                                    return false;
+                                } else {
+                                    $('#modal-default').modal('hide');
+                                    $(errorElement).empty();
+                                    $('#loginForm').submit();
+                                    return true;
+                                }
+
+                            }
+                        });
+                    }else{
+                        $('#loginForm').submit()
+                    }
+                }else{
+                    initiate_sweet_alert('Login Alert', res.msg, 'warning')
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+ </script>
+ <script>
+    // $(document).ready(function(){
+        function initiate_sweet_alert(title, message, type){
+            swal(title, message, type);
+        }
+    // })
  </script>
 </body>
 </html>

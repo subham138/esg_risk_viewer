@@ -149,7 +149,8 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                                                             <%- dt.info_desc %>
                                                         </div>
                                                     </div>
-                                                    <button class="btn btn-custom" type="button" style="width: 6vw;float: inline-end;" data-bs-dismiss="modal">OK</button>
+                                                    <button class="btn btn-custom m-l-10" type="button" style="float: inline-end;" data-bs-dismiss="modal">Close</button>
+                                                    <button class="btn btn-custom" type="button" onclick="appendTextInfo('<%= ediR %>')" style="float: inline-end;" data-bs-dismiss="modal">Copy to texteditor</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -575,6 +576,14 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
         editorList[`div_editor_${id}`].setHTMLCode(info)
         $('#wordInfoModal').modal('toggle');
         $('#wordInfoModal').remove()
+    }
+    function appendTextInfo(id){
+        var info = $(`#man_dis_top_info_${id} .card-body`).html().trim()
+        editorList[`div_editor_${id}`].setHTMLCode(info)
+        // if(flag){
+        //     $('#wordInfoModal').modal('toggle');
+        //     $('#wordInfoModal').remove()
+        // }
     }
 </script>
 

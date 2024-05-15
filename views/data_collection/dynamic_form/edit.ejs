@@ -587,6 +587,7 @@
             }
         }
         function add_header(zone_id, id) {
+            
             // console.log(id);
             $(`#table_${zone_id} thead tr th:last`).before(`<th><input class="form-control form-control-sm" type="text" id="table_${zone_id}_heading_${parseInt(id) + 1}" name="table_${zone_id}_heading" placeholder="Add Header" aria-label="Add Header"></th>`)
             if($(`#table_${zone_id} tbody tr`).length > 1){
