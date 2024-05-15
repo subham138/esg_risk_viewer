@@ -1,13 +1,15 @@
 // const accessToken = require('../googleAccessToken.json'),
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: 'email-smtp.eu-west-2.amazonaws.com',
-  port: 587,
+  host: process.env.HOST,
+  port: process.env.PORT,
   secure: false,
   auth: {
-    user: 'AKIAWPK5HJC3P543N757',
-    pass: 'BHVW+esDdy8Ykgd2FyYG8ONesURyJ9yIHSItEsFHsaEK'
+    user: process.env.USER,
+    pass: process.env.PASSWORD
   },
   tls: {
     rejectUnauthorized: true
@@ -21,7 +23,7 @@ const project_url = 'https://esgriskviewer.com/';
 const SendUserEmail = (emailId, user_name, enc_dt) => {
   return new Promise((resolve, reject) => {
     const mailOptions = {
-      from: 'ESG Risk Viewer<support@esgriskviewer.com>',
+      from: process.env.EMAIL,
       to: `${emailId}`,
       subject: 'ESG Risk Viewer | Password Reset',
       html: `<!DOCTYPE html>
@@ -120,7 +122,7 @@ const SendUserEmail = (emailId, user_name, enc_dt) => {
 const sendOtp = (emailId, user_name, otp) => {
   return new Promise((resolve, reject) => {
     const mailOptions = {
-      from: 'ESG Risk Viewer<support@esgriskviewer.com>',
+      from: process.env.EMAIL,
       to: `${emailId}`,
       subject: 'ESG Risk Viewer | Password Reset',
       html: `<!DOCTYPE html>
