@@ -105,14 +105,18 @@ UserRouter.post('/chk_user_login', async (req, res) => {
     // console.log(await bcrypt.compare(data.password, chk_dt.msg[0].password));
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
-        var otp = Math.floor(1111 + Math.random() * 9999);
-        console.log(otp);
-        req.session.message = {otp: otp}
-        var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
-        if(send_email.suc > 0){
-          res_dt = {suc: 1, msg: chk_dt.msg[0], pin: otp}
+        if(chk_dt.msg[0].user_type != 'S'){
+          var otp = Math.floor(1111 + Math.random() * 9999);
+          console.log(otp);
+          req.session.message = {otp: otp}
+          var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
+          if(send_email.suc > 0){
+            res_dt = {suc: 1, msg: chk_dt.msg[0], pin: otp}
+          }else{
+            res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
+          }
         }else{
-          res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
+          res_dt = {suc: 1, msg: chk_dt.msg[0], pin: 0}
         }
       } else {
         res_dt = {suc: 0, msg: "Please check your username or password"}
