@@ -100,6 +100,8 @@
 
 <!-- <script src="/js/jsPdf/jspdf.umd.min.js"></script> -->
 <script src="/js/html2Canvas/html2canvas.min.js"></script>
+
+<script src="js/sweet-alert/sweetalert.min.js"></script>
 <!-- Plugins JS Ends-->
 <!-- Theme js-->
 <script src="/js/script.js"></script>
@@ -173,6 +175,13 @@
     }
   }
 </script>
+
+<script>
+    function initiate_sweet_alert(title, message, type){
+      swal(title, message, type != 'danger' ? type : 'error');
+    }
+</script>
+
 </body>
 
 </html>

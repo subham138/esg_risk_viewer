@@ -532,12 +532,11 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                 },
                 success: async function(result) {
                     var res = JSON.parse(result)
-                    console.log(res);
+                    $(`#ai_word_res_container_${tot_modal_row} #user_written_text`).text(word)
                     if(res.suc > 0){
                         if(res.msg.length > 0){
                             // $(`#ai_word_res_container_${tot_modal_row} #message_body`)
                             $(`#ai_word_res_container_${tot_modal_row} #message_body`).empty()
-                            $(`#ai_word_res_container_${tot_modal_row} #user_written_text`).text(word)
                             var ul = $('<ul>')
                             for(let dt of res.msg){
                                 var li = $('<li>').append($('<p>').append(dt.info))
@@ -563,6 +562,9 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                             // )
                             // m1.find('.card-content').show()
                             // showPage(1, m1)
+                        }else{
+                            $(`#ai_word_res_container_${tot_modal_row} #message_body`).empty()
+                            $(`#ai_word_res_container_${tot_modal_row} #message_body`).append('<p class="text-dark">Sorry, no data found.</p>')
                         }
                     }
                 },
