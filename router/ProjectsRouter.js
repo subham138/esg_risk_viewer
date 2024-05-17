@@ -386,15 +386,15 @@ ProjectRouter.get('/report_full_view', async (req, res) => {
     var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
     emi_type = {suc:0,msg:[]};
     var year_list=[], currDate = new Date();
-    var ghg_emi_list = await getGhgEmiList(1, 0, data.proj_id)
+    var ghg_emi_list = await getGhgEmiList(req.session.user.client_id, 0, data.proj_id)
     ghg_emi_list = ghg_emi_list.suc > 0 ? (ghg_emi_list.msg.length > 0 ? ghg_emi_list.msg : []) : [];
     var scope_list = ghg_emi_list.length > 0 ? ghg_emi_list.map(dt => dt.scope) : []
     scope_list = scope_list.length > 0 ? [...new Set(scope_list)] : [];
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
-    var project_data = await getProjectList(data.proj_id, 1, 0, data.flag);
+    var project_data = await getProjectList(data.proj_id, req.session.user.client_id, 0, data.flag);
     var met_note_dtls = await getMetNote(0, data.flag)
-    // console.log(project_data);
+    console.log(met_note_dtls);
 
     var ghg_emi_data = {};
     if(scope_list.length > 0){

@@ -43,7 +43,7 @@
         </div>
     </div>
 </div>
-
+<% var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'}; %>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
@@ -483,15 +483,23 @@
         WindowObject.document.writeln('@media print { footer{ margin-left: 0px !important; position: fixed; bottom: 10px; height: 20px; width: 100%; } footer small{ display: flex; justify-content: space-between; } .logo-report{ height: 30%; width: 30%; } .logo-report img{ height: 100%; width: 100%; } .report-head{ font-weight: 500; font-size: 29px; color: #7030a0; } .report-sub-head{ font-weight: 500; font-size: 27px; color: #319795; } .topic-sub-head{ font-weight: 500; font-size: 22px; color: #4472c4; } .info_head{ font-weight: 600; font-size: 17px; }}')
         WindowObject.document.writeln('</style>')
         WindowObject.document.write('<script src="/js/jquery-3.5.1.min.js"></scr' + 'ipt>')
+        // WindowObject.document.write('<script src="/js/downloadPdf.js"></scr' + 'ipt>')
+        WindowObject.document.writeln('<title>ESG Risk Viewer</title>');
         WindowObject.document.writeln('</head><body onload="window.print()">');
         // WindowObject.document.writeln('<header>ESG Risk Viewer</header>')
         WindowObject.document.writeln(divToPrint.innerHTML);
         WindowObject.document.writeln('<footer><small><span>'+ new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "medium"}) +'</span><span>ESG Riskviewer</span></small></footer>');
         WindowObject.document.writeln('</body></html>');
+
+        // console.log(WindowObject.document.documentElement.innerHTML, 'WindowObject');
+        // console.log(WindowObject.document.documentElement, 'WindowObject');
+        // downloadPrf(WindowObject.document)
+        
+        
         WindowObject.document.close();
-        // setTimeout(function() {
-        //     WindowObject.close();
-        // }, 10);
+        setTimeout(function() {
+            WindowObject.close();
+        }, 10);
     }
 </script>
 <%- include('../templates/footer.ejs') %>
