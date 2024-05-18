@@ -100,7 +100,7 @@
                             hidedigits: false, complete: function (value, e, errorElement) {
                                 $("#pincode-callback").html("This is the 'complete' callback firing. Current value: " + value);
                                 if (value != pin) {
-                                    $(errorElement).html("You Have Entered An Incorrect PIN");
+                                    $(errorElement).html("You have entered an incorrect access code.");
                                     return false;
                                 } else {
                                     $('#modal-default').modal('hide');

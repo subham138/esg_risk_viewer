@@ -13,6 +13,7 @@
       <div class="login-card">
         <form class="theme-form login-form" id="loginForm" action="/login" method="POST">
           <% if(message){ %>
+          <script>initiate_sweet_alert('Alert', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")</script>
           <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
            
             <p style=" text-align: center;
@@ -106,7 +107,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-body">
-          <center><label><b>ENTER 4-DIGIT OTP</b></label></center>
+          <center><label><b>Enter the access code</b></label></center>
           <div class="row">
             <div class="col-4"></div>
             <div class="col-4"><input type="password" class="form-control-lg" id="pincode-input1"></div>
@@ -114,14 +115,14 @@
           </div>
           <input type="hidden" id="pin">
           <div class="row">
-            <div class="col-md-12 text-end mt-3 mb-2">Haven't received? <a href="#">Resend..</a></div>
+            <div class="col-md-12 text-center mt-3 mb-2">We have sent a 4-digit access code to your email. It may take a few minutes to arrive. <a href="#">Resend</a></div>
           </div>
-          <center class="pt-3">
+          <!-- <center class="pt-3">
             <div class="bg-warning">
               <i class="fa fa-exclamation-circle text-white pr-1" aria-hidden="true"></i> 
               OTP has been send to your registered email Id.
             </div>
-          </center>
+          </center> -->
         </div>
       </div>
     </div>
