@@ -18,6 +18,11 @@
         <!-- Zero Configuration  Starts-->
         <div class="col-sm-12">
             <% if(message){ %>
+                <script>
+                    setTimeout(() => {
+                        initiate_sweet_alert('Topic Category', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                    }, 1000);
+                </script>
                 <div class="alert alert-<%= message.type %> dark alert-dismissible fade show" role="alert">
                   <i data-feather="clock"></i>
                   <p><%= message.message %></p>

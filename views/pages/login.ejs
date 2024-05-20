@@ -13,7 +13,11 @@
       <div class="login-card">
         <form class="theme-form login-form" id="loginForm" action="/login" method="POST">
           <% if(message){ %>
-          <script>initiate_sweet_alert('Alert', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")</script>
+          <script>
+            setTimeout(() => {
+              initiate_sweet_alert('Alert', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+            }, 1000);
+          </script>
           <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
            
             <p style=" text-align: center;
@@ -80,6 +84,7 @@
                   <input id="checkbox1" type="checkbox">
                   <label class="text-muted" for="checkbox1">Remember password</label>
                 </div> -->
+                <input type="hidden" name="rem_me" id="rem_me_val">
                 <a class="link text-white text-center LoginFpText" href="/forgot_pass">Forgot password?</a>
               </div>
 
@@ -116,6 +121,14 @@
           <input type="hidden" id="pin">
           <div class="row">
             <div class="col-md-12 text-center mt-3 mb-2">We have sent a 4-digit access code to your email. It may take a few minutes to arrive. <a href="#">Resend</a></div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <div class="checkbox checkbox-primary">
+                <input id="rem_me" value="Y" type="checkbox">
+                <label for="rem_me">Remember me for 7 days.</label>
+              </div>
+            </div>
           </div>
           <!-- <center class="pt-3">
             <div class="bg-warning">

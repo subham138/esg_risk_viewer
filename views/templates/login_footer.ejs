@@ -94,16 +94,22 @@
                     if(res.msg.user_type != 'S'){
                         $('#modal-default').modal('show');
                         $.fn.modal.prototype.constructor.Constructor.Default.keyboard = false;
-                        var pin = res.pin;
-                        console.log(pin, 'PIN');
+                        $('#pin').val(res.pin)
+                        // var pin = res.pin;
+                        // console.log(pin, 'PIN');
                         $('#pincode-input1').pincodeInput({
                             hidedigits: false, complete: function (value, e, errorElement) {
+                                $('.first').focusin()
                                 $("#pincode-callback").html("This is the 'complete' callback firing. Current value: " + value);
+                                
+                                var pin = $('#pin').val();
                                 if (value != pin) {
                                     $(errorElement).html("You have entered an incorrect access code.");
                                     return false;
                                 } else {
                                     $('#modal-default').modal('hide');
+                                    // console.log($('#rem_me').is(':checked'))
+                                    $('#rem_me_val').val($('#rem_me').is(':checked') ? 'Y' : 'N')
                                     $(errorElement).empty();
                                     $('#loginForm').submit();
                                     return true;

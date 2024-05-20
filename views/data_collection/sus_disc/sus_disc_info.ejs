@@ -81,6 +81,11 @@
   <div class="row">
     <div class="col-sm-12">
       <% if(message){ %>
+        <script>
+            setTimeout(() => {
+                initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+            }, 1000);
+        </script>
       <div
         class="alert alert-<%= message.type %> dark alert-dismissible fade show"
         role="alert"

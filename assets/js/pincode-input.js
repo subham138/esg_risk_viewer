@@ -203,6 +203,7 @@
 
                     if (i == 0) {
                         input.addClass('first');
+                        input.focus();
                     } else if (i == (this.settings.inputs - 1)) {
                         input.addClass('last');
                     } else {
