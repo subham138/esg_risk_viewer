@@ -80,18 +80,18 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                 var ediR = 1
                 var top_name = filetrTopic.map(dt => dt.topic_name)
                 top_name = [...new Set(top_name)]
-
+                var colSpan = 1
                 top_name.forEach(dt => { %>
-                    <div class="row m-3" id="<%= dt.split(' ').join('_') %>" style="display: none;">
+                    <div class="row m-3" id="<%= dt.split(' ').join('_') %>" data-code="<%= dt.split(' ').join('_') %>" style="display: none;">
                         <div class="col-md-12">
                             <div class="default-according style-2" id="inghg">
                                 <div class="card custom-span-card">
                                     <div class="card-header caruBackCol1 text-center">
                                         <h5 class="mb-0">
-                                            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_2" aria-expanded="true" aria-controls="collapse11"><%= dt %></button>
+                                            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#man_dis_acc_<%= colSpan %>" aria-expanded="true" aria-controls="collapse11"><%= dt %></button>
                                         </h5>
                                     </div>
-                                    <div class="collapse" id="scope_2" aria-labelledby="scope_2" data-bs-parent="#accordionoc">
+                                    <div class="collapse" id="man_dis_acc_<%= colSpan %>" aria-labelledby="man_dis_acc_<%= colSpan %>" data-bs-parent="#accordionoc">
                                         <div class="row">
                                             <div class="col-md-12 text-center p-3 row">
                                                 <% var topicList_new = filetrTopic.filter(fdt => fdt.topic_name == dt)
@@ -266,7 +266,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                             </div>
                         </div>
                     </div>
-                <% }) %>
+                <% colSpan++; }) %>
 
                 <% var topList = [...filetrTopic.map(dt => dt.code)]
                 if(editorData.length > 0){

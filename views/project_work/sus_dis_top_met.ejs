@@ -76,6 +76,8 @@
             $('input[name="top_chk"]:checked').each(function(index, element){
                 var newFilterTopic = allList.filter(dt => dt.topic_name == $(element).val())
                 var topic_name = $(element).val()
+                console.log(topic_name.split(' ').join('_'), 'Topic Name');
+                $(`div[data-code="${topic_name.split(' ').join('_')}"]`).show()
                 $(`#${topic_name.split(' ').join('_')}`).show()
                 var topicId = $(element).attr('dt-set-id')
                 console.log(topicId);
