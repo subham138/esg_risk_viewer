@@ -13,8 +13,8 @@ module.exports = {
                 resolve(res_dt)
             }else{
                 var select = 'a.id, a.project_name, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.last_access, a.last_accessed_by, a.business_act, a.bus_act_id, a.location_busi_act',
-                    table_name = 'td_project a, md_sector b, md_industries c',
-                    whr = `a.sec_id=b.id AND a.repo_flag=b.repo_flag AND a.ind_id=c.id AND a.repo_flag=c.repo_flag AND a.sec_id=c.sec_id AND a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
+                    table_name = 'td_project a LEFT JOIN md_sector b ON a.sec_id=b.id AND a.repo_flag=b.repo_flag LEFT JOIN md_industries c ON a.ind_id=c.id AND a.repo_flag=c.repo_flag AND a.sec_id=c.sec_id',
+                    whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''}`,
                     order = 'ORDER BY a.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 if(id > 0){
