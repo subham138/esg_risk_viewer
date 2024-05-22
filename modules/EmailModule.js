@@ -130,7 +130,7 @@ const sendOtp = (emailId, user_name, otp) => {
     const mailOptions = {
       from: process.env.EMAIL,
       to: `${emailId}`,
-      subject: "ESG Risk Viewer | Password Reset",
+      subject: "ESG Risk Viewer | Access Code",
       html: `<!DOCTYPE html>
         <head>
         <meta charset="utf-8">
@@ -193,7 +193,7 @@ const sendOtp = (emailId, user_name, otp) => {
                                     </tr>
                                 </tbody>
                             </table>
-                            <table style="width: 650px; margin: 0 auto; margin-top: 30px">
+                            <!-- <table style="width: 650px; margin: 0 auto; margin-top: 30px">
                                 <tbody>
                                     <tr style="text-align: center">
                                         <td>
@@ -201,7 +201,7 @@ const sendOtp = (emailId, user_name, otp) => {
                                         </td>
                                     </tr>
                                 </tbody>
-                            </table>
+                            </table> -->
                         </td>
                     </tr>
                 </tbody>

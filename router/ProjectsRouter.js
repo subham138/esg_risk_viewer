@@ -6,11 +6,15 @@ const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSav
 const { getUserList } = require('../modules/UserModule');
 const dateFormat = require("dateformat");
 
+const {my_project: en_lang} = require('../assets/language/en.json')
+const {my_project: fr_lang} = require('../assets/language/fr.json')
+
 const express = require('express'),
 ProjectRouter = express.Router(),
 puppeteer = require('puppeteer'),
 fs = require('fs'),
-path = require('path');
+path = require('path'),
+eng_flag = ['I', 'E', 'G', 'EV'];
 
 // ProjectRouter.use((req, res, next) => {
 //     var user = req.session.user;
@@ -28,12 +32,14 @@ ProjectRouter.get('/my_project', async (req, res) => {
     // var req_data = req.query
     var user_type = req.session.user.user_type,
         user_id = req.session.user.user_id;
+    var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
 
     var project_data = await getProjectList(0, req.session.user.client_id, user_type != 'A' && user_type != 'C' && user_type != 'S' ? user_id : 0, flag)
     var data = {
+        lang: lang,
         user_type,
         project_data,
-        header: "Project List",
+        header: lang.header, //"Project List",
         enc_dt,
         flag,
         dateFormat
@@ -45,6 +51,8 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
     var enc_dt = req.query.flag,
     flag = new Buffer.from(enc_dt, 'base64').toString();
 
+    var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
+
     var id = req.query.id, project_data = [];
     var user_list = await getUserList(0, req.session.user.client_id)
     if(id > 0) {
@@ -52,11 +60,12 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
     }
     // console.log(project_data);
     var data = {
+        lang: lang,
         user_list,
         id,
         project_data,
-        header: "Project List",
-        sub_header: "Project Add/Edit",
+        header: lang.add.header,
+        sub_header: lang.add.sub_header,
         header_url: `/my_project?flag=${enc_dt}`,
         flag
     };
@@ -83,12 +92,15 @@ ProjectRouter.get('/proj_work', async (req, res) => {
     var enc_dt = req.query.flag,
     flag = new Buffer.from(enc_dt, 'base64').toString();
 
+    var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
+
     var loc_list = await getLocationList(),
         sec_data = await getSectorList(0, flag),
         ind_data = [],
         act_list = [];
         var project_data = await getProjectList(req.query.id, req.session.user.client_id, 0, flag)
     var data = {
+        lang: lang,
         id:0,
         proj_id: req.query.id,
         proj_name: project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0].project_name : '',
@@ -97,8 +109,8 @@ ProjectRouter.get('/proj_work', async (req, res) => {
         sec_data,
         ind_data,
         act_list,
-        header: "Project Work",
-        sub_header: "Project Add/Edit",
+        header: lang.manage.header,
+        sub_header: lang.manage.sub_header,
         header_url: `/my_project?flag=${enc_dt}`,
         flag
     }
@@ -185,6 +197,9 @@ ProjectRouter.get('/proj_work_view', async (req, res) => {
     var enc_data = req.query.dt,
         data = Buffer.from(enc_data, "base64");
     data = JSON.parse(data)
+    
+    var lang = eng_flag.includes(data.flag) ? en_lang : fr_lang;
+
     var sec_data = await getSectorList(data.sec_id, data.flag),
         ind_data = await getIndustriesList(data.ind_id, 0, data.flag),
         project_data = await getProjectList(data.proj_id, req.session.user.client_id, 0, data.flag);
@@ -215,6 +230,9 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var enc_data = req.query.enc_data, data_set = {};
     var data = Buffer.from(enc_data, "base64")
     data = JSON.parse(data);
+    
+    var lang = eng_flag.includes(data.flag) ? en_lang : fr_lang;
+
     var resDt = await getDynamicData(0, data.sec_id, data.ind_id, data.top_id, data.flag);
     var susDistList = await getSusDiscList(data.sec_id, data.ind_id, 0, data.flag)
     var metric = await getActMetrialDtls(data.sec_id, data.ind_id, data.flag)
@@ -264,6 +282,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     }
     // console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
     var res_data = {
+        lang: lang,
         top_id: data.top_id, 
         topName,
         sec_id: data.sec_id,
@@ -287,8 +306,8 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
         get_checked_top_list: get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
         project_data: project_data.suc > 0 ? project_data.msg : [],
-        header: "Project Work",
-        sub_header: "Project View",
+        header: lang.report_edit.header,
+        sub_header: lang.report_edit.sub_header,
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
         flag: data.flag
     };

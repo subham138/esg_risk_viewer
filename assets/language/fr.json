@@ -1,0 +1,110 @@
+{
+    "dashboard": {
+        "title": "Tableau de Bord",
+        "greet": "Bienvenue",
+        "header_info": "Cette plateforme vous fournit les outils nécessaires pour comprendre et gérer les risques et opportunités liés à la durabilitée auxquels votre organisation est confrontée.",
+        "video_title": "Commencez par un court tutoriel",
+        "video_info_title": "Faites une visite guidée",
+        "video_info_list": [
+            {
+                "text": "Risques et Opportunités",
+                "list": [
+                    {
+                        "text": "Risques et Opportunités liés à l'Industrie"
+                    },
+                    {
+                        "text": "Analyse des parties prenantes"
+                    },
+                    {
+                        "text": "Évaluation de la Matérialité"
+                    }
+                ]
+            },
+            {
+                "text": "Éléments d’Information ",
+                "list": []
+            }
+        ]
+    },
+    "my_project": {
+        "header": "Liste des projets",
+        "sub_header": "Tableau de Bord",
+        "title": "Mes projets",
+        "framework": {
+            "IF": "International Sustainability Accounting Standards",
+            "EF": "European Sustainability Reporting Standards",
+            "F": "Global Reporting Initiative",
+            "EVF": "European Sustainability Reporting Standards (Volontaire PME)"
+        },
+        "view": {
+            "add_btn_name": "Ajouter un Nouveau Projet",
+            "table": {
+                "head1": "Nom",
+                "head2": "Dernier accès",
+                "head3": "Action"
+            },
+            "edit_btn": "Modifier",
+            "manage_btn": "Gérer",
+            "view_btn": "Aperçu"
+        },
+        "add": {
+            "header": "Liste des projets",
+            "sub_header": "Projet Ajouter/Modifier",
+            "title": "Nom du Projet",
+            "user": "Utilisateur",
+            "submit_btn": "Soumettre"
+        },
+        "manage": {
+            "header": "Liste des projets",
+            "sub_header": "Projet Ajouter/Modifier",
+            "head": "Vous travaillez sur le projet",
+            "sector": "Secteur",
+            "sec_select": "Sélectionnez un Secteur",
+            "indus": "Industrie",
+            "ind_select": "Sélectionnez l'Industrie",
+            "bus_act": "Activité(s) commerciale(s)",
+            "location": "Emplacement(s) des activités commerciales",
+            "sub_btn": "Submit"
+        },
+        "report_edit": {
+            "header": "Liste des projets",
+            "sub_header": "Vue du projet",
+            "head": "Vous travaillez sur le projet",
+            "tab1": {
+                "title": "Risques et Opportunités"
+            },
+            "tab2": {
+                "title": "Éléments d’Information"
+            },
+            "tab3": {
+                "title": "Gestion des Éléments d’Information",
+                "add_btn": "Ajouter"
+            },
+            "tab4": {
+                "title": "Émissions des GES",
+                "scope1": "Champ d'Application 1",
+                "scope2": "Champ d'Application 2",
+                "scope3": "Champ d'Application 3",
+                "add_btn": "Ajouter une Nouvelle Source d'Émission",
+                "emi_sour": "Source d'Émission",
+                "emi_sour_sel": "Veuillez sélectionner la source d'émission",
+                "act": "Activité",
+                "act_sel": "Veuillez sélectionner une activité",
+                "emi_type": "Type d'Émission",
+                "emi_type_sel": "Veuillez sélectionner un type d'émission",
+                "repo_per": "Période de Reporting",
+                "repo_per_sel": "Veuillez sélectionner l'année de référence",
+                "st_month": "Mois de début",
+                "st_month_sel": "Veuillez sélectionner le mois de début",
+                "table": {
+                    "head1": "Mois",
+                    "head2": "Unité",
+                    "head3": "Valeurs",
+                    "head4": "Facteurs d'Émission",
+                    "head5": "Kg CO2e"
+                },
+                "save_btn": "Sauvegarder"
+            }
+        }
+    }
+}

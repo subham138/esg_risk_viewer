@@ -7,7 +7,7 @@
 <div class="row login_back_color">
     <div class="col-12">
       <div class="login-card">
-        <form class="theme-form login-form" action="/reset_pass" method="POST">
+        <form class="theme-form login-form" action="/reset_pass" method="POST" autocomplete="off">
           <% if(message){ %>
           <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
            
@@ -22,7 +22,7 @@
             <div class="col-md-8">
               <div class="form-group mt-3">
                 <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
-                  <input class="form-control loginInput" type="password" name="pass" id="pass" required="" placeholder="Password" onchange="chk_pass()">
+                  <input class="form-control loginInput example-popover" type="password" name="pass" id="pass" required="" placeholder="Password" onchange="chk_pass()" aria-describedby="passwordHelp">
                   <div class="pas-eye"><span class="show-pass"><i class="icofont icofont-eye"></i></span></div>
                 </div>
               </div>
@@ -63,5 +63,26 @@
             }
         }
     }
+  </script>
+  <script>
+    // var passInput = $('#pass')
+    // $(document).ready(function(){
+    //   const popoverTemplate = `
+    //     <div class="popover" role="tooltip" id="password-popover">
+    //       <div class="popover-body"></div>
+    //     </div>
+    //   `;
+      
+    //   passInput.popover({
+    //     trigger: 'manual',
+    //     placement: 'right',
+    //     content: '',
+    //     template: popoverTemplate
+    //   });
+    // })
+    // passInput.on('input', function(){
+    //   console.log($(this).val());
+    //   passInput.popover('show');
+    // })
   </script>
 <%- include('../templates/login_footer.ejs') %>

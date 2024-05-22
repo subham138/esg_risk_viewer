@@ -1,8 +1,6 @@
 </div>
 </section>
 <!-- page-wrapper end-->
- <!-- latest jquery-->
- <script src="js/jquery-3.5.1.min.js"></script>
  <!-- feather icon js-->
  <script src="js/icons/feather-icon/feather.min.js"></script>
  <script src="js/icons/feather-icon/feather-icon.js"></script>
@@ -15,6 +13,7 @@
  <!-- Plugins JS start-->
  <script src="js/sweet-alert/sweetalert.min.js"></script>
  <!-- <script src="js/sweet-alert/app.js"></script> -->
+ <!-- <script src="js/popover-custom.js"></script> -->
  <!-- Plugins JS start-->
  <!-- Plugins JS Ends-->
  <!-- Theme js-->
@@ -136,6 +135,73 @@
             swal(title, message, type);
         }
     // })
+ </script>
+ <script>
+    $(document).ready(function() {
+        var chk1 = chk2 = chk3 = chk4 = chk5 = false;
+      const passwordInput = $('#pass');
+      const popoverTemplate = `
+        <div class="popover" role="tooltip" id="password-popover">
+          <div class="popover-body"><b>Password</b></div>
+        </div>
+      `;
+
+      passwordInput.popover({
+        trigger: 'manual',
+        placement: 'right',
+        html: true,
+        content: '',
+        template: popoverTemplate
+      });
+
+      passwordInput.on('focus', function() {
+        const password = $(this).val();
+        let strength = 'Password must contain:\n';
+        strength += `<ul>
+              <li id="lowercase" class="cross">At least one lowercase letter</li>
+              <li id="uppercase" class="cross">At least one uppercase letter</li>
+              <li id="number" class="cross">At least one number</li>
+              <li id="special" class="cross">At least one special character</li>
+              <li id="length" class="cross">Minimum length of 8 characters</li>
+            </ul>`
+
+        // if (!/[a-z]/.test(password)) strength += ' - At least one lowercase letter\n';
+        // if (!/[A-Z]/.test(password)) strength += ' - At least one uppercase letter\n';
+        // if (!/[0-9]/.test(password)) strength += ' - At least one number\n';
+        // if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += ' - At least one special character\n';
+        // if (password.length < 8) strength += ' - Minimum length of 8 characters\n';
+
+        // if (strength === 'Password must contain:\n') {
+        //   passwordInput.popover('hide');
+        // } else {
+          passwordInput.attr('data-bs-content', strength);
+          passwordInput.popover('show');
+        // }
+      });
+
+      passwordInput.on('input', function() {
+        const password = $(this).val();
+        // Validate password and update list items
+        updatePopoverItem(password, /[a-z]/, '#lowercase');
+        updatePopoverItem(password, /[A-Z]/, '#uppercase');
+        updatePopoverItem(password, /[0-9]/, '#number');
+        updatePopoverItem(password, /[!@#$%^&*(),.?":{}|<>]/, '#special');
+        updatePopoverItem(password, /.{8,}/, '#length');
+      })
+
+      passwordInput.on('blur', function() {
+        passwordInput.popover('hide');
+      });
+
+      function updatePopoverItem(password, regex, elementId) {
+        console.log(elementId);
+        if (regex.test(password)) {
+          $(elementId).removeClass('cross').addClass('tick');
+        } else {
+          $(elementId).removeClass('tick').addClass('cross');
+        }
+      }
+    });
  </script>
 </body>
 </html>

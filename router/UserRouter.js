@@ -112,7 +112,7 @@ UserRouter.post('/chk_user_login', async (req, res) => {
         if(chk_dt.msg[0].user_type != 'S'){
           var otp = Math.floor(1000 + Math.random() * 9000);
           console.log(otp);
-          req.session.message = {otp: otp}
+          // req.session.message = {otp: otp}
           var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
           if(send_email.suc > 0){
             res_dt = {suc: 1, msg: chk_dt.msg[0], pin: otp}
@@ -124,18 +124,12 @@ UserRouter.post('/chk_user_login', async (req, res) => {
         }
       } else {
         res_dt = {suc: 0, msg: "Please check your username or password"}
-        req.session.message = {
-          type: "warning",
-          message: "Please check your username or password",
-        };
       }
     } else {
       res_dt = {suc: 0, msg: "Incorrect username"}
-      req.session.message = { type: "warning", message: "Incorrect username" };
     }
   } else {
     res_dt = {suc: 0, msg: chk_dt.msg}
-    req.session.message = { type: "danger", message: chk_dt.msg };
   }
   res.send(res_dt)
 })
@@ -204,7 +198,7 @@ UserRouter.get('/reset_pass', (req, res) => {
   nowDate = new Date(),
   maxTime = 2;
   var hours = Math.abs(link_date.getTime() - nowDate.getTime()) / 36e5;
-  console.log(hours, 'Hour');
+  // console.log(hours, 'Hour');
   if(hours <= maxTime){
     res.render('pages/forgot_pass_entry', {email: data.email_id})
   }else{

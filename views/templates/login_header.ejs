@@ -60,6 +60,9 @@ content="environmental, social, governance (ESG), esg risk, esg opportunities, e
   <link id="color" rel="stylesheet" href="css/color-1.css" media="screen">
   <!-- Responsive css-->
   <link rel="stylesheet" type="text/css" href="css/responsive.css">
+  
+  <!-- latest jquery-->
+  <script src="js/jquery-3.5.1.min.js"></script>
   <style>
     .container-fluid{
       background-image: url('images/backImg.jpg');
@@ -77,6 +80,23 @@ content="environmental, social, governance (ESG), esg risk, esg opportunities, e
       font-size: 13px !important;
       font-weight: 500 !important;
       color: #1F1F1F !important;
+    }
+  </style>
+  <style>
+    #password-popover .popover-body {
+      white-space: pre-wrap;
+    }
+    .popover-body li {
+      list-style: none;
+      margin-bottom: 5px;
+    }
+    .popover-body .cross::before {
+      content: "❌ ";
+      color: red;
+    }
+    .popover-body .tick::before {
+      content: "✔️ ";
+      color: green;
     }
   </style>
 </head>

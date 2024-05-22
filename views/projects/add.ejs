@@ -21,7 +21,7 @@
                 <form method="POST" action="/my_project_save" class="needs-validation">
                 <div class="row mb-2">
                     <div class="col-md-4">
-                        <label class="form-label" for="project_name">Project Name</label>
+                        <label class="form-label" for="project_name"><%= lang.add.title %></label>
                         <input class="form-control" id="project_name" name="project_name" type="text" value="<%= id > 0 ? project_data.msg[0].project_name : '' %>" required="">
                         <div class="valid-feedback">No Error</div>
                     </div>
@@ -32,7 +32,7 @@
                         <table class="table custom-table-user" id="table" width="50%">
                             <thead>
                                 <tr>
-                                    <th> <label class="form-label user_add">User 
+                                    <th> <label class="form-label user_add"><%= lang.add.user %> 
                                         <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" onclick="add_tb_row()">
                                             <i class="fa fa-user-plus" aria-hidden="true"></i>
                                         </button></label> 
@@ -123,7 +123,7 @@
                                     <td>
                                         <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                                         <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
-                                        <button class="btn btn-pill btn-custom float-end m-r-40" type="submit">Submit</button>
+                                        <button class="btn btn-pill btn-custom float-end m-r-40" type="submit"><%= lang.add.submit_btn %></button>
                                     </td>
                                 </tr>
                             </tfoot>

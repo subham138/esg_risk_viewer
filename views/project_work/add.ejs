@@ -21,10 +21,11 @@
                     <div class="row">
                         <div class="col-md-12">
                             <!-- <p class="pro-card-head text-center">You are working on the project <b><%= proj_name %></b> using the <b><%= flag == "I" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) %> Framework</b></p> -->
+                            <!-- flag == "I" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) -->
                             <p class="pro-card-head text-center">
-                                <span class="fw-normal">You are working on the project <b><%= proj_name %></b> using the</span> 
+                                <span class="fw-normal"><%= lang.manage.head %> <b><%= proj_name %></b></span> 
                                 <br>
-                                <span class="pro-card-cont fw-normal"><b><%= flag == "I" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) %></b> Framework</span>
+                                <span class="pro-card-cont fw-normal"><b><%= lang.framework[flag] %></b></span>
                             </p>
                         </div>
                     </div>
@@ -33,9 +34,9 @@
                     <form method="POST" action="/save_proj_work" class="needs-validation">
                         <div class="row g-3 py-3">
                             <div class="col-md-6">
-                                <label for="sec_id">Sector</label>
+                                <label for="sec_id"><%= lang.manage.sector %></label>
                                 <select class="form-select" id="sec_id" name="sec_id" required="">
-                                    <option selected="" value="">Select Sector</option>
+                                    <option selected="" value=""><%= lang.manage.sec_select %></option>
                                     <% if(sec_data.msg.length > 0){
                                         sec_data.msg.forEach(dt => { 
                                             var selected = '';
@@ -47,19 +48,19 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="ind_id">Industry</label>
+                                <label for="ind_id"><%= lang.manage.indus %></label>
                                 <select class="form-select" id="ind_id" name="ind_id" required="">
-                                    <option selected="" value="">Select Industry</option>
+                                    <option selected="" value=""><%= lang.manage.ind_select %></option>
                                 </select>
                             </div>
                             <div class="col-md-12 select2-drpdwn mb-2">
-                                <label for="bus_id">Business Activities</label>
+                                <label for="bus_id"><%= lang.manage.bus_act %></label>
                                 <select id="bus_id" name="bus_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                                    <option value="">Select Business Activities</option>
+                                    <option value="">Select Business Activity(ies)</option>
                                 </select>
                             </div>
                             <div class="col-md-12 select2-drpdwn mb-2">
-                                <label for="location_id">Locations of Business Activities</label>
+                                <label for="location_id"><%= lang.manage.location %></label>
                                 <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                     <option value="">Select Location</option>
                                     <% if(loc_list.msg.length > 0){

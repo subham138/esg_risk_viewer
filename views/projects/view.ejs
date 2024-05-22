@@ -5,7 +5,7 @@
             <div class="col-sm-6">
                 <h3><%= header %></h3>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/dashboard"><%= lang.sub_header %></a></li>
                     <li class="breadcrumb-item"><%= header %></li>
                 </ol>
             </div>
@@ -36,7 +36,7 @@
                         <div class="top_radio_sec">
                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
                         <div class="col-md-12">
-                            <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit" id="my_project_add" data-step="1">Add New Project</a>
+                            <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit" id="my_project_add" data-step="1"><%= lang.view.add_btn_name %></a>
                         </div>
                         <% } %>
                         </div>
@@ -47,9 +47,9 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Last Accessed</th>
-                                    <th>Action</th>
+                                    <th><%= lang.view.table.head1 %></th>
+                                    <th><%= lang.view.table.head2 %></th>
+                                    <th><%= lang.view.table.head3 %></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,18 +63,18 @@
                                     <td <% if(i == 1){ %> id="my_project_td" <% } %>>
                                         <% if(user_type == 'A' || user_type == 'C' || user_type == 'S'){ %>
                                             <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                                                <i class="icofont icofont-ui-edit"></i> Edit
+                                                <i class="icofont icofont-ui-edit"></i> <%= lang.view.edit_btn %>
                                             </a>
                                         <% }%>
                                         <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', 'project_report_view')">
                                             <% if(user_type != 'V'){ %> 
-                                                <i class="icofont icofont-ui-settings"></i> Manage 
+                                                <i class="icofont icofont-ui-settings"></i> <%= lang.view.manage_btn %> 
                                             <% }else{ %>
-                                                <i class="icofont icofont-eye-alt"></i> View 
+                                                <i class="icofont icofont-eye-alt"></i> <%= lang.view.manage_btn %> 
                                             <% } %>
                                         </a>
                                         <a class="btn btn_UR btn-outline-primary btn-air-primary" onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', 'report_full_view')">
-                                            <i class="icofont icofont-eye-alt"></i> View 
+                                            <i class="icofont icofont-eye-alt"></i> <%= lang.view.view_btn %> 
                                         </a>
                                     <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
                                         <i class="icofont icofont-ui-delete"></i> Delete

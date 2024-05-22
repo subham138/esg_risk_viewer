@@ -15,15 +15,16 @@
           <% if(message){ %>
           <script>
             setTimeout(() => {
+              console.log('From Session');
               initiate_sweet_alert('Alert', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
             }, 1000);
           </script>
-          <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
+          <!-- <div class="alert alert-<%# message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
            
             <p style=" text-align: center;
-            font-size: 17px;"><i data-feather="clock"></i>&nbsp;&nbsp;<%= message.message %></p>
+            font-size: 17px;"><i data-feather="clock"></i>&nbsp;&nbsp;<%# message.message %></p>
             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close" style="top: 5px;"></button>
-          </div>
+          </div> -->
           <% } %>
           <!-- <img width="100%" height="100%" src="images/logo/ESG_logo_trans.png" alt=""> -->
           <img width="100%" height="100%" src="images/logo_white.png" alt="">
