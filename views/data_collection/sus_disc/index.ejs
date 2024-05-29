@@ -28,19 +28,19 @@
                 initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
             }, 1000);
         </script>
-      <div
-        class="alert alert-<%= message.type %> dark alert-dismissible fade show"
+      <!-- <div
+        class="alert alert-<%# message.type %> dark alert-dismissible fade show"
         role="alert"
       >
         <i data-feather="clock"></i>
-        <p><%= message.message %></p>
+        <p><%# message.message %></p>
         <button
           class="btn-close"
           type="button"
           data-bs-dismiss="alert"
           aria-label="Close"
         ></button>
-      </div>
+      </div> -->
       <% } %>
     </div>
     <div class="card">

@@ -187,6 +187,9 @@
         updatePopoverItem(password, /[0-9]/, '#number');
         updatePopoverItem(password, /[!@#$%^&*(),.?":{}|<>]/, '#special');
         updatePopoverItem(password, /.{8,}/, '#length');
+
+        var regExp = /[a-z][A-Z][0-9][!@#$%^&*(),.?":{}|<>].{8,}/
+        console.log(regExp.test(password));
       })
 
       passwordInput.on('blur', function() {

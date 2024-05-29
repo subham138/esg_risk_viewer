@@ -211,42 +211,45 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                                                                     <% } %>
                                                                     editorList['div_editor_<%= ediR %>'].attachEvent("change", function () {
                                                                         var textCount = editorList['div_editor_<%= ediR %>'].getPlainText();
-                                                                        // console.log(textCount);
-                                                                        var ai_flag = '<%= ai_tag_tool_flag %>';
-                                                                        if(ai_flag != 'N'){
-                                                                            totCount[<%= ediR %>] = 0
-                                                                            // var editorVal = e.editor.getData()
-                                                                            // var plainText = $("<div>").html(editorVal).text();
-                                                                            var plainText = editorList['div_editor_<%= ediR %>'].getPlainText();
-                                                                            var txtArr = plainText.trim().split('\n').join(' ').split(' ')
-                                                                            // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
-                                                                            // console.log('len', txtArr);
-                                                                            if(txtArr.length > 0){
-                                                                                txtArr = [...new Set(txtArr)]
-                                                                                // console.log(txtArr, 'TOt array');
-                                                                                var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
-                                                                                if(matchTxt.length > 0){
-                                                                                    // console.log(matchTxt, 'Match array');
-                                                                                    $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                        $(this).removeClass('done')
-                                                                                    })
-                                                                                    for(let dt of matchTxt){
-                                                                                        $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                            // console.log($(this).text());
-                                                                                            // if(matchTxt.includes($(this).text().trim().toLowerCase()))
-                                                                                            if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
-                                                                                                $(this).addClass('done')
-                                                                                        })
-                                                                                    }
-                                                                                }else{
-                                                                                    $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                                        $(this).removeClass('done')
-                                                                                    })
-                                                                                }
-                                                                                // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
-                                                                                // console.log(totCount);
-                                                                            }
-                                                                        }
+                                                                        console.log(textCount);
+                                                                        handleEditorChange('div_editor_<%= ediR %>', '<%= ediR %>', '<%= top_id > 0 ? top_id : fdt.top_id %>');
+                                                                        //////////// Start for selection of ai tag ////////////////
+                                                                        // var ai_flag = '<%= ai_tag_tool_flag %>';
+                                                                        // if(ai_flag != 'N'){
+                                                                        //     totCount[<%= ediR %>] = 0
+                                                                        //     // var editorVal = e.editor.getData()
+                                                                        //     // var plainText = $("<div>").html(editorVal).text();
+                                                                        //     var plainText = editorList['div_editor_<%= ediR %>'].getPlainText();
+                                                                        //     var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                                                                        //     // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                                                                        //     // console.log('len', txtArr);
+                                                                        //     if(txtArr.length > 0){
+                                                                        //         txtArr = [...new Set(txtArr)]
+                                                                        //         // console.log(txtArr, 'TOt array');
+                                                                        //         var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
+                                                                        //         if(matchTxt.length > 0){
+                                                                        //             // console.log(matchTxt, 'Match array');
+                                                                        //             $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                        //                 $(this).removeClass('done')
+                                                                        //             })
+                                                                        //             for(let dt of matchTxt){
+                                                                        //                 $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                        //                     // console.log($(this).text());
+                                                                        //                     // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                                                        //                     if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                                                        //                         $(this).addClass('done')
+                                                                        //                 })
+                                                                        //             }
+                                                                        //         }else{
+                                                                        //             $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                        //                 $(this).removeClass('done')
+                                                                        //             })
+                                                                        //         }
+                                                                        //         // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                                                                        //         // console.log(totCount);
+                                                                        //     }
+                                                                        // }
+                                                                        ////////////////////// END ////////////////////////////
                                                                     });
                                                                 </script>
                                                                 <% if(user_type != 'V'){ %>
@@ -647,5 +650,51 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
             },
         })
         // alert(word)
+    }
+</script>
+
+<script>
+    const saveInterval = 3000; // 10 seconds
+    let activeEditor = null;
+    let saveTimeout = null;
+    let isSaving = false;
+    
+    function handleEditorChange(editorId, id, top_id) {
+        // Clear the previous timeout if any
+        if (saveTimeout) {
+            clearTimeout(saveTimeout);
+        }
+
+        // Set the active editor
+        activeEditor = editorId;
+
+        // Set a timeout to auto-save after the specified interval
+        saveTimeout = setTimeout(() => {
+            saveEditorContent(editorId, id, top_id);
+        }, saveInterval);
+    }
+
+    function saveEditorContent(editorId, id, top_id) {
+        if (isSaving) {
+            // If a save process is already in progress, skip this save
+            return;
+        }
+
+        isSaving = true;
+
+        const content = editorList[editorId].getHTML();
+        console.log(`Auto-saving content for ${editorId}:`, content);
+
+        // Simulate an async save operation
+        setTimeout(() => {
+            saveEditorValue(id, top_id)
+            console.log(`Content for ${editorId} saved successfully.`);
+            isSaving = false;
+
+            // If the user has started typing in a different editor, start the save process for that editor
+            if (activeEditor !== editorId) {
+                saveEditorContent(activeEditor);
+            }
+        }, 2000); // Simulated save delay
     }
 </script>
