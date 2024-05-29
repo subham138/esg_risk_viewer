@@ -128,6 +128,31 @@
             }
         })
     })
+
+    $('#resend_otp').on('click', function(){
+        $.ajax({
+            method:'POST',
+            url: '/chk_user_login',
+            data: {email: $('#logEmail').val(), password: $('#logPass').val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                if(res.suc > 0){
+                    if(res.msg.user_type != 'S'){
+                        $('#pin').val(res.pin)
+                    }
+                }else{
+                    initiate_sweet_alert('Login Alert', res.msg, 'warning')
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
  </script>
  <script>
     // $(document).ready(function(){
@@ -138,7 +163,7 @@
  </script>
  <script>
     $(document).ready(function() {
-        var chk1 = chk2 = chk3 = chk4 = chk5 = false;
+        var sub_btn = false;
       const passwordInput = $('#pass');
       const popoverTemplate = `
         <div class="popover" role="tooltip" id="password-popover">
@@ -164,19 +189,16 @@
               <li id="special" class="cross">At least one special character</li>
               <li id="length" class="cross">Minimum length of 8 characters</li>
             </ul>`
-
-        // if (!/[a-z]/.test(password)) strength += ' - At least one lowercase letter\n';
-        // if (!/[A-Z]/.test(password)) strength += ' - At least one uppercase letter\n';
-        // if (!/[0-9]/.test(password)) strength += ' - At least one number\n';
-        // if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += ' - At least one special character\n';
-        // if (password.length < 8) strength += ' - Minimum length of 8 characters\n';
-
-        // if (strength === 'Password must contain:\n') {
-        //   passwordInput.popover('hide');
-        // } else {
           passwordInput.attr('data-bs-content', strength);
           passwordInput.popover('show');
-        // }
+
+          if(password != ''){
+            updatePopoverItem(password, /[a-z]/, '#lowercase');
+            updatePopoverItem(password, /[A-Z]/, '#uppercase');
+            updatePopoverItem(password, /[0-9]/, '#number');
+            updatePopoverItem(password, /[!@#$%^&*(),.?":{}|<>]/, '#special');
+            updatePopoverItem(password, /.{8,}/, '#length');
+          }
       });
 
       passwordInput.on('input', function() {
@@ -188,16 +210,23 @@
         updatePopoverItem(password, /[!@#$%^&*(),.?":{}|<>]/, '#special');
         updatePopoverItem(password, /.{8,}/, '#length');
 
-        var regExp = /[a-z][A-Z][0-9][!@#$%^&*(),.?":{}|<>].{8,}/
-        console.log(regExp.test(password));
+        if(/[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*(),.?":{}|<>]/.test(password) && /.{8,}/.test(password)){
+            sub_btn = true
+        }else{
+            sub_btn = false
+        }
       })
 
       passwordInput.on('blur', function() {
         passwordInput.popover('hide');
+        if(sub_btn){
+            $('#subBtnFrPass').removeAttr('disabled')
+        }else{
+            $('#subBtnFrPass').attr('disabled', true)
+        }
       });
 
       function updatePopoverItem(password, regex, elementId) {
-        console.log(elementId);
         if (regex.test(password)) {
           $(elementId).removeClass('cross').addClass('tick');
         } else {
