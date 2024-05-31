@@ -1141,7 +1141,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_act_ajax',
-            data: {type_id: $(`#type_id_${scope}_${id}`).val(), flag: '<%= flag %>'},
+            data: {type_id: $(`#type_id_${scope}_${id}`).val(), flag: '<%= req.user.cal_lang_flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1172,7 +1172,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
-            data: {type_id: $(`#type_id_${scope}_${id}`).val(), act_id: $(`#act_id_${scope}_${id}`).val(), flag: '<%= flag %>'},
+            data: {type_id: $(`#type_id_${scope}_${id}`).val(), act_id: $(`#act_id_${scope}_${id}`).val(), flag: '<%= req.user.cal_lang_flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1204,7 +1204,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id: prePoulate ? data.type_id : $(`#type_id_${scope}_${id}`).val(), act_id: prePoulate ? data.act_id : $(`#act_id_${scope}_${id}`).val(), emi_type_id: prePoulate ? data.emi_type_id : $(`#emi_type_id_${scope}_${id}`).val(), year: prePoulate ? data.year : $(`#repo_period_${scope}_${id}`).val(), flag: '<%= flag %>'},
+            data: {type_id: prePoulate ? data.type_id : $(`#type_id_${scope}_${id}`).val(), act_id: prePoulate ? data.act_id : $(`#act_id_${scope}_${id}`).val(), emi_type_id: prePoulate ? data.emi_type_id : $(`#emi_type_id_${scope}_${id}`).val(), year: prePoulate ? data.year : $(`#repo_period_${scope}_${id}`).val(), flag: '<%= req.user.cal_lang_flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1522,7 +1522,7 @@
 <script>
     $('.langContent').on('click', function(){
         $('.langContent').each(function(){
-            $(this).removeClass('active'));
+            $(this).removeClass('active');
         })
         $(this).toggleClass('active')
     })
