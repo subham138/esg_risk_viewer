@@ -4,7 +4,7 @@ const express = require("express"),
   dateFormat = require('dateformat');
 
 const { SendUserEmail, sendOtp } = require("../modules/EmailModule");
-const { db_Select, USER_TYPE_LIST, db_Insert } = require("../modules/MasterModule");
+const { db_Select, USER_TYPE_LIST, CALCULATOR_LANG, db_Insert } = require("../modules/MasterModule");
 const {
   getUserList,
   saveUser,
@@ -57,7 +57,7 @@ UserRouter.post("/login", async (req, res) => {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         req.session.user = chk_dt.msg[0];
         if(chk_dt.msg[0].user_type != 'S'){
-          var select = "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag",
+          var select = "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag",
             table_name = "td_client",
             whr = `id = '${chk_dt.msg[0].client_id}'`,
             order = null;
@@ -72,6 +72,7 @@ UserRouter.post("/login", async (req, res) => {
           req.session.user['esrs_vsme_fr_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].esrs_vsme_fr_flag : 'N') : 'N';
           req.session.user['gri_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].gri_flag : 'N') : 'N';
           req.session.user['gri_fr_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].gri_fr_flag : 'N') : 'N';
+          req.session.user['cal_lang_flag'] = client_dt.msg[0].cal_lang_flag;
 
           if(data.rem_me == 'Y'){
             req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -251,6 +252,7 @@ UserRouter.get("/client_edit", async (req, res) => {
   var data = {
     client_data,
     id,
+    cal_lang: CALCULATOR_LANG,
     user_type_list: USER_TYPE_LIST,
     header: "Client List",
     sub_header: "Client Add/Edit",
