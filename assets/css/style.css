@@ -46753,3 +46753,37 @@ header.main-nav{
   background: #7030A0;
   color: #fff !important;
 }
+img.icon-img-single {
+  width: 8%;
+  height: 100%;
+  margin: 0px 24px 0px 9px;
+}
+img.icon-img-dual {
+  width: 8%;
+  height: 100%;
+  margin: 0px 19px 0px 7px;
+}
+img.icon-img-tripple {
+  width: 8%;
+  height: 100%;
+  margin: 0px 15px 0px 7px;
+}
+.langContent {
+  padding: 5px 15px 5px 15px;
+  border: 2px solid #7430a0;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #7430a0;
+  font-weight: 600;
+}
+.langContent:hover, .langContent.active{
+  background: #7430a0;
+  color: #fff;
+}
+.chooleLang {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

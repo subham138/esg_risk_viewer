@@ -239,7 +239,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var editorVal = await getSavedProjectWork(data.sec_id, data.ind_id, data.top_id, data.proj_id, data.flag)
     var topName = resDt.suc > 0 ? (resDt.msg.length > 0 ? resDt.msg[0].topic_name : '') : ''
     var allDynamicData = await getDynamicData(0, data.sec_id, data.ind_id, 0, data.flag);
-    var type_list = await getCalTypeList(), act_list = {suc:0,msg:[]}, 
+    var type_list = await getCalTypeList(0, req.session.user.cal_lang_flag != 'B' ? req.session.user.cal_lang_flag : 'E'), act_list = {suc:0,msg:[]}, 
     emi_type = {suc:0,msg:[]};
     var year_list=[], currDate = new Date();
     var ghg_emi_list = await getGhgEmiList(req.session.user.client_id, 0, data.proj_id)
@@ -317,7 +317,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
 
 ProjectRouter.post('/get_cal_unit_list_ajax', async (req, res) => {
     var data = req.body
-    var res_dt = await getCalUnitList(data.type_id, data.act_id, data.emi_type_id, data.year)
+    var res_dt = await getCalUnitList(data.type_id, data.act_id, data.emi_type_id, data.year, data.flag)
     res.send(res_dt)
 })
 

@@ -57,6 +57,7 @@
                     </div>
                 </div>
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <input type="hidden" name="flag" value="<%= flag %>">
                 <button class="btn btn-pill btn-outline-primary btn-air-primary m-t-10" type="submit">Submit</button>
                 </form>
             </div>
@@ -70,7 +71,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_act_ajax',
-            data: {type_id: $(this).val()},
+            data: {type_id: $(this).val(), flag: '<%= flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()

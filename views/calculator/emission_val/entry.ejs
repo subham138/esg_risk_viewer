@@ -99,6 +99,7 @@
                         </table>
                     </div>
                 </div>
+                <input type="hidden" name="flag" value="<%= flag %>">
                 <button class="btn btn-pill btn-outline-primary btn-air-primary" type="submit">Submit</button>
                 </form>
             </div>
@@ -120,7 +121,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_act_ajax',
-            data: {type_id: $(this).val()},
+            data: {type_id: $(this).val(), flag: '<%= flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -147,7 +148,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
-            data: {type_id: $('#type_id').val(), act_id: $(this).val()},
+            data: {type_id: $('#type_id').val(), act_id: $(this).val(), flag: '<%= flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -183,7 +184,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id: $('#type_id').val(), act_id: $('#act_id').val(), emi_type_id: $(`#emi_type_id`).val(), year: $(this).val()},
+            data: {type_id: $('#type_id').val(), act_id: $('#act_id').val(), emi_type_id: $(`#emi_type_id`).val(), year: $(this).val(), flag: '<%= flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()

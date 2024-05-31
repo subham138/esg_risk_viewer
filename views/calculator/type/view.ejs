@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 my-2">
-                            <button onclick="routToNextPage('/cal_type_edit', JSON.stringify({id: 0}), true)" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</button>
+                            <button onclick="routToNextPage('/cal_type_edit', JSON.stringify({id: 0, flag: '<%= flag %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</button>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -54,7 +54,7 @@
                                             <td><%= i %></td>
                                             <td><%= dt.type_name %></td>
                                             <td><%= dt.type %></td>
-                                            <td><a onclick="routToNextPage('/cal_type_edit', JSON.stringify({id: '<%= dt.id %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <td><a onclick="routToNextPage('/cal_type_edit', JSON.stringify({id: '<%= dt.id %>', flag: '<%= flag %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                             <a href="/cal_type_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
@@ -64,7 +64,7 @@
                                         </tr>
                                         <% i++; })}else{ %>
                                         <tr>
-                                            <td colspan="4">No Data Found</td>
+                                            <td class="text-danger text-center" colspan="4">No Data Found</td>
                                         </tr>
                                         <% } %>
                                     </tbody>

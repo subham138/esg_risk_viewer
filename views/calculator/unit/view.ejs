@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 my-2">
-                            <button onclick="routToNextPage('/unit_edit', JSON.stringify({id: 0}), true)" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</button>
+                            <button onclick="routToNextPage('/unit_edit', JSON.stringify({id: 0, flag: '<%= flag %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Topic</button>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -53,7 +53,7 @@
                                             <td><%= i %></td>
                                             <td><%= dt.unit_name %></td>
                                             <td>
-                                            <a onclick="routToNextPage('/unit_edit', JSON.stringify({id: '<%= dt.id %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" title="Edit">
+                                            <a onclick="routToNextPage('/unit_edit', JSON.stringify({id: '<%= dt.id %>', flag: '<%= flag %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                             <a href="/unit_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
@@ -63,7 +63,7 @@
                                         </tr>
                                         <% i++; })}else{ %>
                                         <tr>
-                                            <td colspan="3">No Data Found</td>
+                                            <td class="text-danger text-center" colspan="3">No Data Found</td>
                                         </tr>
                                         <% } %>
                                     </tbody>

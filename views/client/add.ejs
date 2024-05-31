@@ -44,6 +44,21 @@
                         </select>
                     </div>
                 </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label" for="cal_lang_flag">Calculator Type</label>
+                        <select class="form-select" id="cal_lang_flag" name="cal_lang_flag" required="">
+                            <option value="">Select Calculator Type</option>
+                            <% Object.keys(cal_lang).forEach(dt => {
+                              var _selected = ''
+                              if(id > 0)
+                                if(client_data.msg[0].cal_lang_flag == dt)
+                                  _selected = 'selected' %>
+                              <option value="<%= dt %>" <%= _selected %>><%= cal_lang[dt] %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
                 <div class="row mt-4">
                     <div class="col-md-3">
                         <div class="media">

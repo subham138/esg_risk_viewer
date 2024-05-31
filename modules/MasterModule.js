@@ -84,6 +84,11 @@ const USER_TYPE_LIST = {
   'A': 'Admin User',
   'V': 'Viewer',
   'E': 'Editor'
+},
+CALCULATOR_LANG = {
+  'B': 'Boath',
+  'E': 'English',
+  'F': 'French'
 }
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST };
+module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG };
