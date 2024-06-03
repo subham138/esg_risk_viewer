@@ -477,4 +477,10 @@ ProjectRouter.get('/report_full_view', async (req, res) => {
     res.render('project_work/report_view_template', res_data)
 })
 
+ProjectRouter.get('/get_cal_emi_source_ajax', async (req, res) => {
+    var data = req.query
+    var emi_source = await getCalTypeList(0, data.flag)
+    res.send(emi_source)
+})
+
 module.exports = {ProjectRouter}
