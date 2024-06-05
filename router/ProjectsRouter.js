@@ -309,7 +309,8 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
         header: lang.report_edit.header,
         sub_header: lang.report_edit.sub_header,
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
-        flag: data.flag
+        flag: data.flag,
+        cal_lang_flag: req.session.user.cal_lang_flag,
     };
     res.render("project_work/report_view", res_data);
     // res.send(res_data)

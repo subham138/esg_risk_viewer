@@ -169,12 +169,14 @@
                                                 <div class="collapse show" id="ghg_emi" aria-labelledby="ghg_emi" data-bs-parent="#ghg"> -->
                                                     <div class="tab-pane fade" id="ghg-emi" role="tabpanel">
                                                         <div class="row m-3">
-                                                            <div class="col-md-12 m-b-10">
-                                                                <div class="chooleLang">
-                                                                    <div class="langContent">English</div>
-                                                                    <div class="langContent">French</div>
+                                                            <% if(cal_lang_flag == 'B'){ %>
+                                                                <div class="col-md-12 m-b-10">
+                                                                    <div class="chooleLang">
+                                                                        <div class="langContent <%= cal_lang_flag == 'E' || cal_lang_flag == 'B' ? 'active' : '' %>">English</div>
+                                                                        <div class="langContent <%= cal_lang_flag == 'F' ? 'active' : '' %>">French</div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            <% } %>
                                                             <div class="col-md-12">
                                                                 <div class="default-according style-2" id="inghg">
                                                                     <div class="card custom-span-card">
@@ -978,6 +980,7 @@
 <input type="hidden" name="ind_id" id="ind_id" value="<%= ind_id %>">
 <input type="hidden" name="top_id" id="top_id" value="<%= top_id %>">
 <input type="hidden" name="project_id" id="project_id" value="<%= project_id %>">
+<input type="hidden" name="cal_lang_flag" id="cal_lang_flag" value="<%= cal_lang_flag %>">
 
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.2.61/jspdf.min.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha512-a9NgEEK7tsCvABL7KqtUTQjl69z7091EVPpw5KxPlZ93T141ffe1woLtbXTX+r2/8TtTvRX/v4zTL2UlMUPgwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -1141,7 +1144,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_act_ajax',
-            data: {type_id: $(`#type_id_${scope}_${id}`).val(), flag: '<%= user.cal_lang_flag %>'},
+            data: {type_id: $(`#type_id_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1172,7 +1175,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
-            data: {type_id: $(`#type_id_${scope}_${id}`).val(), act_id: $(`#act_id_${scope}_${id}`).val(), flag: '<%= user.cal_lang_flag %>'},
+            data: {type_id: $(`#type_id_${scope}_${id}`).val(), act_id: $(`#act_id_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1204,7 +1207,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id: prePoulate ? data.type_id : $(`#type_id_${scope}_${id}`).val(), act_id: prePoulate ? data.act_id : $(`#act_id_${scope}_${id}`).val(), emi_type_id: prePoulate ? data.emi_type_id : $(`#emi_type_id_${scope}_${id}`).val(), year: prePoulate ? data.year : $(`#repo_period_${scope}_${id}`).val(), flag: '<%= user.cal_lang_flag %>'},
+            data: {type_id: prePoulate ? data.type_id : $(`#type_id_${scope}_${id}`).val(), act_id: prePoulate ? data.act_id : $(`#act_id_${scope}_${id}`).val(), emi_type_id: prePoulate ? data.emi_type_id : $(`#emi_type_id_${scope}_${id}`).val(), year: prePoulate ? data.year : $(`#repo_period_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1526,6 +1529,7 @@
         })
         $(this).toggleClass('active')
         var cal_flag = $(this).text() == 'English' ? 'E' : 'F'
+        $('#cal_lang_flag').val(cal_flag)
         console.log($(this).text(), 'Enter Text');
         $.ajax({
             method:'GET',
@@ -1536,20 +1540,20 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
+                var res = JSON.parse(result);
+                console.log(res, res.suc > 0 && res.msg.length > 0);
                 $('.emission_source').each(function () {
-                    var res = JSON.parse(result);
-                    console.log(res, res.suc > 0 && res.msg.length > 0);
                     
                     var id = $(this).attr('id')
                     var id_arr = id.split('_')[2]
                     console.log(id_arr[1], id);
-                    $(id).empty()
-                    $(id).append($('<option>', {value: '', text: '<%= lang.report_edit.tab4.emi_sour_sel %>'}));
+                    $(`#${id}`).empty()
+                    $(`#${id}`).append($('<option>', {value: '', text: '<%= lang.report_edit.tab4.emi_sour_sel %>'}));
                     if(res.suc > 0 && res.msg.length > 0){
                         $.each(res.msg, function (i, item) {
                             if(item.scope == id_arr[1]){
-                                console.log(item);
-                                $(id).append($('<option>', {value: item.id, text: item.type_name}));
+                                console.log(item.type_name, item.scope == id_arr[1], item.scope, id_arr[1], 'In loop');
+                                $(`#${id}`).append($('<option>', {value: item.id, text: item.type_name}));
                             }
                         });
                     }
