@@ -72,7 +72,7 @@ UserRouter.post("/login", async (req, res) => {
           req.session.user['esrs_vsme_fr_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].esrs_vsme_fr_flag : 'N') : 'N';
           req.session.user['gri_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].gri_flag : 'N') : 'N';
           req.session.user['gri_fr_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].gri_fr_flag : 'N') : 'N';
-          req.session.user['cal_lang_flag'] = client_dt.msg[0].cal_lang_flag;
+          req.session.user['cal_lang_flag'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].cal_lang_flag : 'N') : 'N';
 
           if(data.rem_me == 'Y'){
             req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
