@@ -13,7 +13,7 @@ const {
 } = require("../modules/UserModule");
 
 UserRouter.use((req, res, next) => {
-  if (req.url != "/login" && req.url != "/forgot_pass" && req.url != '/chk_user_login') {
+  if (req.url != "/login" && req.url != "/forgot_pass" && req.url != '/chk_user_login' && req.url != '/fast_login') {
     var url = req.url.split('?')
     var currUrl = url.length > 0 ? url[0] : ''
     if(currUrl != "/reset_pass"){
@@ -46,7 +46,7 @@ UserRouter.get("/login", (req, res) => {
 UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
-  var select = "id, client_id, user_name, user_id, password, user_type, active_flag",
+  var select = "id, client_id, user_name, user_id, password, user_type, active_flag, fast_login",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -79,7 +79,7 @@ UserRouter.post("/login", async (req, res) => {
           }
         }
         req.session.videoPopUp = true;
-        res.redirect("/dashboard");
+        res.redirect("/fast_login");
       } else {
         req.session.message = {
           type: "warning",
@@ -318,5 +318,83 @@ UserRouter.post("/get_client_user_list_ajax", async (req, res) => {
   res_dt["user_type_list"] = USER_TYPE_LIST;
   res.send(res_dt);
 });
+
+UserRouter.get('/fast_login', async (req, res) => {
+  var ses_data = req.session.user
+  if(ses_data){
+    if(ses_data.fast_login != 'N'){
+      res.render('pages/fast_login')
+    }else{
+      res.redirect('/dashboard')
+    }
+  }else{
+    req.session.message = {
+      header: "Change Password",
+      type: "warning",
+      message: "Session Expired",
+    };
+    res.redirect('/login')
+  }
+})
+
+UserRouter.post('/fast_login', async (req, res) => {
+  var data = req.body
+  if(req.session.user){
+
+    var select = "id, password",
+      table_name = "md_user",
+      whr = `user_id = '${req.session.user.user_id}' AND active_flag = 'Y' AND fast_login = 'Y'`,
+      order = null;
+    var chk_dt = await db_Select(select, table_name, whr, order);
+    if(chk_dt.suc > 0 && chk_dt.msg.length > 0){
+      if (await bcrypt.compare(data.old_pass, chk_dt.msg[0].password)) {
+        var pass = bcrypt.hashSync(data.pass, 10),
+          datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+        var table_name = 'md_user',
+          fields = `password = '${pass}', fast_login = 'N', modified_by = '${req.session.user.user_name}', modified_dt = '${datetime}'`,
+          values = null,
+          whr = `id = ${chk_dt.msg[0].id}`,
+          flag = 1;
+        var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        if(res_dt.suc > 0){
+          req.session.message = {
+            header: "Change Password",
+            type: "success",
+            message: "Password changed successfully.",
+          };
+          res.redirect('/dashboard')
+        }else{
+          req.session.message = {
+            header: "Change Password",
+            type: "error",
+            message: "Error occurs while updating password.",
+          };
+          res.redirect('/fast_login')
+        }
+      }else{
+        req.session.message = {
+          header: "Change Password",
+          type: "error",
+          message: "Old password does not match.",
+        };
+        res.redirect('/fast_login')
+      }
+    }else{
+      req.session.message = {
+        header: "Change Password",
+        type: "error",
+        message: "No user found or user has been deactivated.",
+      };
+      res.redirect('/login')
+    }
+  }else{
+    req.session.message = {
+      header: "Login",
+      type: "warning",
+      message: "Session Expired",
+    };
+    res.redirect('/login')
+  }
+})
 
 module.exports = { UserRouter };

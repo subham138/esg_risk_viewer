@@ -18,6 +18,13 @@
     }
   })
 </script>
+<% console.log(message); if(message){ %>
+  <script>
+      setTimeout(() => {
+          initiate_sweet_alert('<%= message.header ? message.header : "Dashboard" %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+      }, 1000);
+  </script>
+<% } %>
 <!-- Container-fluid starts-->
 <div class="container-fluid dashboard-default-sec">
   <div class="row">

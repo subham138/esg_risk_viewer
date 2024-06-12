@@ -1,0 +1,71 @@
+<%- include('../templates/login_header.ejs') %>
+<style>
+  .show-hide span {
+    font-size: 20px !important;
+  }
+</style>
+<div class="row login_back_color">
+    <div class="col-12">
+      <div class="login-card">
+        <form class="theme-form login-form" action="/fast_login" method="POST" autocomplete="off">
+            <% if(message){  %>
+                <script>
+                    setTimeout(() => {
+                        initiate_sweet_alert('<%= message.header ? message.header : "Change Password" %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                    }, 1000);
+                </script>
+            <% } %>
+          <img width="100%" height="100%" src="images/logo_white.png" alt="">
+          <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="form-group mt-3">
+                    <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
+                    <input class="form-control loginInput" type="password" name="old_pass" id="old_pass" required="" placeholder="Old Password">
+                    <div class="pas-eye"><span class="show-pass"><i class="icofont icofont-eye"></i></span></div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
+                    <input class="form-control loginInput example-popover" type="password" name="pass" id="pass" required="" placeholder="New Password" onchange="chk_pass()" aria-describedby="passwordHelp">
+                    <div class="pas-eye"><span class="show-pass"><i class="icofont icofont-eye"></i></span></div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
+                    <input class="form-control loginInput" type="password" name="re_pass" id="re_pass" required="" placeholder="Re-Enter Password" onchange="chk_pass()">
+                    <div class="pas-eye"><span class="show-pass"><i class="icofont icofont-eye"></i></span></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary btn-block lginBtn" id="subBtnFrPass" type="submit">Submit</button>
+                    </div>
+                    </div>
+                </div>
+              <!-- <div class="form-group mt-0 pt-0">
+                <a class="link text-white text-center LoginFpText" href="/login">Login</a>
+              </div> -->
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    function chk_pass(){
+        var pass = $('#pass').val(),
+            re_pass = $('#re_pass').val();
+        console.log(pass, re_pass);
+        if(pass != '' && re_pass != ''){
+            if(pass != re_pass){
+                alert('Password and Re-Enter password does not match')
+                $('#subBtn').attr('disabled', true)
+            }else{
+                $('#subBtn').removeAttr('disabled')
+            }
+        }
+    }
+  </script>
+<%- include('../templates/login_footer.ejs') %>
