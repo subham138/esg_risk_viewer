@@ -58,6 +58,19 @@
                             <% }) %>
                         </select>
                     </div>
+                    <div class="col-md-6">
+                      <label class="form-label" for="plan_type">Subscription</label>
+                      <select class="form-select" id="plan_type" name="plan_type">
+                          <option value="">Select Subscription</option>
+                          <% Object.keys(sub_list).forEach(dt => {
+                            var _selected = ''
+                            if(id > 0)
+                              if(client_data.msg[0].plan_type == dt)
+                                _selected = 'selected' %>
+                            <option value="<%= dt %>" <%= _selected %>><%= sub_list[dt] %></option>
+                          <% }) %>
+                      </select>
+                  </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-md-3">

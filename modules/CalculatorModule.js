@@ -15,9 +15,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_unit',
-            fields = data.id > 0 ? `unit_name = '${data.unit_name}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+            fields = data.id > 0 ? `unit_name = "${data.unit_name}", modified_by = '${user}', modified_dt = '${datetime}'` : 
             '(flag, unit_name, created_by, created_dt)',
-            values = `('${data.flag}', '${data.unit_name}', '${user}', '${datetime}')`,
+            values = `('${data.flag}', "${data.unit_name}", '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -38,9 +38,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_cal_type',
-            fields = data.id > 0 ? `type_name = '${data.type_name}', type = '${data.type}', scope = '${data.scope}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+            fields = data.id > 0 ? `type_name = "${data.type_name}", type = "${data.type}", scope = '${data.scope}', modified_by = '${user}', modified_dt = '${datetime}'` : 
             '(flag, type_name, type, scope, created_by, created_dt)',
-            values = `('${data.flag}', '${data.type_name}', '${data.type}', '${data.scope}', '${user}', '${datetime}')`,
+            values = `('${data.flag}', "${data.type_name}", "${data.type}", '${data.scope}', '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -61,9 +61,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_cal_act',
-            fields = data.id > 0 ? `type_id = '${data.type_id}', act_name = '${data.act_name}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+            fields = data.id > 0 ? `type_id = '${data.type_id}', act_name = "${data.act_name}", modified_by = '${user}', modified_dt = '${datetime}'` : 
             '(flag, type_id, act_name, created_by, created_dt)',
-            values = `('${data.flag}', '${data.type_id}', '${data.act_name}', '${user}', '${datetime}')`,
+            values = `('${data.flag}', '${data.type_id}', "${data.act_name}", '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -84,9 +84,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_cal_emi_type',
-            fields = data.id > 0 ? `type_id = '${data.type_id}', act_id = '${data.act_id}', emi_name = '${data.emi_name}', modified_by = '${user}', modified_dt = '${datetime}'` : 
+            fields = data.id > 0 ? `type_id = '${data.type_id}', act_id = '${data.act_id}', emi_name = "${data.emi_name}", modified_by = '${user}', modified_dt = '${datetime}'` : 
             '(flag, type_id, act_id, emi_name, created_by, created_dt)',
-            values = `('${data.flag}', '${data.type_id}', '${data.act_id}', '${data.emi_name}', '${user}', '${datetime}')`,
+            values = `('${data.flag}', '${data.type_id}', '${data.act_id}', "${data.emi_name}", '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)

@@ -4,7 +4,7 @@ const express = require("express"),
   dateFormat = require('dateformat');
 
 const { SendUserEmail, sendOtp } = require("../modules/EmailModule");
-const { db_Select, USER_TYPE_LIST, CALCULATOR_LANG, db_Insert } = require("../modules/MasterModule");
+const { db_Select, USER_TYPE_LIST, CALCULATOR_LANG, db_Insert, PLAN_LIST } = require("../modules/MasterModule");
 const {
   getUserList,
   saveUser,
@@ -254,6 +254,7 @@ UserRouter.get("/client_edit", async (req, res) => {
     id,
     cal_lang: CALCULATOR_LANG,
     user_type_list: USER_TYPE_LIST,
+    sub_list: PLAN_LIST,
     header: "Client List",
     sub_header: "Client Add/Edit",
     header_url: "/client",

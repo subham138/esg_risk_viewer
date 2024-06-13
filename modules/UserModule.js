@@ -1,6 +1,7 @@
 const { db_Select, db_Insert } = require("./MasterModule");
 const bcrypt = require('bcrypt'),
 dateFormat = require("dateformat");
+const { SaveSubsData } = require("./SubscModule");
 
 module.exports = {
     getUserList: (id=null, client_id, active_flag = null) => {
@@ -53,6 +54,10 @@ module.exports = {
             var client_data = await db_Insert(table_name, fields, values, whr, flag)
             
             var client_id = data.id > 0 ? data.id : (client_data.suc > 0 ? client_data.lastId.insertId : 0)
+
+            if(data.plan_type != '' && data.plan_type){
+                await SaveSubsData(user, client_id, data.plan_type)
+            }
 
             var select = 'id',
                 table_name = 'md_user',

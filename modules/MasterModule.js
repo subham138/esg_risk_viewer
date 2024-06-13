@@ -89,6 +89,9 @@ CALCULATOR_LANG = {
   'B': 'Boath',
   'E': 'English',
   'F': 'French'
+},
+PLAN_LIST = {
+  'N': 'None', 'B': 'Basic', 'S': 'Standard', 'P': 'Premium'
 }
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG };
+module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST };
