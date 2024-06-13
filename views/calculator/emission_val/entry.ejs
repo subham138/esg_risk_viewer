@@ -249,7 +249,7 @@
 <script>
     function add_tb_row() {
         var tr_len = $(`#table tbody tr`).length
-        if($(`#unit_id_${tr_len}`).val() > 0 && $(`#co_val_${tr_len}`).val() > 0){
+        if($(`#unit_id_${tr_len}`).val() > 0){
             var next_id = tr_len + 1
             $(`#table tbody:last`).append(`
             <tr id="tr_${next_id}">
