@@ -45,6 +45,7 @@
                                     <th>User Name</th>
                                     <th>Email Id</th>
                                     <th>Action</th>
+                                    <th>User List</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,6 +63,11 @@
                                     <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
                                         <i class="icofont icofont-ui-delete"></i> Delete
                                     </a> -->
+                                    </td>
+                                    <td>
+                                        <a href="/user_list?client_id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="View Users">
+                                            <i class="icofont icofont-eye-alt"></i> View
+                                        </a>
                                     </td>
                                 </tr>
                                 <% i++; })}else{ %>
