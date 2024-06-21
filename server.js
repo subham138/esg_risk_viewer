@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, "assets/")));
 // app.use(express.json()); //
 // app.use(express.urlencoded({ extended: false }));
 app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb', extended: false}));
+app.use(express.urlencoded({limit: '50mb', extended: false, parameterLimit: 1000000,}));
 // END //
 
 // CONFIGURE SESSION //
@@ -316,10 +316,10 @@ app.get('/data_bus_int', async (req, res) => {
       if(ind_dtls.suc > 0 && ind_dtls.msg.length > 0){
         var chk = await db_Select('count(id) tot_row', 'md_busi_act', `ind_id = '${ind_dtls.msg[0].id}' AND sec_id = '${ind_dtls.msg[0].sec_id}' AND repo_flag = '${data.to_repo_flag}'`, null)
         var table_name = 'md_busi_act',
-        fields = chk.suc > 0 && chk.msg[0].tot_row > 0 ? `sec_id = '${ind_dtls.msg[0].sec_id}', ind_id = '${ind_dtls.msg[0].id}', busi_act_name = '${dt.busi_act_name}', created_by = 'admin', created_dt = '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}'` : '(repo_flag, sec_id, ind_id, busi_act_name, created_by, created_dt)',
+        fields = '(repo_flag, sec_id, ind_id, busi_act_name, created_by, created_dt)',
         values = `('${data.to_repo_flag}', '${ind_dtls.msg[0].sec_id}', '${ind_dtls.msg[0].id}', '${dt.busi_act_name}', 'admin', '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
-        whr = `ind_id = '${ind_dtls.msg[0].id}' AND sec_id = '${ind_dtls.msg[0].sec_id}' AND repo_flag = '${data.to_repo_flag}'`,
-        flag = chk.suc > 0 && chk.msg[0].tot_row > 0 ? 1 : 0;
+        whr = null,
+        flag = 0;
         await db_Insert(table_name, fields, values, whr, flag)
       }else{
         name_arr.push({ind_name: dt.ind_name.trim(), busi_act_name: dt.busi_act_name})
