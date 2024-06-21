@@ -13,6 +13,7 @@ const {
   getWordInfo,
   saveWordInfo,
   getCopyLatestWordInfoSet,
+  getRiskOprnDtls,
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select, db_Delete } = require("../modules/MasterModule");
 
@@ -598,6 +599,73 @@ DataCollectionRouter.post('/save_word_info', async (req, res) => {
       message: res_dt.msg,
     };
   res.redirect(`/sus_disc_word_info?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
+})
+
+DataCollectionRouter.get("/risk_opr", async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+
+  var selected = {
+    sec_id: req.query.sec_id ? req.query.sec_id : 0,
+    ind_id: req.query.ind_id ? req.query.ind_id : 0,
+    risk_info: ''
+  };
+  var sec_data = await getSectorList(0, flag),
+    ind_list = { msg: [] };
+  if (selected.sec_id > 0){
+    ind_list = await getIndustriesList(null, selected.sec_id, flag);
+    var risk_dt = await getRiskOprnDtls(flag, selected.sec_id, selected.ind_id);
+    selected["risk_info"] = risk_dt.suc > 0 && risk_dt.msg[0] ? risk_dt.msg[0].risk_info : '';
+  }
+  // console.log(ind_list);
+  var data = {
+    sec_data,
+    ind_list,
+    selected,
+    header: "Risk and Opportunities",
+    flag,
+  };
+  res.render("data_collection/risk_opr/entry", data);
+});
+
+DataCollectionRouter.post('/risk_opr_info_ajax', async (req, res) => {
+  var data = req.body
+  var res_dt = await getRiskOprnDtls(data.flag, data.sec_id, data.ind_id)
+  res.send(res_dt)
+})
+
+DataCollectionRouter.post('/risk_opr', async (req, res) => {
+  var data = req.body,
+    datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+    user = req.session.user.user_name;
+  var select = "id",
+    table_name = "md_risk_opr",
+    whr = `flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id}`,
+    order = null;
+  var chk_dt = await db_Select(select, table_name, whr, order);
+
+  var table_name = "md_risk_opr",
+    fields =
+      chk_dt.suc > 0 && chk_dt.msg.length > 0
+        ? `risk_info = '${data.risk_info}', modified_by = '${user}', modified_dt = '${datetime}'`
+        : "(flag, sec_id, ind_id, risk_info, created_by, created_dt)",
+    values = `('${data.flag}', '${data.sec_id}', '${data.ind_id}', '${data.risk_info}', '${user}', '${datetime}')`,
+    whr =
+      chk_dt.suc > 0 && chk_dt.msg.length > 0
+        ? `flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id}`
+        : null,
+    flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+
+  var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect(
+    `/risk_opr?sec_id=${data.sec_id}&ind_id=${
+      data.ind_id
+    }&flag=${encodeURIComponent(new Buffer.from(data.flag).toString("base64"))}`
+  );
 })
 
 module.exports = { DataCollectionRouter };
