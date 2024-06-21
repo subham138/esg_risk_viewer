@@ -463,7 +463,7 @@ DataCollectionRouter.get("/sus_disc_info", async (req, res) => {
 
 DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
   var data = req.body,
-    res_dt,
+    res_dt = {suc: 1, msg: ''},
     user = "admin",
     datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
     // console.log(data);
