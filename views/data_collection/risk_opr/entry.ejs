@@ -187,9 +187,12 @@
           chunkIndex++;
           uploadNextChunk();
         }, (error) => {
-          console.error('Error uploading chunk:', error);
+            $(".loader-wrapper").hide();
+            initiate_sweet_alert('<%= header %>', error, 'error')
+          // console.error('Error uploading chunk:', error);
         });
       } else {
+        $(".loader-wrapper").hide();
         console.log('All chunks uploaded successfully.');
       }
     }
