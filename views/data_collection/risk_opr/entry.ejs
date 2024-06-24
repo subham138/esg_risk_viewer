@@ -179,7 +179,11 @@
     function uploadNextChunk() {
       if (chunkIndex < chunks.length) {
         uploadChunk(chunks[chunkIndex], chunkIndex, chunks.length, (data) => {
-          console.log(data);
+          if(data.suc == 1){
+            $(".loader-wrapper").hide();
+            initiate_sweet_alert('<%= header %>', data.msg, data.suc == 1 ? 'success' : 'error')
+          }
+          // console.log(data);
           chunkIndex++;
           uploadNextChunk();
         }, (error) => {
@@ -194,6 +198,7 @@
   }
   $('#saveBtn').on('click', function(){
     const data = editor.getHTMLCode();
+    $(".loader-wrapper").show();
     uploadData(data);
   })
 </script>
