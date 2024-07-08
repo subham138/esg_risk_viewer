@@ -169,6 +169,7 @@
                             var sus_data = data.msg.filter((sus_dt) => sus_dt.top_id == dt.id);
                             var k = 0
                             if(sus_data.length > 0){
+                                $(".loader-wrapper").show();
                                 $.each(sus_data, function (j, sus_dt) {
                                     if(k==0){
                                       console.log(dt, sus_dt, 'lalalala');
@@ -189,6 +190,7 @@
                                     }
                                     k++;
                                 })
+                              $(".loader-wrapper").hide();
                             }else{
                                 $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1">
                                     <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>

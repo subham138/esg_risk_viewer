@@ -32,9 +32,30 @@
         
           <div class="left-menu-header col p-b-0 p-t-0">
             <ul>
-              <li>
-                <h5 style="color: var(--theme-primary);">Welcome <%= user.user_name %></h5>
+              <li class="userHeader">
+                <h5 style="color: var(--theme-primary);"><%= user.user_name %></h5>
               </li>
+              <% if(show_br){ %>
+                <li class="breadCrumbHeader">
+                  <div class="row">
+                    <div class="col-sm-12 row">
+                        <div class="col-md-4">
+                            <h5 class="text-muted mt-0 mb-0">You are</h5>
+                        </div>
+                        <div class="col-md-8">
+                            <ol class="breadcrumb">
+                              <% if(header){ %>
+                                <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                              <% } %>
+                              <% if(sub_header){ %>
+                                <li class="breadcrumb-item"><span class="sub-head-brecr"><%= sub_header %></span></li>
+                              <% } %>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                </li>
+              <% } %>
             </ul>
             <!-- <ul>
               <li>

@@ -2,7 +2,7 @@ const express = require("express"),
   path = require("path"),
   session = require("express-session"),
   app = express(),
-  port = process.env.PORT || 3000,
+  port = process.env.PORT || 3001,
   https = require('https'),
   fs = require('fs');
 
@@ -95,16 +95,19 @@ app.get('/test_lala',async (req, res) => {
   const bcrypt = require('bcrypt')
   var pass = bcrypt.hashSync('1234', 10)
   var dateFormat = require('dateformat')
-  var enc = Buffer.from(JSON.stringify({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')})).toString('base64')
-  console.log({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')});
-  var email = await SendUserEmail('suvrajit@synergicsoftek.com', 'Suvrajit Banerjee', encodeURIComponent(enc))
-  console.log(email);
+  var enc = Buffer.from('F').toString('base64')
+  ////////////////////////////////
+  // var enc = Buffer.from(JSON.stringify({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')})).toString('base64')
+  // console.log({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')});
+  // var email = await SendUserEmail('suvrajit@synergicsoftek.com', 'Suvrajit Banerjee', encodeURIComponent(enc))
+  // console.log(email);
+  /////////////////////////////////
   // dec = new Buffer.from(enc, 'base64').toString();
   // console.log(dec);
   // res.send(encodeURIComponent(enc))
   // console.log(req.files);
   // res.send('LALA')
-  res.send(enc)
+  res.send(encodeURIComponent(enc))
   // res.render('test')
 })
 
@@ -309,17 +312,21 @@ app.get('/data_bus_int', async (req, res) => {
     dateFormat = require("dateformat");
   var data = req.query,
   name_arr = [];
+  var i = 0
   var all_bus_act = await db_Select('b.ind_name, a.repo_flag, a.busi_act_name', 'md_busi_act a, md_industries b', `a.ind_id=b.id AND a.repo_flag = '${data.frm_repo_id}'`, null)
   if(all_bus_act.suc > 0 && all_bus_act.msg.length > 0){
     for(let dt of all_bus_act.msg){
       var ind_dtls = await db_Select('id, sec_id', 'md_industries', `TRIM(ind_name) = "${dt.ind_name.trim()}" AND repo_flag = '${data.to_repo_flag}'`, null)
+      console.log(ind_dtls.msg.length, i);
+      if(ind_dtls.msg.length > 0) i++
       if(ind_dtls.suc > 0 && ind_dtls.msg.length > 0){
         var chk = await db_Select('count(id) tot_row', 'md_busi_act', `ind_id = '${ind_dtls.msg[0].id}' AND sec_id = '${ind_dtls.msg[0].sec_id}' AND repo_flag = '${data.to_repo_flag}'`, null)
+        console.log(chk.msg[0].tot_row, ind_dtls.msg[0].id, ind_dtls.msg[0].sec_id);
         var table_name = 'md_busi_act',
-        fields = chk.suc > 0 && chk.msg[0].tot_row > 0 ? `sec_id = '${ind_dtls.msg[0].sec_id}', ind_id = '${ind_dtls.msg[0].id}', busi_act_name = '${dt.busi_act_name}', created_by = 'admin', created_dt = '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}'` : '(repo_flag, sec_id, ind_id, busi_act_name, created_by, created_dt)',
+        fields = '(repo_flag, sec_id, ind_id, busi_act_name, created_by, created_dt)',
         values = `('${data.to_repo_flag}', '${ind_dtls.msg[0].sec_id}', '${ind_dtls.msg[0].id}', '${dt.busi_act_name}', 'admin', '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
-        whr = `ind_id = '${ind_dtls.msg[0].id}' AND sec_id = '${ind_dtls.msg[0].sec_id}' AND repo_flag = '${data.to_repo_flag}'`,
-        flag = chk.suc > 0 && chk.msg[0].tot_row > 0 ? 1 : 0;
+        whr = null,
+        flag = 0;
         await db_Insert(table_name, fields, values, whr, flag)
       }else{
         name_arr.push({ind_name: dt.ind_name.trim(), busi_act_name: dt.busi_act_name})
@@ -327,7 +334,8 @@ app.get('/data_bus_int', async (req, res) => {
       // console.log();
     }
   }
-  res.send(name_arr)
+  console.log(all_bus_act.msg.length, i);
+  res.send(all_bus_act)
 })
 
 app.get('/test_report', async (req, res) => {

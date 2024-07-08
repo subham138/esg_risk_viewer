@@ -46787,3 +46787,21 @@ img.icon-img-tripple {
   justify-content: center;
   align-items: center;
 }
+.breadcrumb-item{
+  font-size: 15px !important;
+}
+.breadcrumb{
+  margin-bottom: 0px !important;
+}
+.page-main-header .main-header-right .left-menu-header {
+  flex: 0 0 50% !important;
+}
+.userHeader{
+  width: 20%;
+}
+.breadCrumbHeader{
+  width: 60%;
+}
+.sub-head-brecr{
+  color: #7030a0;
+}

@@ -1,17 +1,23 @@
-<%- include('../templates/header.ejs') %>
-<div class="container-fluid">
+<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: header, show_br: true}) %>
+<!-- <div class="container-fluid">
     <div class="page-header">
         <div class="row">
-            <div class="col-sm-6">
-                <h3><%= header %></h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item"><%= header %></li>
-                </ol>
+            <div class="col-sm-6 row">
+                <div class="col-md-4">
+                    <h5 class="text-muted mt-2"><%= header %></h5>
+                </div>
+                <div class="col-md-8">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><%= header %></li>
+                    </ol>
+                </div>
             </div>
         </div>
+        <hr>
     </div>
-</div>
+</div> -->
+
 
 <div class="container-fluid">
     <div class="row">
