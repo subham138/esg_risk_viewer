@@ -1,6 +1,6 @@
 const { getSectorList, getIndustriesList, getBusiActList, getMetNote } = require('../modules/AdminModule');
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
-const { getDynamicData, getSusDiscList, getActMetrialDtls } = require('../modules/DataCollectionModule');
+const { getDynamicData, getSusDiscList, getActMetrialDtls, getRiskOprnDtls } = require('../modules/DataCollectionModule');
 const { db_Insert, db_Delete, USER_TYPE_LIST } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList, getActiveTopicList, saveCheckedProjectFlag, getCheckedProjectTopList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
@@ -249,7 +249,10 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     var act_top_catg_list = await getActiveTopicList(data.ind_id, data.flag)
     var get_checked_top_list = await getCheckedProjectTopList(0, data.flag, data.proj_id)
     var project_data = await getProjectList(data.proj_id, req.session.user.client_id, 0, data.flag);
-    console.log(project_data);
+
+    var risk_info_dt = await getRiskOprnDtls(data.flag, data.sec_id, data.ind_id)
+    // console.log(risk_info_dt);
+    // console.log(project_data);
 
     var ghg_emi_data = {};
     if(scope_list.length > 0){
@@ -282,35 +285,40 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
     }
     // console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
     var res_data = {
-        lang: lang,
-        top_id: data.top_id, 
-        topName,
-        sec_id: data.sec_id,
-        ind_id: data.ind_id,
-        project_id: data.proj_id,
-        projName: data.proj_name,
-        repo_type: data.repo_type,
-        resDt,
-        susDistList,
-        metric,
-        user_type: req.session.user.user_type,
-        ai_tag_tool_flag: req.session.user.ai_tag_tool_flag,
-        editorData: editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
-        data_set,
-        allDynamicData,
-        type_list: type_list.suc > 0 ? type_list.msg : [],
-        act_list: act_list.suc > 0 ? act_list.msg : [],
-        emi_type: emi_type.suc > 0 ? emi_type.msg : [],
-        ghg_emi_data,
-        year_list,
-        act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
-        get_checked_top_list: get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
-        project_data: project_data.suc > 0 ? project_data.msg : [],
-        header: lang.report_edit.header,
-        sub_header: lang.report_edit.sub_header,
-        header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
-        flag: data.flag,
-        cal_lang_flag: req.session.user.cal_lang_flag,
+      lang: lang,
+      top_id: data.top_id,
+      topName,
+      sec_id: data.sec_id,
+      ind_id: data.ind_id,
+      project_id: data.proj_id,
+      projName: data.proj_name,
+      repo_type: data.repo_type,
+      resDt,
+      susDistList,
+      metric,
+      user_type: req.session.user.user_type,
+      ai_tag_tool_flag: req.session.user.ai_tag_tool_flag,
+      editorData:
+        editorVal.suc > 0 && editorVal.msg.length > 0 ? editorVal.msg : [],
+      data_set,
+      allDynamicData,
+      type_list: type_list.suc > 0 ? type_list.msg : [],
+      act_list: act_list.suc > 0 ? act_list.msg : [],
+      emi_type: emi_type.suc > 0 ? emi_type.msg : [],
+      ghg_emi_data,
+      year_list,
+      act_top_catg_list: act_top_catg_list.suc > 0 ? act_top_catg_list.msg : [],
+      get_checked_top_list:
+        get_checked_top_list.suc > 0 ? get_checked_top_list.msg : [],
+      project_data: project_data.suc > 0 ? project_data.msg : [],
+      header: lang.report_edit.header,
+      sub_header: lang.report_edit.sub_header,
+      header_url: `/my_project?flag=${encodeURIComponent(
+        new Buffer.from(data.flag).toString("base64")
+      )}`,
+      flag: data.flag,
+      cal_lang_flag: req.session.user.cal_lang_flag,
+      risk_info_dt: risk_info_dt.suc > 0 ? risk_info_dt.msg : [],
     };
     res.render("project_work/report_view", res_data);
     // res.send(res_data)

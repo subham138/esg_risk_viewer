@@ -1,0 +1,209 @@
+<%- include('../../templates/header.ejs') %>
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+<script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<script type="text/javascript" src='/editor/richtexteditor/plugins/all_plugins.js'></script>
+<% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
+    <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+<% } %>
+<script>
+    var editorCfg = {};
+  editorCfg.galleryImages = [
+      "/images/risk_info.png"
+    ];
+</script>
+<div class="container-fluid">
+  <div class="page-header">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3><%= header %></h3>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+          <li class="breadcrumb-item"><%= header %></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <% if(message){ %>
+        <script>
+            setTimeout(() => {
+                initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+            }, 1000);
+        </script>
+      <% } %>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <form action="/risk_opr" method="post">
+          <div class="row g-3 py-3">
+            <div class="col-md-6">
+              <label class="form-label" for="sec_id">Sector</label>
+              <select class="form-select" id="sec_id" name="sec_id" required="">
+                <option selected="" value="">Select Sector</option>
+                <% if(sec_data.msg.length > 0){ 
+                    sec_data.msg.forEach(dt => { 
+                        var _selected = ''; 
+                        if(dt.id == selected.sec_id) _selected = 'selected'; 
+                %>
+                <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                <% }) } %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="ind_id">Industries</label>
+              <select class="form-select" id="ind_id" name="ind_id" required="">
+                <option selected="" value="">Select Industries</option>
+                <% if(ind_list.msg.length > 0){ 
+                    ind_list.msg.forEach(dt => { 
+                        var _selected = ''; 
+                        if(dt.id == selected.ind_id) _selected = 'selected'; 
+                %>
+                <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
+                <% }) } %>
+              </select>
+            </div>
+          </div>
+          <div class="row py-3" id="data_set_view">
+            <div class="col-md-12 colEditor">
+                <div id="risk_info_text"><%- selected.risk_info %></div>
+                <textarea name="risk_info" id="risk_info" style="display: none;"></textarea>
+            </div>
+            <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+            <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" id="saveBtn" > Save </button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+    var editor = new RichTextEditor("#risk_info_text", editorCfg);
+    editor.attachEvent("change", function () {
+        $('#risk_info').val(editor.getHTMLCode())
+    })
+    function delItem(){
+        if(confirm('Do you want to delete?')){
+            return true
+        }else{
+            return false
+        }
+    }
+</script>
+
+<script>
+  $("#sec_id").on("change", function () {
+    $.ajax({
+      method: "GET",
+      url: "/get_ind_list_ajax",
+      data: { sec_id: $(this).val(), flag: $('#flag').val() },
+      dataType: "html",
+      beforeSend: function () {
+        $(".loader-wrapper").show();
+      },
+      success: function (result) {
+        var res = JSON.parse(result);
+        // console.log(res);
+        $("#ind_id").empty();
+        editor ? editor.setHTMLCode('') : ''
+        $("#ind_id").append(
+          $("<option>", { value: "", text: "Select Industries" })
+        );
+        if (res.suc > 0 && res.msg.length > 0)
+          $.each(res.msg, function (i, item) {
+            $("#ind_id").append(
+              $("<option>", { value: item.id, text: item.ind_name })
+            );
+          });
+      },
+      complete: function () {
+        $(".loader-wrapper").hide();
+      },
+    });
+  });
+
+  $("#ind_id").on('change', function(){
+    $.ajax({
+      method: "POST",
+      url: "/risk_opr_info_ajax",
+      data: { sec_id: $("#sec_id").val(), ind_id: $(this).val(), flag: $('#flag').val() },
+      dataType: "html",
+      beforeSend: function () {
+        $(".loader-wrapper").show();
+      },
+      success: function (result) {
+        var res = JSON.parse(result);
+        if(res.suc > 0){
+            $('#risk_info').val(res.msg.length > 0 ? res.msg[0].risk_info : '')
+            editor.setHTMLCode(res.msg.length > 0 ? res.msg[0].risk_info : '')
+        }
+      },
+      complete: function () {
+        $(".loader-wrapper").hide();
+      },
+    });
+  })
+</script>
+
+<script>
+  const CHUNK_SIZE = 1024; // Adjust chunk size as needed
+
+  function chunkString(str, size) {
+    const chunks = [];
+    for (let i = 0; i < str.length; i += size) {
+      chunks.push(str.slice(i, i + size));
+    }
+    return chunks;
+  }
+
+  function uploadChunk(chunk, chunkIndex, totalChunks, onSuccess, onError) {
+    $.ajax({
+      url: '/risk_opr',
+      type: 'POST',
+      data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val() }),
+      contentType: 'application/json',
+      success: onSuccess,
+      error: onError
+    });
+  }
+
+  function uploadData(data) {
+    const chunks = chunkString(data, CHUNK_SIZE);
+    let chunkIndex = 0;
+
+    function uploadNextChunk() {
+      if (chunkIndex < chunks.length) {
+        uploadChunk(chunks[chunkIndex], chunkIndex, chunks.length, (data) => {
+          if(data.suc == 1){
+            $(".loader-wrapper").hide();
+            initiate_sweet_alert('<%= header %>', data.msg, data.suc == 1 ? 'success' : 'error')
+          }
+          // console.log(data);
+          chunkIndex++;
+          uploadNextChunk();
+        }, (error) => {
+            $(".loader-wrapper").hide();
+            initiate_sweet_alert('<%= header %>', error, 'error')
+          // console.error('Error uploading chunk:', error);
+        });
+      } else {
+        $(".loader-wrapper").hide();
+        console.log('All chunks uploaded successfully.');
+      }
+    }
+
+    uploadNextChunk();
+  }
+  $('#saveBtn').on('click', function(){
+    const data = editor.getHTMLCode();
+    $(".loader-wrapper").show();
+    uploadData(data);
+  })
+</script>
+
+<%- include('../../templates/footer.ejs') %>

@@ -55,6 +55,11 @@ UserRouter.post("/login", async (req, res) => {
     // console.log(await bcrypt.compare(data.password, chk_dt.msg[0].password));
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
+        try{
+          await updateLoginStatus(chk_dt.msg[0].id, chk_dt.msg[0].user_name, 'I');
+        }catch(err){
+          console.log(err);
+        }
         req.session.user = chk_dt.msg[0];
         if(chk_dt.msg[0].user_type != 'S'){
           var select = "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag",
@@ -98,6 +103,27 @@ UserRouter.post("/login", async (req, res) => {
   // res.send(data)
 });
 
+const updateLoginStatus = (user_id, user_name, type) => {
+  return new Promise(async (resolve, reject) => {
+    var curr_dt = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+    var table_name = "md_user",
+      fields = `${type == 'I' ? `login_dt = '${curr_dt}'` : `logout_dt = '${curr_dt}'`}, modified_by = '${user_name}', modified_dt = '${curr_dt}'`,
+      values = null,
+      whr = `id = '${user_id}'`,
+      flag = 1;
+    var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+
+    var table_name = "td_login_log",
+      fields = `(user_id, log_dt, flag)`,
+      values = `('${user_id}', '${curr_dt}', '${type}')`,
+      whr = null,
+      flag = 0;
+    var log_dt = await db_Insert(table_name, fields, values, whr, flag);
+
+    resolve(res_dt)
+  });
+};
+
 UserRouter.post('/chk_user_login', async (req, res) => {
   var data = req.body, res_dt = '';
   // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
@@ -135,7 +161,16 @@ UserRouter.post('/chk_user_login', async (req, res) => {
   res.send(res_dt)
 })
 
-UserRouter.get("/log_out", (req, res) => {
+UserRouter.get("/log_out", async (req, res) => {
+  var data = req.session.user;
+  try{
+    console.log(data);
+    if(data){
+      await updateLoginStatus(data.id, data.user_name, 'O');
+    }
+  }catch(err){
+    console.log(err);
+  }
   req.session.destroy();
   res.redirect("/login");
 });
@@ -396,6 +431,26 @@ UserRouter.post('/fast_login', async (req, res) => {
     };
     res.redirect('/login')
   }
+})
+
+UserRouter.get('/user_list', async (req, res) => {
+  var data = req.query
+  var user_dt = await db_Select('id, user_name, user_type, active_flag, fast_login, login_dt, logout_dt', 'md_user', `client_id = '${data.client_id}'`, null)
+  if (user_dt.suc > 0 && user_dt.msg.length > 0){
+    for(let dt of user_dt.msg){
+      var user_log = await db_Select('id, user_id, log_dt, flag', 'td_login_log', `user_id = ${dt.id}`, 'order by log_dt')
+      dt['user_log'] = user_log.suc > 0 ? user_log.msg : []
+    }
+  }
+  var view_data = {
+    user_dt,
+    dateFormat,
+    user_type_list: USER_TYPE_LIST,
+    header_url: "/client",
+    sub_header: "Client User List",
+    header: "Client List",
+  };
+  res.render("client/user_view", view_data);
 })
 
 module.exports = { UserRouter };
