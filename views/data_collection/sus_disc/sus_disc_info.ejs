@@ -141,6 +141,7 @@
                     <th style="width: 15%">Disclosure <br>Topics <br>(Industry specific)</th>
                     <th>Title</th>
                     <th>Information</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -211,7 +212,7 @@
       },
       success: function (result) {
         var res = JSON.parse(result);
-        console.log(res, 'DATATAATATATATATATTATATATA');
+        // console.log(res, 'DATATAATATATATATATTATATATA');
         // $('#ind_id').empty();
         // $('#ind_id').append($('<option>', {value: '', text: 'Select Industries'}));
         if (res.suc > 0 && res.msg.length > 0) {
@@ -219,12 +220,12 @@
             console.log(res.msg[0].topic_dt, 'topic_dt');
             if (res.msg[0].topic_dt) {
                 $.get("/sus_disc_ajax", {flag: $('#flag').val()}).done((data) => {
-                  console.log(data, 'Table data');
+                  // console.log(data, 'Table data');
                   $("#suc_disc_table tbody").empty()
                     if (data.suc == 1) {
                         $.each(res.msg[0].topic_dt, function (i, dt) {
                             var sus_data = data.msg.filter((sus_dt) => sus_dt.top_id == dt.id);
-                            console.log(dt.id, sus_data, 'LALALALLALALALALAL');
+                            // console.log(dt.id, sus_data, 'LALALALLALALALALAL');
                             var k = 0
                             if(sus_data.length > 0){
                               $.each(sus_data, function (j, sus_dt) {
@@ -233,12 +234,13 @@
                                     // created_row(dt.id, 1, 0, sus_dt.metric, sus_dt.catg, sus_dt.unit, sus_dt.code, dt.topic_name)
                                     $("#suc_disc_table tbody").append(`<tr id="row_${dt.id}_1">
                                       <td rowspan="1" id="first_top_td_${dt.id}" class="topic_text">${dt.topic_name}<input type="hidden" name="top_id" value="${dt.id}"></td>
-                                      <td>${sus_dt.code}<input name="code_${dt.id}" type="hidden" value="${sus_dt.code}"></td>
+                                      <td>${sus_dt.code}<input name="code_${dt.id}" id="code_${dt.id}_1" type="hidden" value="${sus_dt.code}"></td>
                                       <td><input class="form-control" id="info_title_${dt.id}_1" name="info_title_${dt.id}" type="text" value="${sus_dt.info_title != null ? sus_dt.info_title : ''}"></td>
                                       <td><div>
                                         <div id="info_desc_${dt.id}_1">${sus_dt.info_desc != null ? sus_dt.info_desc : ''}</div>
                                         <textarea class="form-control" id="info_desc_text_${dt.id}_1" name="info_desc_${dt.id}" cols="30" rows="10" style="display:none;">${sus_dt.info_desc != null ? sus_dt.info_desc : ''}</textarea>
                                         </div></td>
+                                      <td><button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${dt.id}_1', ${dt.id}, 1)">Save</button></td>
                                     </tr>`);
                                     createEditor(`info_desc_${dt.id}_1`, `info_desc_text_${dt.id}_1`)
                                   }else{
@@ -276,12 +278,13 @@
   function created_row(top_id, id, prev_id = 0, info_title='', info_desc='', code=''){
     $(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`).after(`<tr id="row_${top_id}_${id}">
         ${prev_id > 0 ? '' : `<td rowspan="1" id="first_top_td_${top_id}" class="topic_text">${topic_name}<input type="hidden" name="top_id" value="${top_id}"></td>`}
-        <td>${code}<input name="code_${top_id}" type="hidden" value="${code}"></td>
+        <td>${code}<input name="code_${top_id}" id="code_${top_id}_${id}" type="hidden" value="${code}"></td>
         <td><input class="form-control" id="info_title_${top_id}_${id}" name="info_title_${top_id}" type="text" value="${info_title != null ? info_title : ''}"></td>
         <td><div>
           <div id="info_desc_${top_id}_${id}">${info_desc != null ? info_desc : ''}</div>
           <textarea id="info_desc_text_${top_id}_${id}" name="info_desc_${top_id}" cols="30" rows="10" style="display:none;">${info_desc != null ? info_desc : ''}</textarea>
           </div></td>
+          <td><button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${top_id}_${id}', ${top_id}, ${id})">Save</button></td>
     </tr>`);
     createEditor(`info_desc_${top_id}_${id}`, `info_desc_text_${top_id}_${id}`)
   }
@@ -316,6 +319,62 @@
     //       }
     //     }
     //   });
+  }
+
+  const CHUNK_SIZE = 1024; // Adjust chunk size as needed
+
+  function chunkString(str, size) {
+    const chunks = [];
+    for (let i = 0; i < str.length; i += size) {
+      chunks.push(str.slice(i, i + size));
+    }
+    return chunks;
+  }
+
+  function uploadChunk(chunk, chunkIndex, totalChunks, onSuccess, onError, top_id, sl_no) {
+    $.ajax({
+      url: '/save_sus_disc_info_single',
+      type: 'POST',
+      data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val(), code: $(`#code_${top_id}_${sl_no}`).val(), info_title: $(`#info_title_${top_id}_${sl_no}`).val(), top_id }),
+      contentType: 'application/json',
+      success: onSuccess,
+      error: onError
+    });
+  }
+
+  function uploadData(data, top_id, sl_no) {
+    const chunks = chunkString(data, CHUNK_SIZE);
+    let chunkIndex = 0;
+
+    function uploadNextChunk() {
+      if (chunkIndex < chunks.length) {
+        uploadChunk(chunks[chunkIndex], chunkIndex, chunks.length, (data) => {
+          if(data.suc == 1){
+            $(".loader-wrapper").hide();
+            initiate_sweet_alert('<%= header %>', data.msg, data.suc == 1 ? 'success' : 'error')
+          }
+          // console.log(data);
+          chunkIndex++;
+          uploadNextChunk();
+        }, (error) => {
+            $(".loader-wrapper").hide();
+            initiate_sweet_alert('<%= header %>', error, 'error')
+          // console.error('Error uploading chunk:', error);
+        }, top_id, sl_no);
+      } else {
+        $(".loader-wrapper").hide();
+        console.log('All chunks uploaded successfully.');
+      }
+    }
+
+    uploadNextChunk();
+  }
+
+  function saveInfo(id, top_id, sl_no){
+    const data = editorList[id].getHTMLCode();
+    $(".loader-wrapper").show();
+    uploadData(data, top_id, sl_no);
+    // console.log(id, editorList[id].getHTMLCode())
   }
 </script>
 

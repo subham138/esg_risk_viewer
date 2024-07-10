@@ -681,6 +681,43 @@ DataCollectionRouter.post("/save_sus_disc_info", async (req, res) => {
   );
 });
 
+let sus_dis_chunks = {};
+DataCollectionRouter.post("/save_sus_disc_info_single", async (req, res) => {
+  const { chunk, chunkIndex, totalChunks, sec_id, ind_id, code, info_title, top_id, flag } = req.body;
+
+  if (!sus_dis_chunks[chunkIndex]) {
+    sus_dis_chunks[chunkIndex] = chunk;
+  }
+
+  if (Object.keys(sus_dis_chunks).length === totalChunks) {
+    const fullData = Object.keys(sus_dis_chunks)
+      .sort((a, b) => a - b)
+      .map((key) => sus_dis_chunks[key])
+      .join("");
+
+    // Save `fullData` to MySQL database
+    var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+      user = req.session.user.user_name;
+
+    var chk_whr = `repo_flag = '${flag}' AND sec_id = '${sec_id}' AND ind_id = '${ind_id}' AND top_id = ${top_id} AND code = '${code}'`;
+    var table_name = `td_sus_dis_top_met`,
+      fields = `info_title = "${info_title}", info_desc = '${
+        fullData != "" && fullData ? fullData.split("'").join("\\'") : ""
+      }', modified_by= '${user}', modified_dt = '${datetime}'`,
+      values = null,
+      whr = chk_whr,
+      flagIn = 1;
+    // res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
+
+    var res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
+    sus_dis_chunks = {};
+
+    res.send(res_dt);
+  } else {
+    res.send({ suc: 2, status: "chunk received" });
+  }
+});
+
 DataCollectionRouter.get("/sus_disc_word_info", async (req, res) => {
   var enc_dt = req.query.flag,
     flag = new Buffer.from(enc_dt, "base64").toString();
