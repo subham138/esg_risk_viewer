@@ -1,7 +1,11 @@
-<%- include('../templates/header.ejs') %>
+<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: header, sub_header_url: header_url, sub_sub_header: sub_header, show_br: true}) %>
 <div class="container-fluid">
     <div class="page-header">
-        <div class="row">
+        <ul class="nav nav-tabs border-tab nav-primary cust_nav" id="info-tab" role="tablist">
+            <li class="nav-item"><a class="nav-link active" id="info-home-tab" data-bs-toggle="tab" href="#info-home" role="tab" aria-controls="info-home" aria-selected="true"><i class="icofont icofont-list"></i>User Project</a></li>
+            <li class="nav-item"><a class="nav-link" id="profile-info-tab" data-bs-toggle="tab" href="#info-profile" role="tab" aria-controls="info-profile" aria-selected="false"><i class="icofont icofont-info-square"></i>Project Information</a></li>
+        </ul>
+        <!-- <div class="row">
             <div class="col-sm-12">
                 <h3><%= sub_header %></h3>
                 <ol class="breadcrumb">
@@ -10,7 +14,7 @@
                     <li class="breadcrumb-item"><%= sub_header %></li>
                 </ol>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 <div class="container-fluid">
@@ -19,117 +23,174 @@
             <div class="card">
             <div class="card-body card_body_Cus" data-intro="Add a project name - We recommend including the reporting year in the project name. Assign users to projects - Users should first be added in the “Manage Users” tab.">
                 <form method="POST" action="/my_project_save" class="needs-validation">
-                <div class="row mb-2">
-                    <div class="col-md-4">
-                        <label class="form-label" for="project_name"><%= lang.add.title %></label>
-                        <input class="form-control" id="project_name" name="project_name" type="text" value="<%= id > 0 ? project_data.msg[0].project_name : '' %>" required="">
-                        <div class="valid-feedback">No Error</div>
-                    </div>
-                </div>
-                <div class="row my-4">
-                    <!-- <div class="col-md-12"> -->
-                        <div class="p-0">
-                        <table class="table custom-table-user" id="table" width="50%">
-                            <thead>
-                                <tr>
-                                    <th> <label class="form-label user_add"><%= lang.add.user %> 
-                                        <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" onclick="add_tb_row()">
-                                            <i class="fa fa-user-plus" aria-hidden="true"></i>
-                                        </button></label> 
-                                    </th>
-                                    <!-- <th>
-                                        
-                                    </th> -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if(id > 0){
-                                if(project_data.msg[0].user_list){
-                                    let i = 1
-                                    project_data.msg[0].user_list.forEach(udt => { %>
-                                        <tr id="tr_<%= i %>">
-                                            <td class="tableTd_add_main">
-                                                <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
-                                                <select class="form-select" id="user_id_<% i %>" name="user_id" required="">
-                                                    <option selected="" value="">Select User</option>
-                                                    <% if(user_list.msg.length > 0){
-                                                        user_list.msg.forEach(dt => { 
-                                                            var selected = '';
-                                                            if(id > 0){
-                                                                if(dt.id == udt.user_id) selected = 'selected';
-                                                            } %>
-                                                            <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
-                                                        <% })
-                                                    } %>
-                                                </select>
-                                                </div>
-                                            <% if(i > 1){ %>
-                                                <div class="tableTd_add_btn">
-                                                    <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
-                                                        onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i></button>
-                                                </div>
-                                            <% } %>
-                                            </td>
-                                            <!-- <td>
+                    <div class="tab-content" id="info-tabContent">
+                        <div class="tab-pane fade show active" id="info-home" role="tabpanel" aria-labelledby="info-home-tab">
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="project_name"><%= lang.add.title %></label>
+                                    <input class="form-control" id="project_name" name="project_name" type="text" value="<%= id > 0 ? project_data.msg[0].project_name : '' %>" required="">
+                                    <div class="valid-feedback">No Error</div>
+                                </div>
+                            </div>
+                            <div class="row my-4">
+                                <!-- <div class="col-md-12"> -->
+                                <div class="p-0">
+                                    <table class="table custom-table-user" id="table" width="50%">
+                                        <thead>
+                                            <tr>
+                                                <th> <label class="form-label user_add"><%= lang.add.user %> 
+                                                    <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" onclick="add_tb_row()">
+                                                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                    </button></label> 
+                                                </th>
+                                                <!-- <th>
+                                                    
+                                                </th> -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if(id > 0){
+                                            if(project_data.msg[0].user_list){
+                                                let i = 1
+                                                project_data.msg[0].user_list.forEach(udt => { %>
+                                                    <tr id="tr_<%= i %>">
+                                                        <td class="tableTd_add_main">
+                                                            <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
+                                                            <select class="form-select" id="user_id_<% i %>" name="user_id" required="">
+                                                                <option selected="" value="">Select User</option>
+                                                                <% if(user_list.msg.length > 0){
+                                                                    user_list.msg.forEach(dt => { 
+                                                                        var selected = '';
+                                                                        if(id > 0){
+                                                                            if(dt.id == udt.user_id) selected = 'selected';
+                                                                        } %>
+                                                                        <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
+                                                                    <% })
+                                                                } %>
+                                                            </select>
+                                                            </div>
+                                                        <% if(i > 1){ %>
+                                                            <div class="tableTd_add_btn">
+                                                                <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
+                                                                    onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i></button>
+                                                            </div>
+                                                        <% } %>
+                                                        </td>
+                                                        <!-- <td>
+                                                            
+                                                        </td> -->
+                                                    </tr>
+                                            <% i++; })}else{ %>
+                                            <tr id="tr_1">
+                                                <td class="tableTd_add_main">
+                                                    <div class="tableTd_add m-r-40">
+                                                    
+                                                    <select class="form-select" id="user_id_1" name="user_id" required="">
+                                                        <option selected="" value="">Select User</option>
+                                                        <% if(user_list.msg.length > 0){
+                                                            user_list.msg.forEach(dt => { 
+                                                                var selected = '';
+                                                                if(id > 0){
+                                                                    if(dt == project_data.msg[0].user_id) selected = 'selected';
+                                                                } %>
+                                                                <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
+                                                            <% })
+                                                        } %>
+                                                    </select>
                                                 
-                                            </td> -->
-                                        </tr>
-                                <% i++; })}else{ %>
-                                <tr id="tr_1">
-                                    <td class="tableTd_add_main">
-                                        <div class="tableTd_add m-r-40">
-                                        
-                                        <select class="form-select" id="user_id_1" name="user_id" required="">
-                                            <option selected="" value="">Select User</option>
-                                            <% if(user_list.msg.length > 0){
-                                                user_list.msg.forEach(dt => { 
+                                                </td>
+                                            </div>
+                                                <!-- <td></td> -->
+                                            </tr>
+                                            <% }}else{ %>
+                                                <tr id="tr_1">
+                                                    <td class="tableTd_add_main">
+                                                        <div class="tableTd_add m-r-40">
+                                                        <select class="form-select" id="user_id_1" name="user_id" required="">
+                                                            <option selected="" value="">Select User</option>
+                                                            <% if(user_list.msg.length > 0){
+                                                                user_list.msg.forEach(dt => { 
+                                                                    var selected = '';
+                                                                    if(id > 0){
+                                                                        if(dt == project_data.msg[0].user_id) selected = 'selected';
+                                                                    } %>
+                                                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
+                                                                <% })
+                                                            } %>
+                                                        </select>
+                                                    </div>
+                                                    </td>
+                                                    <!-- <td></td> -->
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                                                    <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                                                    <button class="btn btn-pill btn-custom float-end m-r-40" type="submit"><%= lang.add.submit_btn %></button>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="info-profile" role="tabpanel" aria-labelledby="profile-info-tab">
+                            <form method="POST" action="/save_proj_work" class="needs-validation">
+                                <div class="row g-3 py-3">
+                                    <div class="col-md-6">
+                                        <label for="sec_id"><%= lang.manage.sector %></label>
+                                        <select class="form-select" id="sec_id" name="sec_id" required="">
+                                            <option selected="" value=""><%= lang.manage.sec_select %></option>
+                                            <% if(sec_data.msg.length > 0){
+                                                sec_data.msg.forEach(dt => { 
                                                     var selected = '';
-                                                    if(id > 0){
-                                                        if(dt == project_data.msg[0].user_id) selected = 'selected';
-                                                    } %>
-                                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
+                                                    if(project_data) 
+                                                        if(project_data.sec_id == dt.id) selected = 'selected'; %>
+                                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
                                                 <% })
                                             } %>
                                         </select>
-                                    
-                                    </td>
-                                </div>
-                                    <!-- <td></td> -->
-                                </tr>
-                                <% }}else{ %>
-                                    <tr id="tr_1">
-                                        <td class="tableTd_add_main">
-                                            <div class="tableTd_add m-r-40">
-                                            <select class="form-select" id="user_id_1" name="user_id" required="">
-                                                <option selected="" value="">Select User</option>
-                                                <% if(user_list.msg.length > 0){
-                                                    user_list.msg.forEach(dt => { 
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ind_id"><%= lang.manage.indus %></label>
+                                        <select class="form-select" id="ind_id" name="ind_id" required="">
+                                            <option selected="" value=""><%= lang.manage.ind_select %></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 select2-drpdwn mb-2">
+                                        <label for="bus_id"><%= lang.manage.bus_act %></label>
+                                        <select id="bus_id" name="bus_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                            <option value="">Select Business Activity(ies)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 select2-drpdwn mb-2">
+                                        <label for="location_id"><%= lang.manage.location %></label>
+                                        <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                            <option value="">Select Location</option>
+                                            <% if(loc_list.msg.length > 0){
+                                                    var location_list = project_data ? (project_data.location_busi_act != '' ? project_data.location_busi_act : '') : '';
+                                                    location_list = location_list ? location_list.split(',') : [];
+                                                    loc_list.msg.forEach(dt => { 
                                                         var selected = '';
-                                                        if(id > 0){
-                                                            if(dt == project_data.msg[0].user_id) selected = 'selected';
-                                                        } %>
-                                                        <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
+                                                        if(location_list.length > 0) 
+                                                            if(location_list.includes(dt.location_name)) selected = 'selected'; %>
+                                                        <option value="<%= dt.id %>" <%= selected %>><%= dt.location_name %></option>
                                                     <% })
                                                 } %>
-                                            </select>
-                                        </div>
-                                        </td>
-                                        <!-- <td></td> -->
-                                    </tr>
-                                <% } %>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                                        <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
-                                        <button class="btn btn-pill btn-custom float-end m-r-40" type="submit"><%= lang.add.submit_btn %></button>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                                <input type="hidden" name="proj_id" value="<%= proj_id > 0 ? proj_id : 0 %>">
+                                <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                                <input type="hidden" id="bus_id" name="bus_id" value="0">
+                                <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
                 
                 <!-- <div class="row">
                     <div class="col-md-7">
@@ -199,6 +260,94 @@
             }
         }
     }
+</script>
+
+<script>
+    $(document).ready(function(){
+        if($('#sec_id').val() > 0){
+            $('#sec_id').change()
+        }
+    })
+</script>
+
+<script>
+    $('#sec_id').on('change', function (){
+        $.ajax({
+            method:'GET',
+            url: '/get_ind_list_ajax',
+            data: {sec_id: $(this).val(), flag: $('#flag').val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#ind_id').empty();
+                $('#ind_id').append($('<option>', {value: '', text: 'Select Industries'}));
+                if(res.suc > 0 && res.msg.length > 0){
+                    var ind_id = '<%= project_data ? project_data.ind_id : 0 %>';
+                    if(ind_id > 0){
+                        $.each(res.msg, function (i, item) {
+                            var selected = false
+                            if(item.id == ind_id)
+                                selected = true
+                            $('#ind_id').append($('<option>', {value: item.id, text: item.ind_name, selected: selected}));
+                        });
+                        $('#ind_id').change()
+                    }
+                    else
+                    $.each(res.msg, function (i, item) {
+                        $('#ind_id').append($('<option>', {value: item.id, text: item.ind_name}));
+                    });
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+</script>
+<script>
+    $("#ind_id").on("change", function () {
+        $.ajax({
+            method: "GET",
+            url: "/get_busi_act_ajax",
+            data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+            dataType: "html",
+            beforeSend: function () {
+                $(".loader-wrapper").show();
+            },
+            success: function (result) {
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#bus_id').empty();
+                $('#bus_id').append($('<option>', {value: '', text: 'Select Business'}));
+                if (res.suc > 0 && res.msg.length > 0){
+                    var bus_act = '<%= project_data ? (project_data.business_act != "" ? project_data.business_act : "") : "" %>'
+                    bus_act = bus_act != "" ? bus_act.split(',') : []
+                    if(bus_act.length > 0){
+                        $.each(res.msg, function (i, item) {
+                            var selected = false
+                            if(bus_act.includes(item.busi_act_name)) selected = true
+                            $("#bus_id").append(
+                                $("<option>", { value: item.id, text: item.busi_act_name, selected: selected })
+                            );
+                        });
+                    }else{
+                        $.each(res.msg, function (i, item) {
+                            $("#bus_id").append(
+                                $("<option>", { value: item.id, text: item.busi_act_name })
+                            );
+                        });
+                    }
+                }
+            },
+            complete: function () {
+                $(".loader-wrapper").hide();
+            },
+        });
+    });
 </script>
 
 <%- include('../templates/footer.ejs') %>

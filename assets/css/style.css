@@ -46797,11 +46797,17 @@ img.icon-img-tripple {
   flex: 0 0 50% !important;
 }
 .userHeader{
-  width: 20%;
+  width: 15%;
 }
 .breadCrumbHeader{
-  width: 60%;
+  width: 83%;
 }
 .sub-head-brecr{
   color: #7030a0;
+}
+.cust_nav .nav-link.active .nav-link:focus .nav-link:hover{
+  color: #75309c !important;
+}
+.cust_nav .nav-link.active, .border-tab.nav-primary .nav-item .nav-link.show, .border-tab.nav-primary .nav-item .nav-link:focus{
+  border-bottom: 2px solid #75309c !important;
 }

@@ -61,6 +61,15 @@ content="environmental, social, governance (ESG), esg risk, esg opportunities, e
 
   <script src="/js/owlcarousel/owl.carousel.js"></script>
 </head>
-<%- include('./topbar.ejs', {header, header_url, sub_header, show_br}) %>
+<%
+var header = header ? header : false,
+header_url = header_url ? header_url : false,
+sub_header = sub_header ? sub_header : false,
+sub_header_url = sub_header_url ? sub_header_url : false,
+sub_sub_header = sub_sub_header ? sub_sub_header : false,
+sub_sub_header_url = sub_sub_header_url ? sub_sub_header_url : false,
+show_br = show_br ? show_br : false;
+%>
+<%- include('./topbar.ejs', {header: header, header_url: header_url, sub_header: sub_header, sub_header_url: sub_header_url, sub_sub_header: sub_sub_header, sub_sub_header_url: sub_sub_header_url, show_br}) %>
   <%- include('./sidebar.ejs') %>
     <div class="page-body">

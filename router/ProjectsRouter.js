@@ -58,12 +58,22 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
     if(id > 0) {
         project_data = await getProjectList(id, req.session.user.client_id, 0, flag)
     }
+
+    var loc_list = await getLocationList(),
+        sec_data = await getSectorList(0, flag),
+        ind_data = [],
+        act_list = [];
     // console.log(project_data);
     var data = {
         lang: lang,
         user_list,
         id,
+        proj_id: req.query.id,
         project_data,
+        loc_list,
+        sec_data,
+        ind_data,
+        act_list,
         header: lang.add.header,
         sub_header: lang.add.sub_header,
         header_url: `/my_project?flag=${enc_dt}`,

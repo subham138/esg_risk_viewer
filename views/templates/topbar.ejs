@@ -39,16 +39,25 @@
                 <li class="breadCrumbHeader">
                   <div class="row">
                     <div class="col-sm-12 row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <h5 class="text-muted mt-0 mb-0">You are</h5>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-9">
                             <ol class="breadcrumb">
                               <% if(header){ %>
                                 <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
                               <% } %>
                               <% if(sub_header){ %>
-                                <li class="breadcrumb-item"><span class="sub-head-brecr"><%= sub_header %></span></li>
+                                <li class="breadcrumb-item">
+                                  <% if(sub_sub_header){ %>
+                                    <a href="<%= sub_header_url %>"><%= sub_header %></a>
+                                  <% }else{ %>
+                                    <span class="sub-head-brecr"><%= sub_header %></span>
+                                  <% } %>
+                                </li>
+                              <% } %>
+                              <% if(sub_sub_header){ %>
+                                <li class="breadcrumb-item"><span class="sub-head-brecr"><%= sub_sub_header %></span></li>
                               <% } %>
                             </ol>
                         </div>

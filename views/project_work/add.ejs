@@ -135,46 +135,46 @@
         })
     })
 </script>
-    <script>
-        $("#ind_id").on("change", function () {
-            $.ajax({
-                method: "GET",
-                url: "/get_busi_act_ajax",
-                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
-                dataType: "html",
-                beforeSend: function () {
-                    $(".loader-wrapper").show();
-                },
-                success: function (result) {
-                    var res = JSON.parse(result);
-                    // console.log(res);
-                    $('#bus_id').empty();
-                    $('#bus_id').append($('<option>', {value: '', text: 'Select Business'}));
-                    if (res.suc > 0 && res.msg.length > 0){
-                        var bus_act = '<%= project_data ? (project_data.business_act != "" ? project_data.business_act : "") : "" %>'
-                        bus_act = bus_act != "" ? bus_act.split(',') : []
-                        if(bus_act.length > 0){
-                            $.each(res.msg, function (i, item) {
-                                var selected = false
-                                if(bus_act.includes(item.busi_act_name)) selected = true
-                                $("#bus_id").append(
-                                    $("<option>", { value: item.id, text: item.busi_act_name, selected: selected })
-                                );
-                            });
-                        }else{
-                            $.each(res.msg, function (i, item) {
-                                $("#bus_id").append(
-                                    $("<option>", { value: item.id, text: item.busi_act_name })
-                                );
-                            });
-                        }
+<script>
+    $("#ind_id").on("change", function () {
+        $.ajax({
+            method: "GET",
+            url: "/get_busi_act_ajax",
+            data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+            dataType: "html",
+            beforeSend: function () {
+                $(".loader-wrapper").show();
+            },
+            success: function (result) {
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#bus_id').empty();
+                $('#bus_id').append($('<option>', {value: '', text: 'Select Business'}));
+                if (res.suc > 0 && res.msg.length > 0){
+                    var bus_act = '<%= project_data ? (project_data.business_act != "" ? project_data.business_act : "") : "" %>'
+                    bus_act = bus_act != "" ? bus_act.split(',') : []
+                    if(bus_act.length > 0){
+                        $.each(res.msg, function (i, item) {
+                            var selected = false
+                            if(bus_act.includes(item.busi_act_name)) selected = true
+                            $("#bus_id").append(
+                                $("<option>", { value: item.id, text: item.busi_act_name, selected: selected })
+                            );
+                        });
+                    }else{
+                        $.each(res.msg, function (i, item) {
+                            $("#bus_id").append(
+                                $("<option>", { value: item.id, text: item.busi_act_name })
+                            );
+                        });
                     }
-                },
-                complete: function () {
-                    $(".loader-wrapper").hide();
-                },
-            });
+                }
+            },
+            complete: function () {
+                $(".loader-wrapper").hide();
+            },
         });
-    </script>
+    });
+</script>
 
 <%- include('../templates/footer.ejs') %>
