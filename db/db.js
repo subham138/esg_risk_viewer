@@ -1,4 +1,4 @@
-const mysql = require("mysql2");
+const mysql = require("mysql");
 
 // LOCAL //
 // const db = mysql.createPool({
@@ -6,7 +6,6 @@ const mysql = require("mysql2");
 //   host: "localhost",
 //   user: "root",
 //   password: "",
-//   // port: 3306,
 //   database: "esg_risk_viewer",
 // });
 
