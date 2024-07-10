@@ -71,6 +71,7 @@ module.exports = {
                     flag = chk_dt.suc > 0 && chk_dt.msg.length ? 1 : 0;
                 res_dt = await db_Insert(table_name, fields, values, whr, flag)
             }
+            res_dt['project_id'] = project_id
             resolve(res_dt)
         })
     },

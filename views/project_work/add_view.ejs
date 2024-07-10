@@ -2,13 +2,17 @@
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
-            <div class="col-sm-12">
-                <h3><%= sub_header %></h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
-                    <li class="breadcrumb-item"><%= sub_header %></li>
-                </ol>
+            <div class="col-sm-8 row">
+                <div class="col-md-4">
+                    <h5 class="text-muted mt-2"><%= sub_header %></h5>
+                </div>
+                <div class="col-md-8">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                        <li class="breadcrumb-item"><a href="<%= header_url %>"><%= `${header} (${flag_name})` %></a></li>
+                        <li class="breadcrumb-item"><%= proj_name %></li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>

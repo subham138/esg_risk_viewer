@@ -1,4 +1,4 @@
-<%- include('../templates/header.ejs') %>
+<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: `"${projName}"`, show_br: true}) %>
 <script src="/js/chart/google/google-chart-loader.js"></script>
 
 <!-- morris-chart -->
@@ -21,7 +21,7 @@
       text-align: center;
       vertical-align: middle;
     }
-    .nav {
+    /* .nav {
         flex-direction: row;
         justify-content: space-around;
         border-bottom: 1px solid #d0cccc;
@@ -29,7 +29,7 @@
     }
     li.nav-item {
         background: #f8f6f6;
-    }
+    } */
   </style>
 <script>
     google.charts.load('current', {packages: ['corechart', 'bar', 'line']});
@@ -39,13 +39,13 @@
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
-            <div class="col-sm-6">
-                <h3><%= header %></h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
-                    <li class="breadcrumb-item"><%= sub_header %></li>
-                </ol>
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs border-tab nav-primary" id="info-tab" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" id="expo-tab" data-bs-toggle="pill" href="#expo" role="tab" aria-controls="expo" aria-selected="true"><%= lang.report_edit.tab1.title %></a></li>
+                    <li class="nav-item"><a class="nav-link" id="dis-top-tab" data-bs-toggle="pill" href="#dis-top" role="tab" aria-controls="dis-top" aria-selected="false"><%= lang.report_edit.tab2.title %></a></li>
+                    <li class="nav-item"><a class="nav-link" id="msg-dis-top-tab" data-bs-toggle="pill" href="#msg-dis-top" role="tab" aria-controls="msg-dis-top" aria-selected="false"><%= lang.report_edit.tab3.title %></a></li>
+                    <li class="nav-item"><a class="nav-link" id="ghg-emi-tab" data-bs-toggle="pill" href="#ghg-emi" role="tab" aria-controls="ghg-emi" aria-selected="false"><%= lang.report_edit.tab4.title %></a></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -55,10 +55,9 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card card_body_Cus">
-                <div class="card-header pb-0">
+                <!-- <div class="card-header pb-0">
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <!-- <p class="pro-card-head">You are working on the project <b><%= projName %></b> using the <b><%= flag == "I" ? "International Sustainability Standards Board (ISSB)" : (flag == "E" ? "European Sustainability Reporting Standards (ESRS)" : (flag == "G" ? "Global Reporting Initiative (GRI)" : "Global Reporting Initiative (GRI)")) %> Framework</b></p> -->
                             <p class="pro-card-head">
                                 <span class="fw-normal"><%= lang.manage.head %> <b><%= projName %></b></span> 
                                 <br>
@@ -66,17 +65,11 @@
                             </p>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="card-body">
                     <div class="row">
                         <!-- <div class="col-sm-12 col-xl-6 xl-100"> -->
                         <div class="col-sm-12 col-xl-12 xl-100">
-                            <ul class="nav nav-pills navCustom_UR" id="pills-icontab" role="tablist">
-                                <li class="nav-item"><a class="nav-link active" id="expo-tab" data-bs-toggle="pill" href="#expo" role="tab" aria-controls="expo" aria-selected="true"><%= lang.report_edit.tab1.title %></a></li>
-                                <li class="nav-item"><a class="nav-link" id="dis-top-tab" data-bs-toggle="pill" href="#dis-top" role="tab" aria-controls="dis-top" aria-selected="false"><%= lang.report_edit.tab2.title %></a></li>
-                                <li class="nav-item"><a class="nav-link" id="msg-dis-top-tab" data-bs-toggle="pill" href="#msg-dis-top" role="tab" aria-controls="msg-dis-top" aria-selected="false"><%= lang.report_edit.tab3.title %></a></li>
-                                <li class="nav-item"><a class="nav-link" id="ghg-emi-tab" data-bs-toggle="pill" href="#ghg-emi" role="tab" aria-controls="ghg-emi" aria-selected="false"><%= lang.report_edit.tab4.title %></a></li>
-                            </ul>
                             <div class="tab-content" id="pills-icontabContent">
                                 <!-- <div class="tab-pane fade show active" id="expo" role="tabpanel" aria-labelledby="expo-tab">
                                     <div class="row m-t-10">

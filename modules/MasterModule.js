@@ -93,5 +93,8 @@ CALCULATOR_LANG = {
 PLAN_LIST = {
   'N': 'None', 'B': 'Basic', 'S': 'Standard', 'P': 'Premium'
 }
+PROJECT_LIST = {
+  'I': 'IFRS', 'IF': 'IFRS-French', 'E': 'ESRS', 'EF': 'ESRS-French', 'G': 'GRI', 'F': 'GRI-French', 'EV': 'ESRS VSME', 'EVF': 'ESRS VSME-French'	
+}
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST };
+module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST };

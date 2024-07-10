@@ -1,7 +1,7 @@
 const { getSectorList, getIndustriesList, getBusiActList, getMetNote } = require('../modules/AdminModule');
 const { getCalTypeList, getCalUnitList } = require('../modules/CalculatorModule');
 const { getDynamicData, getSusDiscList, getActMetrialDtls, getRiskOprnDtls } = require('../modules/DataCollectionModule');
-const { db_Insert, db_Delete, USER_TYPE_LIST } = require('../modules/MasterModule');
+const { db_Insert, db_Delete, USER_TYPE_LIST, PROJECT_LIST } = require('../modules/MasterModule');
 const { getProjectList, saveProject, getLocationList, saveProjectArticle, getSavedProjectWork, saveGhgEmi, getGhgEmiList, getActiveTopicList, saveCheckedProjectFlag, getCheckedProjectTopList } = require('../modules/ProjectModule');
 const { getUserList } = require('../modules/UserModule');
 const dateFormat = require("dateformat");
@@ -42,7 +42,8 @@ ProjectRouter.get('/my_project', async (req, res) => {
         header: lang.header, //"Project List",
         enc_dt,
         flag,
-        dateFormat
+        dateFormat,
+        flag_name: PROJECT_LIST[flag]
     }
     res.render('projects/view', data)
 })
@@ -69,7 +70,7 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
         user_list,
         id,
         proj_id: req.query.id,
-        project_data,
+        project_data: project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0] : [],
         loc_list,
         sec_data,
         ind_data,
@@ -77,7 +78,8 @@ ProjectRouter.get('/my_project_add', async (req, res) => {
         header: lang.add.header,
         sub_header: lang.add.sub_header,
         header_url: `/my_project?flag=${enc_dt}`,
-        flag
+        flag,
+        flag_name: PROJECT_LIST[flag]
     };
     res.render("projects/add", data);
 })
@@ -89,7 +91,8 @@ ProjectRouter.post('/my_project_save', async (req, res) => {
         type: res_dt.suc > 0 ? "success" : "danger",
         message: res_dt.msg,
     };
-    res.redirect(`/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
+    // res.redirect(`/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
+    res.redirect(`/my_project_add?id=${res_dt.project_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
 })
 
 ProjectRouter.post('/delete_my_project', async (req, res) => {
@@ -122,7 +125,8 @@ ProjectRouter.get('/proj_work', async (req, res) => {
         header: lang.manage.header,
         sub_header: lang.manage.sub_header,
         header_url: `/my_project?flag=${enc_dt}`,
-        flag
+        flag,
+        flag_name: PROJECT_LIST[flag]
     }
     res.render('project_work/add', data)
 })
@@ -329,6 +333,7 @@ ProjectRouter.get('/project_report_view', async (req, res) => {
       flag: data.flag,
       cal_lang_flag: req.session.user.cal_lang_flag,
       risk_info_dt: risk_info_dt.suc > 0 ? risk_info_dt.msg : [],
+      flag_name: PROJECT_LIST[data.flag]
     };
     res.render("project_work/report_view", res_data);
     // res.send(res_data)

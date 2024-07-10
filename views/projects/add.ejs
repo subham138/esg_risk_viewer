@@ -1,4 +1,4 @@
-<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: header, sub_header_url: header_url, sub_sub_header: sub_header, show_br: true}) %>
+<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: sub_header, show_br: true}) %>
 <div class="container-fluid">
     <div class="page-header">
         <ul class="nav nav-tabs border-tab nav-primary cust_nav" id="info-tab" role="tablist">
@@ -22,18 +22,17 @@
         <div class="col-sm-12">
             <div class="card">
             <div class="card-body card_body_Cus" data-intro="Add a project name - We recommend including the reporting year in the project name. Assign users to projects - Users should first be added in the “Manage Users” tab.">
-                <form method="POST" action="/my_project_save" class="needs-validation">
-                    <div class="tab-content" id="info-tabContent">
-                        <div class="tab-pane fade show active" id="info-home" role="tabpanel" aria-labelledby="info-home-tab">
+                <div class="tab-content" id="info-tabContent">
+                    <div class="tab-pane fade show active" id="info-home" role="tabpanel" aria-labelledby="info-home-tab">
+                        <form method="POST" action="/my_project_save" class="needs-validation">
                             <div class="row mb-2">
                                 <div class="col-md-4">
                                     <label class="form-label" for="project_name"><%= lang.add.title %></label>
-                                    <input class="form-control" id="project_name" name="project_name" type="text" value="<%= id > 0 ? project_data.msg[0].project_name : '' %>" required="">
+                                    <input class="form-control" id="project_name" name="project_name" type="text" value="<%= id > 0 ? project_data.project_name : '' %>" required="">
                                     <div class="valid-feedback">No Error</div>
                                 </div>
                             </div>
                             <div class="row my-4">
-                                <!-- <div class="col-md-12"> -->
                                 <div class="p-0">
                                     <table class="table custom-table-user" id="table" width="50%">
                                         <thead>
@@ -50,9 +49,9 @@
                                         </thead>
                                         <tbody>
                                             <% if(id > 0){
-                                            if(project_data.msg[0].user_list){
+                                            if(project_data.user_list){
                                                 let i = 1
-                                                project_data.msg[0].user_list.forEach(udt => { %>
+                                                project_data.user_list.forEach(udt => { %>
                                                     <tr id="tr_<%= i %>">
                                                         <td class="tableTd_add_main">
                                                             <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
@@ -91,7 +90,7 @@
                                                             user_list.msg.forEach(dt => { 
                                                                 var selected = '';
                                                                 if(id > 0){
-                                                                    if(dt == project_data.msg[0].user_id) selected = 'selected';
+                                                                    if(dt == project_data.user_id) selected = 'selected';
                                                                 } %>
                                                                 <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
                                                             <% })
@@ -112,7 +111,7 @@
                                                                 user_list.msg.forEach(dt => { 
                                                                     var selected = '';
                                                                     if(id > 0){
-                                                                        if(dt == project_data.msg[0].user_id) selected = 'selected';
+                                                                        if(dt == project_data.user_id) selected = 'selected';
                                                                     } %>
                                                                     <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
                                                                 <% })
@@ -136,8 +135,37 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tab-pane fade" id="info-profile" role="tabpanel" aria-labelledby="profile-info-tab">
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="info-profile" role="tabpanel" aria-labelledby="profile-info-tab">
+                        <% if(project_data.sec_id > 0 && project_data.ind_id > 0){ %>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <p>
+                                        <label class="form-label" for="sec_id">Section: </label>
+                                        <%= project_data.sec_name %>
+                                    </p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>
+                                        <label class="form-label" for="ind_id">Industrie: </label>
+                                        <%= project_data.ind_name %>
+                                    </p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>
+                                        <label class="form-label" for="bus_id">Business Activities: </label>
+                                        <%= project_data.business_act %>
+                                    </p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>
+                                        <label class="form-label" for="location_id">Locations of Business Activities: </label>
+                                        <%= project_data.location_busi_act %>
+                                    </p>
+                                </div>
+                            </div>
+                        <% }else{ %>
                             <form method="POST" action="/save_proj_work" class="needs-validation">
                                 <div class="row g-3 py-3">
                                     <div class="col-md-6">
@@ -147,7 +175,7 @@
                                             <% if(sec_data.msg.length > 0){
                                                 sec_data.msg.forEach(dt => { 
                                                     var selected = '';
-                                                    if(project_data) 
+                                                    if(project_data.sec_id)
                                                         if(project_data.sec_id == dt.id) selected = 'selected'; %>
                                                     <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %></option>
                                                 <% })
@@ -171,7 +199,7 @@
                                         <select id="location_id" name="location_id" class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                             <option value="">Select Location</option>
                                             <% if(loc_list.msg.length > 0){
-                                                    var location_list = project_data ? (project_data.location_busi_act != '' ? project_data.location_busi_act : '') : '';
+                                                    var location_list = project_data.length > 0 ? (project_data.location_busi_act != '' ? project_data.location_busi_act : '') : '';
                                                     location_list = location_list ? location_list.split(',') : [];
                                                     loc_list.msg.forEach(dt => { 
                                                         var selected = '';
@@ -187,10 +215,13 @@
                                 <input type="hidden" name="proj_id" value="<%= proj_id > 0 ? proj_id : 0 %>">
                                 <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
                                 <input type="hidden" id="bus_id" name="bus_id" value="0">
-                                <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
+                                <% if(id > 0){ %>
+                                    <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
+                                <% } %>
                             </form>
-                        </div>
+                        <% } %>
                     </div>
+                </div>
                 
                 <!-- <div class="row">
                     <div class="col-md-7">
@@ -217,7 +248,7 @@
                         user_list.msg.forEach(dt => { 
                             var selected = '';
                             if(id > 0){
-                                if(dt == project_data.msg[0].user_id) selected = 'selected';
+                                if(dt == project_data.user_id) selected = 'selected';
                             } %>
                             <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
                         <% })

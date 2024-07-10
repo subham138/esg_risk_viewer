@@ -2,12 +2,17 @@
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
-            <div class="col-sm-6">
-                <h3><%= header %></h3>
+            <div class="col-sm-2">
+                <h3>You are in</h3>
+            </div>
+            <div class="col-md-8">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/dashboard"><%= lang.sub_header %></a></li>
-                    <li class="breadcrumb-item"><%= header %></li>
+                    <li class="breadcrumb-item"><%= `${header} (${flag_name})` %></li>
                 </ol>
+            </div>
+            <div class="col-md-12">
+                <hr>
             </div>
         </div>
     </div>
