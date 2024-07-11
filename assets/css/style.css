@@ -45670,6 +45670,75 @@ span.twitter-typeahead .tt-suggestion:active {
   padding-right: 0;
 }
 
+.overview_sec_cus p.lastLog{color: #fff;
+  font-size: 15px;
+  background: #000;
+  display: inline-block;
+  padding: 3px 15px;
+  border-radius: 5px;}
+.paiChartSec{margin-bottom: 25px;}
+.paiChartSec h3{font-size: 18px;
+  border-bottom: #ccc solid 1px;
+  padding-bottom: 8px;
+  margin-bottom: 15px;}
+.paiChartSec h3 span{font-size: 26px; color:#7030A0;}
+
+.paiChartSec_right ul.lpaiCh{margin: 0; padding: 0; list-style-type: none;}
+.paiChartSec_right ul.lpaiCh li{font-size: 15px; position: relative; padding-left: 24px; margin-bottom: 7px;}
+.paiChartSec_right ul.lpaiCh li span.color_Icon{width: 18px; height: 18px; position: absolute; left: 0; top: 4px; border-radius: 50px;}
+.paiChartSec_right ul.lpaiCh li span.count{color: #7030a0; font-weight: 700;}
+.paiChartSec_right ul.lpaiCh li a{text-decoration: underline;}
+
+
+.tutorial_sec{margin-bottom: 25px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0px 8px 2px #bfbebe;}
+.tutorial_sec h3{font-size: 18px;
+  padding-bottom: 8px;
+  margin-bottom: 0; color: #7030A0;}
+
+.tutorial_sec ul.list_ul{margin: 0; padding: 0; list-style-type: none;}
+.tutorial_sec ul.list_ul li{font-size: 15px; position: relative; margin-bottom: 0; color: #000;}
+.tutorial_sec ul.list_ul li a{text-decoration: underline;}
+
+
+
+.support_sec{margin-bottom: 25px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0px 8px 2px #bfbebe;}
+.support_sec h3{font-size: 18px;
+  padding-bottom: 8px;
+  margin-bottom: 7px; color: #7030A0;}
+
+.support_sec ul.list_ul{margin: 0; padding: 0; list-style-type: none; display: flex;}
+.support_sec ul.list_ul li{font-size: 15px; position: relative; margin-bottom: 0; color: #000; margin-right: 25px;}
+.support_sec ul.list_ul li a{text-decoration: underline;}
+.support_sec ul.list_ul li.pending{background: #D72323; padding: 3px 10px; border-radius: 5px; color: #fff;}
+.support_sec ul.list_ul li.solved{background: #0b820b; padding: 3px 10px; border-radius: 5px; color: #fff;}
+.support_sec ul.list_ul li.mySupport{margin: 0 0 0 auto;}
+.support_sec ul.list_ul li.mySupport a{background: #7030A0;
+  padding: 7px 20px;
+  border-radius: 32px;
+  color: #fff;
+  text-decoration: none;}
+
+
+  .knowledgebase_sec_cus{margin-bottom: 25px;}
+  .knowledgebase_sec_cus h3{font-size: 18px;
+    padding-bottom: 8px;
+    margin-bottom: 0; color: #7030A0;}
+  
+  .knowledgebase_sec_cus ul.list_ul{margin: 0; padding: 0; list-style-type: none;}
+  .knowledgebase_sec_cus ul.list_ul li{font-size: 15px; position: relative; margin-bottom: 0; color: #000;}
+  .knowledgebase_sec_cus ul.list_ul li a{text-decoration: underline;}
+
+
+
+
+
+
 @media screen and (max-width: 1660px) {
   .rtl .chat-box .chat-right-aside .chat .chat-header .chat-menu-icons li {
     margin-left: 10px;
