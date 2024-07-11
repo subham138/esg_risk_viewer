@@ -46,7 +46,7 @@ UserRouter.get("/login", (req, res) => {
 UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
-  var select = "id, client_id, user_name, user_id, password, user_type, active_flag, fast_login",
+  var select = "id, client_id, user_name, user_id, password, user_type, active_flag, fast_login, login_dt",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;

@@ -97,11 +97,11 @@ app.get("/", (req, res) => {
 });
 
 app.get('/test_lala',async (req, res) => {
-  const {SendUserEmail} = require('./modules/EmailModule')
+  // const {SendUserEmail} = require('./modules/EmailModule')
   const bcrypt = require('bcrypt')
-  var pass = bcrypt.hashSync('1234', 10)
-  var dateFormat = require('dateformat')
-  var enc = Buffer.from('F').toString('base64')
+  var pass = bcrypt.hashSync('8240378957', 10)
+  // var dateFormat = require('dateformat')
+  // var enc = Buffer.from('F').toString('base64')
   ////////////////////////////////
   // var enc = Buffer.from(JSON.stringify({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')})).toString('base64')
   // console.log({email_id: 'subham@gmail.com', url_time: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')});
@@ -113,7 +113,7 @@ app.get('/test_lala',async (req, res) => {
   // res.send(encodeURIComponent(enc))
   // console.log(req.files);
   // res.send('LALA')
-  res.send(encodeURIComponent(enc))
+  res.send(pass)
   // res.render('test')
 })
 
