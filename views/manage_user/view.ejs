@@ -3,9 +3,9 @@
     <div class="page-header">
         <div class="row">
             <div class="col-sm-6 row">
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <h5 class="text-muted mt-2"><%= header %></h5>
-                </div>
+                </div> -->
                 <div class="col-md-8">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
@@ -141,7 +141,7 @@
                         tab_field.push(dt.user_name)
                         tab_field.push(dt.user_id)
                         tab_field.push(res.user_type_list[dt.user_type])
-                        tab_field.push(`<a href="/manage_user_edit?id=${dt.id}" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                        tab_field.push(`<a href="/manage_user_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                 <i class="icofont icofont-ui-edit"></i> Edit
                             </a>`)
                         return tab_field;

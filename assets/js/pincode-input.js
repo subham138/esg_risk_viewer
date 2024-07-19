@@ -221,6 +221,7 @@
 
             // error box
             this._error = $('<div />').addClass(this.settings.errorclass + ' pincode-input-error').insertBefore(this.element);
+            // this._error = $('<div />').addClass(this.settings.errorclass + ' pincode-input-error').append($('#pinErr'));
 
         },
         enable: function () {

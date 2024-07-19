@@ -92,6 +92,7 @@
                 if(res.suc > 0){
                     if(res.msg.user_type != 'S'){
                         $('#modal-default').modal('show');
+                        $('#modalLoginBtn').hide()
                         $.fn.modal.prototype.constructor.Constructor.Default.keyboard = false;
                         $('#pin').val(res.pin)
                         // var pin = res.pin;
@@ -106,11 +107,8 @@
                                     $(errorElement).html("You have entered an incorrect access code.");
                                     return false;
                                 } else {
-                                    $('#modal-default').modal('hide');
-                                    // console.log($('#rem_me').is(':checked'))
-                                    $('#rem_me_val').val($('#rem_me').is(':checked') ? 'Y' : 'N')
+                                    $('#modalLoginBtn').show()
                                     $(errorElement).empty();
-                                    $('#loginForm').submit();
                                     return true;
                                 }
 
@@ -127,6 +125,13 @@
                 $('.loader-wrapper').hide()
             }
         })
+    })
+
+    $('#modalLoginBtn').on('click', function(){
+        $('#modal-default').modal('hide');
+        // console.log($('#rem_me').is(':checked'))
+        $('#rem_me_val').val($('#rem_me').is(':checked') ? 'Y' : 'N')
+        $('#loginForm').submit();
     })
 
     $('#resend_otp').on('click', function(){

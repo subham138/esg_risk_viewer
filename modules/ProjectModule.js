@@ -48,8 +48,8 @@ module.exports = {
 
             var project_id = data.id > 0 ? data.id : (res_dt.suc > 0 ? res_dt.lastId.insertId : 0)
 
-            if(Array.isArray(data.user_id)){
-                for(let dt of data.user_id){
+            if(Array.isArray(data['user_id[]'])){
+                for(let dt of data['user_id[]']){
                     var chk_dt = await db_Select('id', 'td_user_project', `client_id = ${client_id} AND project_id = '${project_id}' AND user_id = '${dt}'`, null)
 
                     var table_name = 'td_user_project',

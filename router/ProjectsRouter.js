@@ -95,6 +95,18 @@ ProjectRouter.post('/my_project_save', async (req, res) => {
     res.redirect(`/my_project_add?id=${res_dt.project_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
 })
 
+ProjectRouter.post('/my_project_save_ajax', async (req, res) => {
+    var data = req.body
+    // console.log(data);
+    var res_dt = await saveProject(data, req.session.user.client_id, req.session.user.user_name)
+    // req.session.message = {
+    //     type: res_dt.suc > 0 ? "success" : "danger",
+    //     message: res_dt.msg,
+    // };
+    res.send(res_dt)
+    // res.redirect(`/my_project_add?id=${res_dt.project_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
+})
+
 ProjectRouter.post('/delete_my_project', async (req, res) => {
     var data = req.body
     var res_dt = await db_Delete('td_user_project', `id=${data.id}`)
@@ -187,20 +199,21 @@ ProjectRouter.post('/save_proj_work', async (req, res) => {
           message: "Saved successfully",
         };
         // res.redirect(`/proj_work_view?dt=${Buffer.from(JSON.stringify({proj_id: data.proj_id, sec_id: data.sec_id, ind_id: data.ind_id, flag: data.flag}), "utf8").toString('base64')}`);
-        res.redirect(
-          `/project_report_view?enc_data=${Buffer.from(
-            JSON.stringify({
-              sec_id: data.sec_id,
-              ind_id: data.ind_id,
-              top_id: 0,
-              proj_id: data.proj_id,
-              proj_name: data.proj_name,
-              repo_type: data.flag == "I" ? "ifrs" : (data.flag == "E" ? "esrs" : (data.flag == "G" ? "gri" : "gri-f")),
-              flag: data.flag,
-            }),
-            "utf8"
-          ).toString("base64")}`
-        );
+        // res.redirect(
+        //   `/project_report_view?enc_data=${Buffer.from(
+        //     JSON.stringify({
+        //       sec_id: data.sec_id,
+        //       ind_id: data.ind_id,
+        //       top_id: 0,
+        //       proj_id: data.proj_id,
+        //       proj_name: data.proj_name,
+        //       repo_type: data.flag == "I" ? "ifrs" : (data.flag == "E" ? "esrs" : (data.flag == "G" ? "gri" : "gri-f")),
+        //       flag: data.flag,
+        //     }),
+        //     "utf8"
+        //   ).toString("base64")}`
+        // );
+        res.redirect(`/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`)
     } else {
         req.session.message = { type: "danger", message: "Data not saved" };
         res.redirect(`/proj_work?id=${data.proj_id}&flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`);
@@ -496,7 +509,8 @@ ProjectRouter.get('/report_full_view', async (req, res) => {
         sub_header: "Project View",
         header_url: `/my_project?flag=${encodeURIComponent(new Buffer.from(data.flag).toString('base64'))}`,
         flag: data.flag,
-        user_type_master: USER_TYPE_LIST
+        user_type_master: USER_TYPE_LIST,
+        flag_name: PROJECT_LIST[data.flag]
     };
     res.render('project_work/report_view_template', res_data)
 })

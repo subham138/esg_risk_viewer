@@ -24,7 +24,7 @@
             <div class="card-body card_body_Cus" data-intro="Add a project name - We recommend including the reporting year in the project name. Assign users to projects - Users should first be added in the “Manage Users” tab.">
                 <div class="tab-content" id="info-tabContent">
                     <div class="tab-pane fade show active" id="info-home" role="tabpanel" aria-labelledby="info-home-tab">
-                        <form method="POST" action="/my_project_save" class="needs-validation">
+                        <form id="projForm" method="POST" action="/my_project_save" class="needs-validation">
                             <div class="row mb-2">
                                 <div class="col-md-4">
                                     <label class="form-label" for="project_name"><%= lang.add.title %></label>
@@ -128,7 +128,7 @@
                                                 <td>
                                                     <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                                                     <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
-                                                    <button class="btn btn-pill btn-custom float-end m-r-40" type="submit"><%= lang.add.submit_btn %></button>
+                                                    <button class="btn btn-pill btn-custom float-end m-r-40" id="projSub" type="button"><%= project_data.sec_id > 0 && project_data.ind_id > 0 ? lang.add.submit_btn : lang.add.btn_next %></button>
                                                 </td>
                                             </tr>
                                         </tfoot>
@@ -211,13 +211,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                                <input type="hidden" name="proj_id" value="<%= proj_id > 0 ? proj_id : 0 %>">
+                                <input type="hidden" name="id" id="projWorkId" value="<%= id > 0 ? id : 0 %>">
+                                <input type="hidden" name="proj_id" id="projWorkPId" value="<%= proj_id > 0 ? proj_id : 0 %>">
                                 <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
                                 <input type="hidden" id="bus_id" name="bus_id" value="0">
-                                <% if(id > 0){ %>
-                                    <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
-                                <% } %>
+                                <%# if(id > 0){ %>
+                                    <button class="btn btn-pill btn-custom float-end" type="submit" id="projWorkSubBtn" style="display: <%= id > 0 ? 'block' : 'none' %>;">Submit</button>
+                                <%# } %>
                             </form>
                         <% } %>
                     </div>
@@ -234,6 +234,43 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('#projSub').on('click', function(){
+        var userId = []
+        if($('[name="user_id"]').length > 0){
+            $('[name="user_id"]').each((i,e) => {
+                if(e.value > 0)
+                    userId.push(e.value)
+            })
+        }
+        console.log(userId, 'sdasdas');
+        $.ajax({
+            method:'POST',
+            url: '/my_project_save_ajax',
+            data: {id: $('[name="id"]').val(), flag: $('[name="flag"]').val(), project_name: $('[name="project_name"]').val(), user_id: userId},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                if(res.suc > 0){
+                    $('[name="id"]').val(res.project_id)
+                    $('#projWorkId').val(res.project_id)
+                    $('#projWorkPId').val(res.project_id)
+                    $('#profile-info-tab').tab('show')
+                    $('#projWorkSubBtn').show()
+                }
+                console.log(res);
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+        // console.table($('input[name="project_name"]').val(), $('select[name="user_id"]').val());
+    })
+</script>
 
 <script>
     function add_tb_row() {

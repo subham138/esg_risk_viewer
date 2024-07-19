@@ -52,7 +52,8 @@
             "sub_header": "Project Add/Edit",
             "title": "Project Name",
             "user": "User",
-            "submit_btn": "Submit"
+            "submit_btn": "Submit",
+            "btn_next": "Next"
         },
         "manage": {
             "header": "Project List",

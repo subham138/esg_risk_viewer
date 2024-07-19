@@ -14,7 +14,7 @@ DashboardRouter.use((req, res, next) => {
 })
 
 DashboardRouter.get("/dashboard", async (req, res) => {
-    var user = req.session.user, flag = false, daysLeft = 0, dash_proj_data = {}, suppDt={};
+    var user = req.session.user, flag = false, daysLeft = 0, dash_proj_data = {}, suppDt={}, lastLogin = new Date();
     // console.log(user);
     if(user.user_type != 'S'){
         var client_user_dt = await db_Select('DATEDIFF(plan_deactive_dt,plan_active_dt) AS diff_dt, id', 'td_client', `id=${user.client_id}`, null)
@@ -33,12 +33,15 @@ DashboardRouter.get("/dashboard", async (req, res) => {
             SELECT 0 tot_solved, COUNT(id) tot_pending FROM td_support_log WHERE client_id = ${user.client_id} ${user.user_type != 'C' && user.user_type != 'A' ? `AND issued_by = ${user.id}` : ''} AND tkt_status = 'P') a`
         var supp_res = await db_Select('SUM(a.tot_solved) tot_solved, SUM(a.tot_pending) tot_pending', supp_from, null, null)
         suppDt = supp_res.suc > 0 ? supp_res.msg[0] : {}
+
+        var lat_login_log_dt = await db_Select('log_dt', 'td_login_log', `flag = 'I' AND user_id = ${user.id}`, 'ORDER BY id desc limit 1,1')
+        lastLogin = lat_login_log_dt.suc > 0 && lat_login_log_dt.msg.length > 0 ? lat_login_log_dt.msg[0].log_dt : lastLogin
     }else{
         flag = false
     }
     var data = {
         user_type: user.user_type,
-        last_login: user.login_dt > 0 ? dateFormat(new Date(user.login_dt), 'dd/mm/yyyy HH:MM:ss').toString() : dateFormat(new Date(), 'dd/mm/yyyy HH:MM:ss').toString(),
+        last_login: lastLogin ? dateFormat(new Date(lastLogin), 'dd/mm/yyyy HH:MM:ss').toString() : dateFormat(new Date(), 'dd/mm/yyyy HH:MM:ss').toString(),
         flag,
         daysLeft,
         dash_proj_data,

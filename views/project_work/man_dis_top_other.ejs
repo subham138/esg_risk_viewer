@@ -133,15 +133,17 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                                                                                     <div class="modal-content">
                                                                                         <div class="modal-body" style="color: black;">
                                                                                             <div class="card card-absolute">
-                                                                                                <div class="card-header bg-secondary">
-                                                                                                    <h5 class="text-white">"<%= fdt.info_title %>"</h5>
+                                                                                                <div class="card-header custom-card-head text-center">
+                                                                                                    <h5 class="p-l-0"><%= fdt.info_title %></h5>
                                                                                                 </div>
                                                                                                 <div class="card-body">
                                                                                                     <%- fdt.info_desc %>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <button class="btn btn-custom m-l-10" type="button" style="float: inline-end;" data-bs-dismiss="modal">Close</button>
-                                                                                            <button class="btn btn-custom" type="button" onclick="appendTextInfo('<%= ediR %>')" style="float: inline-end;" data-bs-dismiss="modal">Copy to texteditor</button>
+                                                                                            <% if(user.user_type != 'V'){ %>
+                                                                                            <button class="btn btn-custom" type="button" onclick="appendTextInfo('<%= ediR %>')" style="float: inline-end;" data-bs-dismiss="modal">Copy to text editor</button>
+                                                                                            <% } %>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -393,8 +395,8 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                 <div class="modal-content">
                     <div class="modal-body" style="color: black;">
                         <div class="card card-absolute">
-                            <div class="card-header bg-secondary">
-                                <h5 class="text-white">"ESG Bot"</h5>
+                            <div class="card-header custom-card-head text-center">
+                                <h5 class="p-l-0">ESG Bot</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row ai_word_res_container" id="ai_word_res_container_1" style="display:none;">
@@ -429,7 +431,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                             <div class="card-body">
                                 <div class="wordButton col-md-12 row">${word_div}</div>
                                 <div class="row m-t-10">
-                                    <div class="col-md-8">
+                                    <div class="col-md-8 p-l-0">
                                         <input class="form-control" type="text" name="type_text" id="type_text" placeholder="Type here...">
                                     </div>
                                     <div class="col-md-1">

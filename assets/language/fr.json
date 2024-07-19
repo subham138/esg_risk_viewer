@@ -52,7 +52,8 @@
             "sub_header": "Projet Ajouter/Modifier",
             "title": "Nom du Projet",
             "user": "Utilisateur",
-            "submit_btn": "Soumettre"
+            "submit_btn": "Soumettre",
+            "btn_next": "Suivante"
         },
         "manage": {
             "header": "Liste des projets",
