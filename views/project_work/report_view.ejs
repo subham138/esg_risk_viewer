@@ -166,8 +166,8 @@
                                                             <% if(cal_lang_flag == 'B'){ %>
                                                                 <div class="col-md-12 m-b-10">
                                                                     <div class="chooleLang">
-                                                                        <div class="langContent <%= cal_lang_flag == 'E' || cal_lang_flag == 'B' ? 'active' : '' %>">English</div>
-                                                                        <div class="langContent <%= cal_lang_flag == 'F' ? 'active' : '' %>">French</div>
+                                                                        <div class="langContent <%= cal_lang_flag == 'E' || cal_lang_flag == 'B' ? 'active' : '' %>">UK (SECR) Conversion Factors</div>
+                                                                        <div class="langContent <%= cal_lang_flag == 'F' ? 'active' : '' %>">ADEME - Facteurs d'Émissions de la Base Carbone</div>
                                                                     </div>
                                                                 </div>
                                                             <% } %>
@@ -1138,7 +1138,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_act_ajax',
-            data: {type_id: $(`#type_id_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val()},
+            data: {type_id: $(`#type_id_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val() != 'B' ? $('#cal_lang_flag').val() : 'E'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1169,7 +1169,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
-            data: {type_id: $(`#type_id_${scope}_${id}`).val(), act_id: $(`#act_id_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val()},
+            data: {type_id: $(`#type_id_${scope}_${id}`).val(), act_id: $(`#act_id_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val() != 'B' ? $('#cal_lang_flag').val() : 'E'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1201,7 +1201,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id: prePoulate ? data.type_id : $(`#type_id_${scope}_${id}`).val(), act_id: prePoulate ? data.act_id : $(`#act_id_${scope}_${id}`).val(), emi_type_id: prePoulate ? data.emi_type_id : $(`#emi_type_id_${scope}_${id}`).val(), year: prePoulate ? data.year : $(`#repo_period_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val()},
+            data: {type_id: prePoulate ? data.type_id : $(`#type_id_${scope}_${id}`).val(), act_id: prePoulate ? data.act_id : $(`#act_id_${scope}_${id}`).val(), emi_type_id: prePoulate ? data.emi_type_id : $(`#emi_type_id_${scope}_${id}`).val(), year: prePoulate ? data.year : $(`#repo_period_${scope}_${id}`).val(), flag: $('#cal_lang_flag').val() != 'B' ? $('#cal_lang_flag').val() : 'E'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -1261,7 +1261,7 @@
     function AddCal(scope){
         var totCalFields = $(`#calDetails_${scope} table`).length,
             nextCalField = totCalFields + 1;
-        $(`#calDetails_${scope}`).append(`
+        $(`#calDetails_${scope}`).prepend(`
         <hr class="calSeparetor">
         <div class="row m-t-15">
             <div class="col-md-6 m-t-10">
@@ -1436,8 +1436,10 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
-                // var res = JSON.parse(result);
-                console.log(result);
+                var res = JSON.parse(result);
+                if(res.suc > 0){
+                    initiate_sweet_alert('', res.msg, res.suc == 1 ? 'success' : 'error')
+                }
             },
             error: function(err){
                 console.log(err);

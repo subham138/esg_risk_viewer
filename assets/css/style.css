@@ -23427,7 +23427,9 @@ footer.footer-starter-kit {
 footer p {
   font-size: 14px;
   font-weight: 500;
-  color: #999;
+  /* color: #999; */
+  color: #000;
+  font-family: 'IBM Plex Sans', black;
 }
 
 .page-wrapper .page-body-wrapper .footer-dark {

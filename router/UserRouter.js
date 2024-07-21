@@ -194,7 +194,7 @@ UserRouter.post('/forgot_pass', async (req, res) => {
         if(email_send.suc > 0){
           req.session.message = {
             type: "success",
-            message: "Link has been send to your registered email id.",
+            message: "A password-reset link has been sent to your email.",
           };
         }else{
           req.session.message = {
@@ -259,7 +259,7 @@ UserRouter.post('/reset_pass', async (req, res) => {
   if(res_dt.suc > 0){
     req.session.message = {
       type: "success",
-      message: "Password update successfully",
+      message: "Your password was successfully updated",
     };
     res.redirect("/login");
   }else{

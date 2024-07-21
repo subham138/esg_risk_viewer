@@ -9,8 +9,8 @@
         <p id="subMsg"></p>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-        <button href="/subscription" class="btn btn-primary" type="button" disabled>Subscribe</button>
+        <!-- <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button> -->
+        <button href="#" class="btn btn-pill btn-custom" type="button" disabled>Contact Us</button>
       </div>
     </div>
   </div>
@@ -180,8 +180,9 @@
 
 <script>
     function initiate_sweet_alert(title, message, type){
-      console.log('here alert inititated');
-      swal(title, message, type != 'danger' ? type : 'error');
+      // console.log('here alert inititated');
+      // swal(title, message, type != 'danger' ? type : 'error');
+      swal(message, '', type != 'danger' ? type : 'error');
     }
 </script>
 

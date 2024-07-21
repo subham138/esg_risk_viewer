@@ -1,111 +1,111 @@
 {
-    "dashboard": {
-        "title": "Dashboard",
-        "greet": "Welcome",
-        "header_info": "This platform provides you with the tools to effectively understand, manage and report on the ESG risks and opportunities faced by your organisation.",
-        "video_title": "Start with a short tutorial",
-        "video_info_title": "Take a guided tour",
-        "video_info_list": [
-            {
-                "text": "Risks and Opportunities",
-                "list": [
-                    {
-                        "text": "Industry exposure"
-                    },
-                    {
-                        "text": "Stakeholders’ analysis"
-                    },
-                    {
-                        "text": "Materiality Assessment"
-                    }
-                ]
-            },
-            {
-                "text": "Disclosures topics",
-                "list": []
-            }
+  "dashboard": {
+    "title": "Dashboard",
+    "greet": "Welcome",
+    "header_info": "This platform provides you with the tools to effectively understand, manage and report on the ESG risks and opportunities faced by your organisation.",
+    "video_title": "Start with a short tutorial",
+    "video_info_title": "Take a guided tour",
+    "video_info_list": [
+      {
+        "text": "Risks and Opportunities",
+        "list": [
+          {
+            "text": "Industry exposure"
+          },
+          {
+            "text": "Stakeholders’ analysis"
+          },
+          {
+            "text": "Materiality Assessment"
+          }
         ]
+      },
+      {
+        "text": "Disclosures topics",
+        "list": []
+      }
+    ]
+  },
+  "my_project": {
+    "header": "Project List",
+    "sub_header": "Dashboard",
+    "title": "My Projects",
+    "framework": {
+      "I": "International Sustainability Accounting Standards",
+      "E": "European Sustainability Reporting Standards",
+      "G": "Global Reporting Initiative",
+      "EV": "European Sustainability Reporting Standards (Voluntary SME)"
     },
-    "my_project": {
-        "header": "Project List",
-        "sub_header": "Dashboard",
-        "title": "My Projects",
-        "framework": {
-            "I": "International Sustainability Accounting Standards",
-            "E": "European Sustainability Reporting Standards",
-            "G": "Global Reporting Initiative",
-            "EV": "European Sustainability Reporting Standards (Voluntary SME)"
+    "view": {
+      "add_btn_name": "Add New Project",
+      "table": {
+        "head1": "Name",
+        "head2": "Last Accessed",
+        "head3": "Action"
+      },
+      "edit_btn": "Edit",
+      "manage_btn": "Manage",
+      "view_btn": "Preview"
+    },
+    "add": {
+      "header": "Project List",
+      "sub_header": "Project Add/Edit",
+      "title": "Project Name",
+      "user": "Project User(s)",
+      "submit_btn": "Submit",
+      "btn_next": "Next"
+    },
+    "manage": {
+      "header": "Project List",
+      "sub_header": "Project Add/Edit",
+      "head": "You are working on the project",
+      "sector": "Sector",
+      "sec_select": "Select Sector",
+      "indus": "Industry",
+      "ind_select": "Select Industry",
+      "bus_act": "Business Activity(ies)",
+      "location": "Location(s) of Business Activity(ies)",
+      "sub_btn": "Submit"
+    },
+    "report_edit": {
+      "header": "Project List",
+      "sub_header": "Project View",
+      "head": "You are working on the project",
+      "tab1": {
+        "title": "Risks and Opportunities"
+      },
+      "tab2": {
+        "title": "Disclosure Topics"
+      },
+      "tab3": {
+        "title": "Manage Disclosure Topics",
+        "add_btn": "Add"
+      },
+      "tab4": {
+        "title": "GHG Emissions",
+        "scope1": "Scope 1",
+        "scope2": "Scope 2",
+        "scope3": "Scope 3",
+        "add_btn": "Add New Emission Source",
+        "emi_sour": "Emission Source",
+        "emi_sour_sel": "Please select emission source",
+        "act": "Activity",
+        "act_sel": "Please select activity",
+        "emi_type": "Emission Type",
+        "emi_type_sel": "Please select and emission type",
+        "repo_per": "Reporting Period",
+        "repo_per_sel": "Please select year",
+        "st_month": "Start Month",
+        "st_month_sel": "Please select start month",
+        "table": {
+          "head1": "Month",
+          "head2": "Unit",
+          "head3": "Values",
+          "head4": "Emission factors",
+          "head5": "Kg CO2e"
         },
-        "view": {
-            "add_btn_name": "Add New Project",
-            "table": {
-                "head1": "Name",
-                "head2": "Last Accessed",
-                "head3": "Action"
-            },
-            "edit_btn": "Edit",
-            "manage_btn": "Manage",
-            "view_btn": "Preview"
-        },
-        "add": {
-            "header": "Project List",
-            "sub_header": "Project Add/Edit",
-            "title": "Project Name",
-            "user": "User",
-            "submit_btn": "Submit",
-            "btn_next": "Next"
-        },
-        "manage": {
-            "header": "Project List",
-            "sub_header": "Project Add/Edit",
-            "head": "You are working on the project",
-            "sector": "Sector",
-            "sec_select": "Select Sector",
-            "indus": "Industry",
-            "ind_select": "Select Industry",
-            "bus_act": "Business Activity(ies)",
-            "location": "Location(s) of Business Activity(ies)",
-            "sub_btn": "Submit"
-        },
-        "report_edit": {
-            "header": "Project List",
-            "sub_header": "Project View",
-            "head": "You are working on the project",
-            "tab1": {
-                "title": "Risks and Opportunities"
-            },
-            "tab2": {
-                "title": "Disclosure Topics"
-            },
-            "tab3": {
-                "title": "Manage Disclosure Topics",
-                "add_btn": "Add"
-            },
-            "tab4": {
-                "title": "GHG Emissions",
-                "scope1": "Scope 1",
-                "scope2": "Scope 2",
-                "scope3": "Scope 3",
-                "add_btn": "Add New Emission Source",
-                "emi_sour": "Emission Source",
-                "emi_sour_sel": "Please select emission source",
-                "act": "Activity",
-                "act_sel": "Please select activity",
-                "emi_type": "Emission Type",
-                "emi_type_sel": "Please select and emission type",
-                "repo_per": "Reporting Period",
-                "repo_per_sel": "Please select year",
-                "st_month": "Start Month",
-                "st_month_sel": "Please select start month",
-                "table": {
-                    "head1": "Month",
-                    "head2": "Unit",
-                    "head3": "Values",
-                    "head4": "Emission factors",
-                    "head5": "Kg CO2e"
-                },
-                "save_btn": "Save"
-            }
-        }
+        "save_btn": "Save"
+      }
     }
+  }
 }
