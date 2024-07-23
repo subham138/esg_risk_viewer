@@ -431,6 +431,50 @@ app.get('/test_report', async (req, res) => {
   res.render('test_report', res_data)
 })
 
+app.get('/sus_dis_top_info_entry', async (req, res) => {
+  const { db_Select, db_Insert } = require("./modules/MasterModule"),
+  dateFormat = require("dateformat");
+  var currDate = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+  var data = req.query, res_arr = [], sql_arr = [], i = 1;
+
+  var ind_top_from = await db_Select('a.id, a.ind_id, a.topic_id, b.topic_name', 'md_industries_topics a, md_topic b', `a.topic_id=b.id AND a.ind_id = ${data.frm_ind_id} AND a.repo_flag = '${data.flag}'`, 'ORDER BY a.id')
+  if(ind_top_from.suc > 0 && ind_top_from.msg.length > 0){
+    for(let dt of ind_top_from.msg){
+      var ind_top_to = await db_Select('a.id', 'md_industries_topics a, md_topic b', `a.topic_id=b.id AND a.ind_id = ${data.to_ind_id} AND a.repo_flag = '${data.flag}' AND b.topic_name = "${dt.topic_name}"`)
+      if(ind_top_to.suc > 0 && ind_top_to.msg.length > 0){
+        var get_top_desc = await db_Select('sl_no, code, words, info_title, info_desc', 'td_sus_dis_top_met', `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.frm_ind_id} AND top_id = ${dt.id}`, 'ORDER BY sl_no')
+        // console.log(get_top_desc);
+        // break;
+        if(get_top_desc.suc > 0 && get_top_desc.msg.length > 0){
+          for(let tdt of get_top_desc.msg){
+            if(tdt.info_desc != '' && tdt.info_desc != null && tdt.info_desc != 'null'){
+              var chk_dt = await db_Select('id', 'td_sus_dis_top_met', `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${data.to_ind_id} AND top_id = ${ind_top_to.msg[0].id} AND code = "${tdt.code}"`, null)
+              // console.log(chk_dt, 'chk');
+              sql_arr.push({sql: chk_dt.sql, len: chk_dt.msg.length})
+              // break;
+              try{
+                var table_name = 'td_sus_dis_top_met',
+                fields = chk_dt.suc && chk_dt.msg.length > 0 ? `info_title = "${tdt.info_title}", info_desc = '${tdt.info_desc.split("'").join("\\'")}', modified_by = "Subham", modified_dt = '${currDate}'` : '(repo_flag, sec_id, ind_id, top_id, sl_no, code, words, info_title, info_desc, created_by, created_dt)',
+                values = `('${data.flag}', ${data.sec_id}, ${data.to_ind_id}, ${ind_top_to.msg[0].id}, ${tdt.sl_no}, "${tdt.code}", "${tdt.words}", '${tdt.info_title}', '${tdt.info_desc.split("'").join("\\'")}', "Subham", '${currDate}')`,
+                whr = chk_dt.suc && chk_dt.msg.length > 0 ? `id=${chk_dt.msg[0].id}` : null,
+                flag = chk_dt.suc && chk_dt.msg.length > 0 ? 1 : 0;
+                await db_Insert(table_name, fields, values, whr, flag)
+              }catch(err){
+                console.log(err);
+              }
+            }
+          }
+        }
+        // break;
+      }else{
+        res_arr.push(dt)
+      }
+    }
+  }
+  console.log(i);
+  res.send(sql_arr)
+})
+
 app.use(UserRouter);
 app.use(MasterRouter);
 app.use(DataCollectionRouter)
