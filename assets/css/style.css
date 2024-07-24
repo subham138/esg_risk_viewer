@@ -45737,7 +45737,14 @@ span.twitter-typeahead .tt-suggestion:active {
   .knowledgebase_sec_cus ul.list_ul li a{text-decoration: underline;}
 
 
-
+.sticky_esg {
+    position: fixed !important;
+    top: 82px;
+    width: 100%;
+    z-index: 999;
+    background: #f5f7fb;
+    padding-top: 23px;
+    }
 
 
 
