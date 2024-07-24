@@ -1,144 +1,199 @@
-<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: null, show_br: true}) %>
-<% const monthNames = ["January", "February", "March", "April", "May", "June",
-"July", "August", "September", "October", "November", "December"
-]; %>
-<script src="js/chart/google/google-chart-loader.js"></script>
+<%- include('../templates/header.ejs', {header: "Dashboard" , header_url: "/dashboard" , sub_header: null, show_br:
+  true}) %>
+  <% const monthNames=["January", "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September"
+    , "October" , "November" , "December" ]; %>
+    <script src="js/chart/google/google-chart-loader.js"></script>
 
-<script>
-  google.charts.load('current', {packages: ['corechart', 'bar', 'line']});
-  var fun = {}, i = 1;
-</script>
+    <script>
+      google.charts.load('current', { packages: ['corechart', 'bar', 'line'] });
+      var fun = {}, i = 1;
+    </script>
 
-<script>
-  $(document).ready(function(){
-    // console.log($('#videoPopupModal').length);
-    if($('#videoPopupModal').length){
-      $('#videoPopupModal').modal({backdrop: 'static', keyboard: false})
-      $('#videoPopupModal').modal('show');
-    }
-    var flag = <%= flag %>
+    <script>
+      $(document).ready(function () {
+        // console.log($('#videoPopupModal').length);
+        if ($('#videoPopupModal').length) {
+          $('#videoPopupModal').modal({ backdrop: 'static', keyboard: false })
+          $('#videoPopupModal').modal('show');
+        }
+        var flag = <%= flag %>
     var noOfDays = '<%= daysLeft %>';
-    if(flag){
-      $('#exampleModalCenter').modal({backdrop: 'static', keyboard: false})
-      $('#exampleModalCenter').modal('show');
-      $('#subMsg').append(`<label class="text-danger text-center">${noOfDays >= 0 ? `Your Subscription will ended in ${noOfDays} days` : `You have no active plan`}.</label>`)
-    }
-  })
-</script>
-<% if(message){ %>
-  <script>
-      setTimeout(() => {
+        if (flag) {
+          $('#exampleModalCenter').modal({ backdrop: 'static', keyboard: false })
+          $('#exampleModalCenter').modal('show');
+          $('#subMsg').append(`<label class="text-danger text-center">${noOfDays >= 0 ? `Your Subscription will ended in ${noOfDays} days` : `You have no active plan`}.</label>`)
+        }
+      })
+    </script>
+    <% if(message){ %>
+      <script>
+        setTimeout(() => {
           initiate_sweet_alert('<%= message.header ? message.header : "Dashboard" %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
-      }, 1000);
-  </script>
-<% } %>
+        }, 1000);
+      </script>
+      <% } %>
 
-<% if(user_type != 'S'){ %>
-  <div class="container-fluid">
-    <div class="page-header">
-        <ul class="nav nav-tabs border-tab nav-primary cust_nav mb-0 pb-0" id="info-tab" role="tablist">
-            <li class="nav-item"><a class="nav-link active" id="overview-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true"><i class="icofont icofont-list"></i>Overview</a></li>
-            <li class="nav-item"><a class="nav-link" id="knowledgebase-tab" data-bs-toggle="tab" href="#knowledgebase" role="tab" aria-controls="knowledgebase" aria-selected="false"><i class="icofont icofont-info-square"></i>Knowledgebase</a></li>
-        </ul>
-  
-    </div>
-  </div>
-  
-  <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-            <div class="card-body card_body_Cus" data-intro="Add a project name - We recommend including the reporting year in the project name. Assign users to projects - Users should first be added in the “Manage Users” tab.">
-                
-            <div class="tab-content" id="info-tabContent">
-            <div class="tab-pane fade show overview_sec_cus active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-            
-            <p class="lastLog"><b>Last Login:</b> <%= last_login %> </p>
-            <div class="paiChartSec">
-              <h3>You are currently assigned to <span id="projCount">0</span> projects</h3>
+        <% if(user_type !='S' ){ %>
+          <div class="container-fluid">
+            <div class="page-header">
+              <ul class="nav nav-tabs border-tab nav-primary cust_nav mb-0 pb-0" id="info-tab" role="tablist">
+                <li class="nav-item"><a class="nav-link active" id="overview-tab" data-bs-toggle="tab" href="#overview"
+                    role="tab" aria-controls="overview" aria-selected="true"><i
+                      class="icofont icofont-list"></i>Overview</a></li>
+                <li class="nav-item"><a class="nav-link" id="knowledgebase-tab" data-bs-toggle="tab"
+                    href="#knowledgebase" role="tab" aria-controls="knowledgebase" aria-selected="false"><i
+                      class="icofont icofont-info-square"></i>Knowledgebase</a></li>
+              </ul>
+
+            </div>
+          </div>
+
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card">
+                  <div class="card-body card_body_Cus"
+                    data-intro="Add a project name - We recommend including the reporting year in the project name. Assign users to projects - Users should first be added in the “Manage Users” tab.">
+
+                    <div class="tab-content" id="info-tabContent">
+                      <div class="tab-pane fade show overview_sec_cus active" id="overview" role="tabpanel"
+                        aria-labelledby="overview-tab">
+
+                        <p class="lastLog"><b>Last Login:</b>
+                          <%= last_login %>
+                        </p>
+                        <div class="paiChartSec">
+                          <h3>You are currently assigned to <span id="projCount">0</span> projects</h3>
+                          <div class="row">
+                            <div class="col-sm-4 float-left paiChartSec_left">
+                              <div class="chart-overflow" id="pie-chart1"></div>
+                            </div>
+                            <div class="col-sm-8 float-left paiChartSec_right">
+                              <ul class="lpaiCh">
+                                <% if(user.esrs_flag=='Y' ){ %>
+                                  <li><span class="color_Icon" style="background: #e2c636;">&nbsp;</span> European
+                                    Sustainability Reporting Standards (ESRS): <span class="count">
+                                      <%= Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_esrs : 0 %>
+                                    </span> <a href="/my_project?flag=RQ%3D%3D">View</a> </li>
+                                  <% } %>
+                                    <% if(user.esrs_fr_flag=='Y' ){ %>
+                                      <li><span class="color_Icon" style="background: #222222;">&nbsp;</span> European
+                                        Sustainability Reporting Standards - French (ESRS - French): <span
+                                          class="count">
+                                          <%= Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_esrs_f : 0 %>
+                                        </span> <a href="/my_project?flag=RUY%3D">View</a> </li>
+                                      <% } %>
+                                        <% if(user.ifrs_flag=='Y' ){ %>
+                                          <li><span class="color_Icon" style="background: #0f8972;">&nbsp;</span>
+                                            International Sustainability Standards Board (ISSB): <span class="count">
+                                              <%= Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_ifrs : 0
+                                                %>
+                                            </span> <a href="/my_project?flag=SQ%3D%3D">View</a> </li>
+                                          <% } %>
+                                            <% if(user.ifrs_fr_flag=='Y' ){ %>
+                                              <li><span class="color_Icon" style="background: #ffa344;">&nbsp;</span>
+                                                International Sustainability Standards Board - French (ISSB - French):
+                                                <span class="count">
+                                                  <%= Object.values(dash_proj_data).length> 0 ?
+                                                    dash_proj_data.tot_ifrs_f : 0 %>
+                                                </span> <a href="/my_project?flag=SUY%3D">View</a> </li>
+                                              <% } %>
+                                                <% if(user.esrs_vsme_flag=='Y' ){ %>
+                                                  <li><span class="color_Icon"
+                                                      style="background: #df90ff;">&nbsp;</span> European Sustainability
+                                                    Reporting Standards (Voluntary SME)
+                                                    (ESRS-VSME):<span class="count">
+                                                      <%= Object.values(dash_proj_data).length> 0 ?
+                                                        dash_proj_data.tot_vsme : 0 %>
+                                                    </span> <a href="/my_project?flag=RVY%3D">View</a> </li>
+                                                  <% } %>
+                                                    <% if(user.esrs_vsme_fr_flag=='Y' ){ %>
+                                                      <li><span class="color_Icon"
+                                                          style="background: #065960;">&nbsp;</span> European
+                                                        Sustainability Reporting Standards - French (Voluntary SME)
+                                                        (ESRS-VSME - French):<span class="count">
+                                                          <%= Object.values(dash_proj_data).length> 0 ?
+                                                            dash_proj_data.tot_vsme : 0 %>
+                                                        </span> <a href="/my_project?flag=RVZG">View</a> </li>
+                                                      <% } %>
+                                                        <% if(user.gri_flag=='Y' ){ %>
+                                                          <li><span class="color_Icon"
+                                                              style="background: #24695c;">&nbsp;</span> Global
+                                                            Reporting Initiative (GRI): <span class="count">
+                                                              <%= Object.values(dash_proj_data).length> 0 ?
+                                                                dash_proj_data.tot_gri : 0 %>
+                                                            </span> <a href="/my_project?flag=Rw%3D%3D">View</a> </li>
+                                                          <% } %>
+                                                            <% if(user.gri_fr_flag=='Y' ){ %>
+                                                              <li><span class="color_Icon"
+                                                                  style="background: #717171;">&nbsp;</span> Global
+                                                                Reporting Initiative - French (GRI - French):<span
+                                                                  class="count">
+                                                                  <%= Object.values(dash_proj_data).length> 0 ?
+                                                                    dash_proj_data.tot_gri_f : 0 %>
+                                                                </span> <a href="/my_project?flag=Rg%3D%3D">View</a>
+                                                              </li>
+                                                              <% } %>
+                              </ul>
+
+                            </div>
+                          </div>
+
+                        </div>
+
+                        <div class="tutorial_sec">
+                          <h3>Tutorials:</h3>
+                          <ul class="list_ul">
+                            <li>Adding Users <a href="#">Watch Tutorial</a> </li>
+                            <li>Managing material topics <a href="#">Watch Tutorial</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="support_sec">
+                          <h3>Support tickets:</h3>
+                          <ul class="list_ul">
+                            <li class="pending">Pending <span>
+                                <%= suppDt.tot_pending %>
+                              </span> </li>
+                            <li class="solved">Solved <span>
+                                <%= suppDt.tot_solved %>
+                              </span> </li>
+                            <li class="mySupport"> <a href="/support">My Support Tickets</a> </li>
+                          </ul>
+                        </div>
+
+                      </div>
+
+                      <div class="tab-pane knowledgebase_sec_cus fade" id="knowledgebase" role="tabpanel"
+                        aria-labelledby="knowledgebase-tab">
+                        <h3>Insights:</h3>
+                        <ul class="list_ul">
+                          <li>Sustainability Reporting for SMEs: Is your Business at a Downstream or Upstream Control
+                            Point? <a href="https://is.gd/UI07Hh" target="_blank">Read</a> </li>
+                          <!-- <li>Materiality Assessment: Weighting the Relative Contributions of Different Stakeholder Groups.        <a href="https://is.gd/Kn3S2I" target="_blank">Read</a></li> -->
+                          <li>Getting Started with GHG Emissions: Weighting the Relative Contributions of Different
+                            Stakeholder Groups. <a href="https://is.gd/Kn3S2I" target="_blank">Read</a></li>
+                        </ul>
+                      </div>
+                    </div>
+
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }else{ %>
+            <!-- Container-fluid starts-->
+            <div class="container-fluid dashboard-default-sec">
               <div class="row">
-              <div class="col-sm-4 float-left paiChartSec_left">
-                <div class="chart-overflow" id="pie-chart1"></div>
-              </div>
-              <div class="col-sm-8 float-left paiChartSec_right">
-                <ul class="lpaiCh">
-                  <% if(user.esrs_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #e2c636;">&nbsp;</span> European Sustainability Reporting Standards (ESRS): <span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_esrs : 0 %></span>    <a href="/my_project?flag=RQ%3D%3D">View</a> </li>
-                  <% } %>
-                  <% if(user.esrs_fr_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #222222;">&nbsp;</span> European Sustainability Reporting Standards - French (ESRS - French): <span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_esrs_f : 0 %></span>    <a href="/my_project?flag=RUY%3D">View</a> </li>
-                  <% } %>
-                  <% if(user.ifrs_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #0f8972;">&nbsp;</span> International Sustainability Standards Board   (ISSB): <span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_ifrs : 0 %></span>    <a href="/my_project?flag=SQ%3D%3D">View</a> </li>
-                  <% } %>
-                  <% if(user.ifrs_fr_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #ffa344;">&nbsp;</span> International Sustainability Standards Board - French   (ISSB - French): <span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_ifrs_f : 0 %></span>    <a href="/my_project?flag=SUY%3D">View</a> </li>
-                  <% } %>
-                  <% if(user.esrs_vsme_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #df90ff;">&nbsp;</span> European Sustainability Reporting Standards (Voluntary SME) 
-                    (ESRS-VSME):<span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_vsme : 0 %></span>    <a href="/my_project?flag=RVY%3D">View</a> </li>
-                  <% } %>
-                  <% if(user.esrs_vsme_fr_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #065960;">&nbsp;</span> European Sustainability Reporting Standards - French (Voluntary SME) 
-                    (ESRS-VSME - French):<span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_vsme : 0 %></span>    <a href="/my_project?flag=RVZG">View</a> </li>
-                  <% } %>
-                  <% if(user.gri_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #24695c;">&nbsp;</span> Global Reporting Initiative (GRI): <span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_gri : 0 %></span>    <a href="/my_project?flag=Rw%3D%3D">View</a> </li>
-                  <% } %>
-                  <% if(user.gri_fr_flag == 'Y'){ %>
-                    <li><span class="color_Icon" style="background: #717171;">&nbsp;</span> Global Reporting Initiative - French (GRI - French):<span class="count"><%= Object.values(dash_proj_data).length > 0 ? dash_proj_data.tot_gri_f : 0 %></span>    <a href="/my_project?flag=Rg%3D%3D">View</a> </li>
-                  <% } %>
-                </ul>
-  
-              </div>
-            </div>
-  
-            </div>
-  
-            <div class="tutorial_sec">
-              <h3>Tutorials:</h3>
-              <ul class="list_ul">
-                <li>Adding Users   <a href="#">Watch Tutorial</a> </li>
-                <li>Managing material topics          <a href="#">Watch Tutorial</a></li>
-              </ul>
-            </div>
-  
-            <div class="support_sec">
-              <h3>Support tickets:</h3>
-              <ul class="list_ul">
-                <li class="pending">Pending <span><%= suppDt.tot_pending %></span>   </li>
-                <li class="solved">Solved <span><%= suppDt.tot_solved %></span> </li>
-                <li class="mySupport"> <a href="/support">My Support Tickets</a> </li>
-              </ul>
-            </div>
-  
-            </div>
-  
-            <div class="tab-pane knowledgebase_sec_cus fade" id="knowledgebase" role="tabpanel" aria-labelledby="knowledgebase-tab">
-              <h3>Insights:</h3>
-              <ul class="list_ul">
-                <li>Sustainability Reporting for SMEs: Is your Business at a Downstream or Upstream Control Point?        <a href="https://is.gd/UI07Hh" target="_blank">Read</a> </li>
-                <li>Materiality Assessment: Weighting the Relative Contributions of Different Stakeholder Groups.        <a href="https://is.gd/Kn3S2I" target="_blank">Read</a></li>
-              </ul>
-            </div>
-            </div>
-                       
-              </div>
-  
-                
-            </div>
-            </div>
-        </div>
-    </div>
-<% }else{ %>
-  <!-- Container-fluid starts-->
-  <div class="container-fluid dashboard-default-sec">
-    <div class="row">
-      <div class="col-xl-12 xl-100 box-col-12">
-        <p class="text-center dyn_col_head_Cus_UR_Dash">This platform provides you with the tools to effectively understand, manage and report 
-          on the ESG risks and opportunities faced by your organisation.</p>
-      </div>
-      <!-- <div class="col-xl-6 xl-100 box-col-12">
+                <div class="col-xl-12 xl-100 box-col-12">
+                  <p class="text-center dyn_col_head_Cus_UR_Dash">This platform provides you with the tools to
+                    effectively understand, manage and report
+                    on the ESG risks and opportunities faced by your organisation.</p>
+                </div>
+                <!-- <div class="col-xl-6 xl-100 box-col-12">
         <div class="card">
          
           <div class="cal-date-widget card-body" data-intro="Here you can see the current date and calendar.">
@@ -190,80 +245,80 @@
           </div>
         </div>
       </div> -->
-      <div class="col-xl-12 xl-100 box-col-12">
-        <div class="card videoCard">
-          <div class="card-body card_body_Cus">
-          <div class="row">
-            <div class="col-xl-6 col-xs-12 col-md-6 col-sm-6">
-              <p class="videoConText_Cus_UR">Start with a short tutorial</p>
-          <div class="videoContainer_Cus_UR">
-            <video id="totVideo" controls width="100%">
-              <source src="videos/ESG_Risk_Viewer_Video_Presentation_Final.mp4" type="video/mp4">
-            </video>
-          </div>
-            </div>
-            <div class="col-xl-6 col-xs-12 col-md-6 col-sm-6 dashboard_Txt">
-              <h3>Take a guided tour</h3>
-              <ul>
-                <li>Exposure
-                  <ul>
-                  <li>Industry exposure</li>
-                  <li>Stakeholders’ analysis</li>
-                  <li>Materiality Assessment</li>
-                </ul>
-                </li>
-                <li>Disclosures topics</li>
-              </ul>
-  
-            </div>
-          </div>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-<% } %>
+                <div class="col-xl-12 xl-100 box-col-12">
+                  <div class="card videoCard">
+                    <div class="card-body card_body_Cus">
+                      <div class="row">
+                        <div class="col-xl-6 col-xs-12 col-md-6 col-sm-6">
+                          <p class="videoConText_Cus_UR">Start with a short tutorial</p>
+                          <div class="videoContainer_Cus_UR">
+                            <video id="totVideo" controls width="100%">
+                              <source src="videos/ESG_Risk_Viewer_Video_Presentation_Final.mp4" type="video/mp4">
+                            </video>
+                          </div>
+                        </div>
+                        <div class="col-xl-6 col-xs-12 col-md-6 col-sm-6 dashboard_Txt">
+                          <h3>Take a guided tour</h3>
+                          <ul>
+                            <li>Exposure
+                              <ul>
+                                <li>Industry exposure</li>
+                                <li>Stakeholders’ analysis</li>
+                                <li>Materiality Assessment</li>
+                              </ul>
+                            </li>
+                            <li>Disclosures topics</li>
+                          </ul>
 
-<script>
-  $(document).ready(function(){
-    // console.log(new Date().getFullYear());
-  })
-</script>
-<script>
-  google.charts.setOnLoadCallback(CreateBar);
-  function CreateBar(){
-    var projectData = <%- JSON.stringify(dash_proj_data) %>;
-    var totProj = 0
-    if(Object.values(projectData).length > 0){
-      Object.entries(projectData).forEach(([key, value]) => key != 'client_id' ? totProj += value : '')
-    }
-    $('#projCount').text(totProj)
-    // console.log(totProj, projectData);
-    // console.log(projectData, 'User');
-    if ($("#pie-chart1").length > 0) {
-      var data = google.visualization.arrayToDataTable([
-        ['Task', 'Hours per Day'],
-        ['European Sustainability Reporting Standards (ESRS)', Object.values(projectData).length > 0 ? projectData.tot_esrs : 0],
-        ['European Sustainability Reporting Standards - French (ESRS - French)', Object.values(projectData).length > 0 ? projectData.tot_esrs_f : 0],
-        ['International Sustainability Standards Board (ISSB)', Object.values(projectData).length > 0 ? projectData.tot_ifrs : 0],
-        ['International Sustainability Standards Board - French (ISSB - French)', Object.values(projectData).length > 0 ? projectData.tot_ifrs_f : 0],
-        ['European Sustainability Reporting Standards (Voluntary SME) (ESRS-VSME)', Object.values(projectData).length > 0 ? projectData.tot_vsme : 0],
-        ['European Sustainability Reporting Standards - French (Voluntary SME) (ESRS-VSME - French)', Object.values(projectData).length > 0 ? projectData.tot_vsme_f : 0],
-        ['Global Reporting Initiative (GRI)', Object.values(projectData).length > 0 ? projectData.tot_gri : 0 ],
-        ['Global Reporting Initiative - French (GRI - French)', Object.values(projectData).length > 0 ? projectData.tot_gri_f : 0]
-      ]);
-      var options = {
-        // title: 'My Daily Activities',
-        // is3D: true,
-        legend: 'none',
-        width:'100%',
-        height: 300,
-        colors: ["#e2c636", "#222222", "#0f8972", "#ffa344", "#df90ff", "#065960", "#24695c", "#717171"]
-      };
-      var chart = new google.visualization.PieChart(document.getElementById('pie-chart1'));
-      chart.draw(data, options);
-    }
-  }
-</script>
-<!-- Container-fluid Ends-->
-  <%- include('../templates/footer.ejs') %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+
+              <script>
+                $(document).ready(function () {
+                  // console.log(new Date().getFullYear());
+                })
+              </script>
+              <script>
+                google.charts.setOnLoadCallback(CreateBar);
+                function CreateBar() {
+                  var projectData = <% - JSON.stringify(dash_proj_data) %>;
+                  var totProj = 0
+                  if (Object.values(projectData).length > 0) {
+                    Object.entries(projectData).forEach(([key, value]) => key != 'client_id' ? totProj += value : '')
+                  }
+                  $('#projCount').text(totProj)
+                  // console.log(totProj, projectData);
+                  // console.log(projectData, 'User');
+                  if ($("#pie-chart1").length > 0) {
+                    var data = google.visualization.arrayToDataTable([
+                      ['Task', 'Hours per Day'],
+                      ['European Sustainability Reporting Standards (ESRS)', Object.values(projectData).length > 0 ? projectData.tot_esrs : 0],
+                      ['European Sustainability Reporting Standards - French (ESRS - French)', Object.values(projectData).length > 0 ? projectData.tot_esrs_f : 0],
+                      ['International Sustainability Standards Board (ISSB)', Object.values(projectData).length > 0 ? projectData.tot_ifrs : 0],
+                      ['International Sustainability Standards Board - French (ISSB - French)', Object.values(projectData).length > 0 ? projectData.tot_ifrs_f : 0],
+                      ['European Sustainability Reporting Standards (Voluntary SME) (ESRS-VSME)', Object.values(projectData).length > 0 ? projectData.tot_vsme : 0],
+                      ['European Sustainability Reporting Standards - French (Voluntary SME) (ESRS-VSME - French)', Object.values(projectData).length > 0 ? projectData.tot_vsme_f : 0],
+                      ['Global Reporting Initiative (GRI)', Object.values(projectData).length > 0 ? projectData.tot_gri : 0],
+                      ['Global Reporting Initiative - French (GRI - French)', Object.values(projectData).length > 0 ? projectData.tot_gri_f : 0]
+                    ]);
+                    var options = {
+                      // title: 'My Daily Activities',
+                      // is3D: true,
+                      legend: 'none',
+                      width: '100%',
+                      height: 300,
+                      colors: ["#e2c636", "#222222", "#0f8972", "#ffa344", "#df90ff", "#065960", "#24695c", "#717171"]
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById('pie-chart1'));
+                    chart.draw(data, options);
+                  }
+                }
+              </script>
+              <!-- Container-fluid Ends-->
+              <%- include('../templates/footer.ejs') %>
