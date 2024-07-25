@@ -1,93 +1,103 @@
 <%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-9 row">
-                <!-- <div class="col-md-4">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-9 row">
+                    <!-- <div class="col-md-4">
                     <h5 class="text-muted mt-2"><%= sub_header %></h5>
                 </div> -->
-                <div class="col-md-8">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                        <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
-                        <li class="breadcrumb-item"><%= sub_header %></li>
-                    </ol>
+                    <div class="col-md-8">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                            <li class="breadcrumb-item"><a href="<%= header_url %>">
+                                    <%= header %>
+                                </a></li>
+                            <li class="breadcrumb-item">
+                                <%= sub_header %>
+                            </li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-            <div class="card-body card_body_Cus" id="manage_user_save">
-                <form method="POST" action="/manage_user_save" class="needs-validation">
-                <div class="row g-3 py-3">
-                    <div class="col-md-6">
-                        <label class="form-label" for="user_name">User Name</label>
-                        <input class="form-control" id="user_name" name="user_name" type="text" value="<%= id > 0 ? user_data.msg[0].user_name : '' %>" required="">
-                        <div class="valid-feedback">No Error</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="user_type">User Type</label>
-                        <select class="form-select" id="user_type" name="user_type" required="">
-                            <option selected="" value="">Select User Type</option>
-                            <% if(Object.keys(user_type_list).length > 0){
-                                Object.keys(user_type_list).forEach(dt => { 
-                                    var selected = '';
-                                    if(id > 0){
-                                        if(dt == user_data.msg[0].user_type) selected = 'selected';
-                                    }
-                                    if(dt != 'S' && dt != 'C'){ %>
-                                    <option value="<%= dt %>" <%= selected %>><%= user_type_list[dt] %></option>
-                                <% }})
-                            } %>
-                        </select>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-6">
-                        <label class="form-label" for="user_id">User Email</label>
-                        <input class="form-control" id="user_id" name="user_id" type="text" value="<%= id > 0 ? user_data.msg[0].user_id : '' %>" required="">
-                        <div class="valid-feedback">No Error</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label" for="password">Password</label>
-                        <select class="form-select" id="password" name="password" required="">
-                            <option selected="" value="Esg@2023">Default</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row my-4">
-                    <div class="col-md-6">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="active_flag" id="active_flag_y" value="Y" <%= id > 0 ? (user_data.msg[0].active_flag == 'Y' ? 'checked' : '') : 'checked' %>>
-                            <label class="form-check-label" for="active_flag_y">
-                                Activate user
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="active_flag" id="active_flag_n" value="N" <%= id > 0 ? (user_data.msg[0].active_flag == 'N' ? 'checked' : '') : '' %>>
-                            <label class="form-check-label" for="active_flag_n">
-                                Deactivate user
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                <button class="btn btn-pill btn-custom" type="submit">Submit</button>
-                    </div>
-                </div>
-                
-                </form>
-            </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body card_body_Cus" id="manage_user_save">
+                        <form method="POST" action="/manage_user_save" class="needs-validation">
+                            <div class="row g-3 py-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="user_name">User Name</label>
+                                    <input class="form-control" id="user_name" name="user_name" type="text"
+                                        value="<%= id > 0 ? user_data.msg[0].user_name : '' %>" required="">
+                                    <div class="valid-feedback">No Error</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="user_type">User Type</label>
+                                    <select class="form-select" id="user_type" name="user_type" required="">
+                                        <option selected="" value="">Select User Type</option>
+                                        <% if(Object.keys(user_type_list).length> 0){
+                                            Object.keys(user_type_list).forEach(dt => {
+                                            var selected = '';
+                                            if(id > 0){
+                                            if(dt == user_data.msg[0].user_type) selected = 'selected';
+                                            }
+                                            if(dt != 'S' && dt != 'C'){ %>
+                                            <option value="<%= dt %>" <%=selected %>><%= user_type_list[dt] %>
+                                            </option>
+                                            <% }}) } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="user_id">User Email</label>
+                                    <input class="form-control" id="user_id" name="user_id" type="text"
+                                        value="<%= id > 0 ? user_data.msg[0].user_id : '' %>" required="">
+                                    <div class="valid-feedback">No Error</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="password">Password</label>
+                                    <select class="form-select" id="password" name="password" required="">
+                                        <option selected="" value="Esg@2023">Default</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row my-4">
+                                <div class="col-md-6">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="active_flag"
+                                            id="active_flag_y" value="Y" <%=id> 0 ? (user_data.msg[0].active_flag == 'Y'
+                                        ? 'checked' : '') : 'checked' %>>
+                                        <label class="form-check-label" for="active_flag_y">
+                                            Activate user
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="active_flag"
+                                            id="active_flag_n" value="N" <%=id> 0 ? (user_data.msg[0].active_flag == 'N'
+                                        ? 'checked' : '') : '' %>>
+                                        <label class="form-check-label" for="active_flag_n">
+                                            Deactivate user
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                                    <button class="btn btn-pill btn-custom" type="submit">Submit</button>
+                                </div>
+                            </div>
 
-<!-- <script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <script>
     $(document).ready(function(){
         setTimeout(() => {
             triggerTour(document.querySelector('#manage_user_save'), `Here you can create users and assign roles. “Admin Users” have the same rights as you (including to add/remove users). “Editors” can create new, and manage existing projects they are assigned to. “Viewers” can view and download existing projects.`)
@@ -95,4 +105,4 @@
     })
 </script> -->
 
-<%- include('../templates/footer.ejs') %>
+    <%- include('../templates/footer.ejs') %>
