@@ -22,6 +22,7 @@
         </div> -->
         </div>
     </div>
+    <% console.log(project_data, 'HEHE') %>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
@@ -345,6 +346,8 @@
                         $('#projWorkPId').val(res.project_id)
                         $('#profile-info-tab').tab('show')
                         $('#projWorkSubBtn').show()
+                    }else{
+                        initiate_sweet_alert('', 'Data Not Saved. Please try again later.', 'danger')
                     }
                     console.log(res);
                 },

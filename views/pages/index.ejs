@@ -291,7 +291,7 @@
               <script>
                 google.charts.setOnLoadCallback(CreateBar);
                 function CreateBar() {
-                  var projectData = <% - JSON.stringify(dash_proj_data) %>;
+                  var projectData = <%- JSON.stringify(dash_proj_data) %>;
                   var totProj = 0
                   if (Object.values(projectData).length > 0) {
                     Object.entries(projectData).forEach(([key, value]) => key != 'client_id' ? totProj += value : '')
