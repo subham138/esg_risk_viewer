@@ -21,7 +21,7 @@
         if (flag) {
           $('#exampleModalCenter').modal({ backdrop: 'static', keyboard: false })
           $('#exampleModalCenter').modal('show');
-          $('#subMsg').append(`<label class="text-danger text-center">${noOfDays >= 0 ? `Your Subscription will ended in ${noOfDays} days` : `You have no active plan`}.</label>`)
+          $('#subMsg').append(`<label class="text-danger text-center">${noOfDays >= 0 ? `Your Subscription will end in ${noOfDays} days` : `You have no active plan`}.</label>`)
         }
       })
     </script>
@@ -81,14 +81,14 @@
                                       <li><span class="color_Icon" style="background: #222222;">&nbsp;</span> European
                                         Sustainability Reporting Standards - French (ESRS - French): <span
                                           class="count">
-                                          <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                          <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
                                             dash_proj_data.tot_esrs_f : 0 %>
                                         </span> <a href="/my_project?flag=RUY%3D">View</a> </li>
                                       <% } %>
                                         <% if(user.ifrs_flag=='Y' ){ %>
                                           <li><span class="color_Icon" style="background: #0f8972;">&nbsp;</span>
                                             International Sustainability Standards Board (ISSB): <span class="count">
-                                              <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                              <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
                                                 dash_proj_data.tot_ifrs : 0
                                                 %>
                                             </span> <a href="/my_project?flag=SQ%3D%3D">View</a> </li>
@@ -97,7 +97,7 @@
                                               <li><span class="color_Icon" style="background: #ffa344;">&nbsp;</span>
                                                 International Sustainability Standards Board - French (ISSB - French):
                                                 <span class="count">
-                                                  <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                                  <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
                                                     dash_proj_data.tot_ifrs_f : 0 %>
                                                 </span> <a href="/my_project?flag=SUY%3D">View</a>
                                               </li>
@@ -107,7 +107,7 @@
                                                       style="background: #df90ff;">&nbsp;</span> European Sustainability
                                                     Reporting Standards (Voluntary SME)
                                                     (ESRS-VSME):<span class="count">
-                                                      <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                                      <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
                                                         dash_proj_data.tot_vsme : 0 %>
                                                     </span> <a href="/my_project?flag=RVY%3D">View</a> </li>
                                                   <% } %>
@@ -116,7 +116,8 @@
                                                           style="background: #065960;">&nbsp;</span> European
                                                         Sustainability Reporting Standards - French (Voluntary SME)
                                                         (ESRS-VSME - French):<span class="count">
-                                                          <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                                          <%= dash_proj_data && Object.values(dash_proj_data).length> 0
+                                                            ?
                                                             dash_proj_data.tot_vsme : 0 %>
                                                         </span> <a href="/my_project?flag=RVZG">View</a> </li>
                                                       <% } %>
@@ -124,7 +125,8 @@
                                                           <li><span class="color_Icon"
                                                               style="background: #24695c;">&nbsp;</span> Global
                                                             Reporting Initiative (GRI): <span class="count">
-                                                              <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                                              <%= dash_proj_data &&
+                                                                Object.values(dash_proj_data).length> 0 ?
                                                                 dash_proj_data.tot_gri : 0 %>
                                                             </span> <a href="/my_project?flag=Rw%3D%3D">View</a> </li>
                                                           <% } %>
@@ -133,7 +135,8 @@
                                                                   style="background: #717171;">&nbsp;</span> Global
                                                                 Reporting Initiative - French (GRI - French):<span
                                                                   class="count">
-                                                                  <%= dash_proj_data && Object.values(dash_proj_data).length > 0 ?
+                                                                  <%= dash_proj_data &&
+                                                                    Object.values(dash_proj_data).length> 0 ?
                                                                     dash_proj_data.tot_gri_f : 0 %>
                                                                 </span> <a href="/my_project?flag=Rg%3D%3D">View</a>
                                                               </li>
@@ -175,8 +178,8 @@
                           <li>Sustainability Reporting for SMEs: Is your Business at a Downstream or Upstream Control
                             Point? <a href="https://is.gd/UI07Hh" target="_blank">Read</a> </li>
                           <!-- <li>Materiality Assessment: Weighting the Relative Contributions of Different Stakeholder Groups.        <a href="https://is.gd/Kn3S2I" target="_blank">Read</a></li> -->
-                          <li>Getting Started with GHG Emissions: Weighting the Relative Contributions of Different
-                            Stakeholder Groups. <a href="https://is.gd/Kn3S2I" target="_blank">Read</a></li>
+                          <li>Getting Started with GHG Emissions.<a href="https://is.gd/Kn3S2I" target="_blank">Read</a>
+                          </li>
                         </ul>
                       </div>
                     </div>
