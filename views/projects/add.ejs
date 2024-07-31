@@ -463,6 +463,7 @@
             })
         })
     </script>
+
     <script>
         $("#ind_id").on("change", function () {
             $.ajax({
@@ -504,5 +505,32 @@
             });
         });
     </script>
+
+<script>
+    $("#project_name").on("change", function () {
+        $.ajax({
+            method: "GET",
+            url: "/exist_project",
+            data: { project_name: $(this).val()},
+            dataType: "html",
+            success: function (result) {
+                var res_dt = JSON.parse(result);
+                // console.log(res);
+                if (res_dt.suc > 0 && res_dt.msg.length > 0) {
+                    if (res_dt.suc > 0) {
+                // Project name exists, so hide the error message
+                
+            } else {
+                // Project name does not exist, so show the error message
+                
+            }
+                }
+            },
+            complete: function () {
+                $(".loader-wrapper").hide();
+            },
+        });
+    });
+</script>
 
     <%- include('../templates/footer.ejs') %>

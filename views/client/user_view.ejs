@@ -36,7 +36,7 @@
                                         <th>Name</th>
                                         <th>User Type</th>
                                         <th>Status</th>
-                                        <th>Fast Login</th>
+                                        <th>First Login</th>
                                         <th>Last Login</th>
                                         <th>Last LogOut</th>
                                         <th>View Log</th>
@@ -44,6 +44,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                   
                                     <% if(user_dt.msg.length> 0){
                                         let i = 1;
                                         user_dt.msg.forEach(dt => { %>
@@ -82,13 +83,14 @@
                                                 </button>
                                             </td>
                                             <td>
-                                                <button type="button" id="<%= dt.id %>"
+                                                <a href="/deactive_user?id=<%= dt.id %>&client_id=<%= client_id %>"
                                                     class="btn btn-pill btn-outline-primary btn-air-primary deleteBtn"
                                                     data-bs-toggle="tooltip" data-bs-placement="left" title=""
-                                                    data-bs-original-title="Delete User">
+                                                    data-bs-original-title="Delete User" onclick="return checkDel()">
                                                     <i class="icofont icofont-ui-delete"></i> Delete
-                                                </button>
+                                                </a>
                                             </td>
+
                                         </tr>
                                         <% i++; })}else{ %>
                                             <tr>
@@ -136,7 +138,7 @@
     <script>
         var user_data = <% - user_dt.msg.length > 0 ? JSON.stringify(user_dt.msg) : [] %>;
         var login_status = { 'I': 'LogIn', 'O': 'LogOut' }
-        console.log(user_data)
+        console.log(user_data,'ttttt')
         $('.viewBtn').on('click', function () {
             var btn_id = $(this).attr('id')
             $('#user_info_modal').modal('show')
@@ -180,18 +182,6 @@
 
             return `${day}/${month}/${year} ${hour}:${minutes}:${seconds}`;
         }
-
-
-        $('.deleteBtn').on('click', function () {
-    var recordId = $(this).attr('id');
-    var user_del_dt = user_data.filter(dt => dt.id == recordId);
-
-    if (user_del_dt.length > 0) {
-        user_del_dt[0].active_flag = 'N'; // Update the active_flag property
-    }
-});
-
-
 
     </script>
     <%- include('../templates/footer.ejs') %>

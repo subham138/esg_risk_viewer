@@ -112,9 +112,9 @@
                                                                     <i class="icofont icofont-eye-alt"></i>
                                                                     <%= lang.view.view_btn %>
                                                                 </a>
-                                                                <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                                                                <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
                                         <i class="icofont icofont-ui-delete"></i> Delete
-                                    </a> -->
+                                    </a>
                                                 </td>
                                             </tr>
                                             <% i++; })}else{ %>
