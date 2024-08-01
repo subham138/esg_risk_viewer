@@ -791,14 +791,7 @@ ProjectRouter.get('/exist_project', async (req, res) =>{
     whr = `project_name = '${data.project_name}'`,
     order = null;
     var res_dt = await db_Select (select,table_name,whr,order);
-    
-    if (res_dt && res_dt.length > 0) {
-        // Project name exists
-        return res.send({ suc: 1, msg: 'Project name exists' });
-    } else {
-        // Project name does not exist
-        return res.send({ suc: 0, msg: 'Project name does not exist' });
-    }
+    res.send(res_dt)
 })
 
 module.exports = { ProjectRouter };

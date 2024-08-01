@@ -22,7 +22,6 @@
         </div> -->
         </div>
     </div>
-    <% console.log(project_data, 'HEHE') %>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
@@ -164,11 +163,18 @@
                                                                 value="<%= id > 0 ? id : 0 %>">
                                                             <input type="hidden" id="flag" name="flag"
                                                                 value="<%= flag ? flag : '' %>">
+                                                        <% if(id> 0){ %>
                                                             <button class="btn btn-pill btn-custom float-end m-r-40"
-                                                                id="projSub" type="button" disabled>
+                                                                id="projSub" type="button">
                                                                 <%= project_data.sec_id> 0 && project_data.ind_id > 0 ?
                                                                     lang.add.submit_btn : lang.add.btn_next %>
                                                             </button>
+                                                            <% } else { %> 
+                                                                <button class="btn btn-pill btn-custom float-end m-r-40"
+                                                                id="projSub" type="button" disabled>
+                                                                <%= project_data.sec_id > 0 && project_data.ind_id > 0 ? lang.add.submit_btn : lang.add.btn_next %>
+                                                            </button>
+                                                            <% } %>
                                                         </td>
                                                     </tr>
                                                 </tfoot>
@@ -507,7 +513,8 @@
     </script>
 
 <script>
-    $("#project_name").on("change", function () {
+    $("#project_name").on("change", function (e) {
+        console.log(e.target.value);
         $.ajax({
             method: "GET",
             url: "/exist_project",
@@ -515,22 +522,25 @@
             dataType: "html",
             success: function (result) {
                 var res_dt = JSON.parse(result);
-                // console.log(res);
+                // console.log(res_dt,'res');
                 if (res_dt.suc > 0 && res_dt.msg.length > 0) {
-                    if (res_dt.suc > 0) {
-                // Project name exists, so hide the error message
+                    if(res_dt.suc > 0){
+                        swal("Project Name already exists", {
+                            icon: "error",
+                        });
+                        $("#project_name").val('');
+                    }
+               
+            } 
                 
-            } else {
-                // Project name does not exist, so show the error message
-                
-            }
-                }
             },
             complete: function () {
                 $(".loader-wrapper").hide();
             },
         });
     });
+
+    
 </script>
 
     <%- include('../templates/footer.ejs') %>
