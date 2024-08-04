@@ -212,6 +212,13 @@
                                         </p>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="/my_project?flag=<%= enc_flag %>" class="btn btn-pill btn-custom float-end">
+                                            <%= lang.add.btn_back_proj_list %>
+                                        </a>
+                                    </div>
+                                </div>
                                 <% }else{ %>
                                     <form method="POST" action="/save_proj_work" class="needs-validation">
                                         <div class="row g-3 py-3">
@@ -514,30 +521,34 @@
 
 <script>
     $("#project_name").on("change", function (e) {
-        console.log(e.target.value);
-        $.ajax({
-            method: "GET",
-            url: "/exist_project",
-            data: { project_name: $(this).val()},
-            dataType: "html",
-            success: function (result) {
-                var res_dt = JSON.parse(result);
-                // console.log(res_dt,'res');
-                if (res_dt.suc > 0 && res_dt.msg.length > 0) {
-                    if(res_dt.suc > 0){
-                        swal("Project Name already exists", {
-                            icon: "error",
-                        });
-                        $("#project_name").val('');
-                    }
-               
-            } 
-                
-            },
-            complete: function () {
-                $(".loader-wrapper").hide();
-            },
-        });
+        // console.log(e.target.value);
+        var prev_val = "<%= id > 0 ? project_data.project_name.replace(' ', '').toLowerCase() : '' %>", id = $('[name="id"]').val();
+        console.log(id, prev_val, 'HEHEHE')
+        if($(this).val() != '' && $(this).val()){
+            if(prev_val != $(this).val().replace(' ', '').toLowerCase()){
+                $.ajax({
+                    method: "GET",
+                    url: "/exist_project",
+                    data: { project_name: $(this).val(), flag: $('#flag').val()},
+                    dataType: "html",
+                    success: function (result) {
+                        var res_dt = JSON.parse(result);
+                        // console.log(res_dt,'res');
+                        if (res_dt.suc > 0) {
+                            if(res_dt.msg.length > 0){
+                                swal("Project Name is already in use", {
+                                    icon: "error",
+                                });
+                                $("#project_name").val('');
+                            }
+                        } 
+                    },
+                    complete: function () {
+                        $(".loader-wrapper").hide();
+                    },
+                });
+            }
+        }
     });
 
     

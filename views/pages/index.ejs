@@ -70,77 +70,148 @@
                             </div>
                             <div class="col-sm-8 float-left paiChartSec_right">
                               <ul class="lpaiCh">
-                                <% if(user.esrs_flag=='Y' ){ %>
-                                  <li><span class="color_Icon" style="background: #e2c636;">&nbsp;</span> European
-                                    Sustainability Reporting Standards (ESRS): <span class="count">
-                                      <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
-                                        dash_proj_data.tot_esrs : 0 %>
-                                    </span> <a href="/my_project?flag=RQ%3D%3D">View</a> </li>
+                                <% if(user.esrs_flag=='Y' ){
+                                  var tot_esrs = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_esrs :  0;                                        
+                                  if((user.user_type == 'V' || user.user_type == 'E')){
+                                    if(tot_esrs > 0){ %>
+                                    <li><span class="color_Icon" style="background: #e2c636;">&nbsp;</span> European
+                                      Sustainability Reporting Standards (ESRS): <span class="count">
+                                        <%= tot_esrs %>
+                                      </span> <a href="/my_project?flag=RQ%3D%3D">View</a> </li>
+                                  <% }}else{ %>
+                                    <li><span class="color_Icon" style="background: #e2c636;">&nbsp;</span> European
+                                      Sustainability Reporting Standards (ESRS): <span class="count">
+                                        <%= tot_esrs %>
+                                      </span> <a href="/my_project?flag=RQ%3D%3D">View</a> </li>
                                   <% } %>
-                                    <% if(user.esrs_fr_flag=='Y' ){ %>
-                                      <li><span class="color_Icon" style="background: #222222;">&nbsp;</span> European
-                                        Sustainability Reporting Standards - French (ESRS - French): <span
-                                          class="count">
-                                          <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
-                                            dash_proj_data.tot_esrs_f : 0 %>
-                                        </span> <a href="/my_project?flag=RUY%3D">View</a> </li>
+                                  <% } %>
+                                    <% if(user.esrs_fr_flag=='Y' ){
+                                      var tot_esrs_f = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_esrs_f : 0;
+                                      if((user.user_type == 'V' || user.user_type == 'E')){
+                                        if(tot_esrs_f > 0){ %>
+                                          <li><span class="color_Icon" style="background: #222222;">&nbsp;</span> European
+                                            Sustainability Reporting Standards - French (ESRS - French): <span
+                                              class="count">
+                                              <%= tot_esrs_f %>
+                                            </span> <a href="/my_project?flag=RUY%3D">View</a> </li>
+                                            <% }}else{ %> 
+                                              <li><span class="color_Icon" style="background: #222222;">&nbsp;</span> European
+                                                Sustainability Reporting Standards - French (ESRS - French): <span
+                                                  class="count">
+                                                  <%= tot_esrs_f %>
+                                                </span> <a href="/my_project?flag=RUY%3D">View</a> </li>
                                       <% } %>
-                                        <% if(user.ifrs_flag=='Y' ){ %>
-                                          <li><span class="color_Icon" style="background: #0f8972;">&nbsp;</span>
-                                            International Sustainability Standards Board (ISSB): <span class="count">
-                                              <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
-                                                dash_proj_data.tot_ifrs : 0
-                                                %>
-                                            </span> <a href="/my_project?flag=SQ%3D%3D">View</a> </li>
+                                      <% } %>
+                                        <% if(user.ifrs_flag=='Y' ){
+                                          var tot_ifrs = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_ifrs : 0;
+                                          if((user.user_type == 'V' || user.user_type == 'E')){
+                                            if(tot_ifrs > 0){ %>
+                                              <li><span class="color_Icon" style="background: #0f8972;">&nbsp;</span>
+                                                International Sustainability Standards Board (ISSB): <span class="count">
+                                                  <%= tot_ifrs %>
+                                                </span> <a href="/my_project?flag=SQ%3D%3D">View</a> </li>
+                                                <% }}else{ %> 
+                                                  <li><span class="color_Icon" style="background: #0f8972;">&nbsp;</span>
+                                                    International Sustainability Standards Board (ISSB): <span class="count">
+                                                      <%= tot_ifrs %>
+                                                    </span> <a href="/my_project?flag=SQ%3D%3D">View</a> </li>
+                                            <% } %>
                                           <% } %>
-                                            <% if(user.ifrs_fr_flag=='Y' ){ %>
-                                              <li><span class="color_Icon" style="background: #ffa344;">&nbsp;</span>
-                                                International Sustainability Standards Board - French (ISSB - French):
-                                                <span class="count">
-                                                  <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
-                                                    dash_proj_data.tot_ifrs_f : 0 %>
-                                                </span> <a href="/my_project?flag=SUY%3D">View</a>
-                                              </li>
+                                            <% if(user.ifrs_fr_flag=='Y' ){
+                                              var tot_ifrs_f = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_ifrs_f : 0;
+                                              if((user.user_type == 'V' || user.user_type == 'E')){
+                                                if(tot_ifrs_f > 0){ %>
+                                                  <li><span class="color_Icon" style="background: #ffa344;">&nbsp;</span>
+                                                    International Sustainability Standards Board - French (ISSB - French):
+                                                    <span class="count">
+                                                      <%= tot_ifrs_f %>
+                                                    </span> <a href="/my_project?flag=SUY%3D">View</a>
+                                                  </li>
+                                                <% }}else{ %> 
+                                                  <li><span class="color_Icon" style="background: #ffa344;">&nbsp;</span>
+                                                    International Sustainability Standards Board - French (ISSB - French):
+                                                    <span class="count">
+                                                      <%= tot_ifrs_f %>
+                                                    </span> <a href="/my_project?flag=SUY%3D">View</a>
+                                                  </li>
+                                                <% } %>
                                               <% } %>
-                                                <% if(user.esrs_vsme_flag=='Y' ){ %>
-                                                  <li><span class="color_Icon"
-                                                      style="background: #df90ff;">&nbsp;</span> European Sustainability
-                                                    Reporting Standards (Voluntary SME)
-                                                    (ESRS-VSME):<span class="count">
-                                                      <%= dash_proj_data && Object.values(dash_proj_data).length> 0 ?
-                                                        dash_proj_data.tot_vsme : 0 %>
-                                                    </span> <a href="/my_project?flag=RVY%3D">View</a> </li>
-                                                  <% } %>
-                                                    <% if(user.esrs_vsme_fr_flag=='Y' ){ %>
+                                                <% if(user.esrs_vsme_flag=='Y' ){
+                                                  var tot_vsme = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_vsme : 0;
+                                                  if((user.user_type == 'V' || user.user_type == 'E')){
+                                                    if(tot_vsme > 0){ %> 
                                                       <li><span class="color_Icon"
-                                                          style="background: #065960;">&nbsp;</span> European
-                                                        Sustainability Reporting Standards - French (Voluntary SME)
-                                                        (ESRS-VSME - French):<span class="count">
-                                                          <%= dash_proj_data && Object.values(dash_proj_data).length> 0
-                                                            ?
-                                                            dash_proj_data.tot_vsme : 0 %>
-                                                        </span> <a href="/my_project?flag=RVZG">View</a> </li>
-                                                      <% } %>
-                                                        <% if(user.gri_flag=='Y' ){ %>
+                                                          style="background: #df90ff;">&nbsp;</span> European Sustainability
+                                                        Reporting Standards (Voluntary SME)
+                                                        (ESRS-VSME):<span class="count">
+                                                          <%= tot_vsme %>
+                                                        </span> <a href="/my_project?flag=RVY%3D">View</a> </li>
+                                                    <% }}else{ %>
+                                                      <li><span class="color_Icon"
+                                                          style="background: #df90ff;">&nbsp;</span> European Sustainability
+                                                        Reporting Standards (Voluntary SME)
+                                                        (ESRS-VSME):<span class="count">
+                                                          <%= tot_vsme %>
+                                                        </span> <a href="/my_project?flag=RVY%3D">View</a> </li>
+                                                    <% } %>
+                                                  <% } %>
+                                                    <% if(user.esrs_vsme_fr_flag=='Y' ){
+                                                      var tot_vsme_f = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_vsme_f : 0;
+                                                      if((user.user_type == 'V' || user.user_type == 'E')){
+                                                        if(tot_vsme_f > 0){ %> 
                                                           <li><span class="color_Icon"
-                                                              style="background: #24695c;">&nbsp;</span> Global
-                                                            Reporting Initiative (GRI): <span class="count">
-                                                              <%= dash_proj_data &&
-                                                                Object.values(dash_proj_data).length> 0 ?
-                                                                dash_proj_data.tot_gri : 0 %>
-                                                            </span> <a href="/my_project?flag=Rw%3D%3D">View</a> </li>
-                                                          <% } %>
-                                                            <% if(user.gri_fr_flag=='Y' ){ %>
+                                                              style="background: #065960;">&nbsp;</span> European
+                                                            Sustainability Reporting Standards - French (Voluntary SME)
+                                                            (ESRS-VSME - French):<span class="count">
+                                                              <%= tot_vsme_f %>
+                                                            </span> <a href="/my_project?flag=RVZG">View</a> </li>
+                                                        <% }}else{ %> 
+                                                          <li><span class="color_Icon"
+                                                              style="background: #065960;">&nbsp;</span> European
+                                                            Sustainability Reporting Standards - French (Voluntary SME)
+                                                            (ESRS-VSME - French):<span class="count">
+                                                              <%= tot_vsme_f %>
+                                                            </span> <a href="/my_project?flag=RVZG">View</a> </li>
+                                                        <% } %>
+                                                      <% } %>
+                                                        <% if(user.gri_flag=='Y' ){
+                                                          var tot_gri = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_gri : 0;
+                                                          if((user.user_type == 'V' || user.user_type == 'E')){
+                                                            if(tot_gri > 0){ %>
                                                               <li><span class="color_Icon"
-                                                                  style="background: #717171;">&nbsp;</span> Global
-                                                                Reporting Initiative - French (GRI - French):<span
-                                                                  class="count">
-                                                                  <%= dash_proj_data &&
-                                                                    Object.values(dash_proj_data).length> 0 ?
-                                                                    dash_proj_data.tot_gri_f : 0 %>
-                                                                </span> <a href="/my_project?flag=Rg%3D%3D">View</a>
-                                                              </li>
+                                                                  style="background: #24695c;">&nbsp;</span> Global
+                                                                Reporting Initiative (GRI): <span class="count">
+                                                                  <%= tot_gri %>
+                                                                </span> <a href="/my_project?flag=Rw%3D%3D">View</a> </li>
+                                                            <% }}else{ %>
+                                                              <li><span class="color_Icon"
+                                                                  style="background: #24695c;">&nbsp;</span> Global
+                                                                Reporting Initiative (GRI): <span class="count">
+                                                                  <%= tot_gri %>
+                                                                </span> <a href="/my_project?flag=Rw%3D%3D">View</a> </li>
+                                                            <% } %>
+                                                          <% } %>
+                                                          <% if(user.gri_fr_flag=='Y' ){
+                                                            var tot_gri_f = dash_proj_data && Object.values(dash_proj_data).length> 0 ? dash_proj_data.tot_gri_f : 0;
+                                                            if((user.user_type == 'V' || user.user_type == 'E')){
+                                                              if(tot_gri_f > 0){ %>
+                                                                <li><span class="color_Icon"
+                                                                    style="background: #717171;">&nbsp;</span> Global
+                                                                  Reporting Initiative - French (GRI - French):<span
+                                                                    class="count">
+                                                                    <%= tot_gri_f %>
+                                                                  </span> <a href="/my_project?flag=Rg%3D%3D">View</a>
+                                                                </li>
+                                                              <% }}else{ %>
+                                                                <li><span class="color_Icon"
+                                                                    style="background: #717171;">&nbsp;</span> Global
+                                                                  Reporting Initiative - French (GRI - French):<span
+                                                                    class="count">
+                                                                    <%= tot_gri_f %>
+                                                                  </span> <a href="/my_project?flag=Rg%3D%3D">View</a>
+                                                                </li>
                                                               <% } %>
+                                                          <% } %>
                               </ul>
 
                             </div>
@@ -297,7 +368,9 @@
                   var projectData = <%- JSON.stringify(dash_proj_data) %>;
                   var totProj = 0
                   if (Object.values(projectData).length > 0) {
-                    Object.entries(projectData).forEach(([key, value]) => key != 'client_id' ? totProj += value : '')
+                    console.log(Object.values(projectData));
+                    
+                    Object.entries(projectData).forEach(([key, value]) => key != 'client_id' && key != 'user_id' ? totProj += parseInt(value) : '')
                   }
                   $('#projCount').text(totProj)
                   // console.log(totProj, projectData);

@@ -53,7 +53,8 @@
       "title": "Nom du Projet",
       "user": "Utilisateur(s) du projet",
       "submit_btn": "Soumettre",
-      "btn_next": "Enregistrer continuer"
+      "btn_next": "Enregistrer continuer",
+      "btn_back_proj_list": "Retour à la liste des projets"
     },
     "manage": {
       "header": "Liste des projets",

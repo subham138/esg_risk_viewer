@@ -53,7 +53,8 @@
       "title": "Project Name",
       "user": "Project User(s)",
       "submit_btn": "Submit",
-      "btn_next": "Save & Continue"
+      "btn_next": "Save & Continue",
+      "btn_back_proj_list": "Back to project list"
     },
     "manage": {
       "header": "Project List",

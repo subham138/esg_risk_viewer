@@ -124,6 +124,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
     header_url: `/my_project?flag=${enc_dt}`,
     flag,
     flag_name: PROJECT_LIST[flag],
+    enc_flag: enc_dt,
   };
   res.render("projects/add", data);
 });
@@ -784,12 +785,13 @@ ProjectRouter.get("/deactive_project", async (req, res) => {
 
 ProjectRouter.get('/exist_project', async (req, res) =>{
  
-    var data = req.query
+    var data = req.query,
+    user = req.session.user
 
     var select = "project_name",
-    table_name = "td_project",
-    whr = `project_name = '${data.project_name}'`,
-    order = null;
+      table_name = "td_project",
+      whr = `replace(lower(project_name), ' ', '') = '${data.project_name.replace(" ", "").toLowerCase()}' AND repo_flag = '${data.flag}' AND client_id = ${user.client_id}`,
+      order = null;
     var res_dt = await db_Select (select,table_name,whr,order);
     res.send(res_dt)
 })
