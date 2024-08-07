@@ -550,7 +550,7 @@ UserRouter.get("/user_list", async (req, res) => {
 
 UserRouter.get('/deactive_user', async (req, res) => {
   var data = req.query
-  console.log(data,'iiii');
+  // console.log(data,'iiii');
   var table_name = "md_user",
   fields = `active_flag = 'N'`,
   values = null,
@@ -559,6 +559,27 @@ UserRouter.get('/deactive_user', async (req, res) => {
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
   // console.log(res_dt,'test');
   res.redirect(`/user_list?client_id=${data.client_id}`);
+});
+
+UserRouter.get('/deactive_client', async (req, res) =>{
+  var data = req.query
+  // console.log(data,'ooo');
+  var table_name = "td_client",
+  fields = `active_flag = 'N'`,
+  values = null,
+  whr = `id = ${data.id}`,
+  flag = 1;
+  var dt = await db_Insert(table_name, fields, values, whr, flag)
+
+  if(dt.suc > 0 && dt.msg.length > 0){
+    var table_name = "md_user",
+    fields = `active_flag = 'N'`,
+    values = null,
+    whr = `client_id = ${data.id}`,
+    flag = 1;
+    var client_dt = await db_Insert(table_name, fields, values, whr, flag)
+  }
+  res.redirect(`/client`);
 })
 
 module.exports = { UserRouter };

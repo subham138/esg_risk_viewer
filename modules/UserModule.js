@@ -43,9 +43,9 @@ module.exports = {
       var select =
           "a.id, a.client_name, b.user_name, b.user_id, b.user_type, a.plan_type, a.plan_active_dt, DATEDIFF(a.plan_deactive_dt,a.plan_active_dt) AS diff_dt, a.ai_tag_tool_flag, a.ghg_emi_flag, a.ifrs_flag, a.esrs_flag, a.gri_flag, a.gri_fr_flag, a.ifrs_fr_flag, a.esrs_fr_flag, a.esrs_vsme_flag, a.esrs_vsme_fr_flag, a.cal_lang_flag",
         table_name = "td_client a, md_user b",
-        whr = `a.id=b.client_id AND b.user_type = 'C' ${
+        whr = `a.id=b.client_id AND a.active_flag = 'Y'AND  b.user_type = 'C' ${
           id > 0 ? `AND a.id = ${id}` : ""
-        }`,
+        } `,
         order = null;
       var res_dt = await db_Select(select, table_name, whr, order);
       resolve(res_dt);

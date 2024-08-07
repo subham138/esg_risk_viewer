@@ -46,6 +46,7 @@
                                     <th>Email Id</th>
                                     <th>Action</th>
                                     <th>User List</th>
+                                    <th>Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,10 +70,18 @@
                                             <i class="icofont icofont-eye-alt"></i> View
                                         </a>
                                     </td>
+                                    <td>
+                                        <a href="/deactive_client?id=<%= dt.id %>&client_id=<%= dt.id %>"
+                                            class="btn btn-pill btn-outline-primary btn-air-primary deleteBtn"
+                                            data-bs-toggle="tooltip" data-bs-placement="left" title=""
+                                            data-bs-original-title="Delete User" onclick="return checkDel()">
+                                            <i class="icofont icofont-ui-delete"></i> Delete
+                                        </a>
+                                    </td>
                                 </tr>
                                 <% i++; })}else{ %>
                                 <tr>
-                                    <td class="text-center text-danger" colspan="5">No Data Found</td>
+                                    <td class="text-center text-danger" colspan="7">No Data Found</td>
                                 </tr>
                                 <% } %>
                             </tbody>

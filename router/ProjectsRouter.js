@@ -790,7 +790,7 @@ ProjectRouter.get('/exist_project', async (req, res) =>{
 
     var select = "project_name",
       table_name = "td_project",
-      whr = `replace(lower(project_name), ' ', '') = '${data.project_name.replace(" ", "").toLowerCase()}' AND repo_flag = '${data.flag}' AND client_id = ${user.client_id}`,
+      whr = `replace(lower(project_name), ' ', '') = '${data.project_name.split(" ").join("").toLowerCase()}' AND repo_flag = '${data.flag}' AND client_id = ${user.client_id}`,
       order = null;
     var res_dt = await db_Select (select,table_name,whr,order);
     res.send(res_dt)
