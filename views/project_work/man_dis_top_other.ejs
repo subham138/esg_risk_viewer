@@ -623,7 +623,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
             data: { word: word.toString().trim(), bus_id: bas_id_list },
             dataType: "html",
             beforeSend: function () {
-                $(".loader-wrapper").show();
+                // $(".loader-wrapper").show();
             },
             success: async function(result) {
                 var res = JSON.parse(result)
