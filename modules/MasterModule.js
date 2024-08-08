@@ -86,7 +86,7 @@ const USER_TYPE_LIST = {
   'E': 'Editor'
 },
 CALCULATOR_LANG = {
-  'B': 'Boath',
+  'B': 'Both',
   'E': 'English',
   'F': 'French'
 },
