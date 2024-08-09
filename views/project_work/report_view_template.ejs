@@ -107,12 +107,18 @@
                                                         <th>User Type</th>
                                                     </tr>
                                                     <% if(project_data.length > 0){
+                                                        if(project_data[0].user_list && project_data[0].user_list.length > 0){
                                                         project_data[0].user_list.forEach(dt => { %>
                                                             <tr>
                                                                 <td><%= dt.user_name %></td>
                                                                 <td><%= user_type_master[dt.user_type] %></td>
                                                             </tr>
-                                                        <% })
+                                                        <% })}else{ %>
+                                                            <tr>
+                                                                <td>Self</td>
+                                                                <td><%= user_type_master[user.user_type] %></td>
+                                                            </tr>
+                                                    <% }
                                                     } %>
                                                 </table>
                                             </td>
