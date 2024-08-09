@@ -82,7 +82,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                 top_name = [...new Set(top_name)]
                 var colSpan = 1
                 top_name.forEach(dt => { %>
-                    <div class="row m-3" id="<%= dt.split(' ').join('_') %>" data-code="<%= dt.split(' ').join('_') %>" style="display: none;">
+                    <div class="row m-3" id="<%= dt.split(' ').join('_').split('/').join('_') %>" sus-code="<%= dt.split(' ').join('_').split('/').join('_') %>" style="display: none;">
                         <div class="col-md-12">
                             <div class="default-according style-2" id="inghg">
                                 <div class="card custom-span-card">
@@ -212,46 +212,50 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                                                                         editorList['div_editor_<%= ediR %>'].setReadOnly(true);
                                                                     <% } %>
                                                                     editorList['div_editor_<%= ediR %>'].attachEvent("change", function () {
-                                                                        var textCount = editorList['div_editor_<%= ediR %>'].getPlainText();
-                                                                        console.log(textCount);
-                                                                        handleEditorChange('div_editor_<%= ediR %>', '<%= ediR %>', '<%= top_id > 0 ? top_id : fdt.top_id %>');
-                                                                        //////////// Start for selection of ai tag ////////////////
-                                                                        // var ai_flag = '<%= ai_tag_tool_flag %>';
-                                                                        // if(ai_flag != 'N'){
-                                                                        //     totCount[<%= ediR %>] = 0
-                                                                        //     // var editorVal = e.editor.getData()
-                                                                        //     // var plainText = $("<div>").html(editorVal).text();
-                                                                        //     var plainText = editorList['div_editor_<%= ediR %>'].getPlainText();
-                                                                        //     var txtArr = plainText.trim().split('\n').join(' ').split(' ')
-                                                                        //     // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
-                                                                        //     // console.log('len', txtArr);
-                                                                        //     if(txtArr.length > 0){
-                                                                        //         txtArr = [...new Set(txtArr)]
-                                                                        //         // console.log(txtArr, 'TOt array');
-                                                                        //         var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
-                                                                        //         if(matchTxt.length > 0){
-                                                                        //             // console.log(matchTxt, 'Match array');
-                                                                        //             $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                        //                 $(this).removeClass('done')
-                                                                        //             })
-                                                                        //             for(let dt of matchTxt){
-                                                                        //                 $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                        //                     // console.log($(this).text());
-                                                                        //                     // if(matchTxt.includes($(this).text().trim().toLowerCase()))
-                                                                        //                     if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
-                                                                        //                         $(this).addClass('done')
-                                                                        //                 })
-                                                                        //             }
-                                                                        //         }else{
-                                                                        //             $('#countMatch_<%= ediR %> .u-step').each(function(){
-                                                                        //                 $(this).removeClass('done')
-                                                                        //             })
-                                                                        //         }
-                                                                        //         // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
-                                                                        //         // console.log(totCount);
-                                                                        //     }
-                                                                        // }
-                                                                        ////////////////////// END ////////////////////////////
+                                                                        try{
+                                                                            var textCount = editorList['div_editor_<%= ediR %>'].getPlainText();
+                                                                            // console.log(textCount);
+                                                                            handleEditorChange('div_editor_<%= ediR %>', '<%= ediR %>', '<%= top_id > 0 ? top_id : fdt.top_id %>');
+                                                                            //////////// Start for selection of ai tag ////////////////
+                                                                            // var ai_flag = '<%= ai_tag_tool_flag %>';
+                                                                            // if(ai_flag != 'N'){
+                                                                            //     totCount[<%= ediR %>] = 0
+                                                                            //     // var editorVal = e.editor.getData()
+                                                                            //     // var plainText = $("<div>").html(editorVal).text();
+                                                                            //     var plainText = editorList['div_editor_<%= ediR %>'].getPlainText();
+                                                                            //     var txtArr = plainText.trim().split('\n').join(' ').split(' ')
+                                                                            //     // txtArr.map(dt => dt.trim().split('\n').join('').toLowerCase())
+                                                                            //     // console.log('len', txtArr);
+                                                                            //     if(txtArr.length > 0){
+                                                                            //         txtArr = [...new Set(txtArr)]
+                                                                            //         // console.log(txtArr, 'TOt array');
+                                                                            //         var matchTxt = txtArr.filter(dt => increseCount(dt, '<%= ediR %>'))
+                                                                            //         if(matchTxt.length > 0){
+                                                                            //             // console.log(matchTxt, 'Match array');
+                                                                            //             $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                            //                 $(this).removeClass('done')
+                                                                            //             })
+                                                                            //             for(let dt of matchTxt){
+                                                                            //                 $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                            //                     // console.log($(this).text());
+                                                                            //                     // if(matchTxt.includes($(this).text().trim().toLowerCase()))
+                                                                            //                     if($(this).text().trim().split(' ').join('').toLowerCase() == dt.trim().split(' ').join('').toLowerCase())
+                                                                            //                         $(this).addClass('done')
+                                                                            //                 })
+                                                                            //             }
+                                                                            //         }else{
+                                                                            //             $('#countMatch_<%= ediR %> .u-step').each(function(){
+                                                                            //                 $(this).removeClass('done')
+                                                                            //             })
+                                                                            //         }
+                                                                            //         // txtArr.filter(dt => console.log(dt.trim().split('\n').join('').toLowerCase()))
+                                                                            //         // console.log(totCount);
+                                                                            //     }
+                                                                            // }
+                                                                            ////////////////////// END ////////////////////////////
+                                                                        }catch(err){
+                                                                            console.log(err);
+                                                                        }
                                                                     });
                                                                 </script>
                                                                 <% if(user_type != 'V'){ %>
@@ -327,7 +331,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
         currentPage;
 
     function showPage(whichPage, modal = undefined){
-        console.log(totalPages, 'TOT PAGE', $('.card-content .card').length);
+        // console.log(totalPages, 'TOT PAGE', $('.card-content .card').length);
         if(whichPage < 1 || whichPage > totalPages) return false;
         currentPage = whichPage
         if (modal){
