@@ -586,13 +586,15 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
         }
     }
     function appendText(info, id){
-        editorList[`div_editor_${id}`].setHTMLCode(info)
+        var editorPrevData = editorList[`div_editor_${id}`].getHTML()
+        editorList[`div_editor_${id}`].setHTMLCode(editorPrevData + '<br>' + info)
         $('#wordInfoModal').modal('toggle');
         $('#wordInfoModal').remove()
     }
     function appendTextInfo(id){
         var info = $(`#man_dis_top_info_${id} .card-body`).html().trim()
-        editorList[`div_editor_${id}`].setHTMLCode(info)
+        var editorPrevData = editorList[`div_editor_${id}`].getHTML()
+        editorList[`div_editor_${id}`].setHTMLCode(editorPrevData + '<br>' + info)
         // if(flag){
         //     $('#wordInfoModal').modal('toggle');
         //     $('#wordInfoModal').remove()
@@ -631,7 +633,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
             },
             success: async function(result) {
                 var res = JSON.parse(result)
-                console.log(res);
+                // console.log(res);
                 if(res.suc > 0){
                     if(res.msg.length > 0){
                         var m1 = $(await makeModal(word.toString().trim(), res.msg));
