@@ -1,4 +1,7 @@
 <%- include('../templates/header.ejs') %>
+<% if(flag == "E"){ %>
+    <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+<% } %>
 <style>
     .logo-report{
         height: 30%;
@@ -9,14 +12,37 @@
         width: 100%;
     }
     .report-head{
-        font-weight: 500;
+        font-weight: 600;
         font-size: 29px;
         color: #7030a0;
     }
+    .report-head_1{
+        font-weight: 600;
+        font-size: 29px;
+        color: #03244e;
+    }
     .report-sub-head{
-        font-weight: 500;
+        font-weight: 600;
         font-size: 25px;
-        color: #319795;
+        /* color: #319795; */
+        color: black;
+    }
+    .report-sub-head_1{
+        font-weight: 600;
+        font-size: 22px;
+        /* color: #319795; */
+        color: black;
+    }
+    .report-sub-head_2{
+        font-weight: 600;
+        font-size: 18px;
+        /* color: #319795; */
+        color: black;
+    }
+    .sub_head {
+        font-weight: 600;
+        font-size: 15px;
+        color: black;
     }
     .topic-sub-head{
         font-weight: 500;
@@ -29,6 +55,9 @@
     }
     .text-muted {
         color: #C9C9C9 !important;
+    }
+    .text-spacing {
+        letter-spacing: 0px;
     }
 </style>
 
@@ -61,9 +90,9 @@
                                 <p class="report-head">Sustainability Report</p>
                             </div>
                             <div class="row">
-                                <p class="report-head">Details</p>
+                                <p class="report-head_1">Details</p>
                                 <div class="col-md-6">
-                                    <table width="100%">
+                                    <table width="100%" class="text-spacing">
                                         <tr>
                                             <th>Framework</th>
                                             <th>:</th>
@@ -126,9 +155,9 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                                 <p class="report-head">Exposure</p>
-                            </div>
+                            </div> -->
                             <div class="row">
                                 <% if(allDynamicData.length > 0){
                                     var rowSpan = 1
@@ -250,12 +279,11 @@
                                 <% })
                             } %>
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                                 <p class="report-head">Disclosure Topics</p>
-                            </div>
-                            <div class="row">
+                            </div> -->
+                            <!-- <div class="row">
                                 <div class="col-md-12">
-                                    <!-- <p class="report-sub-head">Topic List</p> -->
                                     <% var prevCatg = '', chk_list = [], un_chk_list = [], catg_name_list = [];
                                         if(act_top_catg_list.length > 0){
                                         var susModifyDt = susDistList.msg.map(dt => dt.code != '' && dt.code != 'null' && dt.code ? dt : null)
@@ -298,32 +326,32 @@
                                         <% }) %>
                                     <% } %>
                                 </div>
+                            </div> -->
+                            <div class="row mt-3">
+                                <p class="report-head_1">Disclosure Topics Report</p>
                             </div>
-                            <div class="row">
-                                <p class="report-head">Disclosure Topics Reporting</p>
-                            </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <% var prevRes = '';
                                 catg_name_list.forEach(dt => { %>
                                     <div class="col-md-12">
                                         <p class="report-sub-head"><%= dt %></p>
                                     </div>
                                     <% var new_chk_list = chk_list.filter(fdt => fdt.catg_name == dt); %>
-                                        <div class="row">
+                                        <di v class="row">
                                             <% if(new_chk_list.length > 0){
                                                 new_chk_list.forEach(chkDt => { %>
-                                                    <div class="col-md-12"><p><%= chkDt.data.topic_name %></p></div>
+                                                    <div class="col-md-12"><p class="report-sub-head_1"><%= chkDt.data.topic_name %></p></div>
                                                 <% var sPrevRes = '',
                                                     newManDisList = susModifyDt.filter(fdt => fdt.topic_name == chkDt.data.topic_name);
                                                     newManDisList.forEach(sdt => {
                                                         var sNowRes = sdt.top_id 
                                                         var getRes = editorData.filter(edt => edt.article_code == sdt.code && edt.top_id==sdt.top_id)
                                                         if(getRes.length > 0){ %>
-                                                            <div class="col-md-12"><p class="m-l-10"><%= sdt.code %></p></div>
+                                                            <div class="col-md-12"><p class="m-l-8 report-sub-head_2"><%= sdt.code %></p></div>
                                                             <div class="col-md-12 m-l-20">
                                                                 <!-- <p class="m-l-2 info_head">Requirements, Guidance and Link to Sustainable Development Goals</p> -->
-                                                                <p class="m-l-2"><%= sdt.info_title %></p>
-                                                                <p class="m-l-2"><%- sdt.info_desc %></p>
+                                                                <p class="m-l-2 sub_head"><%= sdt.info_title %></p>
+                                                                <p class="m-l-2 sub_head"><%- sdt.info_desc %></p>
                                                             </div>
                                                             <div class="col-md-12 m-l-20">
                                                                 <p class="m-l-2 info_head">Disclosure Topics Report</p>
@@ -337,14 +365,14 @@
                                 <% }) %>
                             </div>
                             <div class="row">
-                                <p class="report-head">GHG Emissions</p>
+                                <p class="report-head_1">GHG Emissions</p>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <p class="report-sub-head">Scope 1</p>
                                 </div>
                                 <p>Start Month: <%= 's1' in ghg_emi_data ? (ghg_emi_data['s1'].length > 0 ? fullMonths[ghg_emi_data['s1'][0].repo_month] : '') : '' %></p>
-                                <table class="table-bordered m-5">
+                                <table class="table-bordered m-3">
                                     <tr>
                                         <th>Emission source</th>
                                         <th>Activity</th>
@@ -363,7 +391,7 @@
                                             <td><%= newGhgDt[0].type_name %></td>
                                             <td><%= newGhgDt[0].act_name %></td>
                                             <td><%= newGhgDt[0].emi_name %></td>
-                                            <td><%= tot_co_val_label %></td>
+                                            <td><%= tot_co_val_label.toFixed(2) %></td>
                                         </tr>
                                         <% }
                                     }
@@ -379,7 +407,7 @@
                                     <p class="report-sub-head">Scope 2</p>
                                 </div>
                                 <p>Start Month: <%= 's2' in ghg_emi_data ? (ghg_emi_data['s2'].length > 0 ? fullMonths[ghg_emi_data['s2'][0].repo_month] : '') : '' %></p>
-                                <table class="table-bordered m-5">
+                                <table class="table-bordered m-3">
                                     <tr>
                                         <th>Emission source</th>
                                         <th>Activity</th>
@@ -398,7 +426,7 @@
                                             <td><%= newGhgDt[0].type_name %></td>
                                             <td><%= newGhgDt[0].act_name %></td>
                                             <td><%= newGhgDt[0].emi_name %></td>
-                                            <td><%= tot_co_val_label %></td>
+                                            <td><%= tot_co_val_label.toFixed(2) %></td>
                                         </tr>
                                         <% }
                                     }
@@ -414,7 +442,7 @@
                                     <p class="report-sub-head">Scope 3</p>
                                 </div>
                                 <p>Start Month: <%= 's3' in ghg_emi_data ? (ghg_emi_data['s3'].length > 0 ? fullMonths[ghg_emi_data['s3'][0].repo_month] : '') : '' %></p>
-                                <table class="table-bordered m-5">
+                                <table class="table-bordered m-3">
                                     <tr>
                                         <th>Emission source</th>
                                         <th>Activity</th>
@@ -433,7 +461,7 @@
                                             <td><%= newGhgDt[0].type_name %></td>
                                             <td><%= newGhgDt[0].act_name %></td>
                                             <td><%= newGhgDt[0].emi_name %></td>
-                                            <td><%= tot_co_val_label %></td>
+                                            <td><%= tot_co_val_label.toFixed(2) %></td>
                                         </tr>
                                         <% }
                                     }
@@ -445,7 +473,8 @@
                                 </table>
                             </div>
                             <div class="row">
-                                <p class="report-head">Methodology Notes</p>
+                                <!-- <p class="report-head">Methodology Notes</p> -->
+                                <p class="report-head_1">Notes</p>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">

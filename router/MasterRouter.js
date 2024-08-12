@@ -401,7 +401,7 @@ MasterRouter.get('/met_note', async (req, res) => {
   // console.log(data);
   res.render("master/met_note", {
     data: data.suc > 0 ? data.msg : [],
-    header: "Methodology Notes",
+    header: "Notes",
     flag,
     enc_dt
   });
