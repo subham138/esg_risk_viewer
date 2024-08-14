@@ -337,7 +337,7 @@
                                         <p class="report-sub-head"><%= dt %></p>
                                     </div>
                                     <% var new_chk_list = chk_list.filter(fdt => fdt.catg_name == dt); %>
-                                        <di v class="row">
+                                        <div class="row">
                                             <% if(new_chk_list.length > 0){
                                                 new_chk_list.forEach(chkDt => { %>
                                                     <div class="col-md-12"><p class="report-sub-head_1"><%= chkDt.data.topic_name %></p></div>
@@ -350,11 +350,11 @@
                                                             <div class="col-md-12"><p class="m-l-8 report-sub-head_2"><%= sdt.code %></p></div>
                                                             <div class="col-md-12 m-l-20">
                                                                 <!-- <p class="m-l-2 info_head">Requirements, Guidance and Link to Sustainable Development Goals</p> -->
-                                                                <p class="m-l-2 sub_head"><%= sdt.info_title %></p>
-                                                                <p class="m-l-2 sub_head"><%- sdt.info_desc %></p>
+                                                                <!-- <p class="m-l-2 sub_head"><%# sdt.info_title %></p>
+                                                                <p class="m-l-2 sub_head"><%# sdt.info_desc %></p> -->
                                                             </div>
                                                             <div class="col-md-12 m-l-20">
-                                                                <p class="m-l-2 info_head">Disclosure Topics Report</p>
+                                                                <!-- <p class="m-l-2 info_head">Disclosure Topics Report</p> -->
                                                                 <p class="m-l-2"><%- getRes.length > 0 ? getRes[0].article : "" %></p>
                                                             </div>
                                                         <% } %>
@@ -526,7 +526,7 @@
         WindowObject.document.writeln('</head><body onload="window.print()">');
         // WindowObject.document.writeln('<header>ESG Risk Viewer</header>')
         WindowObject.document.writeln(divToPrint.innerHTML);
-        WindowObject.document.writeln('<footer><small><span>'+ new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "medium"}) +'</span><span>ESG Riskviewer</span></small></footer>');
+        // WindowObject.document.writeln('<footer><small><span>'+ new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "medium"}) +'</span><span>ESG Riskviewer</span></small></footer>');
         WindowObject.document.writeln('</body></html>');
 
         // console.log(WindowObject.document.documentElement.innerHTML, 'WindowObject');
