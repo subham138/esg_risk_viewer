@@ -13,7 +13,7 @@ app.set("views", path.join(__dirname, "views"));
 
 // SET ASSETS AS A STATIC PATH //
 app.use(express.static(path.join(__dirname, "assets/")));
-app.use(express.static(path.join(__dirname, "assets/editor")));
+// app.use(express.static(path.join(__dirname, "assets/editor")));
 // END //
 
 // SET REQUEST HANDLER //
@@ -474,6 +474,21 @@ app.get('/sus_dis_top_info_entry', async (req, res) => {
   }
   console.log(i);
   res.send(sql_arr)
+})
+
+app.get('/insert_ifrs_sus_dis', async (req, res) => {
+  const { db_Select, db_Insert } = require("./modules/MasterModule"),
+  dateFormat = require("dateformat");
+  var currDate = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+  var data = req.query, res_arr = [], sql_arr = [], i = 1;
+
+  var ind_top_from = await db_Select('a.id, b.sec_name, c.ind_name, e.topic_name, a.metric, a.catg, a.unit, a.code, a.words, a.info_title, a.info_desc', 'td_sus_dis_top_met a, md_sector b, md_industries c, md_industries_topics d, md_topic e', `a.sec_id=b.id AND a.ind_id=c.id AND a.top_id=d.id AND d.topic_id=e.id AND a.repo_flag = 'G' AND e.topic_name LIKE "GRI%"`, 'ORDER BY a.id')
+
+  if(ind_top_from.suc > 0 && ind_top_from.msg.length > 0){
+    for(let tdt of ind_top_from.msg){
+      
+    }
+  }
 })
 
 app.use(UserRouter);
