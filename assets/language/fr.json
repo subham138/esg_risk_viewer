@@ -45,7 +45,8 @@
       },
       "edit_btn": "Modifier",
       "manage_btn": "Gérer",
-      "view_btn": "Aperçu"
+      "view_btn": "Aperçu",
+      "delete_btn": "Supprimer"
     },
     "add": {
       "header": "Liste des projets",
@@ -53,7 +54,7 @@
       "title": "Nom du Projet",
       "user": "Utilisateur(s) du projet",
       "submit_btn": "Soumettre",
-      "btn_next": "Enregistrer continuer",
+      "btn_next": "Enregistrer & Continuer",
       "btn_back_proj_list": "Retour à la liste des projets"
     },
     "manage": {
@@ -105,7 +106,8 @@
           "head4": "Facteurs d'Émission",
           "head5": "Kg CO2e"
         },
-        "save_btn": "Sauvegarder"
+        "save_btn": "Sauvegarder",
+        "del_btn": "Supprimer"
       }
     }
   }

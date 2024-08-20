@@ -45,7 +45,8 @@
       },
       "edit_btn": "Edit",
       "manage_btn": "Manage",
-      "view_btn": "Preview"
+      "view_btn": "Preview",
+      "delete_btn": "Delete"
     },
     "add": {
       "header": "Project List",
@@ -105,7 +106,8 @@
           "head4": "Emission factors",
           "head5": "Kg CO2e"
         },
-        "save_btn": "Save"
+        "save_btn": "Save",
+        "del_btn": "Delete"
       }
     }
   }

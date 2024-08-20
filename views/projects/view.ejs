@@ -107,13 +107,14 @@
                                                                                 <%= lang.view.manage_btn %>
                                                                                     <% } %>
                                                                 </a>
-                                                                <a class="btn btn_UR btn-outline-primary btn-air-primary"
+                                                                <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
                                                                     onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', 'report_full_view')">
                                                                     <i class="icofont icofont-eye-alt"></i>
                                                                     <%= lang.view.view_btn %>
                                                                 </a>
-                                                                <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
-                                        <i class="icofont icofont-ui-delete"></i> Delete
+                                                                <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                        <i class="icofont icofont-ui-delete"></i> 
+                                        <%= lang.view.delete_btn %>
                                     </a>
                                                 </td>
                                             </tr>

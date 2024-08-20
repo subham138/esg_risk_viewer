@@ -54,12 +54,15 @@
                                             <td><%= i %></td>
                                             <td><%= dt.topic_catg %></td>
                                             <td><%= dt.topic_name %></td>
-                                            <td><a href="/topic_edit?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <td><a href="/topic_edit?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary m-b-5" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
                                             <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
                                                 <i class="icofont icofont-ui-delete"></i> Delete
                                             </a> -->
+                                            <a href="/topic_del?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return delItem();">
+                                                <i class="icofont icofont-ui-delete"></i> Delete
+                                            </a>
                                             </td>
                                         </tr>
                                         <% i++; })}else{ %>
@@ -78,4 +81,13 @@
         <!-- Zero Configuration  Ends-->
     </div>
 </div>
+<script>
+    function delItem(){
+        if(confirm('Do you want to delete?')){
+            return true
+        }else{
+            return false
+        }
+    }
+</script>
 <%- include('../../templates/footer.ejs') %>

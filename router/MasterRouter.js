@@ -281,6 +281,21 @@ MasterRouter.get("/topic_edit", async (req, res) => {
   res.render("master/topic/add", { topic_data, catg_data, id: id, flag, enc_dt });
 });
 
+MasterRouter.get("/topic_del", async (req, res) => {
+  var id = req.query.id,
+  data= req.query,
+    res_dt;
+  // console.log(data,'data');
+
+  if (id > 0) {
+    res_dt = await db_Delete('md_topic', `id = ${id}`);
+    req.session.message = { type: "danger", message: "Data deleted successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not saved" };
+  }
+  res.redirect(`/topic?flag=${(data.flag)}`);
+});
+
 MasterRouter.post("/topic_save", async (req, res) => {
   var data = req.body;
   var table_name = "md_topic",
