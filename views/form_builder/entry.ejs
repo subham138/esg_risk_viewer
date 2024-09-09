@@ -1,0 +1,185 @@
+<%- include('../templates/header.ejs') %>
+<style>
+    .label-view{
+        border: 1px solid rgb(0, 0, 0);
+        padding: 10px;
+    }
+    .op-key {
+        font-size: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+    }
+    .op-btn-p {
+        font-size: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+    }
+    .op-btn-m {
+        font-size: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+    }
+</style>
+
+<!-- Container-fluid starts-->
+<div class="container-fluid">
+    <form action="" method="post">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-header b-t-success border-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Form Builder</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-success float-end" onclick="addNewCard()">Add New</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-success float-end">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center flex-column" id="add-card">
+                <div class="card w-75">
+                    <div class="card-body b-l-success border-3">
+                      <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group mb-0">
+                                <h5 class="label-view" onclick="editLabel(this)">Entry Heading</h5>
+                                <input type="text" value="" name="header_1" class="edit form-control" id="header_1" style="display: none;">
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="card w-75 entry-card" id="card-1">
+                    <div class="card-body b-l-success border-3">
+                      <div class="row">
+                          <div class="col-md-8">
+                            <div class="form-group mb-0">
+                                <h5 class="label-view" onclick="editLabel(this)">Entry Question</h5>
+                                <input type="text" value="" name="q_1" class="edit form-control" id="q_1" style="display: none;">
+                            </div>
+                            <div class="dynamic-form-value-entry"></div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-select dynamic-option" card-id="card-1">
+                                    <option value="radio">&#9673; | Radio</option>
+                                    <option value="check">&#9635; | Checkbox</option>
+                                    <option value="drop">&#9661; | Select Dropdown</option>
+                                    <option value="slider">&#127898; | Range Slider</option>
+                                </select>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </form>
+</div>
+  <!-- Container-fluid Ends-->
+
+<script>
+    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'}]
+    function editLabel(elm) {
+        var jelm = $(elm);
+        var htmlElm = jelm[0];
+        $(htmlElm).hide();
+        $(htmlElm).siblings('.edit').show();
+        $(htmlElm).siblings('.edit').focus()
+        var initial_text = $(htmlElm).text();
+        $(htmlElm).siblings('.edit').focusout(function () {
+            var editedInput = $(htmlElm).siblings('.edit').val();
+            $(htmlElm).siblings('.edit').hide();
+            if (editedInput != '') {
+                $(htmlElm).show().text(editedInput);
+            }
+            else {
+                $(htmlElm).show().text(initial_text);
+            }
+        });
+    }
+    function addOption(elm, key){
+        var jelm = $(elm);
+        var cardId = $(jelm[0]).parent().closest('.card').attr('id')
+        
+        createOptions(cardId, key, true)
+        // $(jelm[0]).parent().closest('.dynamic-form-value-entry')
+    }
+
+    function removeOption(elm){
+        var jelm = $(elm);
+        $(jelm[0]).parent().detach();
+    }
+    
+    $('.dynamic-option').on('change', function(e){
+        var card_id = $(this).attr('card-id')
+        // console.log($(this));
+        var symbol = optionList.filter(dt => dt.label == $(this).val())
+        $(`#${card_id} .dynamic-form-value-entry`).empty()
+        // var selected_text = 
+        // var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
+        createOptions(card_id, symbol[0].key)
+    })
+
+    function createOptions(card_id, key, minus = false){
+        var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
+        $(`#${card_id} .dynamic-form-value-entry`).append(`
+        <div class="form-group row">
+            <div class="col-md-1 op-key"><span>${key}</span></div>
+            <div class="col-md-9">
+                <h5 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h5>
+                <input type="text" value="" name="q_s_${opCount + 1}" class="edit form-control" id="q_s_${opCount + 1}" style="display: none;">
+            </div>
+            <div class="col-md-1 op-btn-p" onclick="addOption(this, '${key}')"><i class="icofont icofont-plus text-success"></i></div>
+            ${minus ? `<div class="col-md-1 op-btn-m" onclick="removeOption(this)"><i class="icofont icofont-minus text-danger"></i></div>` : ''}
+        </div>
+        `)
+    }
+
+    function addNewCard(){
+        var tot_card = $('.entry-card').length
+        $('#add-card').append(`
+            <div class="card w-75 entry-card" id="card-${tot_card + 1}">
+                <div class="card-body b-l-success border-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                        <div class="form-group mb-0">
+                            <h5 class="label-view" onclick="editLabel(this)">Entry Question</h5>
+                            <input type="text" value="" name="q_${tot_card + 1}" class="edit form-control" id="q_${tot_card + 1}" style="display: none;">
+                        </div>
+                        <div class="dynamic-form-value-entry"></div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="form-group">
+                            <select class="form-select dynamic-option" card-id="card-${tot_card + 1}">
+                                <option value="radio">&#9673; | Radio</option>
+                                <option value="check">&#9635; | Checkbox</option>
+                                <option value="drop">&#9661; | Select Dropdown</option>
+                                <option value="slider">&#127898; | Range Slider</option>
+                            </select>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `)
+    }
+</script>
+
+<%- include('../templates/footer.ejs') %>
