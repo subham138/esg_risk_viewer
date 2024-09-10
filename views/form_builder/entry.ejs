@@ -2,7 +2,7 @@
 <style>
     .label-view{
         border: 1px solid rgb(0, 0, 0);
-        padding: 10px;
+        padding: 8px;
     }
     .op-key {
         font-size: 20px;
@@ -24,6 +24,31 @@
         justify-content: flex-end;
         flex-direction: row;
         align-items: center;
+    }
+    .btn-card-footer{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: end;
+    }
+    .media {
+        align-items: center !important;
+    }
+    .vl {
+        border-left: 2px solid green;
+        height: 20px;
+        margin: 0px 10px 0 10px;
+    }
+    .is-parent{
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+    }
+    .delete-btn-form{
+        font-size: 20px;
+    }
+    .btn-pill {
+        background: #fff;
     }
 </style>
 
@@ -69,22 +94,63 @@
                       <div class="row">
                           <div class="col-md-8">
                             <div class="form-group mb-0">
-                                <h5 class="label-view" onclick="editLabel(this)">Entry Question</h5>
+                                <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
                                 <input type="text" value="" name="q_1" class="edit form-control" id="q_1" style="display: none;">
                             </div>
-                            <div class="dynamic-form-value-entry"></div>
+                            <div class="dynamic-form-value-entry">
+                                <div class="form-group row">
+                                    <div class="col-md-1 op-key"><span>&#9673;</span></div>
+                                    <div class="col-md-9">
+                                        <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                                        <input type="text" value="" name="q_s_1" class="edit form-control" id="q_s_1" style="display: none;">
+                                    </div>
+                                    <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
+                                </div>
+                            </div>
                           </div>
                           <div class="col-md-4">
                             <div class="form-group">
-                                <select class="form-select dynamic-option" card-id="card-1">
+                                <select class="form-select dynamic-option" onchange="dynamicOptionChange(this)" card-id="card-1">
                                     <option value="radio">&#9673; | Radio</option>
                                     <option value="check">&#9635; | Checkbox</option>
                                     <option value="drop">&#9661; | Select Dropdown</option>
                                     <option value="slider">&#127898; | Range Slider</option>
+                                    <option value="short_text">&#9776; | Short Answer</option>
                                 </select>
                             </div>
                           </div>
                       </div>
+                    </div>
+                    <div class="card-footer p-2">
+                        <div class="btn-card-footer">
+                            <!-- <button class=""></button> -->
+                            <div class="vl"></div>
+                            <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10" type="button" title="Build your logic"> <span class="m-r-5">&#402;</span> Build Logic</button>
+                            <div class="vl"></div>
+                            <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a>
+                            <div class="vl"></div>
+                            <div class="m-r-10">
+                                <span onclick="editLabel(this)">Sequence</span>
+                                <input type="text" value="" name="s_1" class="edit form-control" id="s_1" style="display: none;">
+                            </div>
+                            <div class="vl"></div>
+                            <div class="media m-r-10">
+                                <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
+                                <div class="media-body text-end icon-state switch-outline">
+                                    <label class="switch">
+                                        <input type="checkbox" id="gri_flag" checked onchange="checkChange(this)">
+                                        <span class="switch-state bg-primary"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="is-parent" style="display: none;">
+                                <div class="vl"></div>
+                                <div class="m-r-10">
+                                    <span onclick="editLabel(this)">Parent Sequence</span>
+                                    <input type="text" value="" name="p_c_1" class="edit form-control" id="p_c_1" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -95,7 +161,7 @@
   <!-- Container-fluid Ends-->
 
 <script>
-    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'}]
+    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'},{key: '&#9776;', label: 'short_text'}]
     function editLabel(elm) {
         var jelm = $(elm);
         var htmlElm = jelm[0];
@@ -126,25 +192,46 @@
         var jelm = $(elm);
         $(jelm[0]).parent().detach();
     }
+
+    function delFrmCard(e){
+        var elm = $(e);
+        $(elm[0]).parent().closest('.card').detach();
+    }
+
+    function checkChange(e){
+        var elm = $(e);
+        console.log($(elm[0]).attr('checked'));
+        if($(elm[0]).attr('checked')){
+            $(elm[0]).removeAttr('checked')
+            $(elm[0]).parent().closest('.btn-card-footer').children().closest('.is-parent').show()
+        }else{
+            $(elm[0]).attr('checked', true)
+            $(elm[0]).parent().closest('.btn-card-footer').children().closest('.is-parent').hide()
+        }
+        
+    }
     
-    $('.dynamic-option').on('change', function(e){
-        var card_id = $(this).attr('card-id')
+    function dynamicOptionChange(e){
+        console.log(e);
+        
+        var card_id = $(e).attr('card-id')
         // console.log($(this));
-        var symbol = optionList.filter(dt => dt.label == $(this).val())
+        var symbol = optionList.filter(dt => dt.label == $(e).val())
         $(`#${card_id} .dynamic-form-value-entry`).empty()
         // var selected_text = 
         // var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
         createOptions(card_id, symbol[0].key)
-    })
+    }
 
     function createOptions(card_id, key, minus = false){
-        var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
+        var opCount = $(`#${card_id} .dynamic-form-value-entry`).length,
+        cardId = card_id.split('-')[1];
         $(`#${card_id} .dynamic-form-value-entry`).append(`
         <div class="form-group row">
             <div class="col-md-1 op-key"><span>${key}</span></div>
             <div class="col-md-9">
-                <h5 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h5>
-                <input type="text" value="" name="q_s_${opCount + 1}" class="edit form-control" id="q_s_${opCount + 1}" style="display: none;">
+                <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                <input type="text" value="" name="q_s_${cardId}" class="edit form-control" id="q_s_${opCount + 1}" style="display: none;">
             </div>
             <div class="col-md-1 op-btn-p" onclick="addOption(this, '${key}')"><i class="icofont icofont-plus text-success"></i></div>
             ${minus ? `<div class="col-md-1 op-btn-m" onclick="removeOption(this)"><i class="icofont icofont-minus text-danger"></i></div>` : ''}
@@ -160,20 +247,49 @@
                     <div class="row">
                         <div class="col-md-8">
                         <div class="form-group mb-0">
-                            <h5 class="label-view" onclick="editLabel(this)">Entry Question</h5>
+                            <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
                             <input type="text" value="" name="q_${tot_card + 1}" class="edit form-control" id="q_${tot_card + 1}" style="display: none;">
                         </div>
                         <div class="dynamic-form-value-entry"></div>
                         </div>
                         <div class="col-md-4">
                         <div class="form-group">
-                            <select class="form-select dynamic-option" card-id="card-${tot_card + 1}">
+                            <select class="form-select dynamic-option" onchange="dynamicOptionChange(this)" card-id="card-${tot_card + 1}">
                                 <option value="radio">&#9673; | Radio</option>
                                 <option value="check">&#9635; | Checkbox</option>
                                 <option value="drop">&#9661; | Select Dropdown</option>
                                 <option value="slider">&#127898; | Range Slider</option>
+                                <option value="short_text">&#9776; | Short Answer</option>
                             </select>
                         </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer p-2">
+                    <div class="btn-card-footer">
+                        <div class="vl"></div>
+                        <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a>
+                        <div class="vl"></div>
+                        <div class="m-r-10">
+                            <span onclick="editLabel(this)">Sequence</span>
+                            <input type="text" value="" name="s_${tot_card + 1}" class="edit form-control" id="s_${tot_card + 1}" style="display: none;">
+                        </div>
+                        <div class="vl"></div>
+                        <div class="media m-r-10">
+                            <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
+                            <div class="media-body text-end icon-state switch-outline">
+                                <label class="switch">
+                                    <input type="checkbox" id="gri_flag" checked onchange="checkChange(this)">
+                                    <span class="switch-state bg-primary"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="is-parent" style="display: none;">
+                            <div class="vl"></div>
+                            <div class="m-r-10">
+                                <span onclick="editLabel(this)">Parent Sequence</span>
+                                <input type="text" value="" name="p_c_${tot_card + 1}" class="edit form-control" id="p_c_${tot_card + 1}" style="display: none;">
+                            </div>
                         </div>
                     </div>
                 </div>
