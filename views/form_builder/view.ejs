@@ -1,0 +1,74 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3><%= header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><%= header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Zero Configuration  Starts-->
+        <div class="col-sm-12">
+            <% if(message){ %>
+                <script>
+                    setTimeout(() => {
+                        initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                    }, 1000);
+                </script>
+            <% } %>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 my-2">
+                            <a href="/form_builder_edit?scope=0" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new topic" data-bs-original-title="Edit">Add New Question</a>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="display" id="basic-1">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Scope</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if(scope_dt.msg.length > 0){
+                                            let i = 1;
+                                        scope_dt.msg.forEach(dt => { %>
+                                        <tr>
+                                            <td><%= i %></td>
+                                            <td>Scope <%= dt.scope_id %></td>
+                                            <td><a href="/form_builder_edit?scope=<%= dt.scope_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                                <i class="icofont icofont-ui-edit"></i> Edit
+                                            </a>
+                                            <!-- <a href="/cal_type_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                                <i class="icofont icofont-ui-delete"></i> Delete
+                                            </a> -->
+                                            </td>
+                                        </tr>
+                                        <% i++; })}else{ %>
+                                        <tr>
+                                            <td class="text-danger text-center" colspan="4">No Data Found</td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Zero Configuration  Ends-->
+    </div>
+</div>
+<%- include('../templates/footer.ejs') %>

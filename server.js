@@ -82,6 +82,7 @@ const { DashboardRouter } = require("./router/DashboardRouter");
 const { SupportRouter } = require("./router/SupportRouter");
 const { imgGalaryRouter } = require("./router/imgGalaryRouter");
 const { CalculatorRouter } = require("./router/CalculatorRouter");
+const { FBRouter } = require("./router/formBuilderRouter");
 // END //
 
 app.get("/", (req, res) => {
@@ -500,6 +501,8 @@ app.use(DashboardRouter)
 app.use(SupportRouter)
 app.use(imgGalaryRouter)
 app.use(CalculatorRouter)
+
+app.use(FBRouter)
 
 app.get("/user_data", (req, res) => {
   var data = {

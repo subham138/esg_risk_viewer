@@ -50,11 +50,39 @@
     .btn-pill {
         background: #fff;
     }
+    .hover-centainer {
+        position: absolute;
+        display: none;
+        right: -61px;
+        height: auto;
+        top: 20%;
+        background: #ffffff;
+        border: #dfdfdfb0 1px solid;
+        box-shadow: 0px 0px 0px 0 rgba(0, 0, 0, 0.2), 0px 0px 4px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 10px;
+        padding: 10px;
+        width: 60px;
+    }
+    .entry-card {
+        position: relative;
+    }
+    hr{
+        width: 100%;
+    }
+    .entry-card:hover .hover-centainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .hover-centainer i{
+        font-size: 25px;
+        cursor: pointer;
+    }
 </style>
 
 <!-- Container-fluid starts-->
 <div class="container-fluid">
-    <form action="" method="post">
+    <form action="/form_builder_post" method="post">
         <div class="row">
           <div class="col-sm-12">
             <div class="card">
@@ -66,10 +94,12 @@
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-6">
-                                <button type="button" class="btn btn-success float-end" onclick="addNewCard()">Add New</button>
+                                <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10" type="button" title="Build your logic"> <span class="m-r-5">&#402;</span> Build Logic</button>
+                                <!-- <button type="button" class="btn btn-success float-end" onclick="addNewCard()">Add New</button> -->
                             </div>
                             <div class="col-md-6">
-                                <button type="button" class="btn btn-success float-end">Save</button>
+                                <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10" type="submit" title="Build your logic"> <span class="m-r-5"><i class="icofont icofont-save"></i></span>Save</button>
+                                <!-- <button type="button" class="btn btn-success float-end">Save</button> -->
                             </div>
                         </div>
                     </div>
@@ -80,15 +110,121 @@
                 <div class="card w-75">
                     <div class="card-body b-l-success border-3">
                       <div class="row">
-                          <div class="col-md-12">
+                          <div class="col-md-8">
                             <div class="form-group mb-0">
-                                <h5 class="label-view" onclick="editLabel(this)">Entry Heading</h5>
-                                <input type="text" value="" name="header_1" class="edit form-control" id="header_1" style="display: none;">
+                                <h5 class="label-view" onclick="editLabel(this)"><%= q_header != '' ? q_header : 'Entry Heading' %></h5>
+                                <input type="text" value="<%= q_header != '' ? q_header : '' %>" name="header" class="edit form-control" id="header" style="display: none;">
                             </div>
+                          </div>
+                          <div class="col-md-4">
+                            <select class="form-select" name="scope_id" required>
+                                <option>Select Scope</option>
+                                <% scope.forEach(dt => {
+                                    var _selected = ''
+                                    if(dt.id == scope_id) _selected = 'selected'
+                                    %>
+                                    <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
+                                <% }) %>
+                            </select>
                           </div>
                       </div>
                     </div>
                 </div>
+                <% if(qr_dt.length > 0){
+                    var i = 1
+                    qr_dt.forEach(dt => { %>
+                        <div class="card w-75 entry-card" id="card-<%= i %>">
+                            <div class="card-body b-l-success border-3">
+                              <div class="row">
+                                  <div class="col-md-8">
+                                    <div class="form-group mb-0">
+                                        <h6 class="label-view" onclick="editLabel(this)"><%= dt.input_label != '' ? dt.input_label : 'Entry Question' %></h6>
+                                        <input type="text" value="<%= dt.input_label != '' ? dt.input_label : '' %>" name="q_<%= i %>" class="edit form-control" id="q_<%= i %>" style="display: none;">
+                                    </div>
+                                    <div class="dynamic-form-value-entry">
+                                        <% var option_symbol = {'R': '&#9673;', 'C': '&#9635;', 'S': '&#9661;', 'I': '&#9776;'}
+                                        if(dt.input_type != 'I'){
+                                        if(dt.options.length > 0){
+                                            var j = 1
+                                            dt.options.forEach(odt => { %>
+                                            <div class="form-group row">
+                                                <div class="col-md-1 op-key"><span><%- option_symbol[dt.input_type] %></span></div>
+                                                <div class="col-md-9">
+                                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)"><%= odt.option_name != '' ? odt.option_name : 'Entry Option' %></h6>
+                                                    <input type="text" value="<%= odt.option_name != '' ? odt.option_name : '' %>" name="q_s_<%= i %>" class="edit form-control" id="q_s_<%= j %>" style="display: none;">
+                                                </div>
+                                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '<%= option_symbol[dt.input_type] %>')"><i class="icofont icofont-plus text-success"></i></div>
+                                            </div>
+                                            <% j++ })
+                                        }else{ %>
+                                            <div class="form-group row">
+                                                <div class="col-md-1 op-key"><span>&#9673;</span></div>
+                                                <div class="col-md-9">
+                                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                                                    <input type="text" value="" name="q_s_<%= i %>" class="edit form-control" id="q_s_1" style="display: none;">
+                                                </div>
+                                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
+                                            </div>
+                                        <% }}else{ %>
+                                            <div class="form-group">
+                                                <input class="form-control" placeholder="User Input" type="text" disabled="true">
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select class="form-select dynamic-option" name="option_<%= i %>" onchange="dynamicOptionChange(this)" card-id="card-1">
+                                            <option value="radio" <%= dt.input_type == 'R' ? 'selected' : '' %>>&#9673; | Radio</option>
+                                            <option value="check" <%= dt.input_type == 'C' ? 'selected' : '' %>>&#9635; | Checkbox</option>
+                                            <option value="drop" <%= dt.input_type == 'S' ? 'selected' : '' %>>&#9661; | Select Dropdown</option>
+                                            <!-- <option value="slider">&#127898; | Range Slider</option> -->
+                                            <option value="short_text" <%= dt.input_type == 'I' ? 'selected' : '' %>>&#9776; | Short Answer</option>
+                                        </select>
+                                        <input type="hidden" name="cards" value="<%= i %>">
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="card-footer p-2">
+                                <div class="btn-card-footer">
+                                    <!-- <button class=""></button> -->
+                                    <!-- <div class="vl"></div> -->
+                                    
+                                    <!-- <div class="vl"></div>
+                                    <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
+                                    <div class="vl"></div>
+                                    <div class="m-r-10">
+                                        <span onclick="editLabel(this)"><%= dt.sequence > 0 ? dt.sequence : 'Sequence' %></span>
+                                        <input type="text" value="<%= dt.sequence > 0 ? dt.sequence : '' %>" name="s_<%= i %>" class="edit form-control" id="s_<%= i %>" style="display: none;">
+                                    </div>
+                                    <div class="vl"></div>
+                                    <div class="media m-r-10">
+                                        <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
+                                        <div class="media-body text-end icon-state switch-outline">
+                                            <label class="switch">
+                                                <input type="checkbox" id="gri_flag" <%= dt.is_parent != 'Y' ? '' : 'checked' %> onchange="checkChange(this)">
+                                                <span class="switch-state bg-primary"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="is-parent" style="display: <%= dt.is_parent != 'Y' ? 'flex' : 'none' %>;">
+                                        <div class="vl"></div>
+                                        <div class="m-r-10">
+                                            <span onclick="editLabel(this)"><%= dt.parent_id > 0 ? dt.parent_id : 'Parent Sequence' %></span>
+                                            <input type="text" value="<%= dt.parent_id > 0 ? dt.parent_id : '' %>" name="p_c_<%= i %>" class="edit form-control" id="p_c_<%= i %>" style="display: none;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hover-centainer">
+                                <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
+                                <hr>
+                                <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
+                            </div>
+                        </div>
+                    <% i++ })
+                }else{ %>
                 <div class="card w-75 entry-card" id="card-1">
                     <div class="card-body b-l-success border-3">
                       <div class="row">
@@ -110,13 +246,14 @@
                           </div>
                           <div class="col-md-4">
                             <div class="form-group">
-                                <select class="form-select dynamic-option" onchange="dynamicOptionChange(this)" card-id="card-1">
+                                <select class="form-select dynamic-option" name="option_1" onchange="dynamicOptionChange(this)" card-id="card-1">
                                     <option value="radio">&#9673; | Radio</option>
                                     <option value="check">&#9635; | Checkbox</option>
                                     <option value="drop">&#9661; | Select Dropdown</option>
-                                    <option value="slider">&#127898; | Range Slider</option>
+                                    <!-- <option value="slider">&#127898; | Range Slider</option> -->
                                     <option value="short_text">&#9776; | Short Answer</option>
                                 </select>
+                                <input type="hidden" name="cards" value="1">
                             </div>
                           </div>
                       </div>
@@ -124,10 +261,10 @@
                     <div class="card-footer p-2">
                         <div class="btn-card-footer">
                             <!-- <button class=""></button> -->
-                            <div class="vl"></div>
-                            <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10" type="button" title="Build your logic"> <span class="m-r-5">&#402;</span> Build Logic</button>
-                            <div class="vl"></div>
-                            <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a>
+                            <!-- <div class="vl"></div> -->
+                            
+                            <!-- <div class="vl"></div>
+                            <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
                             <div class="vl"></div>
                             <div class="m-r-10">
                                 <span onclick="editLabel(this)">Sequence</span>
@@ -152,7 +289,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="hover-centainer">
+                        <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
+                        <hr>
+                        <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
+                    </div>
                 </div>
+                <% } %>
             </div>
           </div>
         </div>
@@ -220,7 +363,15 @@
         $(`#${card_id} .dynamic-form-value-entry`).empty()
         // var selected_text = 
         // var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
-        createOptions(card_id, symbol[0].key)
+        if(['radio', 'check', 'drop'].includes($(e).val())){
+            createOptions(card_id, symbol[0].key)
+        }else{
+            $(`#${card_id} .dynamic-form-value-entry`).append(`
+            <div class="form-group">
+                <input class="form-control" placeholder="User Input" type="text" disabled="true">
+            </div>
+            `)
+        }
     }
 
     function createOptions(card_id, key, minus = false){
@@ -250,25 +401,35 @@
                             <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
                             <input type="text" value="" name="q_${tot_card + 1}" class="edit form-control" id="q_${tot_card + 1}" style="display: none;">
                         </div>
-                        <div class="dynamic-form-value-entry"></div>
+                        <div class="dynamic-form-value-entry">
+                            <div class="form-group row">
+                                <div class="col-md-1 op-key"><span>&#9673;</span></div>
+                                <div class="col-md-9">
+                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                                    <input type="text" value="" name="q_s_${tot_card + 1}" class="edit form-control" id="q_s_${tot_card + 1}" style="display: none;">
+                                </div>
+                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
+                            </div>
+                        </div>
                         </div>
                         <div class="col-md-4">
                         <div class="form-group">
-                            <select class="form-select dynamic-option" onchange="dynamicOptionChange(this)" card-id="card-${tot_card + 1}">
+                            <select class="form-select dynamic-option" name="option_${tot_card + 1}" onchange="dynamicOptionChange(this)" card-id="card-${tot_card + 1}">
                                 <option value="radio">&#9673; | Radio</option>
                                 <option value="check">&#9635; | Checkbox</option>
                                 <option value="drop">&#9661; | Select Dropdown</option>
-                                <option value="slider">&#127898; | Range Slider</option>
                                 <option value="short_text">&#9776; | Short Answer</option>
                             </select>
+                            <input type="hidden" name="cards" value="${tot_card + 1}">
                         </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer p-2">
                     <div class="btn-card-footer">
-                        <div class="vl"></div>
-                        <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a>
+                        <!-- <div class="vl"></div> -->
+                        <!-- <div class="vl"></div>
+                        <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
                         <div class="vl"></div>
                         <div class="m-r-10">
                             <span onclick="editLabel(this)">Sequence</span>
@@ -292,6 +453,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="hover-centainer">
+                    <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
+                    <hr>
+                    <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
                 </div>
             </div>
         `)
