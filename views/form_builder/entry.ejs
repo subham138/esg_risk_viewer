@@ -109,23 +109,36 @@
             <div class="d-flex justify-content-center flex-column" id="add-card">
                 <div class="card w-75">
                     <div class="card-body b-l-success border-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select" name="scope_id" required>
+                                    <option>Select Scope</option>
+                                    <% scope.forEach(dt => {
+                                        var _selected = ''
+                                        if(dt.id == scope_id) _selected = 'selected'
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-select" name="sec_id" required>
+                                    <option>Select Calculator Section Type</option>
+                                    <% sec_list.forEach(dt => {
+                                        var _selected = ''
+                                        if(dt.id == sec_id) _selected = 'selected'
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
                       <div class="row">
                           <div class="col-md-8">
                             <div class="form-group mb-0">
                                 <h5 class="label-view" onclick="editLabel(this)"><%= q_header != '' ? q_header : 'Entry Heading' %></h5>
                                 <input type="text" value="<%= q_header != '' ? q_header : '' %>" name="header" class="edit form-control" id="header" style="display: none;">
                             </div>
-                          </div>
-                          <div class="col-md-4">
-                            <select class="form-select" name="scope_id" required>
-                                <option>Select Scope</option>
-                                <% scope.forEach(dt => {
-                                    var _selected = ''
-                                    if(dt.id == scope_id) _selected = 'selected'
-                                    %>
-                                    <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
-                                <% }) %>
-                            </select>
                           </div>
                       </div>
                     </div>

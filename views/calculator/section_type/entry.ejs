@@ -1,0 +1,91 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3><%= sub_header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %></a></li>
+                    <li class="breadcrumb-item"><%= sub_header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/cal_sec_type_edit" class="needs-validation">
+                <div class="row g-3 py-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="scope_id">Scope</label>
+                        <select class="form-select" id="scope_id" name="scope_id" required="">
+                            <option selected="" value="">Select One</option>
+                            <option <%= id > 0 ? (data.length > 0 ? (data[0].scope_id == 1 ? 'selected' : '') : '') : '' %> value="1">Scope 1</option>
+                            <option <%= id > 0 ? (data.length > 0 ? (data[0].scope_id == 2 ? 'selected' : '') : '') : '' %> value="2">Scope 2</option>
+                            <option <%= id > 0 ? (data.length > 0 ? (data[0].scope_id == 3 ? 'selected' : '') : '') : '' %> value="3">Scope 3</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="type_id">Type</label>
+                        <select class="form-select" id="type_id" name="type_id" required="">
+                            <option value="">Select Type</option>
+                            <% if(type_list.length > 0){
+                                type_list.forEach(dt => {
+                                    var _selected = ''
+                                    if(data.length > 0)
+                                        if(dt.id == data[0].type_id)
+                                            _selected = 'selected'
+                                %>
+                                    <option value="<%= dt.id %>" <%= _selected %>><%= dt.type %></option>
+                                <% })
+                            } %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="sec_name">Section</label>
+                        <input class="form-control" id="sec_name" name="sec_name" type="text" value="<%= id > 0 ? (data.length > 0 ? data[0].sec_name : '') : '' %>" required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <button class="btn btn-pill btn-outline-primary btn-air-primary" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#scope_id').on('change', function(){
+        $.ajax({
+            method:'POST',
+            url: '/get_calc_type_list',
+            data: {scope: $(this).val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#type_id').empty();
+                $('#type_id').append($('<option>', {value: '', text: 'Select Type'}));
+                if(res.suc > 0 && res.msg.length > 0){
+                    $.each(res.msg, function (i, item) {
+                        $('#type_id').append($('<option>', {value: item.id, text: item.type}));
+                    });
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+</script>
+
+<%- include('../../templates/footer.ejs') %>
