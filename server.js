@@ -94,7 +94,8 @@ app.get("/", (req, res) => {
   if (user) {
     res.redirect("/dashboard");
   } else {
-    res.redirect("/login");
+    res.render('landing_page/landing')
+    // res.redirect("/login");
   }
 });
 
