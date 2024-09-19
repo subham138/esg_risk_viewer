@@ -42,7 +42,8 @@
     .is-parent{
         display: flex;
         justify-content: center;
-        flex-direction: row;
+        flex-direction: row;    
+        align-items: center;
     }
     .delete-btn-form{
         font-size: 20px;
@@ -111,7 +112,7 @@
                     <div class="card-body b-l-success border-3">
                         <div class="row">
                             <div class="col-md-6">
-                                <select class="form-select" name="scope_id" required>
+                                <select class="form-select" id="scope_id" name="scope_id" required>
                                     <option>Select Scope</option>
                                     <% scope.forEach(dt => {
                                         var _selected = ''
@@ -122,7 +123,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <select class="form-select" name="sec_id" required>
+                                <select class="form-select" id="sec_id" name="sec_id" required>
                                     <option>Select Calculator Section Type</option>
                                     <% sec_list.forEach(dt => {
                                         var _selected = ''
@@ -133,10 +134,10 @@
                                 </select>
                             </div>
                         </div>
-                      <div class="row">
-                          <div class="col-md-8">
+                      <div class="row mt-4">
+                          <div class="col-md-12">
                             <div class="form-group mb-0">
-                                <h5 class="label-view" onclick="editLabel(this)"><%= q_header != '' ? q_header : 'Entry Heading' %></h5>
+                                <h5 class="label-view" onclick="editLabel(this)"><%= q_header != '' ? q_header : 'Entry Sub-Heading' %></h5>
                                 <input type="text" value="<%= q_header != '' ? q_header : '' %>" name="header" class="edit form-control" id="header" style="display: none;">
                             </div>
                           </div>
@@ -149,54 +150,60 @@
                         <div class="card w-75 entry-card" id="card-<%= i %>">
                             <div class="card-body b-l-success border-3">
                               <div class="row">
-                                  <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="form-group mb-0">
-                                        <h6 class="label-view" onclick="editLabel(this)"><%= dt.input_label != '' ? dt.input_label : 'Entry Question' %></h6>
-                                        <input type="text" value="<%= dt.input_label != '' ? dt.input_label : '' %>" name="q_<%= i %>" class="edit form-control" id="q_<%= i %>" style="display: none;">
+                                        <h6 class="label-view" onclick="editLabel(this)"><%= dt.input_label != '' ? dt.input_label : 'Entry Test' %></h6>
+                                        <input type="text" value="<%= dt.input_label != '' ? dt.input_label : '' %>" name="hed_<%= i %>" class="edit form-control" id="hed_<%= i %>" style="display: none;">
                                     </div>
-                                    <div class="dynamic-form-value-entry">
-                                        <% var option_symbol = {'R': '&#9673;', 'C': '&#9635;', 'S': '&#9661;', 'I': '&#9776;'}
-                                        if(dt.input_type != 'I'){
-                                        if(dt.options.length > 0){
-                                            var j = 1
-                                            dt.options.forEach(odt => { %>
-                                            <div class="form-group row">
-                                                <div class="col-md-1 op-key"><span><%- option_symbol[dt.input_type] %></span></div>
-                                                <div class="col-md-9">
-                                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)"><%= odt.option_name != '' ? odt.option_name : 'Entry Option' %></h6>
-                                                    <input type="text" value="<%= odt.option_name != '' ? odt.option_name : '' %>" name="q_s_<%= i %>" class="edit form-control" id="q_s_<%= j %>" style="display: none;">
-                                                </div>
-                                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '<%= option_symbol[dt.input_type] %>')"><i class="icofont icofont-plus text-success"></i></div>
+                                </div>
+                                <div class="col-md-8">
+                                <div class="form-group mb-0">
+                                    <h6 class="label-view" onclick="editLabel(this)"><%= dt.input_label != '' ? dt.input_label : 'Entry Question' %></h6>
+                                    <input type="text" value="<%= dt.input_label != '' ? dt.input_label : '' %>" name="q_<%= i %>" class="edit form-control" id="q_<%= i %>" style="display: none;">
+                                </div>
+                                <div class="dynamic-form-value-entry">
+                                    <% var option_symbol = {'R': '&#9673;', 'C': '&#9635;', 'S': '&#9661;', 'I': '&#9776;'}
+                                    if(dt.input_type != 'I'){
+                                    if(dt.options.length > 0){
+                                        var j = 1
+                                        dt.options.forEach(odt => { %>
+                                        <div class="form-group row">
+                                            <div class="col-md-1 op-key"><span><%- option_symbol[dt.input_type] %></span></div>
+                                            <div class="col-md-9">
+                                                <h6 class="label-view" class="input-label" onclick="editLabel(this)"><%= odt.option_name != '' ? odt.option_name : 'Entry Option' %></h6>
+                                                <input type="text" value="<%= odt.option_name != '' ? odt.option_name : '' %>" name="q_s_<%= i %>" class="edit form-control" id="q_s_<%= j %>" style="display: none;">
                                             </div>
-                                            <% j++ })
-                                        }else{ %>
-                                            <div class="form-group row">
-                                                <div class="col-md-1 op-key"><span>&#9673;</span></div>
-                                                <div class="col-md-9">
-                                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
-                                                    <input type="text" value="" name="q_s_<%= i %>" class="edit form-control" id="q_s_1" style="display: none;">
-                                                </div>
-                                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
+                                            <div class="col-md-1 op-btn-p" onclick="addOption(this, '<%= option_symbol[dt.input_type] %>')"><i class="icofont icofont-plus text-success"></i></div>
+                                        </div>
+                                        <% j++ })
+                                    }else{ %>
+                                        <div class="form-group row">
+                                            <div class="col-md-1 op-key"><span>&#9673;</span></div>
+                                            <div class="col-md-9">
+                                                <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                                                <input type="text" value="" name="q_s_<%= i %>" class="edit form-control" id="q_s_1" style="display: none;">
                                             </div>
-                                        <% }}else{ %>
-                                            <div class="form-group">
-                                                <input class="form-control" placeholder="User Input" type="text" disabled="true">
-                                            </div>
-                                        <% } %>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-4">
-                                    <div class="form-group">
-                                        <select class="form-select dynamic-option" name="option_<%= i %>" onchange="dynamicOptionChange(this)" card-id="card-1">
-                                            <option value="radio" <%= dt.input_type == 'R' ? 'selected' : '' %>>&#9673; | Radio</option>
-                                            <option value="check" <%= dt.input_type == 'C' ? 'selected' : '' %>>&#9635; | Checkbox</option>
-                                            <option value="drop" <%= dt.input_type == 'S' ? 'selected' : '' %>>&#9661; | Select Dropdown</option>
-                                            <!-- <option value="slider">&#127898; | Range Slider</option> -->
-                                            <option value="short_text" <%= dt.input_type == 'I' ? 'selected' : '' %>>&#9776; | Short Answer</option>
-                                        </select>
-                                        <input type="hidden" name="cards" value="<%= i %>">
-                                    </div>
-                                  </div>
+                                            <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
+                                        </div>
+                                    <% }}else{ %>
+                                        <div class="form-group">
+                                            <input class="form-control" placeholder="User Input" type="text" disabled="true">
+                                        </div>
+                                    <% } %>
+                                </div>
+                                </div>
+                                <div class="col-md-4">
+                                <div class="form-group">
+                                    <select class="form-select dynamic-option" name="option_<%= i %>" onchange="dynamicOptionChange(this)" card-id="card-1">
+                                        <option value="radio" <%= dt.input_type == 'R' ? 'selected' : '' %>>&#9673; | Radio</option>
+                                        <option value="check" <%= dt.input_type == 'C' ? 'selected' : '' %>>&#9635; | Checkbox</option>
+                                        <option value="drop" <%= dt.input_type == 'S' ? 'selected' : '' %>>&#9661; | Select Dropdown</option>
+                                        <!-- <option value="slider">&#127898; | Range Slider</option> -->
+                                        <option value="short_text" <%= dt.input_type == 'I' ? 'selected' : '' %>>&#9776; | Short Answer</option>
+                                    </select>
+                                    <input type="hidden" name="cards" value="<%= i %>">
+                                </div>
+                                </div>
                               </div>
                             </div>
                             <div class="card-footer p-2">
@@ -241,6 +248,12 @@
                 <div class="card w-75 entry-card" id="card-1">
                     <div class="card-body b-l-success border-3">
                       <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group mb-0">
+                                <h6 class="label-view" onclick="editLabel(this)">Entry Test</h6>
+                                <input type="text" value="" name="hed_1" class="edit mb-2 form-control" id="hed_1" style="display: none;">
+                            </div>
+                        </div>
                           <div class="col-md-8">
                             <div class="form-group mb-0">
                                 <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
@@ -298,6 +311,23 @@
                                 <div class="m-r-10">
                                     <span onclick="editLabel(this)">Parent Sequence</span>
                                     <input type="text" value="" name="p_c_1" class="edit form-control" id="p_c_1" style="display: none;">
+                                </div>
+                                <div class="vl"></div>
+                                <div class="media m-r-10">
+                                    <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
+                                    <div class="media-body text-end icon-state switch-outline">
+                                        <label class="switch">
+                                            <input type="checkbox" id="gr_sub_flag" checked onchange="checkSubChange(this)">
+                                            <span class="switch-state bg-primary"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="is-parent" style="display: none;">
+                                    <div class="vl"></div>
+                                    <div class="m-r-10">
+                                        <span onclick="editLabel(this)">Sub-Parent Sequence</span>
+                                        <input type="text" value="" name="p_s_c_1" class="edit form-control" id="p_s_c_1" style="display: none;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -365,6 +395,18 @@
             $(elm[0]).parent().closest('.btn-card-footer').children().closest('.is-parent').hide()
         }
         
+    }
+
+    function checkSubChange(e){
+        var elm = $(e);
+        console.log($(elm[0]).attr('checked'));
+        if($(elm[0]).attr('checked')){
+            $(elm[0]).removeAttr('checked')
+            $(elm[0]).closest('.is-parent').children().show()
+        }else{
+            $(elm[0]).attr('checked', true)
+            $(elm[0]).closest('.is-parent').children().hide()
+        }
     }
     
     function dynamicOptionChange(e){
@@ -475,6 +517,32 @@
             </div>
         `)
     }
+
+    $('#scope_id').on('change', function(){
+        $.ajax({
+            method:'POST',
+            url: '/get_calc_sec_type_list_ajax',
+            data: {scope: $(this).val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#sec_id').empty();
+                $('#sec_id').append($('<option>', {value: '', text: 'Select Type'}));
+                if(res.suc > 0 && res.msg.length > 0){
+                    $.each(res.msg, function (i, item) {
+                        $('#sec_id').append($('<option>', {value: item.id, text: item.sec_name}));
+                    });
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
 </script>
 
 <%- include('../templates/footer.ejs') %>

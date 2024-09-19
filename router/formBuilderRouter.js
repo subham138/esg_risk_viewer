@@ -77,6 +77,12 @@ const getCalTypeList = (id = 0, scope = 0) => {
     })
 }
 
+FBRouter.post('/get_calc_sec_type_list_ajax', async (req, res) => {
+    var dt = req.body
+    var data = await db_Select('*', 'md_cal_sec_type', `scope_id=${dt.scope}`, null)
+    res.send(data)
+})
+
 FBRouter.get('/form_builder', async (req, res) => {
     var data = await db_Select('DISTINCT scope_id', 'md_cal_form_builder', null, 'ORDER BY scope_id asc')
     var scope_list = SCOPE_LIST
