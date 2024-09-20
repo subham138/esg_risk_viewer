@@ -1,0 +1,118 @@
+<%- include('../templates/header.ejs') %>
+<style>
+    .quest-list ol {
+        counter-reset: item;
+        padding:2px;
+    }
+    .quest-list ol li {
+        display: table;
+        counter-increment: item;
+        margin-top:2px;
+    }
+    .quest-list ol li:before {
+        content: counters(item, ".") ". ";
+        display: table-cell;
+        padding-right: 10px;
+    }
+    .quest-list ol li li:before {
+        content: counters(item, ".") " ";
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header b-t-success border-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Form Logic Builder</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10"
+                                        type="button" title="Build your logic"> <span class="m-r-5">&#402;</span>
+                                        Build Logic</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10"
+                                        type="submit" title="Build your logic"> <span class="m-r-5"><i
+                                                class="icofont icofont-save"></i></span>Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header b-b-success border-3">
+                            <h6>Build Logic</h6>
+                        </div>
+                        <div class="card-body">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header b-b-success border-3">
+                            <h6>Preview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p>
+                                        <label for="">Scope: </label> <span><%= q_data ? q_data.q_scope : '' %></span>
+                                    </p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>
+                                        <label for="">Section: </label> <span><%= q_data ? q_data.q_sec_name : '' %></span>
+                                    </p>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>
+                                        <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
+                                    </p>
+                                </div>
+                                <% console.log(q_data.q_data.length, 'LALALA') %>
+                                <div class="col-md-12 quest-list">
+                                    <% if(q_data.q_data.length > 0){
+                                        var parent_q = q_data.q_data.find(qdt => qdt.is_parent == 'Y')
+                                        console.log(parent_q, 'HEHE')
+                                        parent_q.forEach(dt => { %>
+                                            <ol start="1" type="1">
+                                                <li>
+                                                    <dl>
+                                                        <dt><%= dt.input_label %></dt>
+                                                        <% if(dt.options){
+                                                            dt.options.forEach(odt => { %>
+                                                                <dd>- <%= odt.option_name %></dd>
+                                                            <% }) %>
+                                                        <% } %>
+                                                    </dl>
+                                                    <% var sub_parent_q = q_data.q_data.find(qdt => qdt.is_sub_parent == 'Y' && qdt.is_parent == 'N')
+                                                    if(sub_parent_q.length > 0){
+                                                        sub_parent_q.forEach(subdt => { %>
+                                                            <ol>
+                                                                <li><%= subdt.input_label %></li>
+                                                            </ol>
+                                                        <% })
+                                                    } %>
+                                                </li>
+                                            </ol>
+                                    <% })
+                                    } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../templates/footer.ejs') %>

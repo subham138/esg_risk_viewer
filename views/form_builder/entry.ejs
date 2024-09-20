@@ -454,6 +454,12 @@
             <div class="card w-75 entry-card" id="card-${tot_card + 1}">
                 <div class="card-body b-l-success border-3">
                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group mb-0">
+                                <h6 class="label-view" onclick="editLabel(this)">Entry Heading/Sub-heading</h6>
+                                <input type="text" value="" name="hed_${tot_card + 1}" class="edit mb-2 form-control" id="hed_${tot_card + 1}" style="display: none;">
+                            </div>
+                        </div>
                         <div class="col-md-8">
                         <div class="form-group mb-0">
                             <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
