@@ -250,7 +250,7 @@
                       <div class="row">
                         <div class="col-md-12">
                             <div class="form-group mb-0">
-                                <h6 class="label-view" onclick="editLabel(this)">Entry Test</h6>
+                                <h6 class="label-view" onclick="editLabel(this)">Entry Heading/Sub-heading</h6>
                                 <input type="text" value="" name="hed_1" class="edit mb-2 form-control" id="hed_1" style="display: none;">
                             </div>
                         </div>
@@ -278,6 +278,9 @@
                                     <option value="drop">&#9661; | Select Dropdown</option>
                                     <!-- <option value="slider">&#127898; | Range Slider</option> -->
                                     <option value="short_text">&#9776; | Short Answer</option>
+                                    <option value="short_text">Activity</option>
+                                    <option value="short_text">Emission Type</option>
+                                    <option value="short_text">Unit</option>
                                 </select>
                                 <input type="hidden" name="cards" value="1">
                             </div>
@@ -301,7 +304,7 @@
                                 <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
                                 <div class="media-body text-end icon-state switch-outline">
                                     <label class="switch">
-                                        <input type="checkbox" id="gri_flag" checked onchange="checkChange(this)">
+                                        <input type="checkbox" id="gri_flag_1" checked onchange="checkChange(this)">
                                         <span class="switch-state bg-primary"></span>
                                     </label>
                                 </div>
@@ -317,7 +320,7 @@
                                     <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
                                     <div class="media-body text-end icon-state switch-outline">
                                         <label class="switch">
-                                            <input type="checkbox" id="gr_sub_flag" checked onchange="checkSubChange(this)">
+                                            <input type="checkbox" id="gr_sub_flag_1" checked onchange="checkSubChange(this)">
                                             <span class="switch-state bg-primary"></span>
                                         </label>
                                     </div>
@@ -399,13 +402,13 @@
 
     function checkSubChange(e){
         var elm = $(e);
-        console.log($(elm[0]).attr('checked'));
+        console.log($(elm[0]).closest('.is-sub-parent').children());
         if($(elm[0]).attr('checked')){
             $(elm[0]).removeAttr('checked')
-            $(elm[0]).closest('.is-parent').children().show()
+            $(elm[0]).parent().closest('.media').next().show()
         }else{
             $(elm[0]).attr('checked', true)
-            $(elm[0]).closest('.is-parent').children().hide()
+            $(elm[0]).parent().closest('.media').next().hide()
         }
     }
     
@@ -495,7 +498,7 @@
                             <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
                             <div class="media-body text-end icon-state switch-outline">
                                 <label class="switch">
-                                    <input type="checkbox" id="gri_flag" checked onchange="checkChange(this)">
+                                    <input type="checkbox" id="gri_flag_${tot_card + 1}" checked onchange="checkChange(this)">
                                     <span class="switch-state bg-primary"></span>
                                 </label>
                             </div>
@@ -505,6 +508,23 @@
                             <div class="m-r-10">
                                 <span onclick="editLabel(this)">Parent Sequence</span>
                                 <input type="text" value="" name="p_c_${tot_card + 1}" class="edit form-control" id="p_c_${tot_card + 1}" style="display: none;">
+                            </div>
+                            <div class="vl"></div>
+                            <div class="media m-r-10">
+                                <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
+                                <div class="media-body text-end icon-state switch-outline">
+                                    <label class="switch">
+                                        <input type="checkbox" id="gr_sub_flag_${tot_card + 1}" checked onchange="checkSubChange(this)">
+                                        <span class="switch-state bg-primary"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="is-parent" style="display: none;">
+                                <div class="vl"></div>
+                                <div class="m-r-10">
+                                    <span onclick="editLabel(this)">Sub-Parent Sequence</span>
+                                    <input type="text" value="" name="p_s_c_${tot_card + 1}" class="edit form-control" id="p_s_c_${tot_card + 1}" style="display: none;">
+                                </div>
                             </div>
                         </div>
                     </div>
