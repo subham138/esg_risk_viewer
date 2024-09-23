@@ -51,16 +51,6 @@
                             <h6>Build Logic</h6>
                         </div>
                         <div class="card-body">
-                            
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header b-b-success border-3">
-                            <h6>Preview</h6>
-                        </div>
-                        <div class="card-body">
                             <div class="row">
                                 <div class="col-md-12">
                                     <p>
@@ -77,37 +67,43 @@
                                         <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
                                     </p>
                                 </div>
-                                <% console.log(q_data.q_data.length, 'LALALA') %>
-                                <div class="col-md-12 quest-list">
-                                    <% if(q_data.q_data.length > 0){
-                                        var parent_q = q_data.q_data.find(qdt => qdt.is_parent == 'Y')
-                                        console.log(parent_q, 'HEHE')
-                                        parent_q.forEach(dt => { %>
-                                            <ol start="1" type="1">
-                                                <li>
-                                                    <dl>
-                                                        <dt><%= dt.input_label %></dt>
-                                                        <% if(dt.options){
-                                                            dt.options.forEach(odt => { %>
-                                                                <dd>- <%= odt.option_name %></dd>
-                                                            <% }) %>
-                                                        <% } %>
-                                                    </dl>
-                                                    <% var sub_parent_q = q_data.q_data.find(qdt => qdt.is_sub_parent == 'Y' && qdt.is_parent == 'N')
-                                                    if(sub_parent_q.length > 0){
-                                                        sub_parent_q.forEach(subdt => { %>
-                                                            <ol>
-                                                                <li><%= subdt.input_label %></li>
-                                                            </ol>
-                                                        <% })
-                                                    } %>
-                                                </li>
-                                            </ol>
-                                    <% })
-                                    } %>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <select class="form-select dynamic-option" name="option_1" onchange="dynamicOptionChange(this)" card-id="card-1">
+                                            <option value="radio">Select Question</option>
+                                            <% if(q_data){
+                                                q_data.q_data.forEach(dt => { %>
+                                                    <option value="<%= dt.id %>"><%= `${dt.is_parent=='Y' ? `${dt.sequence}.` : (dt.parent_id > 0 && dt.is_sub_parent == 'Y' ? `${dt.parent_id}.${dt.sequence}` : (dt.sub_parent_id > 0 && dt.is_parent == 'N' && dt.is_sub_parent == 'N' ? `${dt.parent_id}.${dt.sub_parent_id}.${dt.sequence}` : `${dt.sequence}.`))}` %> &nbsp;<%= dt.input_label %></option>
+                                                <% })
+                                            } %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <select class="form-select dynamic-option" name="option_1" onchange="dynamicOptionChange(this)" card-id="card-1">
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" value="Y">
+                                    <label class="btn" for="option5">Checked</label>
+
+                                    <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" value="N">
+                                    <label class="btn" for="option6">Radio</label>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header b-b-success border-3">
+                            <h6>Preview</h6>
+                        </div>
+                        <%- include('preview_question', {q_data}) %>
                     </div>
                 </div>
             </div>

@@ -122,7 +122,7 @@ FBRouter.post('/form_builder_post', async (req, res) => {
     resDt = {};
     
     if(data.cards.length > 0){
-        var scopeDt = await db_Select('count(*) tot_row', 'md_cal_form_builder', `scope_id = ${data.scope_id}`, null)
+        var scopeDt = await db_Select('count(*) tot_row', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id}`, null)
         if(scopeDt.suc > 0){
             if(scopeDt.msg[0].tot_row > 0){
                 await db_Delete('md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id}`)
@@ -137,13 +137,13 @@ FBRouter.post('/form_builder_post', async (req, res) => {
         resDt = await db_Insert(table_name, fields, values, whr, flag)
         for(let id of data.cards){
             var table_name = 'md_cal_form_builder',
-            fields = `(scope_id, sec_id, input_type, input_label, sequence, is_parent, parent_id, is_sub_parent, sub_parent_id, created_by, created_dt)`,
-            values = `(${data.scope_id}, ${data.sec_id}, '${INPUT_TYPE_LIST[data[`option_${id}`]]}', '${data[`q_${id}`].split("'").join("\\'")}', '${data[`s_${id}`]}', '${data[`p_c_${id}`] > 0 ? 'N': 'Y'}', '${data[`p_c_${id}`] > 0 ? data[`p_c_${id}`] : 0}', '${data[`p_s_c_${id}`] > 0 ? 'N': 'Y'}', '${data[`p_s_c_${id}`] > 0 ? data[`p_s_c_${id}`] : 0}', '${user_name}', '${datetime}')`,
+            fields = `(scope_id, sec_id, input_type, input_label, input_heading, sequence, is_parent, parent_id, is_sub_parent, sub_parent_id, created_by, created_dt)`,
+            values = `(${data.scope_id}, ${data.sec_id}, '${INPUT_TYPE_LIST[data[`option_${id}`]]}', '${data[`q_${id}`].split("'").join("\\'")}', '${data[`hed_${id}`]}', '${data[`s_${id}`]}', '${data[`p_c_${id}`] > 0 ? 'N': (data[`p_s_c_${id}`] > 0 ? 'N' : 'Y')}', '${data[`p_c_${id}`] > 0 ? data[`p_c_${id}`] : 0}', '${data[`p_s_c_${id}`] > 0 ? 'N': 'Y'}', '${data[`p_s_c_${id}`] > 0 ? data[`p_s_c_${id}`] : 0}', '${user_name}', '${datetime}')`,
             whr= null,
             flag = 0;
             resDt = await db_Insert(table_name, fields, values, whr, flag)
             var builder_id = resDt.suc > 0 ? resDt.lastId.insertId : 0
-            if(INPUT_TYPE_LIST[data[`option_${id}`]] != 'I' && builder_id > 0){
+            if(['radio', 'check', 'drop'].includes(data[`option_${id}`]) && builder_id > 0){
                 for(let opt of data[`q_s_${id}`]){
                     var table_name = 'md_cal_form_builder_option',
                     fields = `(scope_id, sec_id, builder_id, option_name, created_by, created_dt)`,

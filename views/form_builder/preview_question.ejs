@@ -1,0 +1,77 @@
+<div class="card-body">
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                <label for="">Scope: </label> <span><%= q_data ? q_data.q_scope : '' %></span>
+            </p>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <label for="">Section: </label> <span><%= q_data ? q_data.q_sec_name : '' %></span>
+            </p>
+        </div>
+        <div class="col-md-12">
+            <p>
+                <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
+            </p>
+        </div>
+        <div class="col-md-12 quest-list">
+            <% if(q_data.q_data.length > 0){
+                var parent_q = q_data.q_data.filter(qdt => qdt.is_parent == 'Y')
+                parent_q.forEach(dt => { %>
+                    <ol start="1" type="1">
+                        <li>
+                            <dl>
+                                <dt><%= dt.input_label %></dt>
+                                <% if(dt.options){
+                                    dt.options.forEach(odt => { %>
+                                        <dd>- <%= odt.option_name %></dd>
+                                    <% }) %>
+                                <% } %>
+                            </dl>
+                            <% var sub_parent_q = q_data.q_data.filter(qdt => qdt.is_sub_parent == 'Y' && qdt.is_parent == 'N')
+                            if(sub_parent_q.length > 0){
+                                sub_parent_q.forEach(subdt => { %>
+                                    <ol>
+                                        <li>
+                                            <dl>
+                                                <dt><%= subdt.input_label %></dt>
+                                                <% if(subdt.input_type != 'I'){
+                                                    if(subdt.options){
+                                                        subdt.options.forEach(subop => { %>
+                                                            <dd>- <%= subop.option_name %></dd>
+                                                        <% })
+                                                    }
+                                                } %>
+                                            </dl>
+                                            <% var sub_child_q = q_data.q_data.filter(qdt => qdt.is_sub_parent == 'N' && qdt.is_parent == 'N')
+                                                if(sub_child_q.length > 0){ %>
+                                                    <ol>
+                                                        <% sub_child_q.forEach(chiDt => { %>
+                                                            <li>
+                                                                <dl>
+                                                                    <dt><%= chiDt.input_label %></dt>
+                                                                    <% if(chiDt.input_type != 'I'){
+                                                                        if(chiDt.options){
+                                                                            chiDt.options.forEach(chiOp => { %>
+                                                                                <dd>- <%= chiOp.option_name %></dd>
+                                                                            <% })
+                                                                        }
+                                                                    } %>
+                                                                </dl>
+                                                            </li>
+                                                        <% }) %>
+                                                    </ol>
+                                                <% }
+                                            %>
+                                        </li>
+                                    </ol>
+                                <% })
+                            } %>
+                        </li>
+                    </ol>
+            <% })
+            } %>
+        </div>
+    </div>
+</div>

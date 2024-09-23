@@ -276,11 +276,10 @@
                                     <option value="radio">&#9673; | Radio</option>
                                     <option value="check">&#9635; | Checkbox</option>
                                     <option value="drop">&#9661; | Select Dropdown</option>
-                                    <!-- <option value="slider">&#127898; | Range Slider</option> -->
                                     <option value="short_text">&#9776; | Short Answer</option>
-                                    <option value="short_text">Activity</option>
-                                    <option value="short_text">Emission Type</option>
-                                    <option value="short_text">Unit</option>
+                                    <option value="act">&#128270; | Activity</option>
+                                    <option value="emi_type">&#127787; | Emission Type</option>
+                                    <option value="emi_unit">&#128207; | Unit</option>
                                 </select>
                                 <input type="hidden" name="cards" value="1">
                             </div>
@@ -350,7 +349,7 @@
   <!-- Container-fluid Ends-->
 
 <script>
-    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'},{key: '&#9776;', label: 'short_text'}]
+    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'},{key: '&#9776;', label: 'short_text'},{key: '&#128270;', label:'act'},{key: '&#127787;', label:'emi_type'},{key: '&#128207;', label:'emi_unit'}]
     function editLabel(elm) {
         var jelm = $(elm);
         var htmlElm = jelm[0];
@@ -423,8 +422,16 @@
         // var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
         if(['radio', 'check', 'drop'].includes($(e).val())){
             createOptions(card_id, symbol[0].key)
-        }else{
+        }
+        if(['act', 'emi_type', 'emi_unit'].includes($(e).val())){
             $(`#${card_id} .dynamic-form-value-entry`).append(`
+            <div class="form-group">
+                <select class="form-select" disabled><option selected>User Select</option></select>
+            </div>
+            `)
+        }
+        if(['short_text'].includes($(e).val())){
+           $(`#${card_id} .dynamic-form-value-entry`).append(`
             <div class="form-group">
                 <input class="form-control" placeholder="User Input" type="text" disabled="true">
             </div>
@@ -483,6 +490,9 @@
                                 <option value="check">&#9635; | Checkbox</option>
                                 <option value="drop">&#9661; | Select Dropdown</option>
                                 <option value="short_text">&#9776; | Short Answer</option>
+                                <option value="act">&#128270; | Activity</option>
+                                <option value="emi_type">&#127787; | Emission Type</option>
+                                <option value="emi_unit">&#128207; | Unit</option>
                             </select>
                             <input type="hidden" name="cards" value="${tot_card + 1}">
                         </div>
