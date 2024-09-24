@@ -17,6 +17,21 @@
     .quest-list ol li li:before {
         content: counters(item, ".") " ";
     }
+    .cust-q-opt{
+        border: 1px solid rgb(150 150 150 / 30%);
+    }
+    .cust-q-opt:hover{
+        background: #b8b8b8;
+        color: #262b36;
+    }
+    input[name=option_action]:checked+label.cust-q-opt {
+        background: #e3e3e3;
+        color: #262b36;
+    }
+    input[name=option_action]:checked+label.cust-q-opt:hover {
+        background: #b8b8b8;
+        color: #262b36;
+    }
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -88,11 +103,18 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" value="Y">
-                                    <label class="btn" for="option5">Checked</label>
+                                    <input type="radio" class="btn-check" name="option_action" id="nxt_1" autocomplete="off" value="N">
+                                    <label class="btn cust-q-opt" for="nxt_1">Next</label>
 
-                                    <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off" value="N">
-                                    <label class="btn" for="option6">Radio</label>
+                                    <input type="radio" class="btn-check" name="option_action" id="die_1" autocomplete="off" value="D">
+                                    <label class="btn cust-q-opt" for="die_1">Die</label>
+                                </div>
+                                <div class="col-md-12">
+                                    <input type="radio" class="btn-check" name="option_action" id="nxt_1" autocomplete="off" value="N">
+                                    <label class="btn cust-q-opt" for="nxt_1">Next</label>
+
+                                    <input type="radio" class="btn-check" name="option_action" id="die_1" autocomplete="off" value="D">
+                                    <label class="btn cust-q-opt" for="die_1">Die</label>
                                 </div>
                             </div>
                         </div>
