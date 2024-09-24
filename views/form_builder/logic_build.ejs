@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <select class="form-select dynamic-option" name="option_1" onchange="dynamicOptionChange(this)" card-id="card-1">
+                                        <select class="form-select dynamic-option" name="quest_1" onchange="dynamicQuestSelect(this)" card-id="card-1">
                                             <option value="radio">Select Question</option>
                                             <% if(q_data){
                                                 q_data.q_data.forEach(dt => { %>
@@ -94,27 +94,27 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <!-- <div class="col-md-12">
                                     <div class="form-group">
                                         <select class="form-select dynamic-option" name="option_1" onchange="dynamicOptionChange(this)" card-id="card-1">
                                             <option value="Yes">Yes</option>
                                             <option value="No">No</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="radio" class="btn-check" name="option_action" id="nxt_1" autocomplete="off" value="N">
+                                </div> -->
+                                <div class="col-md-12 action-div" style="display: none;">
+                                    <input type="radio" class="btn-check option_action" name="option_action_1" id="nxt_1" autocomplete="off" value="N">
                                     <label class="btn cust-q-opt" for="nxt_1">Next</label>
 
-                                    <input type="radio" class="btn-check" name="option_action" id="die_1" autocomplete="off" value="D">
-                                    <label class="btn cust-q-opt" for="die_1">Die</label>
+                                    <input type="radio" class="btn-check option_action" name="option_action_1" id="die_1" autocomplete="off" value="D">
+                                    <label class="btn cust-q-opt" for="die_1">End</label>
                                 </div>
-                                <div class="col-md-12">
-                                    <input type="radio" class="btn-check" name="option_action" id="nxt_1" autocomplete="off" value="N">
-                                    <label class="btn cust-q-opt" for="nxt_1">Next</label>
+                                <div class="col-md-12 quest_action" style="display: none;">
+                                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_1" id="quest_1" autocomplete="off" value="D">
+                                    <label class="btn cust-q-opt" for="die_1">Select Question</label>
 
-                                    <input type="radio" class="btn-check" name="option_action" id="die_1" autocomplete="off" value="D">
-                                    <label class="btn cust-q-opt" for="die_1">Die</label>
+                                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_1" id="inp_1" autocomplete="off" value="N">
+                                    <label class="btn cust-q-opt" for="nxt_1">Emission User Input</label>
                                 </div>
                             </div>
                         </div>
@@ -132,5 +132,58 @@
         </div>
     </div>
 </div>
+
+<script>
+    var quest_master_data = <%- JSON.stringify(q_data.q_data) %>;
+    function dynamicQuestSelect(e){
+        var filterData = quest_master_data.filter(dt => dt.id == $(e).val())
+        if(filterData.length > 0){
+            switch (filterData[0].input_type) {
+                case "R":
+                    var optionEle = ''
+                    
+                    if(filterData[0].options){
+                        for(let opdt of filterData[0].options){
+                            optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
+                        }
+                    }
+                    
+                    var questOption = $(`
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <select class="form-select dynamic-option" name="option_1" onchange="selectOpt(this)">
+                                    <option value="">Select Option</option>
+                                    ${optionEle}
+                                </select>
+                            </div>
+                        </div>
+                    `)
+                    questOption.insertAfter($(e).parent().parent())
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+        // console.log(filterData);
+    }
+
+    function selectOpt(e){
+        if($(e).val() != '')
+        $(e).parent().parent().next().show()
+        else
+        $(e).parent().parent().next().hide()
+    }
+
+    $('input.option_action').change(function(){
+        console.log($(this).val());
+        var checkedVal = $(this).val()
+        if(checkedVal == 'N'){
+            $(this).parent().closest('.action-div').next().show()
+        }else{
+            $(this).parent().closest('.action-div').next().hide()
+        }
+    })
+</script>
 
 <%- include('../templates/footer.ejs') %>
