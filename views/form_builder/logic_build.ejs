@@ -24,11 +24,11 @@
         background: #b8b8b8;
         color: #262b36;
     }
-    input[name=option_action]:checked+label.cust-q-opt {
+    input[type=radio]:checked+label.cust-q-opt {
         background: #e3e3e3;
         color: #262b36;
     }
-    input[name=option_action]:checked+label.cust-q-opt:hover {
+    input[type=radio]:checked+label.cust-q-opt:hover {
         background: #b8b8b8;
         color: #262b36;
     }
@@ -82,9 +82,9 @@
                                         <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
                                     </p>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-12 mt-2 dyn-opt-div">
                                     <div class="form-group">
-                                        <select class="form-select dynamic-option" name="quest_1" onchange="dynamicQuestSelect(this)" card-id="card-1">
+                                        <select class="form-select dynamic-option" name="quest_list" onchange="dynamicQuestSelect(this)" card-id="card-1">
                                             <option value="radio">Select Question</option>
                                             <% if(q_data){
                                                 q_data.q_data.forEach(dt => { %>
@@ -93,28 +93,6 @@
                                             } %>
                                         </select>
                                     </div>
-                                </div>
-                                <!-- <div class="col-md-12">
-                                    <div class="form-group">
-                                        <select class="form-select dynamic-option" name="option_1" onchange="dynamicOptionChange(this)" card-id="card-1">
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
-                                    </div>
-                                </div> -->
-                                <div class="col-md-12 action-div" style="display: none;">
-                                    <input type="radio" class="btn-check option_action" name="option_action_1" id="nxt_1" autocomplete="off" value="N">
-                                    <label class="btn cust-q-opt" for="nxt_1">Next</label>
-
-                                    <input type="radio" class="btn-check option_action" name="option_action_1" id="die_1" autocomplete="off" value="D">
-                                    <label class="btn cust-q-opt" for="die_1">End</label>
-                                </div>
-                                <div class="col-md-12 quest_action" style="display: none;">
-                                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_1" id="quest_1" autocomplete="off" value="D">
-                                    <label class="btn cust-q-opt" for="die_1">Select Question</label>
-
-                                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_1" id="inp_1" autocomplete="off" value="N">
-                                    <label class="btn cust-q-opt" for="nxt_1">Emission User Input</label>
                                 </div>
                             </div>
                         </div>
@@ -135,9 +113,53 @@
 
 <script>
     var quest_master_data = <%- JSON.stringify(q_data.q_data) %>;
+    var cal_type = <%- JSON.stringify(cal_type) %>,
+    cal_act = <%- JSON.stringify(cal_act) %>,
+    cal_emi_type = <%- JSON.stringify(cal_emi_type) %>, cal_type_id = 0, cal_act_id = 0, cal_emi_type_id = 0;
+    function editLabel(elm) {
+        var jelm = $(elm);
+        var htmlElm = jelm[0];
+        $(htmlElm).hide();
+        $(htmlElm).siblings('.edit').show();
+        $(htmlElm).siblings('.edit').focus()
+        var initial_text = $(htmlElm).text();
+        $(htmlElm).siblings('.edit').focusout(function () {
+            var editedInput = $(htmlElm).siblings('.edit').val();
+            $(htmlElm).siblings('.edit').hide();
+            if (editedInput != '') {
+                $(htmlElm).show().text(editedInput);
+            }
+            else {
+                $(htmlElm).show().text(initial_text);
+            }
+        });
+    }
     function dynamicQuestSelect(e){
         var filterData = quest_master_data.filter(dt => dt.id == $(e).val())
+        if($(e).parent().parent().next().closest('.q-opt-dyn').length > 0){
+            $(e).parent().parent().next().closest('.q-opt-dyn').detach()
+            $(e).parent().parent().next().closest('.action-div').detach()
+            $(e).parent().parent().next().closest('.quest_action').detach()
+        }
         if(filterData.length > 0){
+            // var tot_row = $('.dynamic-option').length;
+            var tot_row = $(e).val();
+            var action_btn =
+                `<div class="col-md-12 action-div" style="display: none;">
+                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="nxt_${tot_row}" autocomplete="off" value="N" onchange="optActChange(this)">
+                    <label class="btn cust-q-opt" for="nxt_${tot_row}">Next</label>
+
+                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="die_${tot_row}" autocomplete="off" value="D" onchange="optActChange(this)">
+                    <label class="btn cust-q-opt" for="die_${tot_row}">End</label>
+                </div>`
+            var quest_btn = 
+                `<div class="col-md-12 quest_action" style="display: none;">
+                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="quest_${tot_row}" autocomplete="off" value="Q" onchange="nxtQstActChange(this)">
+                    <label class="btn cust-q-opt" for="quest_${tot_row}">Select Question</label>
+
+                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="inp_${tot_row}" autocomplete="off" value="E" onchange="nxtQstActChange(this)">
+                    <label class="btn cust-q-opt" for="inp_${tot_row}">Emission User Input</label>
+                </div>`
             switch (filterData[0].input_type) {
                 case "R":
                     var optionEle = ''
@@ -147,16 +169,36 @@
                             optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
                         }
                     }
+
+                    var optEleData = createDynOption(filterData[0].options, tot_row)
                     
                     var questOption = $(`
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <select class="form-select dynamic-option" name="option_1" onchange="selectOpt(this)">
-                                    <option value="">Select Option</option>
-                                    ${optionEle}
-                                </select>
-                            </div>
-                        </div>
+                        ${optEleData}
+                        ${action_btn}
+                        ${quest_btn}
+                    `)
+                    questOption.insertAfter($(e).parent().parent())
+                    
+                    break;
+                case "I":
+                    var optEleData = createDynInput()
+                    
+                    var questOption = $(`
+                        ${optEleData}
+                        ${action_btn}
+                        ${quest_btn}
+                    `)
+                    questOption.insertAfter($(e).parent().parent())
+                    $($(questOption)[2]).show()
+                    // console.log();
+                    break;
+                case "A":
+                    var optEleData = createDynEmiDt(cal_type, tot_row, 'A')
+                    
+                    var questOption = $(`
+                        ${optEleData}
+                        ${action_btn}
+                        ${quest_btn}
                     `)
                     questOption.insertAfter($(e).parent().parent())
                     break;
@@ -168,22 +210,137 @@
         // console.log(filterData);
     }
 
+    function createDynOption(options, tot_row){
+        var optionEle = ''
+                    
+        if(options){
+            for(let opdt of options){
+                optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
+            }
+        }
+        
+        var questOption = `
+            <div class="col-md-12 q-opt-dyn">
+                <div class="form-group">
+                    <select class="form-select dynamic-sel-opt" name="option_${tot_row}" onchange="selectOpt(this)">
+                        <option value="">Select Option</option>
+                        ${optionEle}
+                    </select>
+                </div>
+            </div>
+        `
+        return questOption;
+    }
+    function createDynEmiDt(options, tot_row, emi_flag){
+        var optionEle = ''
+
+        if(emi_flag == 'A'){
+            for(let opdt of options){
+                optionEle = optionEle + `<option value="${opdt.id}">${opdt.type_name}</option>`
+            }
+        }
+        if(emi_flag == 'A')
+        // if(options){
+        //     for(let opdt of options){
+        //         optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
+        //     }
+        // }
+        
+        var questOption = `
+            <div class="col-md-12 q-opt-dyn">
+                <div class="form-group">
+                    <select class="form-select dynamic-sel-opt" name="option_${tot_row}" onchange="selectOpt(this)">
+                        <option value="">Select Option</option>
+                        ${optionEle}
+                    </select>
+                </div>
+            </div>
+        `
+        return questOption;
+    }
+    function createDynInput(options, tot_row){
+        var questOption = `
+            <div class="col-md-12 q-opt-dyn">
+                <div class="form-group">
+                    <input class="form-control" placeholder="User Input" type="text" disabled="true">
+                </div>
+            </div>
+        `
+        return questOption;
+    }
+
     function selectOpt(e){
         if($(e).val() != '')
         $(e).parent().parent().next().show()
         else
         $(e).parent().parent().next().hide()
     }
-
-    $('input.option_action').change(function(){
-        console.log($(this).val());
-        var checkedVal = $(this).val()
+    function optActChange(e){
+        console.log($(e).val());
+        var checkedVal = $(e).val()
         if(checkedVal == 'N'){
-            $(this).parent().closest('.action-div').next().show()
+            $(e).parent().closest('.action-div').next().show()
         }else{
-            $(this).parent().closest('.action-div').next().hide()
+            $(e).parent().closest('.action-div').next().hide()
+            $(e).parent().closest('.action-div').next().nextAll().detach()
         }
-    })
+    }
+
+    function nxtQstActChange(e){
+        // console.log($(e).val());
+        var checkedVal = $(e).val()
+        var tot_row = $('.dynamic-option').length;
+        if($(e).parent().next().find('hr')){
+            $(e).parent().nextAll().detach()
+        }
+        if(checkedVal == 'Q'){
+            var sel_dt = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').clone()
+            $(sel_dt).children().find('.dynamic-option').removeAttr('name')
+            $(sel_dt).children().find('.dynamic-option').attr('name', `quest_list`)
+            
+            sel_dt.insertAfter($('<div class="col-md-12"><hr></div>').insertAfter($(e).parent()))
+        }else{
+            var opt_val = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').children().find('.dynamic-option').val()
+            console.log(opt_val);
+            
+            var sel_dt = $(`
+                <div class="col-md-12 emi-table">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="form-group mb-0">
+                                        <p class="label-view" onclick="editLabel(this)">Value(s)</p>
+                                        <input type="text" value="Value(s)" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_1" style="display: none;">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="form-group mb-0">
+                                        <p class="label-view" onclick="editLabel(this)">Emission factor</p>
+                                        <input type="text" value="Emission factor" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_2" style="display: none;">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="form-group mb-0">
+                                        <p class="label-view" onclick="editLabel(this)">tCO2e</p>
+                                        <input type="text" value="tCO2e" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_3" style="display: none;">
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `)
+            sel_dt.insertAfter($(e).parent())
+        }
+    }
 </script>
 
 <%- include('../templates/footer.ejs') %>

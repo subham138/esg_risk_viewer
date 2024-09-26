@@ -1,3 +1,4 @@
+const { getCalEmiType, getCalAct } = require('../modules/CalculatorModule');
 const { get_form_builder_list } = require('../modules/FormBuilderModule');
 
 const FBRouter = require('express').Router(),
@@ -160,7 +161,10 @@ FBRouter.post('/form_builder_post', async (req, res) => {
 
 FBRouter.get('/build_logic', async (req, res) => {
     var q_data = await get_form_builder_list(1, 1)
-    res.render('form_builder/logic_build', {q_data: q_data.suc > 0 ? q_data.msg : false})
+    var cal_type = await getCalTypeList(0),
+    cal_act = await getCalAct(0, 0),
+    cal_emi_type = await getCalEmiType(0, 0, 0);
+    res.render('form_builder/logic_build', {q_data: q_data.suc > 0 ? q_data.msg : false, cal_type: cal_type.suc > 0 ? cal_type.msg : [], cal_act: cal_act.suc > 0 ? cal_act.msg : [], cal_emi_type: cal_emi_type.suc > 0 ? cal_emi_type.msg : []})
 })
 
 module.exports = {FBRouter}
