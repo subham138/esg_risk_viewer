@@ -1,4 +1,4 @@
-const { getCalEmiType, getCalAct } = require('../modules/CalculatorModule');
+const { getCalEmiType, getCalAct, getUnitList } = require('../modules/CalculatorModule');
 const { get_form_builder_list } = require('../modules/FormBuilderModule');
 
 const FBRouter = require('express').Router(),
@@ -163,8 +163,25 @@ FBRouter.get('/build_logic', async (req, res) => {
     var q_data = await get_form_builder_list(1, 1)
     var cal_type = await getCalTypeList(0),
     cal_act = await getCalAct(0, 0),
-    cal_emi_type = await getCalEmiType(0, 0, 0);
-    res.render('form_builder/logic_build', {q_data: q_data.suc > 0 ? q_data.msg : false, cal_type: cal_type.suc > 0 ? cal_type.msg : [], cal_act: cal_act.suc > 0 ? cal_act.msg : [], cal_emi_type: cal_emi_type.suc > 0 ? cal_emi_type.msg : []})
+    cal_emi_type = await getCalEmiType(0, 0, 0),
+    cal_unit = await getUnitList(0);
+    res.render('form_builder/logic_build', {q_data: q_data.suc > 0 ? q_data.msg : false, cal_type: cal_type.suc > 0 ? cal_type.msg : [], cal_act: cal_act.suc > 0 ? cal_act.msg : [], cal_emi_type: cal_emi_type.suc > 0 ? cal_emi_type.msg : [], cal_unit: cal_unit.suc > 0 ? cal_unit.msg : []})
+})
+
+FBRouter.post('/build_logic', async (req, res) => {
+    var data = req.body, res_dt, user = req.session.user.user_name, datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+    
+    if(data.quest_list.length > 0){
+        for(let dt of data.quest_list){
+            var table_name = 'md_cal_form_build_logic',
+            fields = `(quest_id, option_val, action_val, next_qst_action_val, emi_head_opt1, emi_head_opt2, emi_head_opt3, created_by, created_dt)`,
+            values = `(${dt}, '${data[`option_${dt}`]}', '${data[`option_action_${dt}`]}', '${data[`next_quest_act_${dt}`]}', ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][0]}"` : NULL}, ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][1]}"` : NULL}, ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][2]}"` : NULL}, '${user}', '${datetime}')`,
+            whr = null,
+            flag = 0;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        }
+    }
+    res.send(res_dt)
 })
 
 module.exports = {FBRouter}

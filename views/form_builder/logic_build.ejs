@@ -65,37 +65,41 @@
                         <div class="card-header b-b-success border-3">
                             <h6>Build Logic</h6>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <p>
-                                        <label for="">Scope: </label> <span><%= q_data ? q_data.q_scope : '' %></span>
-                                    </p>
-                                </div>
-                                <div class="col-md-12">
-                                    <p>
-                                        <label for="">Section: </label> <span><%= q_data ? q_data.q_sec_name : '' %></span>
-                                    </p>
-                                </div>
-                                <div class="col-md-12">
-                                    <p>
-                                        <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
-                                    </p>
-                                </div>
-                                <div class="col-md-12 mt-2 dyn-opt-div">
-                                    <div class="form-group">
-                                        <select class="form-select dynamic-option" name="quest_list" onchange="dynamicQuestSelect(this)" card-id="card-1">
-                                            <option value="radio">Select Question</option>
-                                            <% if(q_data){
-                                                q_data.q_data.forEach(dt => { %>
-                                                    <option value="<%= dt.id %>"><%= `${dt.is_parent=='Y' ? `${dt.sequence}.` : (dt.parent_id > 0 && dt.is_sub_parent == 'Y' ? `${dt.parent_id}.${dt.sequence}` : (dt.sub_parent_id > 0 && dt.is_parent == 'N' && dt.is_sub_parent == 'N' ? `${dt.parent_id}.${dt.sub_parent_id}.${dt.sequence}` : `${dt.sequence}.`))}` %> &nbsp;<%= dt.input_label %></option>
-                                                <% })
-                                            } %>
-                                        </select>
+                        <form action="/build_logic" method="post">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p>
+                                            <label for="">Scope: </label> <span><%= q_data ? q_data.q_scope : '' %></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <p>
+                                            <label for="">Section: </label> <span><%= q_data ? q_data.q_sec_name : '' %></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <p>
+                                            <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-12 mt-2 dyn-opt-div">
+                                        <div class="form-group">
+                                            <select class="form-select dynamic-option" name="quest_list" onchange="dynamicQuestSelect(this)" card-id="card-1">
+                                                <option value="radio">Select Question</option>
+                                                <% if(q_data){
+                                                    q_data.q_data.forEach(dt => { %>
+                                                        <option value="<%= dt.id %>"><%= `${dt.is_parent=='Y' ? `${dt.sequence}.` : (dt.parent_id > 0 && dt.is_sub_parent == 'Y' ? `${dt.parent_id}.${dt.sequence}` : (dt.sub_parent_id > 0 && dt.is_parent == 'N' && dt.is_sub_parent == 'N' ? `${dt.parent_id}.${dt.sub_parent_id}.${dt.sequence}` : `${dt.sequence}.`))}` %> &nbsp;<%= dt.input_label %></option>
+                                                    <% })
+                                                } %>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <input type="hidden" name="scope_id" value="1">
+                            <input type="hidden" name="sec_type_id" value="1">
+                        </form>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -115,7 +119,8 @@
     var quest_master_data = <%- JSON.stringify(q_data.q_data) %>;
     var cal_type = <%- JSON.stringify(cal_type) %>,
     cal_act = <%- JSON.stringify(cal_act) %>,
-    cal_emi_type = <%- JSON.stringify(cal_emi_type) %>, cal_type_id = 0, cal_act_id = 0, cal_emi_type_id = 0;
+    cal_emi_type = <%- JSON.stringify(cal_emi_type) %>,
+    cal_unit = <%- JSON.stringify(cal_unit) %>, cal_type_id = 0;
     function editLabel(elm) {
         var jelm = $(elm);
         var htmlElm = jelm[0];
@@ -202,6 +207,40 @@
                     `)
                     questOption.insertAfter($(e).parent().parent())
                     break;
+                case "E":
+                    var optEleData = createDynEmiDt(cal_emi_type, tot_row, 'E')
+                    
+                    var questOption = $(`
+                        ${optEleData}
+                        ${action_btn}
+                        ${quest_btn}
+                    `)
+                    questOption.insertAfter($(e).parent().parent())
+                    $($(questOption)[2]).show()
+                    break;
+                case "U":
+                    var optEleData = createDynEmiDt(cal_unit, tot_row, 'U')
+                    
+                    var questOption = $(`
+                        ${optEleData}
+                        ${action_btn}
+                        ${quest_btn}
+                    `)
+                    questOption.insertAfter($(e).parent().parent())
+                    $($(questOption)[2]).show()
+                    break;
+                case "Y":
+                    var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Queterly'}, {id: 'M', name: 'Monthly'}]
+                    var optEleData = createDynEmiDt(year_opt, tot_row, 'Y')
+                    
+                    var questOption = $(`
+                        ${optEleData}
+                        ${action_btn}
+                        ${quest_btn}
+                    `)
+                    questOption.insertAfter($(e).parent().parent())
+                    $($(questOption)[2]).show()
+                    break;
             
                 default:
                     break;
@@ -232,25 +271,45 @@
         return questOption;
     }
     function createDynEmiDt(options, tot_row, emi_flag){
-        var optionEle = ''
+        var optionEle = '', firstOptTxt = emi_flag == 'A' ? 'Select Type' : (emi_flag == 'E' ? 'User Select Emmition Type' : (emi_flag == 'U' ? 'User Select Unit' : 'User Select Calculation Mode'));
 
         if(emi_flag == 'A'){
             for(let opdt of options){
                 optionEle = optionEle + `<option value="${opdt.id}">${opdt.type_name}</option>`
             }
         }
-        if(emi_flag == 'A')
-        // if(options){
-        //     for(let opdt of options){
-        //         optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
-        //     }
-        // }
+
+        if(emi_flag == 'E'){
+            var emiOptionList = options.filter(dt => dt.type_id == cal_type_id)
+            // console.log(emiOptionList);
+            const uniqueEmiNames = [...new Set(emiOptionList.map(item => item.emi_name))];
+            // console.log(uniqueEmiNames);
+            
+            
+            if(uniqueEmiNames.length > 0){
+                for(let opdt of uniqueEmiNames){
+                    optionEle = optionEle + `<option value="${opdt}">${opdt}</option>`
+                }
+            }
+        }
+
+        if(emi_flag == 'U'){
+            for(let opdt of options){
+                optionEle = optionEle + `<option value="${opdt.id}">${opdt.unit_name}</option>`
+            }
+        }
+
+        if(emi_flag == 'Y'){
+            for(let opdt of options){
+                optionEle = optionEle + `<option value="${opdt.id}">${opdt.name}</option>`
+            }
+        }
         
         var questOption = `
             <div class="col-md-12 q-opt-dyn">
                 <div class="form-group">
-                    <select class="form-select dynamic-sel-opt" name="option_${tot_row}" onchange="selectOpt(this)">
-                        <option value="">Select Option</option>
+                    <select class="form-select dynamic-sel-opt" name="option_${tot_row}" onchange="selectEmiOpt(this)" ${emi_flag != "A" ? ' readonly style="background-color: #e8ecef;"' : ''}>
+                        <option value="">${firstOptTxt}</option>
                         ${optionEle}
                     </select>
                 </div>
@@ -275,6 +334,33 @@
         else
         $(e).parent().parent().next().hide()
     }
+    function selectEmiOpt(e){
+        cal_type_id = $(e).val()
+        var optionList = '', optId = $(e).attr('name').split('_')[1];
+        if(cal_type_id > 0){
+            var typeOpt = cal_act.filter(dt => dt.type_id == cal_type_id)
+            // console.log(typeOpt, cal_act);
+            
+            if(typeOpt.length > 0){
+                for(let dt of typeOpt){
+                    optionList = optionList + `<option value="${dt.id}">${dt.act_name}</option>`
+                }
+            }
+
+            var questOption = $(`
+            <div class="col-md-12">
+                <div class="form-group">
+                    <select class="form-select dynamic-sel-opt" readonly style="background-color: #e8ecef;">
+                        <option value="">User Select Activity Option</option>
+                        ${optionList}
+                    </select>
+                </div>
+            </div>
+            `);
+            questOption.insertAfter($(e).parent().parent())
+            $(e).parent().parent().next().next().show()
+        }
+    }
     function optActChange(e){
         console.log($(e).val());
         var checkedVal = $(e).val()
@@ -294,7 +380,7 @@
             $(e).parent().nextAll().detach()
         }
         if(checkedVal == 'Q'){
-            var sel_dt = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').clone()
+            var sel_dt = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').length > 0 ? $(e).parent().prev().prev().prev().closest('.dyn-opt-div').clone() : $(e).parent().prev().prev().prev().prev().closest('.dyn-opt-div').clone()
             $(sel_dt).children().find('.dynamic-option').removeAttr('name')
             $(sel_dt).children().find('.dynamic-option').attr('name', `quest_list`)
             
@@ -336,6 +422,9 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="col-md-12 mt-3">
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             `)
             sel_dt.insertAfter($(e).parent())
