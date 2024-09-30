@@ -37,6 +37,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Scope</th>
+                                            <th>Type Name</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -47,9 +48,14 @@
                                         <tr>
                                             <td><%= i %></td>
                                             <td>Scope <%= dt.scope_id %></td>
-                                            <td><a href="/form_builder_edit?scope=<%= dt.scope_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                                                <i class="icofont icofont-ui-edit"></i> Edit
-                                            </a>
+                                            <td><%= dt.sec_name %></td>
+                                            <td>
+                                                <a href="/form_builder_edit?scope=<%= dt.scope_id %>&type_id=<%= dt.sec_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                                    <i class="icofont icofont-ui-edit"></i> Edit
+                                                </a>
+                                                <a href="/build_logic?scope=<%= dt.scope_id %>&type_id=<%= dt.sec_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Build Logic">
+                                                    <i class="icofont icofont-ui-edit"></i> Build Logic
+                                                </a>
                                             <!-- <a href="/cal_type_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
                                                 <i class="icofont icofont-ui-delete"></i> Delete
                                             </a> -->

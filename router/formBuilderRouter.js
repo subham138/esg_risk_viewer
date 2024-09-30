@@ -87,7 +87,7 @@ FBRouter.post('/get_calc_sec_type_list_ajax', async (req, res) => {
 })
 
 FBRouter.get('/form_builder', async (req, res) => {
-    var data = await db_Select('DISTINCT scope_id', 'md_cal_form_builder', null, 'ORDER BY scope_id asc')
+    var data = await db_Select('DISTINCT a.scope_id, a.sec_id, b.sec_name', 'md_cal_form_builder a, md_cal_sec_type b', `a.sec_id=b.id`, 'ORDER BY a.scope_id asc')
     var scope_list = SCOPE_LIST
     res.render('form_builder/view', {header: "Calculator Form Builder", scope_dt: data, scope_list})
 })
@@ -95,8 +95,8 @@ FBRouter.get('/form_builder', async (req, res) => {
 FBRouter.get('/form_builder_edit', async (req, res) => {
     var scope_dt = SCOPE_LIST, data = req.query, qr_dt = {}, q_header = '',
     sec_list = await db_Select('scope_id, type_id, sec_name', 'md_cal_sec_type', data.scope > 0 ? `scope_id = ${data.scope}` : null, null);
-    if(data.scope > 0){
-        var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope}`, 'ORDER BY id asc')
+    if(data.scope > 0 && data.type_id > 0){
+        var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id}`, 'ORDER BY id asc')
         if(resDt.suc > 0){
             var headerFilterDt = resDt.msg.filter(dt => dt.header_flag != 'N')
             var questFilterData = resDt.msg.filter(dt => dt.header_flag != 'Y')
@@ -105,7 +105,7 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
             q_header = headerFilterDt[0].input_label
             for(let dt of questFilterData){
                 if(dt.input_type != 'I'){
-                    var opDt = await db_Select('id, builder_id, option_name', 'md_cal_form_builder_option', `builder_id=${dt.id}`, 'ORDER BY id asc')
+                    var opDt = await db_Select('id, builder_id, option_name', 'md_cal_form_builder_option', `builder_id=${dt.id} AND sec_id=${data.type_id}`, 'ORDER BY id asc')
                     dt['options'] = opDt.suc > 0 ? opDt.msg : []
                 }
             }
@@ -156,17 +156,18 @@ FBRouter.post('/form_builder_post', async (req, res) => {
             }
         }
     }
-    res.send(resDt)
+    res.redirect(`/build_logic?scope=${data.scope_id}&type_id=${data.sec_id}`)
 })
 
 FBRouter.get('/build_logic', async (req, res) => {
-    var q_data = await get_form_builder_list(1, 1)
-    var q_logic_data = await get_form_logic_list(1, 1)
+    var data = req.query
+    var q_data = await get_form_builder_list(data.scope, data.type_id)
+    var q_logic_data = await get_form_logic_list(data.scope, data.type_id)
     var cal_type = await getCalTypeList(0),
     cal_act = await getCalAct(0, 0),
     cal_emi_type = await getCalEmiType(0, 0, 0),
     cal_unit = await getUnitList(0);
-    res.render('form_builder/logic_build', {q_data: q_data.suc > 0 ? q_data.msg : false, cal_type: cal_type.suc > 0 ? cal_type.msg : [], cal_act: cal_act.suc > 0 ? cal_act.msg : [], cal_emi_type: cal_emi_type.suc > 0 ? cal_emi_type.msg : [], cal_unit: cal_unit.suc > 0 ? cal_unit.msg : [], logic_dt: q_logic_data.suc > 0 ? q_logic_data.msg : []})
+    res.render('form_builder/logic_build', {q_data: q_data.suc > 0 ? q_data.msg : false, cal_type: cal_type.suc > 0 ? cal_type.msg : [], cal_act: cal_act.suc > 0 ? cal_act.msg : [], cal_emi_type: cal_emi_type.suc > 0 ? cal_emi_type.msg : [], cal_unit: cal_unit.suc > 0 ? cal_unit.msg : [], logic_dt: q_logic_data.suc > 0 ? q_logic_data.msg : [], scope_id: data.scope, type_id: data.type_id})
 })
 
 FBRouter.post('/build_logic', async (req, res) => {
@@ -174,15 +175,17 @@ FBRouter.post('/build_logic', async (req, res) => {
     
     if(data.quest_list.length > 0){
         for(let dt of data.quest_list){
+            var chkDt = await db_Select('id', 'md_cal_form_build_logic', `quest_id=${dt} AND option_val='${data[`option_${dt}`]}'`, null)
+
             var table_name = 'md_cal_form_build_logic',
-            fields = `(quest_id, option_val, action_val, next_qst_action_val, emi_head_opt1, emi_head_opt2, emi_head_opt3, created_by, created_dt)`,
+            fields = chkDt.suc > 0 && chkDt.msg.length > 0 ? `option_val = '${data[`option_${dt}`]}', action_val = '${data[`option_action_${dt}`]}', next_qst_action_val = '${data[`next_quest_act_${dt}`]}', emi_head_opt1 = ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][0]}"` : 'NULL'}, emi_head_opt2 = ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][1]}"` : 'NULL'}, emi_head_opt3 = ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][2]}"` : 'NULL'}, modified_by = '${user}', modified_dt = '${datetime}'` : `(quest_id, option_val, action_val, next_qst_action_val, emi_head_opt1, emi_head_opt2, emi_head_opt3, created_by, created_dt)`,
             values = `(${dt}, '${data[`option_${dt}`]}', '${data[`option_action_${dt}`]}', '${data[`next_quest_act_${dt}`]}', ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][0]}"` : 'NULL'}, ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][1]}"` : 'NULL'}, ${data[`em_hed_${dt}`] ? `"${data[`em_hed_${dt}`][2]}"` : 'NULL'}, '${user}', '${datetime}')`,
-            whr = null,
-            flag = 0;
+            whr = chkDt.suc > 0 && chkDt.msg.length > 0 ? `quest_id=${dt} AND option_val='${data[`option_${dt}`]}'` : null,
+            flag = chkDt.suc > 0 && chkDt.msg.length > 0 ? 1 : 0;
             res_dt = await db_Insert(table_name, fields, values, whr, flag)
         }
     }
-    res.send(res_dt)
+    res.redirect('/form_builder')
 })
 
 module.exports = {FBRouter}

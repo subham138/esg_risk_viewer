@@ -42,7 +42,7 @@
                         <div class="col-md-6">
                             <h5>Form Logic Builder</h5>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
                                     <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10"
@@ -55,7 +55,7 @@
                                                 class="icofont icofont-save"></i></span>Save</button>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -85,8 +85,8 @@
                                     </div>
                                     <div class="col-md-12 mt-2 dyn-opt-div">
                                         <div class="form-group">
-                                            <select class="form-select dynamic-option" name="quest_list" onchange="dynamicQuestSelect(this)" card-id="card-1">
-                                                <option value="radio">Select Question</option>
+                                            <select class="form-select dynamic-option" name="quest_list" id="quest_list_1" onchange="dynamicQuestSelect(this)" card-id="card-1">
+                                                <option value="">Select Question</option>
                                                 <% if(q_data){
                                                     q_data.q_data.forEach(dt => {
                                                         var _selected = ''
@@ -104,8 +104,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="scope_id" value="1">
-                            <input type="hidden" name="sec_type_id" value="1">
+                            <input type="hidden" name="scope_id" value="<%= scope_id %>">
+                            <input type="hidden" name="type_id" value="<%= type_id %>">
                         </form>
                     </div>
                 </div>
@@ -146,15 +146,15 @@
             }
         });
     }
-    function dynamicQuestSelect(e){
+    function dynamicQuestSelect(e){        
         var filterData = quest_master_data.filter(dt => dt.id == $(e).val())
         if($(e).parent().parent().next().closest('.q-opt-dyn').length > 0){
             $(e).parent().parent().next().closest('.q-opt-dyn').detach()
             $(e).parent().parent().next().closest('.action-div').detach()
             $(e).parent().parent().next().closest('.quest_action').detach()
         }
+        var op_act_next = '', op_act_end = '', op_act_sel_quest = '', op_act_sel_emi = '', op_chk_val_sel = '', has_logic_dt = false;
         if(filterData.length > 0){
-            var op_act_next = '', op_act_end = '', op_act_sel_quest = '', op_act_sel_emi = '', op_chk_val_sel = '', has_logic_dt = false;
             if(cal_logic_data.length > 0){
                 has_logic_dt = true;
                 var logic_filter_dt = cal_logic_data.filter(dt => dt.id == $(e).val())
@@ -164,8 +164,10 @@
                    op_act_sel_quest = logic_filter_dt[0].next_qst_action_val == 'Q' ? 'checked' : ''
                    op_act_sel_emi = logic_filter_dt[0].next_qst_action_val == 'E' ? 'checked' : ''
                    op_chk_val_sel = logic_filter_dt[0].option_val ? logic_filter_dt[0].option_val : ''
+                   console.log(logic_filter_dt);
                 }
             }
+            
             // var tot_row = $('.dynamic-option').length;
             var tot_row = $(e).val();
             var action_btn =
@@ -184,34 +186,44 @@
                     <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="inp_${tot_row}" autocomplete="off" value="E" ${op_act_sel_emi} onchange="nxtQstActChange(this)">
                     <label class="btn cust-q-opt" for="inp_${tot_row}">Emission User Input</label>
                 </div>`
+            // console.log(filterData[0].input_type, '--------------');
+            
             switch (filterData[0].input_type) {
                 case "R":
                     var optionEle = ''
                     
                     if(filterData[0].options){
                         for(let opdt of filterData[0].options){
-                            var _sel = false
+                            var _sel = ''
                             if(has_logic_dt){
                                 if(op_chk_val_sel == opdt.option_name){
-                                    _sel = true
+                                    _sel = 'selected'
                                 }
                             }
-                            console.log(_sel, 'SEL OPT');
-                            
-                            optionEle = optionEle + `<option value="${opdt.option_name}" selected=${_sel}>${opdt.option_name}</option>`
-                            console.log(optionEle, 'OPTION');
-                            
+                            optionEle = optionEle + `<option value="${opdt.option_name}" ${_sel}>${opdt.option_name}</option>`
                         }
                     }
 
-                    var optEleData = createDynOption(filterData[0].options, tot_row)
+                    var optEleData = createDynOption(optionEle, tot_row)
                     
                     var questOption = $(`
                         ${optEleData}
                         ${action_btn}
                         ${quest_btn}
                     `)
-                    questOption.insertAfter($(e).parent().parent())
+                    
+                    if(has_logic_dt){
+                        setTimeout(() => {
+                            $(e).parent().parent().after(questOption)
+                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
+                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
+                            
+                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
+                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
+                        }, 100);
+                    }else{
+                        $(e).parent().parent().after(questOption)
+                    }
                     
                     break;
                 case "S":
@@ -231,6 +243,7 @@
                         ${quest_btn}
                     `)
                     questOption.insertAfter($(e).parent().parent())
+                    $($(questOption)[0])
                     $($(questOption)[2]).show()
                     
                     break;
@@ -262,19 +275,45 @@
                         ${action_btn}
                         ${quest_btn}
                     `)
-                    questOption.insertAfter($(e).parent().parent())
-                    $($(questOption)[2]).show()
+                    // questOption.insertAfter($(e).parent().parent())
+                    // $($(questOption)[2]).show()
                     // console.log();
+                    if(has_logic_dt){
+                        setTimeout(() => {
+                            $(e).parent().parent().after(questOption)
+                            $($(questOption)[2]).show()
+                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
+                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
+                            
+                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
+                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
+                        }, 100);
+                    }else{
+                        $(e).parent().parent().after(questOption)
+                        $($(questOption)[2]).show()
+                    }
                     break;
                 case "A":
-                    var optEleData = createDynEmiDt(cal_type, tot_row, 'A')
+                    var optEleData = createDynEmiDt(cal_type, tot_row, 'A', has_logic_dt, op_chk_val_sel)
                     
                     var questOption = $(`
                         ${optEleData}
                         ${action_btn}
                         ${quest_btn}
                     `)
-                    questOption.insertAfter($(e).parent().parent())
+                    if(has_logic_dt){
+                        setTimeout(() => {
+                            $(e).parent().parent().after(questOption)
+                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
+                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
+                            
+                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
+                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
+                        }, 100);
+                    }else{
+                        questOption.insertAfter($(e).parent().parent())
+                    }
+                    
                     break;
                 case "E":
                     var optEleData = createDynEmiDt(cal_emi_type, tot_row, 'E')
@@ -284,8 +323,21 @@
                         ${action_btn}
                         ${quest_btn}
                     `)
-                    questOption.insertAfter($(e).parent().parent())
-                    $($(questOption)[2]).show()
+
+                    if(has_logic_dt){
+                        setTimeout(() => {
+                            $(e).parent().parent().after(questOption)
+                            $($(questOption)[2]).show()
+                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
+                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
+                            
+                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
+                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
+                        }, 100);
+                    }else{
+                        questOption.insertAfter($(e).parent().parent())
+                        $($(questOption)[2]).show()
+                    }
                     break;
                 case "U":
                     var optEleData = createDynEmiDt(cal_unit, tot_row, 'U')
@@ -295,8 +347,22 @@
                         ${action_btn}
                         ${quest_btn}
                     `)
-                    questOption.insertAfter($(e).parent().parent())
-                    $($(questOption)[2]).show()
+
+                    if(has_logic_dt){
+                        setTimeout(() => {
+                            $(e).parent().parent().after(questOption)
+                            $($(questOption)[2]).show()
+                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
+                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
+                            
+                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
+                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
+                        }, 100);
+                    }else{
+                        questOption.insertAfter($(e).parent().parent())
+                        $($(questOption)[2]).show()
+                    }
+                    
                     break;
                 case "Y":
                     var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Queterly'}, {id: 'M', name: 'Monthly'}]
@@ -307,8 +373,22 @@
                         ${action_btn}
                         ${quest_btn}
                     `)
-                    questOption.insertAfter($(e).parent().parent())
-                    $($(questOption)[2]).show()
+
+                    if(has_logic_dt){
+                        setTimeout(() => {
+                            $(e).parent().parent().after(questOption)
+                            $($(questOption)[2]).show()
+                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
+                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
+                            
+                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
+                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
+                        }, 100);
+                    }else{
+                        questOption.insertAfter($(e).parent().parent())
+                        $($(questOption)[2]).show()
+                    }
+                    
                     break;
             
                 default:
@@ -321,30 +401,34 @@
     function createDynOption(options, tot_row, disabled=false){
         var optionEle = ''
                     
-        if(options){
-            for(let opdt of options){
-                optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
-            }
-        }
+        // if(options){
+        //     for(let opdt of options){
+        //         optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
+        //     }
+        // }
         
         var questOption = `
             <div class="col-md-12 q-opt-dyn">
                 <div class="form-group">
                     <select class="form-select dynamic-sel-opt" name="option_${tot_row}" onchange="selectOpt(this)" ${disabled ? `readonly style="background-color: #e8ecef;"` : ''}>
                         <option value="">Select Option</option>
-                        ${optionEle}
+                        ${options}
                     </select>
                 </div>
             </div>
         `
         return questOption;
     }
-    function createDynEmiDt(options, tot_row, emi_flag){
+    function createDynEmiDt(options, tot_row, emi_flag, has_logic_dt = false, op_chk_val_sel = 0){
         var optionEle = '', firstOptTxt = emi_flag == 'A' ? 'Select Type' : (emi_flag == 'E' ? 'User Select Emmition Type' : (emi_flag == 'U' ? 'User Select Unit' : 'User Select Calculation Mode'));
 
         if(emi_flag == 'A'){
             for(let opdt of options){
-                optionEle = optionEle + `<option value="${opdt.id}">${opdt.type_name}</option>`
+                var _sel = ''
+                if(has_logic_dt){
+                    if(op_chk_val_sel == opdt.id) _sel = 'selected'
+                }
+                optionEle = optionEle + `<option value="${opdt.id}" ${_sel}>${opdt.type_name}</option>`
             }
         }
 
@@ -450,8 +534,26 @@
         }
         if(checkedVal == 'Q'){
             var sel_dt = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').length > 0 ? $(e).parent().prev().prev().prev().closest('.dyn-opt-div').clone() : $(e).parent().prev().prev().prev().prev().closest('.dyn-opt-div').clone()
-            $(sel_dt).children().find('.dynamic-option').removeAttr('name')
-            $(sel_dt).children().find('.dynamic-option').attr('name', `quest_list`)
+            $(sel_dt).children().find('.dynamic-option').removeAttr('id')
+            $(sel_dt).children().find('.dynamic-option').attr('id', `quest_list_${tot_row+1}`)
+            var selectElement = $(sel_dt).children().find('.dynamic-option')
+            // $(sel_dt).children().find('.dynamic-option').val('')
+            if($('select.dynamic-option').length > 0 && cal_logic_data.length > 0){
+                var sel_id = selectElement.attr('id')
+
+                // console.log($(sel_dt).children().find(`.dynamic-option option[value="${selectElement.val()}"]`), '++//++');
+                
+                $(sel_dt).children().find(`.dynamic-option option[value="${selectElement.val()}"]`).removeAttr('selected')
+                var calDt = cal_logic_data.length >= $('select.dynamic-option').length ? cal_logic_data[$('select.dynamic-option').length] : {}
+                // // console.log(selectElement.val(), $(`#${sel_id} option[value="${selectElement.val()}"]`), '---////-----');
+                
+                $(sel_dt).children().find(`.dynamic-option`).val(calDt.id ? calDt.id : '')
+                $(sel_dt).children().find(`.dynamic-option option[value="${calDt.id ? calDt.id : ''}"]`).attr('selected', 'selected')
+
+                $(sel_dt).children().find(`.dynamic-option`).change()
+                // console.log($(selectElement).change())
+            }
+            // console.log(selectElement.val(),'HEHE')
             
             sel_dt.insertAfter($('<div class="col-md-12"><hr></div>').insertAfter($(e).parent()))
         }else{

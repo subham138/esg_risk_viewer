@@ -162,8 +162,8 @@
                                     <input type="text" value="<%= dt.input_label != '' ? dt.input_label : '' %>" name="q_<%= i %>" class="edit form-control" id="q_<%= i %>" style="display: none;">
                                 </div>
                                 <div class="dynamic-form-value-entry">
-                                    <% var option_symbol = {'R': '&#9673;', 'C': '&#9635;', 'S': '&#9661;', 'I': '&#9776;'}
-                                    if(dt.input_type != 'I'){
+                                    <% var option_symbol = {'R': '&#9673;', 'C': '&#9635;', 'S': '&#9661;', 'A': '&#128270;', 'E': '&#127787;', 'U': '&#128207;', 'Y': '&#128207;'}
+                                    if(['R', 'C', 'S'].includes(dt.input_type)){
                                     if(dt.options.length > 0){
                                         var j = 1
                                         dt.options.forEach(odt => { %>
@@ -185,7 +185,11 @@
                                             </div>
                                             <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
                                         </div>
-                                    <% }}else{ %>
+                                    <% }}else if(['A', 'E', 'U', 'Y'].includes(dt.input_type)){ %>
+                                        <div class="form-group">
+                                            <select class="form-select" disabled><option selected>User Select</option></select>
+                                        </div>
+                                    <% }else{ %>
                                         <div class="form-group">
                                             <input class="form-control" placeholder="User Input" type="text" disabled="true">
                                         </div>
@@ -198,8 +202,11 @@
                                         <option value="radio" <%= dt.input_type == 'R' ? 'selected' : '' %>>&#9673; | Radio</option>
                                         <option value="check" <%= dt.input_type == 'C' ? 'selected' : '' %>>&#9635; | Checkbox</option>
                                         <option value="drop" <%= dt.input_type == 'S' ? 'selected' : '' %>>&#9661; | Select Dropdown</option>
-                                        <!-- <option value="slider">&#127898; | Range Slider</option> -->
                                         <option value="short_text" <%= dt.input_type == 'I' ? 'selected' : '' %>>&#9776; | Short Answer</option>
+                                        <option value="act" <%= dt.input_type == 'A' ? 'selected' : '' %>>&#128270; | Activity</option>
+                                        <option value="emi_type" <%= dt.input_type == 'E' ? 'selected' : '' %>>&#127787; | Emission Type</option>
+                                        <option value="emi_unit" <%= dt.input_type == 'U' ? 'selected' : '' %>>&#128207; | Unit</option>
+                                        <option value="mode" <%= dt.input_type == 'Y' ? 'selected' : '' %>>&#128197; | Mode</option>
                                     </select>
                                     <input type="hidden" name="cards" value="<%= i %>">
                                 </div>
@@ -208,12 +215,7 @@
                             </div>
                             <div class="card-footer p-2">
                                 <div class="btn-card-footer">
-                                    <!-- <button class=""></button> -->
-                                    <!-- <div class="vl"></div> -->
-                                    
                                     <!-- <div class="vl"></div>
-                                    <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
-                                    <div class="vl"></div>
                                     <div class="m-r-10">
                                         <span onclick="editLabel(this)"><%= dt.sequence > 0 ? dt.sequence : 'Sequence' %></span>
                                         <input type="text" value="<%= dt.sequence > 0 ? dt.sequence : '' %>" name="s_<%= i %>" class="edit form-control" id="s_<%= i %>" style="display: none;">
@@ -233,6 +235,45 @@
                                         <div class="m-r-10">
                                             <span onclick="editLabel(this)"><%= dt.parent_id > 0 ? dt.parent_id : 'Parent Sequence' %></span>
                                             <input type="text" value="<%= dt.parent_id > 0 ? dt.parent_id : '' %>" name="p_c_<%= i %>" class="edit form-control" id="p_c_<%= i %>" style="display: none;">
+                                        </div>
+                                    </div> -->
+                                    <div class="vl"></div>
+                                    <div class="m-r-10">
+                                        <span onclick="editLabel(this)"><%= dt.sequence > 0 ? dt.sequence : 'Sequence' %></span>
+                                        <input type="text" value="<%= dt.sequence > 0 ? dt.sequence : '' %>" name="s_<%= i %>" class="edit form-control" id="s_<%= i %>" style="display: none;">
+                                    </div>
+                                    <div class="vl"></div>
+                                    <div class="media m-r-10">
+                                        <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
+                                        <div class="media-body text-end icon-state switch-outline">
+                                            <label class="switch">
+                                                <input type="checkbox" id="gri_flag_<%= i %>" <%= dt.is_parent != 'Y' ? '' : 'checked' %> onchange="checkChange(this)">
+                                                <span class="switch-state bg-primary"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="is-parent" style="display: <%= dt.is_parent != 'Y' ? 'flex' : 'none' %>;">
+                                        <div class="vl"></div>
+                                        <div class="m-r-10">
+                                            <span onclick="editLabel(this)"><%= dt.parent_id > 0 ? dt.parent_id : 'Parent Sequence' %></span>
+                                            <input type="text" value="<%= dt.parent_id > 0 ? dt.parent_id : '' %>" name="p_c_<%= i %>" class="edit form-control" id="p_c_<%= i %>" style="display: none;">
+                                        </div>
+                                        <div class="vl"></div>
+                                        <div class="media m-r-10">
+                                            <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
+                                            <div class="media-body text-end icon-state switch-outline">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="gr_sub_flag_<%= i %>" <%= dt.sub_parent_id != 'Y' ? '' : 'checked' %> onchange="checkSubChange(this)">
+                                                    <span class="switch-state bg-primary"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="is-parent" style="display: <%= dt.is_sub_parent != 'Y' ? 'flex' : 'none' %>;">
+                                            <div class="vl"></div>
+                                            <div class="m-r-10">
+                                                <span onclick="editLabel(this)"><%= dt.sub_parent_id > 0 ? dt.sub_parent_id : 'Sub-Parent Sequence' %></span>
+                                                <input type="text" value="<%= dt.sub_parent_id > 0 ? dt.sub_parent_id : '' %>" name="p_s_c_<%= i %>" class="edit form-control" id="p_s_c_<%= i %>" style="display: none;">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -280,6 +321,7 @@
                                     <option value="act">&#128270; | Activity</option>
                                     <option value="emi_type">&#127787; | Emission Type</option>
                                     <option value="emi_unit">&#128207; | Unit</option>
+                                    <option value="mode">&#128197; | Mode</option>
                                 </select>
                                 <input type="hidden" name="cards" value="1">
                             </div>
@@ -423,7 +465,7 @@
         if(['radio', 'check', 'drop'].includes($(e).val())){
             createOptions(card_id, symbol[0].key)
         }
-        if(['act', 'emi_type', 'emi_unit'].includes($(e).val())){
+        if(['act', 'emi_type', 'emi_unit', 'mode'].includes($(e).val())){
             $(`#${card_id} .dynamic-form-value-entry`).append(`
             <div class="form-group">
                 <select class="form-select" disabled><option selected>User Select</option></select>
