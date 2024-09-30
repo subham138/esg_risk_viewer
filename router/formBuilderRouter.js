@@ -8,7 +8,7 @@ dateFormat = require("dateformat");
 FBRouter.get('/cal_sec_type', async (req, res) => {
     var data = await db_Select('*', 'md_cal_sec_type', null, null)
     var view_data = {
-        data,
+        data: data.suc > 0 ? data.msg.length > 0 ? data.msg : []: [],
         header: 'Calculator Sector Type'
     }
     res.render('calculator/section_type/view', view_data)

@@ -42,9 +42,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% if(data.msg.length > 0){
+                                        <% if(data.length > 0){
                                             let i = 1;
-                                        data.msg.forEach(dt => { %>
+                                        data.forEach(dt => { %>
                                         <tr>
                                             <td><%= i %></td>
                                             <td>Scope <%= dt.scope_id %></td>
