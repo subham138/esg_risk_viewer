@@ -89,7 +89,7 @@ FBRouter.post('/get_calc_sec_type_list_ajax', async (req, res) => {
 FBRouter.get('/form_builder', async (req, res) => {
     var data = await db_Select('DISTINCT a.scope_id, a.sec_id, b.sec_name', 'md_cal_form_builder a, md_cal_sec_type b', `a.sec_id=b.id`, 'ORDER BY a.scope_id asc')
     var scope_list = SCOPE_LIST
-    res.render('form_builder/view', {header: "Calculator Form Builder", scope_dt: data, scope_list})
+    res.render('form_builder/view', {header: "Calculator Form Builder", scope_dt: data.suc > 0 ? data.msg.length > 0 ? data.msg : [] : [], scope_list})
 })
 
 FBRouter.get('/form_builder_edit', async (req, res) => {
