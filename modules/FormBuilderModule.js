@@ -5,7 +5,7 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       var qr_dt, q_header, q_scope, q_sec_name, q_type_id, res_dt;
       var resDt = await db_Select(
-        "a.*, b.sec_name, b.type_id",
+        "a.*, b.sec_name",
         "md_cal_form_builder a, md_cal_sec_type b",
         `a.sec_id=b.id AND a.scope_id=b.scope_id ${
           scope_id > 0 ? `AND a.scope_id=${scope_id}` : ""
