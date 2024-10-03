@@ -10,6 +10,7 @@ const {
   CALCULATOR_LANG,
   db_Insert,
   PLAN_LIST,
+  PLATFORM_MODE,
 } = require("../modules/MasterModule");
 const {
   getUserList,
@@ -79,11 +80,12 @@ UserRouter.post("/login", async (req, res) => {
         req.session.user = chk_dt.msg[0];
         if (chk_dt.msg[0].user_type != "S") {
           var select =
-              "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag",
+              "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag, platform_mode",
             table_name = "td_client",
             whr = `id = '${chk_dt.msg[0].client_id}'`,
             order = null;
           var client_dt = await db_Select(select, table_name, whr, order);
+          req.session.user['platform_mode'] = client_dt.suc > 0 ? (client_dt.msg.length > 0 ? client_dt.msg[0].platform_mode : 'E') : 'E'
           req.session.user["ai_tag_tool_flag"] =
             client_dt.suc > 0
               ? client_dt.msg.length > 0
@@ -375,6 +377,7 @@ UserRouter.get("/client_edit", async (req, res) => {
     cal_lang: CALCULATOR_LANG,
     user_type_list: USER_TYPE_LIST,
     sub_list: PLAN_LIST,
+    plat_mode: PLATFORM_MODE,
     header: "Client List",
     sub_header: "Client Add/Edit",
     header_url: "/client",

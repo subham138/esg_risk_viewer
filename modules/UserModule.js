@@ -41,7 +41,7 @@ module.exports = {
   getClientList: (id = null) => {
     return new Promise(async (resolve, reject) => {
       var select =
-          "a.id, a.client_name, b.user_name, b.user_id, b.user_type, a.plan_type, a.plan_active_dt, DATEDIFF(a.plan_deactive_dt,a.plan_active_dt) AS diff_dt, a.ai_tag_tool_flag, a.ghg_emi_flag, a.ifrs_flag, a.esrs_flag, a.gri_flag, a.gri_fr_flag, a.ifrs_fr_flag, a.esrs_fr_flag, a.esrs_vsme_flag, a.esrs_vsme_fr_flag, a.cal_lang_flag",
+          "a.id, a.client_name, b.user_name, b.user_id, b.user_type, a.plan_type, a.plan_active_dt, DATEDIFF(a.plan_deactive_dt,a.plan_active_dt) AS diff_dt, a.ai_tag_tool_flag, a.ghg_emi_flag, a.ifrs_flag, a.esrs_flag, a.gri_flag, a.gri_fr_flag, a.ifrs_fr_flag, a.esrs_fr_flag, a.esrs_vsme_flag, a.esrs_vsme_fr_flag, a.cal_lang_flag, a.platform_mode",
         table_name = "td_client a, md_user b",
         whr = `a.id=b.client_id AND a.active_flag = 'Y'AND  b.user_type = 'C' ${
           id > 0 ? `AND a.id = ${id}` : ""
@@ -60,9 +60,9 @@ module.exports = {
       var table_name = "td_client",
         fields =
           data.id > 0
-            ? `client_name = '${data.client_name}', plan_type = 'N', ai_tag_tool_flag = '${data.ai_tag_tool_flag}', ghg_emi_flag = '${data.ghg_emi_flag}', ifrs_flag = '${data.ifrs_flag}', ifrs_fr_flag = '${data.ifrs_fr_flag}', esrs_flag = '${data.esrs_flag}', esrs_fr_flag = '${data.esrs_fr_flag}', esrs_vsme_flag = '${data.esrs_vsme_flag}', esrs_vsme_fr_flag = '${data.esrs_vsme_fr_flag}', gri_flag = '${data.gri_flag}', gri_fr_flag = '${data.gri_fr_flag}', cal_lang_flag = '${data.cal_lang_flag}', modified_by = '${user}', modified_dt = '${datetime}'`
-            : `(entry_dt, client_name, plan_type, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag, created_by, created_dt)`,
-        values = `('${datetime}', '${data.client_name}', 'N', '${
+            ? `client_name = '${data.client_name}', platform_mode='${data.platform_mode}', plan_type = 'N', ai_tag_tool_flag = '${data.ai_tag_tool_flag}', ghg_emi_flag = '${data.ghg_emi_flag}', ifrs_flag = '${data.ifrs_flag}', ifrs_fr_flag = '${data.ifrs_fr_flag}', esrs_flag = '${data.esrs_flag}', esrs_fr_flag = '${data.esrs_fr_flag}', esrs_vsme_flag = '${data.esrs_vsme_flag}', esrs_vsme_fr_flag = '${data.esrs_vsme_fr_flag}', gri_flag = '${data.gri_flag}', gri_fr_flag = '${data.gri_fr_flag}', cal_lang_flag = '${data.cal_lang_flag}', modified_by = '${user}', modified_dt = '${datetime}'`
+            : `(entry_dt, client_name, platform_mode, plan_type, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag, created_by, created_dt)`,
+        values = `('${datetime}', '${data.client_name}', '${data.platform_mode}', 'N', '${
           data.ai_tag_tool_flag ? data.ai_tag_tool_flag : "N"
         }', '${data.ghg_emi_flag ? data.ghg_emi_flag : "N"}', '${
           data.ifrs_flag ? data.ifrs_flag : "N"

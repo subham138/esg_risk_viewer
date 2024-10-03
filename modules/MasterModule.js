@@ -92,10 +92,10 @@ CALCULATOR_LANG = {
 },
 PLAN_LIST = {
   'N': 'None', 'B': 'Basic', 'S': 'Standard', 'P': 'Premium'
-}
+},
 PROJECT_LIST = {
   'I': 'IFRS', 'IF': 'IFRS-French', 'E': 'ESRS', 'EF': 'ESRS-French', 'G': 'GRI', 'F': 'GRI-French', 'EV': 'ESRS VSME', 'EVF': 'ESRS VSME-French'	
-}
+},
 INPUT_TYPE_LIST = {
   radio: "R",
   check: "C",
@@ -104,7 +104,8 @@ INPUT_TYPE_LIST = {
   act: "A",
   emi_type: "E",
   emi_unit: "U",
-};
-SCOPE_LIST = [{id: 1, name: 'Scope 1'},{id: 2, name: 'Scope 2'},{id: 3, name: 'Scope 3'}]
+},
+SCOPE_LIST = [{id: 1, name: 'Scope 1'},{id: 2, name: 'Scope 2'},{id: 3, name: 'Scope 3'}],
+PLATFORM_MODE = {C: 'Calculator', E: 'ESG Full'};
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST };
+module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE };
