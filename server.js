@@ -13,7 +13,7 @@ app.set("views", path.join(__dirname, "views"));
 
 // SET ASSETS AS A STATIC PATH //
 app.use(express.static(path.join(__dirname, "assets/")));
-app.use(express.static(path.join(__dirname, "assets/editor")));
+// app.use(express.static(path.join(__dirname, "assets/editor")));
 // END //
 
 // SET REQUEST HANDLER //
