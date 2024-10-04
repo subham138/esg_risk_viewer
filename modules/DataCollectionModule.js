@@ -225,4 +225,14 @@ module.exports = {
       resolve(res_dt);
     });
   },
+  getDataPointList: () => {
+    return new Promise(async (resolve, reject) => {
+      var select = "id, flag, sec_id, ind_id, risk_info",
+        table_name = "md_risk_opr",
+        whr = `flag = '${flag}' AND sec_id = ${sec_id} AND ind_id = ${ind_id}`,
+        order = null;
+      var res_dt = await db_Select(select, table_name, whr, order);
+      resolve(res_dt);
+    });
+  }
 };

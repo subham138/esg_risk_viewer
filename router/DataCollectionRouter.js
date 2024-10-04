@@ -923,4 +923,8 @@ DataCollectionRouter.post("/risk_opr", async (req, res) => {
   }
 });
 
+DataCollectionRouter.post('/', async (req, res) => {
+  var data = await dt()
+})
+
 module.exports = { DataCollectionRouter };
