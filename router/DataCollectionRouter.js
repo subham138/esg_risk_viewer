@@ -938,19 +938,43 @@ DataCollectionRouter.get('/data_point', async (req, res) => {
   res.render('data_collection/data_point/view', view_data)
 })
 
+// DataCollectionRouter.get('/data_point_entry', async (req, res) => {
+//   var enc_dt = req.query.flag,
+//     flag = new Buffer.from(enc_dt, "base64").toString();
+//   var data = req.query;
+//   var sec_data = await getSectorList(0, flag),
+//     ind_list = await getDataPointList(flag, data.sec_id > 0 ? data.sec_id : 0);
+  
+//   var viewData = {
+//     header: "Data Point Entry",
+//     frame_list: PROJECT_LIST,
+//     sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
+//     ind_dt: ind_list.suc > 0 ? ind_list : {},
+//     sec_id: data.sec_id > 0 ? data.sec_id : 0,
+//     flag: flag,
+//   };
+//   res.render("data_collection/data_point/edit", viewData);
+// })
+
 DataCollectionRouter.get('/data_point_entry', async (req, res) => {
   var enc_dt = req.query.flag,
     flag = new Buffer.from(enc_dt, "base64").toString();
   var data = req.query;
   var sec_data = await getSectorList(0, flag),
-    ind_list = await getDataPointList(flag, data.sec_id > 0 ? data.sec_id : 0);
+    ind_list = await getDataPointList(flag, data.sec_id > 0 ? data.sec_id : 0),
+    indst_list = {suc: 0};
+
+  if (data.sec_id > 0)
+    indst_list = await getIndustriesList(null, data.sec_id, flag);
   
   var viewData = {
     header: "Data Point Entry",
     frame_list: PROJECT_LIST,
     sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
     ind_dt: ind_list.suc > 0 ? ind_list : {},
+    ind_list: indst_list.suc > 0 ? indst_list.msg : [],
     sec_id: data.sec_id > 0 ? data.sec_id : 0,
+    ind_id: data.ind_id > 0 ? data.ind_id : 0,
     flag: flag,
   };
   res.render("data_collection/data_point/edit", viewData);
@@ -1019,5 +1043,9 @@ DataCollectionRouter.post("/get_data_topic_list_ajax", async (req, res) => {
   var res_dt = await getDataPointList(data.flag, data.sec_id);
   res.send(res_dt)
 });
+
+DataCollectionRouter.get('/set_sus_dis_info_point', async (req, res) => {
+
+})
 
 module.exports = { DataCollectionRouter };

@@ -53,19 +53,6 @@
                                 <% }) } %>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="ind_id">Industries</label>
-                            <select class="form-select" id="ind_id" name="ind_id" required="">
-                              <option selected="" value="">Select Industries</option>
-                              <% if(ind_list.length > 0){ 
-                                  ind_list.forEach(dt => { 
-                                      var _selected = ''; 
-                                      if(dt.id == ind_id) _selected = 'selected'; 
-                              %>
-                              <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
-                              <% }) } %>
-                            </select>
-                        </div>
                     </div>
                     <div class="row py-3" id="data_topic_table_div" style="display: none">
                         <div class="col-md-12">
@@ -136,66 +123,69 @@
                     $(".loader-wrapper").show();
                 },
                 success: function (result) {
-                    var res = JSON.parse(result); 
-                    $("#ind_id").empty();
-                    $("#data_set_view").hide()
-                    $("#data_topic_table tbody >").remove()
-                    $("#ind_id").append(
-                    $("<option>", { value: "", text: "Select Industries" })
-                    );
-                    if (res.suc > 0 && res.msg.length > 0)
-                    $.each(res.msg, function (i, item) {
-                        $("#ind_id").append(
-                        $("<option>", { value: item.id, text: item.ind_name })
-                        );
-                    });
+                    var res = JSON.parse(result);                    
+                    $('#data_topic_table tbody').empty()
+                    if(res.suc > 0){
+                        if(res.msg.length > 0){
+                            $('#data_topic_table_div').show()
+                            $.each(res.msg, function (j, dt) {
+                                $('#data_topic_table tbody').append(`
+                                    <tr>
+                                        <td>${j+1}</td>
+                                        <td>
+                                            <label>${dt.ind_name}</label>
+                                            <input type="hidden" name="ind_id" value="${dt.ind_id}">
+                                        </td>
+                                        <td>
+                                            <textarea class="form-control" name="point_codes_${dt.ind_id}" id="point_codes_${dt.ind_id}" rows="3">${dt.point_codes ? dt.point_codes : ''}</textarea>
+                                        </td>
+                                    </tr>
+                                `)
+                            })
+                        }else{                            
+                            $.ajax({
+                                method: "GET",
+                                url: "/get_ind_list_ajax",
+                                data: { sec_id: sec_id, flag: $('#flag').val() },
+                                dataType: "html",
+                                beforeSend: function () {
+                                    $(".loader-wrapper").show();
+                                },
+                                success: function (result) {
+                                    var res_ind = JSON.parse(result);
+                                    if (res_ind.suc > 0 && res_ind.msg.length > 0){
+                                        $('#data_topic_table_div').show()
+                                        $.each(res_ind.msg, function (j, dt) {
+                                            $('#data_topic_table tbody').append(`
+                                                <tr>
+                                                    <td>${j+1}</td>
+                                                    <td>
+                                                        <label>${dt.ind_name}</label>
+                                                        <input type="hidden" name="ind_id" value="${dt.id}">
+                                                    </td>
+                                                    <td>
+                                                        <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="2"></textarea>
+                                                    </td>
+                                                </tr>
+                                            `)
+                                        })
+                                    }
+                                },
+                                complete: function () {
+                                    $(".loader-wrapper").hide();
+                                },
+                            });
+
+                        }
+                    }else{
+                        alert(res.msg)
+                    }
                 },
                 complete: function () {
                     $(".loader-wrapper").hide();
                 },
             });
         }
-    })
-
-    $("#ind_id").on("change", function () {
-        $.ajax({
-            method: "GET",
-            url: "/sus_disc_ajax",
-            data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
-            dataType: "html",
-            beforeSend: function () {
-                $(".loader-wrapper").show();
-            },
-            success: function (result) {
-                var res = JSON.parse(result);
-                console.log(res);
-                
-                var frame_list = '<%- JSON.stringify(frame_list) %>';
-                var frame_opt = ''
-                Object.keys(frame_list).forEach(dt => {
-                    frame_opt += `<option value="${dt}">${frame_list[dt]}</option>`
-                })
-                if (res.suc > 0 && res.msg.length > 0) {
-                    // $.each(sus_data, function (j, sus_dt) {
-                    //     $("#data_topic_table tbody").append(`
-                    //     <tr>
-                    //         <td>${j+1}</td>
-                    //         <td>
-                    //             <label>${dt.ind_name}</label>
-                    //             <input type="hidden" name="ind_id" value="${dt.ind_id}">
-                    //         </td>
-                    //         <td>
-                    //             <textarea class="form-control" name="point_codes_${dt.ind_id}" id="point_codes_${dt.ind_id}" rows="3">${dt.point_codes ? dt.point_codes : ''}</textarea>
-                    //         </td>
-                    //     </tr>
-                    //     `)
-                    // })
-                }
-            },
-            complete: function () {
-                $(".loader-wrapper").hide();
-            },
-        })
     })
 </script>
 <%- include('../../templates/footer.ejs') %>
