@@ -46895,3 +46895,11 @@ img.icon-img-tripple {
 .custom-card-head h5{
   padding-left: 0px !important;
 }
+.up-img-prev{
+  height: 120px;
+  width: 120px;
+}
+img#prev_img{
+  height: 100%;
+  width: 100%
+}

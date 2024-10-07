@@ -1,0 +1,189 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+  <div class="page-header">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3><%= header %></h3>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+          <li class="breadcrumb-item"><%= header %></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+        <% if(message){ %>
+            <script>
+                setTimeout(() => {
+                    initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                }, 1000);
+            </script>
+        <% } %>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form action="/save_sus_disc" method="post">
+                    <div class="row g-3 py-3">
+                        <div class="col-md-8">
+                            <label class="form-label" for="sec_id">Upload Logo For The Framework <%= frame_list[flag] %></label>
+                            <input class="form-control" type="file" name="flag_img" id="flag_img" accept="image/*">
+                        </div>
+                        <div class="col-md-4" style="display: none;">
+                            <label class="form-label" for="sec_id">Preview Logo For The Framework <%= frame_list[flag] %></label>
+                            <div class="up-img-prev">
+                                <img src="#" alt="" id="prev_img">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 py-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="sec_id">Sector</label>
+                            <select class="form-select" id="sec_id" name="sec_id" required="">
+                                <option selected="" value="">Select Sector</option>
+                                <% if(sec_dt.length > 0){ 
+                                    sec_dt.forEach(dt => {
+                                        var _selected = ''; 
+                                        if(dt.id == sec_id) _selected = 'selected';
+                                %>
+                                <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                <% }) } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row py-3" id="data_topic_table_div" style="display: none">
+                        <div class="col-md-12">
+                            <table class="table" id="data_topic_table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Industrie</th>
+                                        <th>Topic ID's</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <input type="hidden" id="id" name="id" value="<%# id ? id : 0 %>">
+                            <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                            <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="submit">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#flag_img').on('change', function(e){
+        var file = e.target.files[0];
+        // console.log(file);
+        if(file){
+            var fileName = file.name;
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (extFile=="jpg" || extFile=="jpeg" || extFile=="png"){
+                $('#prev_img').parent().parent().show()
+                $('#prev_img').removeAttr('src')
+                $('#prev_img').attr('src', URL.createObjectURL(file))
+            }else{
+                $('#prev_img').parent().parent().hide()
+                $('#prev_img').removeAttr('src')
+                $('#prev_img').attr('src', '#')
+                $(this).val('')
+                alert("Only jpg/jpeg and png files are allowed!");
+            }
+        }
+    })
+
+    $('#prev_img').on('click', function(){
+        var src = $(this).attr('src');
+        window.open(src, '_blank'); 
+    })
+</script>
+
+<script>
+    $('#sec_id').on('change', function(){
+        var sec_id = $(this).val()
+        if(sec_id > 0){
+            $.ajax({
+                method: "POST",
+                url: "/get_data_topic_list_ajax",
+                data: { sec_id: sec_id, flag: $('#flag').val() },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result);
+                    console.log(res.msg.length, '----------');
+                    
+                    $('#data_topic_table tbody').empty()
+                    if(res.suc > 0){
+                        if(res.msg.length > 0){
+                            $('#data_topic_table_div').show()
+                            $.each(res.msg, function (j, dt) {
+                                $('#data_topic_table tbody').append(`
+                                    <tr>
+                                        <td>${j+1}</td>
+                                        <td>
+                                            <label>${dt.ind_name}</label>
+                                            <input type="hidden" name="ind_id" value="${dt.ind_id}">
+                                        </td>
+                                        <td>
+                                            <textarea class="form-control" name="point_codes" id="point_codes" rows="3">${dt.point_codes}</textarea>
+                                        </td>
+                                    </tr>
+                                `)
+                            })
+                        }else{
+                            console.log('++++++++');
+                            
+                            $.ajax({
+                                method: "GET",
+                                url: "/get_ind_list_ajax",
+                                data: { sec_id: sec_id, flag: $('#flag').val() },
+                                dataType: "html",
+                                beforeSend: function () {
+                                    $(".loader-wrapper").show();
+                                },
+                                success: function (result) {
+                                    var res_ind = JSON.parse(result);
+                                    if (res_ind.suc > 0 && res_ind.msg.length > 0){
+                                        $('#data_topic_table_div').show()
+                                        $.each(res_ind.msg, function (j, dt) {
+                                            $('#data_topic_table tbody').append(`
+                                                <tr>
+                                                    <td>${j+1}</td>
+                                                    <td>
+                                                        <label>${dt.ind_name}</label>
+                                                        <input type="hidden" name="ind_id" value="${dt.id}">
+                                                    </td>
+                                                    <td>
+                                                        <textarea class="form-control" name="point_codes" id="point_codes" rows="2"></textarea>
+                                                    </td>
+                                                </tr>
+                                            `)
+                                        })
+                                    }
+                                },
+                                complete: function () {
+                                    $(".loader-wrapper").hide();
+                                },
+                            });
+
+                        }
+                    }else{
+                        alert(res.msg)
+                    }
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                },
+            });
+        }
+    })
+</script>
+<%- include('../../templates/footer.ejs') %>

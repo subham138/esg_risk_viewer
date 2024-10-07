@@ -225,13 +225,24 @@ module.exports = {
       resolve(res_dt);
     });
   },
-  getDataPointList: () => {
+  getDataPointList: (flag, sec_id = 0) => {
     return new Promise(async (resolve, reject) => {
-      var select = "id, flag, sec_id, ind_id, risk_info",
-        table_name = "md_risk_opr",
-        whr = `flag = '${flag}' AND sec_id = ${sec_id} AND ind_id = ${ind_id}`,
+      var select = "a.id, a.repo_flag, a.sec_id, a.ind_id, a.point_codes, b.ind_name",
+        table_name = "md_data_point_dt a, md_industries b",
+        whr = `a.ind_id=b.id AND a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''}`,
         order = null;
       var res_dt = await db_Select(select, table_name, whr, order);
+
+      if(res_dt.suc > 0){
+        var select = "id, repo_flag, img_path",
+          table_name = "md_data_point",
+          whr = `repo_flag = '${flag}'`,
+          order = null;
+        var res_pic_dt = await db_Select(select, table_name, whr, order);
+        res_dt["flag_img"] = res_pic_dt.suc > 0 ? (res_pic_dt.msg.length > 0 ? res_pic_dt.msg[0].img_path : '') : '';
+      }
+
+      res_dt["flag_img"] = '';
       resolve(res_dt);
     });
   }

@@ -18,8 +18,9 @@ const {
   saveWordInfo,
   getCopyLatestWordInfoSet,
   getRiskOprnDtls,
+  getDataPointList,
 } = require("../modules/DataCollectionModule");
-const { db_Insert, db_Select, db_Delete } = require("../modules/MasterModule");
+const { db_Insert, db_Select, db_Delete, PROJECT_LIST } = require("../modules/MasterModule");
 
 DataCollectionRouter.use((req, res, next) => {
   var user = req.session.user;
@@ -923,8 +924,28 @@ DataCollectionRouter.post("/risk_opr", async (req, res) => {
   }
 });
 
-DataCollectionRouter.post('/', async (req, res) => {
-  var data = await dt()
+DataCollectionRouter.get('/data_point_entry', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var data = req.query;
+  var sec_data = await getSectorList(0, flag),
+    ind_list = await getDataPointList(flag, data.sec_id > 0 ? data.sec_id : 0);
+  
+  var viewData = {
+    header: "Data Point Entry",
+    frame_list: PROJECT_LIST,
+    sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
+    ind_dt: ind_list.suc > 0 ? ind_list.msg : [],
+    sec_id: data.sec_id > 0 ? data.sec_id : 0,
+    flag: flag,
+  };
+  res.render("data_collection/data_point/edit", viewData);
 })
+
+DataCollectionRouter.post("/get_data_topic_list_ajax", async (req, res) => {
+  var data = req.body
+  var res_dt = await getDataPointList(data.flag, data.sec_id);
+  res.send(res_dt)
+});
 
 module.exports = { DataCollectionRouter };
