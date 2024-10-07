@@ -1002,6 +1002,15 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
       }
     }
   }
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : "danger",
+    message: res_dt.msg,
+  };
+  res.redirect(
+    `/data_point?flag=${encodeURIComponent(
+      new Buffer.from(data.flag).toString("base64")
+    )}`
+  );
   res.send(res_dt)
 })
 
