@@ -19,6 +19,7 @@ const {
   getCopyLatestWordInfoSet,
   getRiskOprnDtls,
   getDataPointList,
+  getDataPoint,
 } = require("../modules/DataCollectionModule");
 const { db_Insert, db_Select, db_Delete, PROJECT_LIST } = require("../modules/MasterModule");
 
@@ -924,6 +925,19 @@ DataCollectionRouter.post("/risk_opr", async (req, res) => {
   }
 });
 
+DataCollectionRouter.get('/data_point', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var res_dt = await getDataPoint(flag)
+  var view_data = {
+    header: 'Data Point',
+    data: res_dt.suc > 0 ? res_dt.msg : [],
+    flag,
+    enc_dt
+  }
+  res.render('data_collection/data_point/view', view_data)
+})
+
 DataCollectionRouter.get('/data_point_entry', async (req, res) => {
   var enc_dt = req.query.flag,
     flag = new Buffer.from(enc_dt, "base64").toString();
@@ -935,11 +949,60 @@ DataCollectionRouter.get('/data_point_entry', async (req, res) => {
     header: "Data Point Entry",
     frame_list: PROJECT_LIST,
     sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
-    ind_dt: ind_list.suc > 0 ? ind_list.msg : [],
+    ind_dt: ind_list.suc > 0 ? ind_list : {},
     sec_id: data.sec_id > 0 ? data.sec_id : 0,
     flag: flag,
   };
   res.render("data_collection/data_point/edit", viewData);
+})
+
+DataCollectionRouter.post('/data_point_entry', async (req, res) => {  
+  var data = req.body, file = req.files ? req.files.flag_img : null,
+  user = req.session.user.user_name,
+  datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt;
+
+  if(file){
+    var img_path = file.name;
+    var dir = 'assets',
+    sub_dir = `${dir}/uploads/flag_icon`;
+    if(!fs.existsSync(sub_dir)){
+      fs.mkdirSync(sub_dir)
+    }
+    try{
+      file.mv(`assets/uploads/flag_icon/${img_path}`, async (err) => {
+        if(err) console.log(err);
+        else{
+          var img_chk_dt = await db_Select('id', 'md_data_point', `repo_flag = '${data.flag}'`, null)
+          var img_fld = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? `img_path = '${img_path}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, img_path, created_by, created_dt)',
+          img_vals = `('${data.flag}', '${img_path}', '${user}', '${datetime}')`,
+          img_whr = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? `id = ${img_chk_dt.msg[0].id}` : null,
+          img_flag = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? 1 : 0;
+          var img_dt = await db_Insert('md_data_point', img_fld, img_vals, img_whr, img_flag)
+        }
+      })
+    }catch(err){
+      console.log(err);      
+    }
+  }
+
+  if(data.ind_id.length > 0){
+    for(let dt of data.ind_id){
+      try{
+        if(data[`point_codes_${dt}`] != ''){
+          var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${dt}`, null)
+          var table_name = 'md_data_point_dt',
+          fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `point_codes = '${data[`point_codes_${dt}`]}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, point_codes, created_by, created_dt)',
+          values = `('${data.flag}', '${data.sec_id}', ${dt}, '${data[`point_codes_${dt}`]}', '${user}', '${datetime}')`,
+          whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+          flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+          res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        }
+      }catch(err){
+        res_dt = {suc: 0, msg: err}
+      }
+    }
+  }
+  res.send(res_dt)
 })
 
 DataCollectionRouter.post("/get_data_topic_list_ajax", async (req, res) => {

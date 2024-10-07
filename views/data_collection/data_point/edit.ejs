@@ -26,16 +26,16 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <form action="/save_sus_disc" method="post">
+                <form action="/data_point_entry" method="post" enctype="multipart/form-data">
                     <div class="row g-3 py-3">
                         <div class="col-md-8">
                             <label class="form-label" for="sec_id">Upload Logo For The Framework <%= frame_list[flag] %></label>
                             <input class="form-control" type="file" name="flag_img" id="flag_img" accept="image/*">
                         </div>
-                        <div class="col-md-4" style="display: none;">
+                        <div class="col-md-4" style="display: <%= ind_dt.flag_img && ind_dt.flag_img != '' ? 'block' : 'none' %>;">
                             <label class="form-label" for="sec_id">Preview Logo For The Framework <%= frame_list[flag] %></label>
                             <div class="up-img-prev">
-                                <img src="#" alt="" id="prev_img">
+                                <img src="<%= ind_dt.flag_img && ind_dt.flag_img != '' ? '/uploads/flag_icon/' + ind_dt.flag_img : '#' %>" alt="" id="prev_img">
                             </div>
                         </div>
                     </div>
@@ -77,6 +77,12 @@
     </div>
 </div>
 <script>
+    $(document).ready(function(){
+        var sec_id = '<%= sec_id > 0 ? sec_id : 0 %>';
+        if(sec_id > 0){
+            $('#sec_id').change()
+        }
+    })
     $('#flag_img').on('change', function(e){
         var file = e.target.files[0];
         // console.log(file);
@@ -117,9 +123,7 @@
                     $(".loader-wrapper").show();
                 },
                 success: function (result) {
-                    var res = JSON.parse(result);
-                    console.log(res.msg.length, '----------');
-                    
+                    var res = JSON.parse(result);                    
                     $('#data_topic_table tbody').empty()
                     if(res.suc > 0){
                         if(res.msg.length > 0){
@@ -133,14 +137,12 @@
                                             <input type="hidden" name="ind_id" value="${dt.ind_id}">
                                         </td>
                                         <td>
-                                            <textarea class="form-control" name="point_codes" id="point_codes" rows="3">${dt.point_codes}</textarea>
+                                            <textarea class="form-control" name="point_codes_${dt.ind_id}" id="point_codes_${dt.ind_id}" rows="3">${dt.point_codes ? dt.point_codes : ''}</textarea>
                                         </td>
                                     </tr>
                                 `)
                             })
-                        }else{
-                            console.log('++++++++');
-                            
+                        }else{                            
                             $.ajax({
                                 method: "GET",
                                 url: "/get_ind_list_ajax",
@@ -162,7 +164,7 @@
                                                         <input type="hidden" name="ind_id" value="${dt.id}">
                                                     </td>
                                                     <td>
-                                                        <textarea class="form-control" name="point_codes" id="point_codes" rows="2"></textarea>
+                                                        <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="2"></textarea>
                                                     </td>
                                                 </tr>
                                             `)

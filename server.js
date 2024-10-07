@@ -2,7 +2,8 @@ const express = require("express"),
   path = require("path"),
   session = require("express-session"),
   app = express(),
-  port = process.env.PORT || 3001;
+  port = process.env.PORT || 3001,
+  fileUpload = require('express-fileupload');
   // https = require('https'),
   // fs = require('fs');
 
@@ -15,6 +16,8 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "assets/")));
 // app.use(express.static(path.join(__dirname, "assets/editor")));
 // END //
+
+app.use(fileUpload());
 
 // SET REQUEST HANDLER //
 // app.use(express.json()); //
