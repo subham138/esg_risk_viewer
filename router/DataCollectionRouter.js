@@ -1009,23 +1009,43 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
     }
   }
 
-  if(data.ind_id.length > 0){
-    for(let dt of data.ind_id){
-      try{
-        if(data[`point_codes_${dt}`] != ''){
-          var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${dt}`, null)
-          var table_name = 'md_data_point_dt',
-          fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `point_codes = '${data[`point_codes_${dt}`]}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, point_codes, created_by, created_dt)',
-          values = `('${data.flag}', '${data.sec_id}', ${dt}, '${data[`point_codes_${dt}`]}', '${user}', '${datetime}')`,
-          whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
-          flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
-          res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  if(data.sus_dis_top_met_id.length > 0){
+    for(let dt of data.sus_dis_top_met_id){
+      if(Array.isArray(data[`point_codes_${dt}`])){
+        var i = 0
+        for(let pdt of data[`point_codes_${dt}`]){
+          if(pdt!='' && pdt){
+            var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND repo_flag_id = '${data[`frame_id_${dt}`][i]}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND sus_dis_top_met_id = ${dt}`, null)
+            var table_name = 'md_data_point_dt',
+            fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `repo_flag_id = '${data[`frame_id_${dt}`][i]}', point_codes = '${pdt}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, sus_dis_top_met_id, repo_flag_id, point_codes, created_by, created_dt)',
+            values = `('${data.flag}', '${data.sec_id}', ${data.ind_id}, ${dt}, '${data[`frame_id_${dt}`][i]}', '${pdt}', '${user}', '${datetime}')`,
+            whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+            flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag)
+            i++
+          }
         }
-      }catch(err){
-        res_dt = {suc: 0, msg: err}
       }
     }
   }
+
+  // if(data.ind_id.length > 0){
+  //   for(let dt of data.ind_id){
+  //     try{
+  //       if(data[`point_codes_${dt}`] != ''){
+  //         var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${dt}`, null)
+  //         var table_name = 'md_data_point_dt',
+  //         fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `point_codes = '${data[`point_codes_${dt}`]}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, point_codes, created_by, created_dt)',
+  //         values = `('${data.flag}', '${data.sec_id}', ${dt}, '${data[`point_codes_${dt}`]}', '${user}', '${datetime}')`,
+  //         whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+  //         flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+  //         res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  //       }
+  //     }catch(err){
+  //       res_dt = {suc: 0, msg: err}
+  //     }
+  //   }
+  // }
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
     message: res_dt.msg,
@@ -1035,17 +1055,83 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
       new Buffer.from(data.flag).toString("base64")
     )}`
   );
-  res.send(res_dt)
 })
 
 DataCollectionRouter.post("/get_data_topic_list_ajax", async (req, res) => {
   var data = req.body
-  var res_dt = await getDataPointList(data.flag, data.sec_id);
+  var res_dt = await getDataPointList(data.flag, data.sec_id, data.ind_id);
   res.send(res_dt)
 });
 
 DataCollectionRouter.get('/set_sus_dis_info_point', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var view_data = {
+    flag
+  }
+  res.render('data_collection/data_point_info/view', view_data)
+})
 
+DataCollectionRouter.get('/set_sus_dis_info_point_entry', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var data = req.query;
+  var sec_data = await getSectorList(0, flag),
+    indst_list = {suc: 0};
+
+  if (data.sec_id > 0)
+    indst_list = await getIndustriesList(null, data.sec_id, flag);
+  var view_data = {
+    header: "Data Point Entry",
+    sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
+    ind_list: indst_list.suc > 0 ? indst_list.msg : [],
+    sec_id: data.sec_id > 0 ? data.sec_id : 0,
+    ind_id: data.ind_id > 0 ? data.ind_id : 0,
+    flag: flag,
+  }
+  res.render('data_collection/data_point_info/entry', view_data)
+})
+
+let sus_dis_point_chunks = {};
+DataCollectionRouter.post("/set_sus_dis_info_point_entry", async (req, res) => {
+  const { chunk, chunkIndex, totalChunks, sec_id, ind_id, code_id, info_title, flag } = req.body;
+
+  if (!sus_dis_chunks[chunkIndex]) {
+    sus_dis_chunks[chunkIndex] = chunk;
+  }
+
+  if (Object.keys(sus_dis_chunks).length === totalChunks) {
+    const fullData = Object.keys(sus_dis_chunks)
+      .sort((a, b) => a - b)
+      .map((key) => sus_dis_chunks[key])
+      .join("");
+
+    // Save `fullData` to MySQL database
+    var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+      user = req.session.user.user_name;
+
+    var chk_whr = `repo_flag = '${flag}' AND sec_id = '${sec_id}' AND ind_id = '${ind_id}' AND top_id = ${top_id} AND code = '${code}'`;
+    var table_name = `td_sus_dis_top_met`,
+      fields = `info_title = "${info_title}", info_desc = '${
+        fullData != "" && fullData ? fullData.split("'").join("\\'") : ""
+      }', modified_by= '${user}', modified_dt = '${datetime}'`,
+      values = null,
+      whr = chk_whr,
+      flagIn = 1;
+    // res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
+
+    var res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
+    sus_dis_chunks = {};
+
+    res.send(res_dt);
+  } else {
+    res.send({ suc: 2, status: "chunk received" });
+  }
+});
+
+DataCollectionRouter.post('/set_sus_dis_info_point_entry', async (req, res) => {
+  var data = req.body
+  res.send(data)
 })
 
 module.exports = { DataCollectionRouter };

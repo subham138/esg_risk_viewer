@@ -42,7 +42,8 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Sector</th>
-                                    <th>Total Industrie <br>Point Entry</th>
+                                    <th>Industrie</th>
+                                    <th>Total Point Entry</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -53,8 +54,9 @@
                                 <tr>
                                     <td><%= i %></td>
                                     <td><%= dt.sec_name %></td>
+                                    <td><%= dt.ind_name %></td>
                                     <td><%= dt.tot_ind_point_entry %></td>
-                                    <td><a href="/data_point_entry?flag=<%= enc_dt %>&sec_id=<%= dt.sec_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                    <td><a href="/data_point_entry?flag=<%= enc_dt %>&sec_id=<%= dt.sec_id %>&ind_id=<%= dt.ind_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                         Edit/Update
                                     </a>
                                     <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">

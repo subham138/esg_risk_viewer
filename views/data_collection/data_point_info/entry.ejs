@@ -1,4 +1,68 @@
 <%- include('../../templates/header.ejs') %>
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css"/>
+<script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<script type="text/javascript" src="/editor/richtexteditor/plugins/all_plugins.js"></script>
+<script>
+  var editorCfg = {}
+  <% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
+    editorCfg.galleryImages = [
+      "/images/icons/colored/french/1.png",
+      "/images/icons/colored/french/2.png",
+      "/images/icons/colored/french/3.png",
+      "/images/icons/colored/french/4.png",
+      "/images/icons/colored/french/5.png",
+      "/images/icons/colored/french/6.png",
+      "/images/icons/colored/french/7.png",
+      "/images/icons/colored/french/8.png",
+      "/images/icons/colored/french/9.png",
+      "/images/icons/colored/french/10.png",
+      "/images/icons/colored/french/11.png",
+      "/images/icons/colored/french/12.png",
+      "/images/icons/colored/french/13.png",
+      "/images/icons/colored/french/14.png",
+      "/images/icons/colored/french/15.png",
+      "/images/icons/colored/french/16.png",
+      "/images/icons/colored/french/17.png",
+    ];
+  <% }else{ %>
+    editorCfg.galleryImages = [
+      "/images/icons/colored/1.png",
+      "/images/icons/colored/2.png",
+      "/images/icons/colored/3.png",
+      "/images/icons/colored/4.png",
+      "/images/icons/colored/5.png",
+      "/images/icons/colored/6.png",
+      "/images/icons/colored/7.png",
+      "/images/icons/colored/8.png",
+      "/images/icons/colored/9.png",
+      "/images/icons/colored/10.png",
+      "/images/icons/colored/11.png",
+      "/images/icons/colored/12.png",
+      "/images/icons/colored/13.png",
+      "/images/icons/colored/14.png",
+      "/images/icons/colored/15.png",
+      "/images/icons/colored/16.png",
+      "/images/icons/colored/17.png",
+    ];
+  <% } %>
+</script>
+<% if(flag == "F" || flag == "IF" || flag == "EF" || flag == "EVF"){ %>
+    <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+<% } %>
+<!-- END -->
+<style>
+  .topic_text {
+    text-align: center;
+    vertical-align: middle;
+  }
+  .rte-modern.rte-desktop.rte-toolbar-default {
+    min-width: 100% !important;
+  }
+</style>
+<script>
+  var editorList = {};
+</script>
+
 <div class="container-fluid">
   <div class="page-header">
     <div class="row">
@@ -26,19 +90,7 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <form action="/data_point_entry" method="post" enctype="multipart/form-data">
-                    <div class="row g-3 py-3">
-                        <div class="col-md-8">
-                            <label class="form-label" for="sec_id">Upload Logo For The Framework <%= frame_list[flag] %></label>
-                            <input class="form-control" type="file" name="flag_img" id="flag_img" accept="image/*">
-                        </div>
-                        <div class="col-md-4" style="display: <%= ind_dt.flag_img && ind_dt.flag_img != '' ? 'block' : 'none' %>;">
-                            <label class="form-label" for="sec_id">Preview Logo For The Framework <%= frame_list[flag] %></label>
-                            <div class="up-img-prev">
-                                <img src="<%= ind_dt.flag_img && ind_dt.flag_img != '' ? '/uploads/flag_icon/' + ind_dt.flag_img : '#' %>" alt="" id="prev_img">
-                            </div>
-                        </div>
-                    </div>
+                <form action="/set_sus_dis_info_point_entry" method="post" enctype="multipart/form-data">
                     <div class="row g-3 py-3">
                         <div class="col-md-6">
                             <label class="form-label" for="sec_id">Sector</label>
@@ -73,10 +125,11 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 5%;">#</th>
-                                        <th style="width: 30%;">Code</th>
-                                        <th style="width: 20%;">Framework</th>
-                                        <th style="width: 40%;">Point</th>
-                                        <th style="width: 5%;"></th>
+                                        <th style="width: 20%;">Code</th>
+                                        <th style="width: 20%;">Tab Title</th>
+                                        <th style="width: 47%;">Info</th>
+                                        <th style="width: 4%;"></th>
+                                        <th style="width: 4%;"></th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -165,75 +218,61 @@
         }
     })
 
-    function create_frame_opt(){
-        return new Promise((resolve, reject) => {
-            var frame_list = '<%- JSON.stringify(frame_list) %>';
-            frame_list = JSON.parse(frame_list)
-            var frame_opt = ''
-            Object.keys(frame_list).forEach(dt => {
-                var _sel = ''
-                if(dt == $('#flag').val()) _sel = 'selected'
-                frame_opt = frame_opt + `<option value="${dt}" ${_sel}>${frame_list[dt]}</option>`
-            })
-            resolve(frame_opt.toString())
-        })
-    }
-
     $("#ind_id").on("change", function () {
         var ind_id = $(this).val(),
         sec_id = $('#sec_id').val(),
         sel_sec_id = '<%= sec_id %>';
         if($(this).val() > 0){
-            $.ajax({
-                method: "POST",
-                url: "/get_data_topic_list_ajax",
-                data: { sec_id: sec_id, flag: $('#flag').val(), ind_id: ind_id },
-                dataType: "html",
-                beforeSend: function () {
-                    $(".loader-wrapper").show();
-                },
-                success: function (result) {
-                    var top_res = JSON.parse(result);
-                    if(top_res.suc > 0 && top_res.msg.length > 0 && sel_sec_id > 0){
-                        $('#data_topic_table_div').show()
-                        var i = 1, prev_id = '';
-                        $.each(top_res.msg, async function (j, dt) {                            
-                            if(dt.code != '' && dt.code){                          
-                                var now_id = dt.sus_id
-                                console.log(now_id, prev_id, 'here');
+            // $.ajax({
+            //     method: "POST",
+            //     url: "/get_data_topic_list_ajax",
+            //     data: { sec_id: sec_id, flag: $('#flag').val(), ind_id: ind_id },
+            //     dataType: "html",
+            //     beforeSend: function () {
+            //         $(".loader-wrapper").show();
+            //     },
+            //     success: function (result) {
+            //         var top_res = JSON.parse(result);
+            //         if(top_res.suc > 0 && top_res.msg.length > 0 && sel_sec_id > 0){
+            //             $('#data_topic_table_div').show()
+            //             var i = 1, prev_id = '';
+            //             $.each(top_res.msg, async function (j, dt) {                            
+            //                 if(dt.code != '' && dt.code){                          
+            //                     var now_id = dt.sus_id
+            //                     console.log(now_id, prev_id, 'here');
                                 
-                                if(now_id == prev_id){
-                                    add_row(dt.sus_id, 1)
-                                }else{
-                                    console.log(dt.sus_id, '----------');
+            //                     if(now_id == prev_id){
+            //                         add_row(dt.sus_id, 1)
+            //                     }else{
+            //                         console.log(dt.sus_id, '----------');
                                     
-                                    var frame_opt = await create_frame_opt()
-                                    prev_id = dt.sus_id
-                                    $("#data_topic_table tbody").append(`
-                                    <tr id="row_${dt.sus_id}_1">
-                                        <td rowspan="1">${i}</td>
-                                        <td rowspan="1">
-                                            <label>${dt.code}</label>
-                                            <input type="hidden" name="sus_dis_top_met_id" value="${dt.sus_id}">
-                                        </td>
-                                        <td>
-                                            <select class="form-select" id="frame_id_${dt.sus_id}_1" name="frame_id_${dt.sus_id}" required="">
-                                                ${frame_opt}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <textarea class="form-control" name="point_codes_${dt.sus_id}" id="point_codes_${dt.sus_id}" rows="3"></textarea>
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
-                                        </td>
-                                    </tr>
-                                    `)
-                                    i++
-                                }
-                            }
-                        })
-                    }else{
+            //                         var frame_opt = await create_frame_opt()
+            //                         prev_id = dt.sus_id
+            //                         $("#data_topic_table tbody").append(`
+            //                         <tr id="row_${dt.sus_id}_1">
+            //                             <td rowspan="1">${i}</td>
+            //                             <td rowspan="1">
+            //                                 <label>${dt.code}</label>
+            //                                 <input type="hidden" name="sus_dis_top_met_id" value="${dt.sus_id}">
+            //                             </td>
+            //                             <td>
+            //                                 <select class="form-select" id="frame_id_${dt.sus_id}_1" name="frame_id_${dt.sus_id}" required="">
+            //                                     ${frame_opt}
+            //                                 </select>
+            //                             </td>
+            //                             <td>
+            //                                 <textarea class="form-control" name="point_codes_${dt.sus_id}" id="point_codes_${dt.sus_id}" rows="3"></textarea>
+            //                             </td>
+            //                             <td>
+            //                                 <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
+            //                             </td>
+            //                         </tr>
+            //                         `)
+            //                         i++
+            //                     }
+            //                 }
+            //             })
+            //         }else{
                         $.ajax({
                             method: "GET",
                             url: "/sus_disc_ajax",
@@ -245,7 +284,7 @@
                             success: async function (result) {
                                 var res = JSON.parse(result);
                                 
-                                var frame_opt = await create_frame_opt()
+                                var frame_opt = ''
                                 
                                 if (res.suc > 0 && res.msg.length > 0) {
                                     $('#data_topic_table_div').show()
@@ -260,19 +299,23 @@
                                                     <input type="hidden" name="sus_dis_top_met_id" value="${dt.id}">
                                                 </td>
                                                 <td>
-                                                    <select class="form-select" id="frame_id_${dt.id}_1" name="frame_id_${dt.id}" required="">
-                                                        ${frame_opt}
-                                                    </select>
+                                                    <input class="form-control" id="ind_agn_${dt.id}_1" name="ind_agn_${dt.id}" type="text" value="">
                                                 </td>
                                                 <td>
-                                                    <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="3"></textarea>
+                                                    <div>
+                                                        <div id="info_desc_${dt.id}_1"></div>
+                                                        <textarea class="form-control" id="info_desc_text_${dt.id}_1" name="info_desc_${dt.id}" cols="30" rows="10" style="display:none;"></textarea>
+                                                    </div>
+                                                    <!-- <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="3"></textarea> -->
                                                 </td>
                                                 <td>
                                                     <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
                                                 </td>
+                                                <td><button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${dt.id}_1', ${dt.id}, 1)">Save</button></td>
                                             </tr>
                                             `)
                                             i++
+                                            createEditor(`info_desc_${dt.id}_1`, `info_desc_text_${dt.id}_1`)
                                         }
                                     })
                                 }
@@ -281,52 +324,38 @@
                                 $(".loader-wrapper").hide();
                             },
                         })
-                    }
-                },
-                complete: function () {
-                    $(".loader-wrapper").hide();
-                },
-            })
+        //             }
+        //         },
+        //         complete: function () {
+        //             $(".loader-wrapper").hide();
+        //         },
+        //     })
         }
     })
 
-    // function created_row(sus_dis_top_met_id, id, frame_opt='', code_name= '', sl_no = 1, prev_id = 0){
-    //     // console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
-    //     var next_id = $(`.row-${sus_dis_top_met_id}`).length + 1
-    //     $(`${prev_id > 0 ? `#row_${sus_dis_top_met_id}_${prev_id}` : '#data_topic_table tbody'}`).after(`<tr class="row-${sus_dis_top_met_id}" id="row_${sus_dis_top_met_id}_${next_id}">
-    //         ${prev_id > 0 ? '' : `<td rowspan="1">${sl_no}</td><td rowspan="1" class="topic_text"><label>${code_name}</label>
-    //                             <input type="hidden" name="sus_dis_top_met_id" value="${sus_dis_top_met_id}"></td>`}
-    //         <td>
-    //             <select class="form-select" id="frame_id_${sus_dis_top_met_id}_${next_id}" name="frame_id_${sus_dis_top_met_id}" required="">
-    //                 ${frame_opt}
-    //             </select>
-    //         </td>
-    //         <td>
-    //             <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3"></textarea>
-    //         </td>
-    //         <td>${prev_id > 0 ? `<button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-trash"></i></button>` : `<button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${sus_dis_top_met_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>`}</td>
-    //     </tr>`);
-    // }
-
-    async function created_row(sus_dis_top_met_id, next_id, prev_id){
-        var frame_opt = await create_frame_opt()
-        
+    async function created_row(sus_dis_top_met_id, next_id, prev_id){        
         $(`#row_${sus_dis_top_met_id}_${next_id-1}`).after(`
             <tr id="row_${sus_dis_top_met_id}_${next_id}">
                 <td>
-                    <select class="form-select" id="frame_id_${sus_dis_top_met_id}_${next_id}" name="frame_id_${sus_dis_top_met_id}" required="">
-                        ${frame_opt}
-                    </select>
+                    <input class="form-control" id="ind_agn_${sus_dis_top_met_id}_${next_id}" name="ind_agn_${sus_dis_top_met_id}" type="text" value="">
                 </td>
                 <td>
-                    <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3"></textarea>
+                    <div>
+                        <div id="info_desc_${sus_dis_top_met_id}_${next_id}"></div>
+                        <textarea class="form-control" id="info_desc_text_${sus_dis_top_met_id}_${next_id}" name="info_desc_${sus_dis_top_met_id}" cols="30" rows="10" style="display:none;"></textarea>
+                    </div>
+                    <!-- <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3"></textarea> -->
                 </td>
                 <td>
                     <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-trash"></i></button>
                     <!-- <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-plus-circle"></i></button> -->
                 </td>
+                <td>
+                    <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${sus_dis_top_met_id}_1', ${sus_dis_top_met_id}, 1)">Save</button>
+                </td>
             </tr>
         `)
+        createEditor(`info_desc_${sus_dis_top_met_id}_${next_id}`, `info_desc_text_${sus_dis_top_met_id}_${next_id}`)
     }
 
     function add_row(sus_dis_top_met_id, id) {
@@ -369,5 +398,85 @@
       $(`#row_${sus_dis_top_met_id}_${id}`).remove();
     }
   }
+
+  function createEditor(id, txt_id){
+
+    editorList[id] = new RichTextEditor(id, editorCfg);
+    editorList[id].attachEvent("change", function () {
+    // console.log(editorList[id].getHTMLCode());
+    $(`#${txt_id}`).val(editorList[id].getHTMLCode())
+    $(`#${txt_id}`).text(editorList[id].getHTMLCode())
+    })
+    // CKEDITOR
+    //   .replace(id, {
+    //     on: {
+    //       contentDom: function( evt ) {
+    //         // Allow custom context menu only with table elemnts.
+    //         evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
+    //           var path = evt.editor.elementPath();
+    //             if ( !path.contains( 'table' ) ) {
+    //               contextEvent.cancel();
+    //             }
+    //         }, null, null, 5 );
+    //       }
+    //     }
+    //   });
+    }
+    
+const CHUNK_SIZE = 1024; // Adjust chunk size as needed
+
+function chunkString(str, size) {
+  const chunks = [];
+  for (let i = 0; i < str.length; i += size) {
+    chunks.push(str.slice(i, i + size));
+  }
+  return chunks;
+}
+
+function uploadChunk(chunk, chunkIndex, totalChunks, onSuccess, onError, top_id, sl_no) {
+  $.ajax({
+    url: '/set_sus_dis_info_point_entry',
+    type: 'POST',
+    data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val(), code: $(`#code_${top_id}_${sl_no}`).val(), info_title: $(`#info_title_${top_id}_${sl_no}`).val(), top_id }),
+    contentType: 'application/json',
+    success: onSuccess,
+    error: onError
+  });
+}
+
+function uploadData(data, top_id, sl_no) {
+  const chunks = chunkString(data, CHUNK_SIZE);
+  let chunkIndex = 0;
+
+  function uploadNextChunk() {
+    if (chunkIndex < chunks.length) {
+      uploadChunk(chunks[chunkIndex], chunkIndex, chunks.length, (data) => {
+        if(data.suc == 1){
+          $(".loader-wrapper").hide();
+          initiate_sweet_alert('<%= header %>', data.msg, data.suc == 1 ? 'success' : 'error')
+        }
+        // console.log(data);
+        chunkIndex++;
+        uploadNextChunk();
+      }, (error) => {
+          $(".loader-wrapper").hide();
+          initiate_sweet_alert('<%= header %>', error, 'error')
+        // console.error('Error uploading chunk:', error);
+      }, top_id, sl_no);
+    } else {
+      $(".loader-wrapper").hide();
+      console.log('All chunks uploaded successfully.');
+    }
+  }
+
+  uploadNextChunk();
+}
+
+function saveInfo(id, top_id, sl_no){
+  const data = editorList[id].getHTMLCode();
+  $(".loader-wrapper").show();
+  uploadData(data, top_id, sl_no);
+  // console.log(id, editorList[id].getHTMLCode())
+}
 </script>
 <%- include('../../templates/footer.ejs') %>

@@ -227,20 +227,25 @@ module.exports = {
   },
   getDataPoint: (flag) => {
     return new Promise(async (resolve, reject) => {
-      var select = "DISTINCT a.sec_id, b.sec_name, COUNT(a.id) tot_ind_point_entry",
-        table_name = `md_data_point_dt a, md_sector b`,
-        whr = `a.sec_id=b.id AND a.repo_flag = '${flag}'`,
-        order = 'GROUP BY a.sec_id';
+      var select = "DISTINCT a.sec_id, a.ind_id, c.ind_name, b.sec_name, COUNT(a.id) tot_ind_point_entry",
+        table_name = `md_data_point_dt a, md_sector b, md_industries c`,
+        whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.repo_flag = '${flag}'`,
+        order = 'GROUP BY a.sec_id, a.ind_id';
       var res_dt = await db_Select(select, table_name, whr, order);
       resolve(res_dt)
     })
   },
-  getDataPointList: (flag, sec_id = 0) => {
+  getDataPointListAjax: (flag, sec_id, ind_id) => {
+
+  },
+  getDataPointList: (flag, sec_id = 0, ind_id = 0) => {
     return new Promise(async (resolve, reject) => {
-      var select = "a.id ind_id, a.ind_name, b.id, b.repo_flag, b.sec_id, b.point_codes",
-        table_name = `md_industries a left join md_data_point_dt b ON a.id=b.ind_id ${sec_id > 0 ? `AND b.sec_id = ${sec_id}` : ''}`,
-        whr = `a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''}`,
-        order = null;
+      var select = "a.id sus_id, a.ind_id, a.code, b.id, b.repo_flag, b.sec_id, b.sus_dis_top_met_id, b.repo_flag_id, b.point_codes",
+        table_name = `td_sus_dis_top_met a
+        JOIN md_industries_topics d ON a.top_id=d.id
+        LEFT JOIN md_data_point_dt b ON a.id=b.sus_dis_top_met_id AND a.ind_id=b.ind_id AND a.sec_id=b.sec_id AND a.repo_flag=b.repo_flag ${sec_id > 0 ? `AND b.sec_id = ${sec_id}` : ''}`,
+        whr = `a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''} ${sec_id > 0 ? `AND a.ind_id = ${ind_id}` : ''}`,
+        order = `HAVING a.code != '' ORDER BY a.id, b.id`;
       var res_dt = await db_Select(select, table_name, whr, order);
       
       var select = "id, repo_flag, img_path",
