@@ -218,11 +218,98 @@
         }
     })
 
+    function fetchData(){
+        var ind_id = $('#ind_id').val(),
+        sec_id = $('#sec_id').val(),
+        flag = $('#flag').val();
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/get_sus_dis_point_dt_ajax?flag=${flag}&sec_id=${sec_id}&ind_id=${ind_id}`, true);
+
+        let dataBuffer = ''
+        var i=0;
+        $('#data_topic_table_div').show()
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.LOADING) {
+                dataBuffer += xhr.responseText;  // Append the chunked data
+                const rows = dataBuffer.split('\n'); // Split at newline characters
+                dataBuffer = rows.pop(); // Keep the last partial row for the next chunk
+                console.log(rows, '===============');
+                
+                console.log(rows.length);
+                
+                var prev_dt = ''
+                rows.forEach((row, index) => {
+                    var now_dt = ''
+                    try {
+                        const parsedRow = JSON.parse(row);
+                        console.log(parsedRow);
+                        
+                        
+                        now_dt = parsedRow.id
+                        console.log(now_dt == prev_dt, now_dt, prev_dt);
+                        if(now_dt == prev_dt){
+                            appendRowToTable(parsedRow, false, i);  // Function to add row to table
+                        }else{
+                            prev_dt = parsedRow.id
+                            i++
+                            appendRowToTable(parsedRow, true, i);  // Function to add row to table
+                            createEditor(`info_desc_${parsedRow.id}_1`, `info_desc_text_${parsedRow.id}_1`)
+                        }
+                    } catch (e) {
+                        console.log('Error parsing row:', e);
+                    }
+                });
+            }
+        };
+        xhr.send();
+    }
+
+    function appendRowToTable(row, fresh=true, i) {
+        // console.log(row);
+        // return new Promise((resolve, reject) => {
+            if(fresh){
+                $("#data_topic_table tbody").append(`
+                    <tr id="row_${row.id}_1">
+                        <td rowspan="1">${i}</td>
+                        <td rowspan="1">
+                            <label>${row.code}</label>
+                            <input type="hidden" name="sus_dis_top_met_id" value="${row.id}">
+                        </td>
+                        <td>
+                            <input class="form-control" id="info_title_${row.id}_1" name="info_title_${row.id}" type="text" value="${row.tab_title && row.tab_title != '' ? row.tab_title : ''}">
+                        </td>
+                        <td>
+                            <div>
+                                <div id="info_desc_${row.id}_1">${row.tab_info && row.tab_info != '' ? row.tab_info : ''}</div>
+                                <textarea class="form-control" id="info_desc_text_${row.id}_1" name="info_desc_${row.id}" cols="30" rows="10" style="display:none;">${row.tab_info && row.tab_info != '' ? row.tab_info : ''}</textarea>
+                            </div>
+                            <!-- <textarea class="form-control" name="point_codes_${row.id}" id="point_codes_${row.id}" rows="3"></textarea> -->
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${row.id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
+                        </td>
+                        <td><button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${row.id}_1', ${row.id}, 1)">Save</button></td>
+                    </tr>
+                    `)
+                    // setTimeout(() => {
+                        // createEditor(`info_desc_${row.id}_1`, `info_desc_text_${row.id}_1`)
+                    // }, 1000);
+                    // resolve(true);
+            }else{
+                add_row(row.id, 1, `${row.tab_title && row.tab_title != '' ? row.tab_title : ''}`, `${row.tab_info && row.tab_info != '' ? row.tab_info : ''}`)
+                // resolve(true)
+            }
+        // })
+    }
+
     $("#ind_id").on("change", function () {
         var ind_id = $(this).val(),
         sec_id = $('#sec_id').val(),
         sel_sec_id = '<%= sec_id %>';
         if($(this).val() > 0){
+            $("#data_topic_table tbody").empty()
+            fetchData()
             // $.ajax({
             //     method: "POST",
             //     url: "/get_data_topic_list_ajax",
@@ -273,92 +360,91 @@
             //                 }
             //             })
             //         }else{
-                        $.ajax({
-                            method: "GET",
-                            url: "/sus_disc_ajax",
-                            data: { ind_id: ind_id, sec_id: $("#sec_id").val(), flag: $('#flag').val() },
-                            dataType: "html",
-                            beforeSend: function () {
-                                $(".loader-wrapper").show();
-                            },
-                            success: async function (result) {
-                                var res = JSON.parse(result);
+            //             $.ajax({
+            //                 method: "GET",
+            //                 url: "/sus_disc_ajax",
+            //                 data: { ind_id: ind_id, sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+            //                 dataType: "html",
+            //                 beforeSend: function () {
+            //                     $(".loader-wrapper").show();
+            //                 },
+            //                 success: async function (result) {
+            //                     var res = JSON.parse(result);
                                 
-                                var frame_opt = ''
+            //                     var frame_opt = ''
                                 
-                                if (res.suc > 0 && res.msg.length > 0) {
-                                    $('#data_topic_table_div').show()
-                                    var i = 1
-                                    $.each(res.msg, function (j, dt) {
-                                        if(dt.code != '' && dt.code){                            
-                                            $("#data_topic_table tbody").append(`
-                                            <tr id="row_${dt.id}_1">
-                                                <td rowspan="1">${i}</td>
-                                                <td rowspan="1">
-                                                    <label>${dt.code}</label>
-                                                    <input type="hidden" name="sus_dis_top_met_id" value="${dt.id}">
-                                                </td>
-                                                <td>
-                                                    <input class="form-control" id="ind_agn_${dt.id}_1" name="ind_agn_${dt.id}" type="text" value="">
-                                                </td>
-                                                <td>
-                                                    <div>
-                                                        <div id="info_desc_${dt.id}_1"></div>
-                                                        <textarea class="form-control" id="info_desc_text_${dt.id}_1" name="info_desc_${dt.id}" cols="30" rows="10" style="display:none;"></textarea>
-                                                    </div>
-                                                    <!-- <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="3"></textarea> -->
-                                                </td>
-                                                <td>
-                                                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
-                                                </td>
-                                                <td><button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${dt.id}_1', ${dt.id}, 1)">Save</button></td>
-                                            </tr>
-                                            `)
-                                            i++
-                                            createEditor(`info_desc_${dt.id}_1`, `info_desc_text_${dt.id}_1`)
-                                        }
-                                    })
-                                }
-                            },
-                            complete: function () {
-                                $(".loader-wrapper").hide();
-                            },
-                        })
-        //             }
-        //         },
-        //         complete: function () {
-        //             $(".loader-wrapper").hide();
-        //         },
-        //     })
+            //                     if (res.suc > 0 && res.msg.length > 0) {
+            //                         $('#data_topic_table_div').show()
+            //                         var i = 1
+            //                         $.each(res.msg, function (j, dt) {
+            //                             if(dt.code != '' && dt.code){                            
+                                            // $("#data_topic_table tbody").append(`
+                                            // <tr id="row_${dt.id}_1">
+                                            //     <td rowspan="1">${i}</td>
+                                            //     <td rowspan="1">
+                                            //         <label>${dt.code}</label>
+                                            //         <input type="hidden" name="sus_dis_top_met_id" value="${dt.id}">
+                                            //     </td>
+                                            //     <td>
+                                            //         <input class="form-control" id="info_title_${dt.id}_1" name="info_title_${dt.id}" type="text" value="">
+                                            //     </td>
+                                            //     <td>
+                                            //         <div>
+                                            //             <div id="info_desc_${dt.id}_1"></div>
+                                            //             <textarea class="form-control" id="info_desc_text_${dt.id}_1" name="info_desc_${dt.id}" cols="30" rows="10" style="display:none;"></textarea>
+                                            //         </div>
+                                            //         <!-- <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="3"></textarea> -->
+                                            //     </td>
+                                            //     <td>
+                                            //         <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
+                                            //     </td>
+                                            //     <td><button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${dt.id}_1', ${dt.id}, 1)">Save</button></td>
+                                            // </tr>
+                                            // `)
+            //                                 i++
+            //                                 createEditor(`info_desc_${dt.id}_1`, `info_desc_text_${dt.id}_1`)
+            //                             }
+            //                         })
+            //                     }
+            //                 },
+            //                 complete: function () {
+            //                     $(".loader-wrapper").hide();
+            //                 },
+            //             })
+            //         }
+            //     },
+            //     complete: function () {
+            //         $(".loader-wrapper").hide();
+            //     },
+            // })
         }
     })
 
-    async function created_row(sus_dis_top_met_id, next_id, prev_id){        
+    async function created_row(sus_dis_top_met_id, next_id, prev_id, tab_title = '', tab_info = ''){        
         $(`#row_${sus_dis_top_met_id}_${next_id-1}`).after(`
             <tr id="row_${sus_dis_top_met_id}_${next_id}">
                 <td>
-                    <input class="form-control" id="ind_agn_${sus_dis_top_met_id}_${next_id}" name="ind_agn_${sus_dis_top_met_id}" type="text" value="">
+                    <input class="form-control" id="info_title_${sus_dis_top_met_id}_${next_id}" name="info_title_${sus_dis_top_met_id}" type="text" value="${tab_title}">
                 </td>
                 <td>
                     <div>
-                        <div id="info_desc_${sus_dis_top_met_id}_${next_id}"></div>
-                        <textarea class="form-control" id="info_desc_text_${sus_dis_top_met_id}_${next_id}" name="info_desc_${sus_dis_top_met_id}" cols="30" rows="10" style="display:none;"></textarea>
+                        <div id="info_desc_${sus_dis_top_met_id}_${next_id}">${tab_info}</div>
+                        <textarea class="form-control" id="info_desc_text_${sus_dis_top_met_id}_${next_id}" name="info_desc_${sus_dis_top_met_id}" cols="30" rows="10" style="display:none;">${tab_info}</textarea>
                     </div>
-                    <!-- <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3"></textarea> -->
                 </td>
                 <td>
                     <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-trash"></i></button>
                     <!-- <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-plus-circle"></i></button> -->
                 </td>
                 <td>
-                    <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${sus_dis_top_met_id}_1', ${sus_dis_top_met_id}, 1)">Save</button>
+                    <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="button" onclick="saveInfo('info_desc_${sus_dis_top_met_id}_${next_id}', ${sus_dis_top_met_id}, ${next_id})">Save</button>
                 </td>
             </tr>
         `)
         createEditor(`info_desc_${sus_dis_top_met_id}_${next_id}`, `info_desc_text_${sus_dis_top_met_id}_${next_id}`)
     }
 
-    function add_row(sus_dis_top_met_id, id) {
+    function add_row(sus_dis_top_met_id, id, tab_title = '', tab_info = '') {
         console.log($(`#row_${sus_dis_top_met_id}_1`))
         var row = $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr('rowspan')
         // var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
@@ -367,7 +453,7 @@
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", next_id);
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).attr("rowspan", next_id);
-        created_row(sus_dis_top_met_id, next_id, id)
+        created_row(sus_dis_top_met_id, next_id, id, tab_title, tab_info)
     }
 
     function remove_row(sus_dis_top_met_id, id, sus_id) {
@@ -399,29 +485,18 @@
     }
   }
 
-  function createEditor(id, txt_id){
-
-    editorList[id] = new RichTextEditor(id, editorCfg);
-    editorList[id].attachEvent("change", function () {
-    // console.log(editorList[id].getHTMLCode());
-    $(`#${txt_id}`).val(editorList[id].getHTMLCode())
-    $(`#${txt_id}`).text(editorList[id].getHTMLCode())
-    })
-    // CKEDITOR
-    //   .replace(id, {
-    //     on: {
-    //       contentDom: function( evt ) {
-    //         // Allow custom context menu only with table elemnts.
-    //         evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-    //           var path = evt.editor.elementPath();
-    //             if ( !path.contains( 'table' ) ) {
-    //               contextEvent.cancel();
-    //             }
-    //         }, null, null, 5 );
-    //       }
-    //     }
-    //   });
+function createEditor(id, txt_id){
+    try{
+        editorList[id] = new RichTextEditor(id, editorCfg);
+        editorList[id].attachEvent("change", function () {
+        // console.log(editorList[id].getHTMLCode());
+        $(`#${txt_id}`).val(editorList[id].getHTMLCode())
+        $(`#${txt_id}`).text(editorList[id].getHTMLCode())
+        })
+    }catch(err){
+        console.log(err);
     }
+}
     
 const CHUNK_SIZE = 1024; // Adjust chunk size as needed
 
@@ -433,18 +508,18 @@ function chunkString(str, size) {
   return chunks;
 }
 
-function uploadChunk(chunk, chunkIndex, totalChunks, onSuccess, onError, top_id, sl_no) {
+function uploadChunk(chunk, chunkIndex, totalChunks, onSuccess, onError, sus_dis_top_met_id, sl_no) {
   $.ajax({
     url: '/set_sus_dis_info_point_entry',
     type: 'POST',
-    data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val(), code: $(`#code_${top_id}_${sl_no}`).val(), info_title: $(`#info_title_${top_id}_${sl_no}`).val(), top_id }),
+    data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val(), code_id: sus_dis_top_met_id, info_title: $(`#info_title_${sus_dis_top_met_id}_${sl_no}`).val()}),
     contentType: 'application/json',
     success: onSuccess,
     error: onError
   });
 }
 
-function uploadData(data, top_id, sl_no) {
+function uploadData(data, sus_dis_top_met_id, sl_no) {
   const chunks = chunkString(data, CHUNK_SIZE);
   let chunkIndex = 0;
 
@@ -462,7 +537,7 @@ function uploadData(data, top_id, sl_no) {
           $(".loader-wrapper").hide();
           initiate_sweet_alert('<%= header %>', error, 'error')
         // console.error('Error uploading chunk:', error);
-      }, top_id, sl_no);
+      }, sus_dis_top_met_id, sl_no);
     } else {
       $(".loader-wrapper").hide();
       console.log('All chunks uploaded successfully.');
@@ -472,10 +547,10 @@ function uploadData(data, top_id, sl_no) {
   uploadNextChunk();
 }
 
-function saveInfo(id, top_id, sl_no){
+function saveInfo(id, sus_dis_top_met_id, sl_no){
   const data = editorList[id].getHTMLCode();
   $(".loader-wrapper").show();
-  uploadData(data, top_id, sl_no);
+  uploadData(data, sus_dis_top_met_id, sl_no);
   // console.log(id, editorList[id].getHTMLCode())
 }
 </script>

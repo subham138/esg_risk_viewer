@@ -165,14 +165,15 @@
         }
     })
 
-    function create_frame_opt(){
+    function create_frame_opt(repo_flag_id = ''){
         return new Promise((resolve, reject) => {
             var frame_list = '<%- JSON.stringify(frame_list) %>';
             frame_list = JSON.parse(frame_list)
-            var frame_opt = ''
+            var frame_opt = '', sel_flag_id = repo_flag_id != '' ? repo_flag_id : $('#flag').val();
+            
             Object.keys(frame_list).forEach(dt => {
                 var _sel = ''
-                if(dt == $('#flag').val()) _sel = 'selected'
+                if(dt == sel_flag_id) _sel = 'selected'
                 frame_opt = frame_opt + `<option value="${dt}" ${_sel}>${frame_list[dt]}</option>`
             })
             resolve(frame_opt.toString())
@@ -183,6 +184,7 @@
         var ind_id = $(this).val(),
         sec_id = $('#sec_id').val(),
         sel_sec_id = '<%= sec_id %>';
+        $("#data_topic_table tbody").empty()
         if($(this).val() > 0){
             $.ajax({
                 method: "POST",
@@ -200,15 +202,15 @@
                         $.each(top_res.msg, async function (j, dt) {                            
                             if(dt.code != '' && dt.code){                          
                                 var now_id = dt.sus_id
-                                console.log(now_id, prev_id, 'here');
                                 
                                 if(now_id == prev_id){
-                                    add_row(dt.sus_id, 1)
+                                    setTimeout(async () => {
+                                        add_row(dt.sus_id, 1, `${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}`, `${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}`)
+                                    }, 1000);
                                 }else{
-                                    console.log(dt.sus_id, '----------');
-                                    
-                                    var frame_opt = await create_frame_opt()
                                     prev_id = dt.sus_id
+                                    
+                                    var frame_opt = await create_frame_opt(dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : '')
                                     $("#data_topic_table tbody").append(`
                                     <tr id="row_${dt.sus_id}_1">
                                         <td rowspan="1">${i}</td>
@@ -222,10 +224,10 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <textarea class="form-control" name="point_codes_${dt.sus_id}" id="point_codes_${dt.sus_id}" rows="3"></textarea>
+                                            <textarea class="form-control" name="point_codes_${dt.sus_id}" id="point_codes_${dt.sus_id}" rows="3">${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}</textarea>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
+                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1, '${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}', ${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''})"><i class="icofont icofont-plus-circle"></i></button>    
                                         </td>
                                     </tr>
                                     `)
@@ -308,8 +310,8 @@
     //     </tr>`);
     // }
 
-    async function created_row(sus_dis_top_met_id, next_id, prev_id){
-        var frame_opt = await create_frame_opt()
+    async function created_row(sus_dis_top_met_id, next_id, prev_id, repo_flag_id, point_codes){
+        var frame_opt = await create_frame_opt(repo_flag_id)
         
         $(`#row_${sus_dis_top_met_id}_${next_id-1}`).after(`
             <tr id="row_${sus_dis_top_met_id}_${next_id}">
@@ -319,7 +321,7 @@
                     </select>
                 </td>
                 <td>
-                    <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3"></textarea>
+                    <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3">${point_codes}</textarea>
                 </td>
                 <td>
                     <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-trash"></i></button>
@@ -329,8 +331,7 @@
         `)
     }
 
-    function add_row(sus_dis_top_met_id, id) {
-        console.log($(`#row_${sus_dis_top_met_id}_1`))
+    function add_row(sus_dis_top_met_id, id, repo_flag_id = '', point_codes = '') {
         var row = $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr('rowspan')
         // var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
         let next_id = parseInt(row) + 1;
@@ -338,7 +339,7 @@
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", next_id);
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).attr("rowspan", next_id);
-        created_row(sus_dis_top_met_id, next_id, id)
+        created_row(sus_dis_top_met_id, next_id, id, repo_flag_id, point_codes)
     }
 
     function remove_row(sus_dis_top_met_id, id, sus_id) {

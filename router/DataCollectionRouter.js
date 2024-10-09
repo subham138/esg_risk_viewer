@@ -1096,32 +1096,32 @@ let sus_dis_point_chunks = {};
 DataCollectionRouter.post("/set_sus_dis_info_point_entry", async (req, res) => {
   const { chunk, chunkIndex, totalChunks, sec_id, ind_id, code_id, info_title, flag } = req.body;
 
-  if (!sus_dis_chunks[chunkIndex]) {
-    sus_dis_chunks[chunkIndex] = chunk;
+  if (!sus_dis_point_chunks[chunkIndex]) {
+    sus_dis_point_chunks[chunkIndex] = chunk;
   }
 
-  if (Object.keys(sus_dis_chunks).length === totalChunks) {
-    const fullData = Object.keys(sus_dis_chunks)
+  if (Object.keys(sus_dis_point_chunks).length === totalChunks) {
+    const fullData = Object.keys(sus_dis_point_chunks)
       .sort((a, b) => a - b)
-      .map((key) => sus_dis_chunks[key])
+      .map((key) => sus_dis_point_chunks[key])
       .join("");
 
     // Save `fullData` to MySQL database
     var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss"),
       user = req.session.user.user_name;
 
-    var chk_whr = `repo_flag = '${flag}' AND sec_id = '${sec_id}' AND ind_id = '${ind_id}' AND top_id = ${top_id} AND code = '${code}'`;
-    var table_name = `td_sus_dis_top_met`,
-      fields = `info_title = "${info_title}", info_desc = '${
-        fullData != "" && fullData ? fullData.split("'").join("\\'") : ""
-      }', modified_by= '${user}', modified_dt = '${datetime}'`,
-      values = null,
-      whr = chk_whr,
-      flagIn = 1;
+    var chk_whr = `repo_flag = '${flag}' AND sec_id = '${sec_id}' AND ind_id = '${ind_id}' AND code_id = '${code_id}' AND tab_title = "${info_title}"`;
+    var chk_dt = await db_Select('id', 'td_sus_dist_point_info', chk_whr, null)
+
+    var table_name = `td_sus_dist_point_info`,
+      fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `tab_title = "${info_title}", tab_info = '${fullData != "" && fullData ? fullData.split("'").join("\\'") : ""}', modified_by= '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, code_id, tab_title, tab_info, created_by, created_dt)',
+      values = `('${flag}', ${sec_id}, ${ind_id}, ${code_id}, '${info_title}', '${fullData != "" && fullData ? fullData.split("'").join("\\'") : ""}', '${user}', '${datetime}')`,
+      whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id=${chk_dt.msg[0].id}` : null,
+      flagIn = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
     // res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
 
     var res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
-    sus_dis_chunks = {};
+    sus_dis_point_chunks = {};
 
     res.send(res_dt);
   } else {
@@ -1129,9 +1129,63 @@ DataCollectionRouter.post("/set_sus_dis_info_point_entry", async (req, res) => {
   }
 });
 
-DataCollectionRouter.post('/set_sus_dis_info_point_entry', async (req, res) => {
-  var data = req.body
-  res.send(data)
+DataCollectionRouter.get('/get_sus_dis_point_dt_ajax', async (req, res) => {
+  const db = require('../db/db'), data = req.query;
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Transfer-Encoding", "chunked");
+  db.getConnection((err, connection) => {
+    if (err) {
+      return res.status(500).send("Error connecting to the database");
+    }
+
+    const query = `SELECT a.id, a.sec_id, a.ind_id, a.repo_flag, a.code, b.tab_title, b.tab_info FROM td_sus_dis_top_met a JOIN md_industries_topics c ON a.top_id=c.id
+LEFT JOIN td_sus_dist_point_info b ON a.id=b.code_id AND a.repo_flag=b.repo_flag AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id
+WHERE a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = ${data.ind_id} HAVING a.code !=''`;
+    // console.log(query, "--------------------");
+
+    const queryStream = connection.query(query).stream();
+
+    queryStream.on("data", (row) => {
+      // console.log(row, '+++++++++++++++++++++');
+      const sanitizedRow = {};
+      for (let key in row) {
+        if (typeof row[key] === 'string') {
+          sanitizedRow[key] = row[key].replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        } else {
+          sanitizedRow[key] = row[key];
+        }
+      }
+      res.write(JSON.stringify(sanitizedRow) + '\n');
+      // res.write(JSON.stringify(row)); // Send each row as a JSON string
+    });
+
+    queryStream.on("end", () => {
+      res.end(); // End the response once all data is sent
+      connection.release(); // Release the connection back to the pool
+    });
+
+    queryStream.on("error", (error) => {
+      res.status(500).send(error.message);
+      connection.release(); // Ensure connection is released on error
+    });
+  });
+  
+
+  // const queryStream = db.query(query).stream();
+
+  // queryStream.on("data", (row) => {
+  //   console.log(row, '++++');
+    
+  //   res.write(JSON.stringify(row));
+  // });
+
+  // queryStream.on("end", () => {
+  //   res.end(); // End the stream once all rows are sent
+  // });
+
+  // queryStream.on("error", (error) => {
+  //   res.send(error.message);
+  // });
 })
 
 module.exports = { DataCollectionRouter };

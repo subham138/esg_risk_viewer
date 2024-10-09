@@ -94,15 +94,20 @@ PLAN_LIST = {
   'N': 'None', 'B': 'Basic', 'S': 'Standard', 'P': 'Premium'
 }
 PROJECT_LIST = {
-  'I': 'IFRS', 
-  'IF': 'IFRS-French', 
-  'E': 'ESRS', 
-  'EF': 'ESRS-French', 
-  'G': 'GRI', 
-  'F': 'GRI-French', 
-  'EV': 'ESRS VSME', 
-  'EVF': 'ESRS VSME-French'	
-}
+  I: "IFRS",
+  IF: "IFRS-French",
+  E: "ESRS",
+  EF: "ESRS-French",
+  G: "GRI",
+  F: "GRI-French",
+  EV: "ESRS VSME",
+  EVF: "ESRS VSME-French",
+  TNFD: "Taskforce on Nature-related Financial Disclosures",
+  SECR: "Streamlined Energy and Carbon Reporting (SECR)",
+  SFDR: "Sustainable Finance Disclosures Regulation (SFDR)",
+  SDR: "UK's Sustainability Disclosure Requirements (SDR)",
+  CFA: "CFA Institute's Diversity, Equity, & Inclusion Code",
+};
 FRAMEWORK_LIST = [
   { id: "I", name: "IFRS", key: "SQ%3D%3D", icon_name: "icon_I.png" },
   { id: "IF", name: "IFRS - French", key: "SUY%3D", icon_name: "icon_IF.png" },
