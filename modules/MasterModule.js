@@ -105,7 +105,7 @@ PROJECT_LIST = {
   TNFD: "Taskforce on Nature-related Financial Disclosures",
   SECR: "Streamlined Energy and Carbon Reporting (SECR)",
   SFDR: "Sustainable Finance Disclosures Regulation (SFDR)",
-  SDR: "UK's Sustainability Disclosure Requirements (SDR)",
+  SDR: "UK\'s Sustainability Disclosure Requirements (SDR)",
   CFA: "CFA Institute's Diversity, Equity, & Inclusion Code",
 };
 FRAMEWORK_LIST = [
