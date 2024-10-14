@@ -32,6 +32,7 @@ const {
   getActiveTopicList,
   saveCheckedProjectFlag,
   getCheckedProjectTopList,
+  getSusDistPointDt,
 } = require("../modules/ProjectModule");
 const { getUserList } = require("../modules/UserModule");
 const dateFormat = require("dateformat");
@@ -794,6 +795,12 @@ ProjectRouter.get('/exist_project', async (req, res) =>{
       order = null;
     var res_dt = await db_Select (select,table_name,whr,order);
     res.send(res_dt)
+})
+
+ProjectRouter.post('/getSusDistPointDt', async (req, res) => {
+  var data = req.body
+  var res_dt = await getSusDistPointDt(data.sec_id, data.ind_id, data.repo_flag, data.code)
+  res.send(res_dt)
 })
 
 module.exports = { ProjectRouter };

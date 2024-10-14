@@ -46961,4 +46961,14 @@ img#prev_img{
 .dt-pnt-id p{
   margin-bottom: 0px;
 }
+.offcanvas-body::-webkit-scrollbar {
+  width: 0.5em;
+}
+.offcanvas-body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+.offcanvas-body::-webkit-scrollbar-thumb {
+  background-color: #009a99;
+  outline: 1px solid #c1c1c1;
+}
 

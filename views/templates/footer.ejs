@@ -19,7 +19,7 @@
 
 <div class="offcanvas offcanvas-end" id="demo">
   <div class="offcanvas-header">
-    <h1 class="offcanvas-title">Heading</h1>
+    <h5 class="offcanvas-title">Data Point/Information</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body">
@@ -35,59 +35,6 @@
             </nav>
           </div>
           <div class="tab-content p-3" id="myTabContent">
-            <div role="tabpanel" class="tab-pane fade active show mt-2" id="tab1" aria-labelledby="public-tab" aria-expanded="true">
-              <div class="row">
-                <div class="col-md-12 mb-5">
-                  <img height="30%" width="30%" src="/uploads/flag_icon/GRI Logo.png" alt="GRI Logo">
-                  <div class="dt-pnt">
-                    <div class="dt-pnt-id">
-                      <p>204-1 a.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 b.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 c.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 d.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 e.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 f.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-12 mb-5">
-                  <img height="30%" width="30%" src="/uploads/flag_icon/GRI Logo.png" alt="GRI Logo">
-                  <div class="dt-pnt">
-                    <div class="dt-pnt-id">
-                      <p>204-1 a.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 b.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 c.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 d.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 e.</p>
-                    </div>
-                    <div class="dt-pnt-id">
-                      <p>204-1 f.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div role="tabpanel" class="tab-pane fade active show mt-2" id="tab2" aria-labelledby="public-tab" aria-expanded="true">
-              <h5>HEHE</h5>
-            </div>
           </div>
         </div>
       </div>
@@ -346,6 +293,43 @@
           reAdjust();
         });
       });
+    </script>
+
+    <script>
+      $('#myTab a').on('click', function(){
+        console.log($(this).attr('href'))
+        var act_id = $(this).attr('href').split('#').join('')
+        $('#myTab a').each((i, dt) => {
+          $(dt).removeClass('active')
+        })
+        $(this).addClass('active')
+        $('#myTabContent .tab-pane').each((i, dt) => {
+          console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
+          if($(dt).attr('id') == act_id){
+            if(!$(dt).hasClass('active'))
+              $(dt).addClass('active').addClass('show')
+          }else{
+            $(dt).removeClass('active').removeClass('show')
+          }
+        })
+      })
+      function clickTabPoint(e){
+        console.log($(e).attr('href'))
+        var act_id = $(e).attr('href').split('#').join('')
+        $('#infoTab a').each((i, dt) => {
+          $(dt).removeClass('active')
+        })
+        $(e).addClass('active')
+        $('#infoTabContent .tab-pane').each((i, dt) => {
+          console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
+          if($(dt).attr('id') == act_id){
+            if(!$(dt).hasClass('active'))
+              $(dt).addClass('active').addClass('show')
+          }else{
+            $(dt).removeClass('active').removeClass('show')
+          }
+        })
+      }
     </script>
 
     </body>

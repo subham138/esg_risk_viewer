@@ -184,5 +184,32 @@ module.exports = {
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
         })
+    },
+    getSusDistPointDt: (sec_id, ind_id, repo_flag, code) => {
+        return new Promise(async (resolve, reject) => {
+            var result = []
+            var select = `a.sec_id, a.ind_id, a.repo_flag, a.tab_title, a.tab_info, b.code, b.id suc_dis_id`,
+            table_name = 'td_sus_dist_point_info a, td_sus_dis_top_met b',
+            whr = `a.code_id=b.id AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id AND a.repo_flag=b.repo_flag AND b.code = '${code}' AND a.sec_id = ${sec_id} AND a.ind_id = ${ind_id} AND a.repo_flag = '${repo_flag}'`,
+            order = null;
+            var res_dt = await db_Select(select, table_name, whr, order)
+            // console.log(res_dt);
+            
+            if(res_dt.suc > 0){
+                var filter_res = [...new Set(res_dt.msg.map(item => item.suc_dis_id))];
+                // console.log(filter_res);
+                
+                for(let dt of filter_res){
+                    var select = `a.id, a.sec_id, a.ind_id, a.repo_flag_id, a.point_codes, b.code, c.img_path`,
+                    table_name = 'md_data_point_dt a, td_sus_dis_top_met b, md_data_point c',
+                    whr = `a.sus_dis_top_met_id=b.id AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id AND a.repo_flag=b.repo_flag AND a.repo_flag_id=c.repo_flag AND b.code = '${code}' AND a.sec_id = ${sec_id} AND a.ind_id = ${ind_id} AND a.repo_flag = '${repo_flag}' AND a.sus_dis_top_met_id=${dt}`,
+                    order = null;
+                    var point_res_dt = await db_Select(select, table_name, whr, order)
+                    var new_res = {info_dt: res_dt.msg.filter(idt => idt.suc_dis_id == dt), point_dt: point_res_dt.suc > 0 ? point_res_dt.msg : []}
+                    result.push(new_res)
+                }
+            }
+            resolve(result)
+        })
     }
 }
