@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .cust-tabs {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            padding: 10px;
+        }
+
+        .cust-tab-item {
+            border: 2px solid grey;
+            width: 40%;
+            text-align: center;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        a.cust-tab-link {
+            text-decoration: none;
+            color: grey;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        a.cust-tab-link:after {
+            content: '#1F806';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        a.cust-tab-link:hover {
+            padding-right: 25px;
+        }
+
+        /* a.cust-tab-link:hover a.cust-tab-link:after {
+            opacity: 1;
+            right: 0;
+        } */
+
+
+        .cust-tab-item.active {
+            border: 2px solid #7030a0;
+        }
+
+        .cust-tab-item.active a.cust-tab-link {
+            color: #7030a0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBackdrop"
+        aria-controls="offcanvasWithBackdrop">Enable backdrop (default)</button>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWithBackdrop"
+        aria-labelledby="offcanvasWithBackdropLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasWithBackdropLabel">Offcanvas with backdrop</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="cust-tabs">
+                <div class="cust-tab-item active">
+                    <a class="cust-tab-link" data-bs-toggle="tab" href="#home">Data Point</a>
+                </div>
+                <div class="cust-tab-item">
+                    <a class="cust-tab-link" data-bs-toggle="tab" href="#menu1">Information</a>
+                </div>
+            </div>
+            <!-- Nav tabs -->
+            <!-- <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#menu1">Menu 1</a>
+                </li>
+            </ul> -->
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane container active" id="home">
+                    <div class="card">
+                        <div class="card-header pb-0">
+                            <h5>Simple Material style tab</h5><span>Add <code>.border-tab</code> class with nav
+                                class</span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs border-tab" id="top-tab" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-bs-toggle="tab"
+                                        href="#top-home" role="tab" aria-controls="top-home" aria-selected="true"><i
+                                            class="icofont icofont-ui-home"></i>Home</a></li>
+                                <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-bs-toggle="tab"
+                                        href="#top-profile" role="tab" aria-controls="top-profile"
+                                        aria-selected="false"><i class="icofont icofont-man-in-glasses"></i>Profile</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" id="contact-top-tab" data-bs-toggle="tab"
+                                        href="#top-contact" role="tab" aria-controls="top-contact"
+                                        aria-selected="false"><i class="icofont icofont-contacts"></i>Contact</a></li>
+                            </ul>
+                            <div class="tab-content" id="top-tabContent">
+                                <div class="tab-pane fade active show" id="top-home" role="tabpanel"
+                                    aria-labelledby="top-home-tab">
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+                                        Ipsum has been the industry's standard dummy text ever since the 1500s, when an
+                                        unknown printer took a galley of type and scrambled it to make a type specimen
+                                        book. It has survived not only five centuries, but also the leap into electronic
+                                        typesetting, remaining essentially unchanged. It was popularised in the 1960s
+                                        with the release of Letraset sheets containing Lorem Ipsum passages, and more
+                                        recently with desktop publishing software like Aldus PageMaker including
+                                        versions of Lorem Ipsum</p>
+                                </div>
+                                <div class="tab-pane fade" id="top-profile" role="tabpanel"
+                                    aria-labelledby="profile-top-tab">
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+                                        Ipsum has been the industry's standard dummy text ever since the 1500s, when an
+                                        unknown printer took a galley of type and scrambled it to make a type specimen
+                                        book. It has survived not only five centuries, but also the leap into electronic
+                                        typesetting, remaining essentially unchanged. It was popularised in the 1960s
+                                        with the release of Letraset sheets containing Lorem Ipsum passages, and more
+                                        recently with desktop publishing software like Aldus PageMaker including
+                                        versions of Lorem Ipsum</p>
+                                </div>
+                                <div class="tab-pane fade" id="top-contact" role="tabpanel"
+                                    aria-labelledby="contact-top-tab">
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+                                        Ipsum has been the industry's standard dummy text ever since the 1500s, when an
+                                        unknown printer took a galley of type and scrambled it to make a type specimen
+                                        book. It has survived not only five centuries, but also the leap into electronic
+                                        typesetting, remaining essentially unchanged. It was popularised in the 1960s
+                                        with the release of Letraset sheets containing Lorem Ipsum passages, and more
+                                        recently with desktop publishing software like Aldus PageMaker including
+                                        versions of Lorem Ipsum</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane container fade" id="menu1">
+                    <p>Menu 1</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+    </script>
+
+</body>
+
+</html>
