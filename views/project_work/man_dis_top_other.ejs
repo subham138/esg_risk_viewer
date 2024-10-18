@@ -153,7 +153,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                                                                         </div>
                                                                         <% if(fdt.info_desc && fdt.info_title){ %>
                                                                         <div class="col-md-1" style="display: flex; align-items: center; flex-direction: column; justify-content: center;">
-                                                                            <i class="icon-info-alt info-btn" style="font-size: 22px; cursor: pointer;" onclick="pointInfoFunc(this)"></i>
+                                                                            <i class="icon-info-alt info-btn" style="font-size: 22px; cursor: pointer;" onclick="pointInfoFunc(this, '<%= fdt.code %>', '<%= ediR %>')"></i>
                                                                             <!-- <i class="icon-info-alt" data-bs-toggle="modal" data-bs-target="#man_dis_top_info_<%= ediR %>" style="font-size: 22px; cursor: pointer;"></i> -->
                                                                         </div>
                                                                         <% } %>
@@ -647,6 +647,14 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
         //     $('#wordInfoModal').remove()
         // }
     }
+    function appendTextInfoNew(e, id){
+        console.log($(e));
+        var info = $(e).parent().prev('.data-point-body').html().trim()
+        
+        // var info = $(`#man_dis_top_info_${id} .card-body`).html().trim()
+        var editorPrevData = editorList[`div_editor_${id}`].getHTML()
+        editorList[`div_editor_${id}`].setHTMLCode(editorPrevData + '<br>' + info)
+    }
 </script>
 
 <script>
@@ -755,7 +763,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
 </script>
 
 <script>
-    function pointInfoFunc(e){
+    function pointInfoFunc(e, code, editorId){
         var parentDiv = $(e).parent().parent().parent()
         var code = parentDiv[0].dataset.code
         
@@ -774,12 +782,14 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                 var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas)
                 var i = 1
                 console.log(res);
+                $('#offCanvTitl').text(code)
+                $('#myTabContent').empty()
                 if(res.length > 0){
                     if(res[0].point_dt.length > 0){
-                        var point_div = `<div role="tabpanel" class="tab-pane fade active show mt-2" id="tab${i}" aria-labelledby="public-tab" aria-expanded="true"><div class="row">`
+                        var point_div = `<div role="tabpanel" class="tab-pane fade active show cust-first-tab mt-2" id="tab${i}" aria-labelledby="public-tab" aria-expanded="true"><div class="row">`
                         res[0].point_dt.forEach(dt => {
                             point_div = point_div + `<div class="col-md-12 mb-5">`
-                            point_div = point_div + `<img height="30%" width="30%" src="/uploads/flag_icon/${dt.img_path}">`
+                            point_div = point_div + `<img height="40%" width="15%" src="/uploads/flag_icon/${dt.img_path}">`
                             var point_code_div = ''
                             var point_codes = dt.point_codes.split(',')
                             if(point_codes.length > 0){
@@ -797,31 +807,40 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                         i++
                     }
                     if(res[0].info_dt.length > 0){
-                        var point_div = `<div role="tabpanel" class="tab-pane fade mt-2" id="tab${i}" aria-labelledby="public-tab" aria-expanded="true">`
+                        var point_div = `<div role="tabpanel" class="tab-pane fade cust-first-tab mt-2" id="tab${i}" aria-labelledby="public-tab" aria-expanded="true">`
                         point_div = point_div + `<div class="row">
                         <div class="col-md-12">
                             <div class="w-100 pt-3">
                                 <div class="scroller scroller-left float-start mt-2"><i class="fa fa-chevron-left"></i></div>
                                 <div class="scroller scroller-right float-end mt-2"><i class="fa fa-chevron-right"></i></div>
-                                <div class="wrapper">
-                                    <nav class="nav nav-tabs list mt-2" id="infoTab" role="tablist">`
+                                <div class="wrapper cust-point-nav">
+                                    <ul class="nav nav-tabs border-tab list mt-2" id="infoTab" role="tablist">`
                         var tab_div = '', tab_cont_div = '<div class="tab-content p-3" id="infoTabContent">';
                         var j = 1
                         res[0].info_dt.forEach(dt => {
-                            tab_div = tab_div + `<a class="nav-item nav-link ${j==1 ? 'active' : ''}" data-toggle="tab" href="#iTab${j}" role="tab" aria-controls="public" aria-expanded="true" onclick="clickTabPoint(this)">${dt.tab_title}</a>`
-                            tab_cont_div = tab_cont_div + `<div role="tabpanel" class="tab-pane fade ${j==1 ? 'active show' : ''} mt-2" id="iTab${j}" aria-labelledby="public-tab" aria-expanded="true">${dt.tab_info}</div>`
+                            tab_div = tab_div + `<li class="nav-item"><a class="nav-link ${j==1 ? 'active' : ''}" data-toggle="tab" href="#iTab${j}" role="tab" aria-controls="public" aria-expanded="true" onclick="clickTabPoint(this)">${dt.tab_title}</a></li>`
+                            tab_cont_div = tab_cont_div + `<div role="tabpanel" class="tab-pane fade ${j==1 ? 'active show' : ''} mt-2" id="iTab${j}" aria-labelledby="public-tab" aria-expanded="true"><div class="mb-3 data-point-body">${dt.tab_info}</div><div><button class="btn btn-custom" type="button" onclick="appendTextInfoNew(this, ${editorId})" style="float: inline-end;"><i class="icofont icofont-copy-alt"></i> Copy to text editor</button></div></div>`
                             console.log(j==1 ? 'active show' : '');
                             
                             j++
                         })
-                        point_div = point_div + tab_div + '</nav></div>'
+                        point_div = point_div + tab_div + '</ul></div>'
                         point_div = point_div + tab_cont_div + '</div>'
                         point_div = point_div + '</div></div></div>'
                         $('#myTabContent').append(point_div)
                     }
                     // setTimeout(() => {
                         bsOffcanvas.toggle()
+                        // reAdjust()
                     // }, 1000);
+                    document.querySelector('.cust-point-nav').addEventListener('wheel', function(e) {
+                        if (e.deltaY > 0) {
+                            this.scrollLeft += 100;  // Scroll to the right
+                        } else {
+                            this.scrollLeft -= 100;  // Scroll to the left
+                        }
+                        e.preventDefault();  // Prevent the default vertical scroll behavior
+                    });
                 }
             },
             complete: function () {

@@ -46972,3 +46972,68 @@ img#prev_img{
   outline: 1px solid #c1c1c1;
 }
 
+.cust-tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 10px;
+}
+
+.cust-tab-item {
+  border: 2px solid grey;
+  width: 45%;
+  text-align: center;
+  padding: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+a.cust-tab-link {
+  text-decoration: none;
+  color: grey;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cust-tab-item:hover {
+  background: #fbf3ff;
+}
+
+/* a.cust-tab-link:after {
+  content: '\2192';
+  position: absolute;
+  opacity: 0;
+  padding-left: 10px;
+  transition: 0.5s;
+}
+
+a.cust-tab-link:hover {
+  padding-right: 25px;
+}
+
+.cust-tab-item:hover .cust-tab-link:after {
+  opacity: 1;
+} */
+
+.cust-tab-item.active {
+  border: 2px solid #7030a0;
+}
+
+.cust-tab-item.active a.cust-tab-link {
+  color: #7030a0;
+}
+.cust-point-nav{
+  overflow-x: auto; /* Change from 'scroll' to 'auto' for better behavior */
+  -ms-overflow-style: none;  /* Hide scrollbar in Internet Explorer and Edge */
+  scrollbar-width: none;     /* Hide scrollbar in Firefox */
+  height: 70px;
+}
+.cust-point-nav::-webkit-scrollbar {
+  display: none;
+}
+.border-tab.nav-tabs .nav-item .nav-link.active, .border-tab.nav-tabs .nav-item .nav-link.show, .border-tab.nav-tabs .nav-item .nav-link:focus{
+  border-bottom: 2px solid #89009f;
+}
+.border-tab.nav-tabs .nav-item .nav-link{
+  padding: 10px 15px;
+}
