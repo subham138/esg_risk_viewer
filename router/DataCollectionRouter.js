@@ -985,6 +985,9 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
   user = req.session.user.user_name,
   datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt = {}, img_dt = {};
 
+  console.log(data);
+  
+
   if(file){
     var img_path = file.name;
     var dir = 'assets',
@@ -1024,6 +1027,16 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
             res_dt = await db_Insert(table_name, fields, values, whr, flag)
             i++
           }
+        }
+      }else{
+        if(data[`point_codes_${dt}`]!='' && data[`point_codes_${dt}`]){
+          var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND repo_flag_id = '${data[`frame_id_${dt}`]}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND sus_dis_top_met_id = ${dt}`, null)
+          var table_name = 'md_data_point_dt',
+          fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `repo_flag_id = '${data[`frame_id_${dt}`]}', point_codes = '${data[`point_codes_${dt}`]}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, sus_dis_top_met_id, repo_flag_id, point_codes, created_by, created_dt)',
+          values = `('${data.flag}', '${data.sec_id}', ${data.ind_id}, ${dt}, '${data[`frame_id_${dt}`]}', '${data[`point_codes_${dt}`]}', '${user}', '${datetime}')`,
+          whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+          flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+          res_dt = await db_Insert(table_name, fields, values, whr, flag)
         }
       }
     }
