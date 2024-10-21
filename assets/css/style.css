@@ -46962,6 +46962,7 @@ img#prev_img{
 .dt-pnt-id p{
   margin-bottom: 0px;
   font-size: 10px;
+  font-weight: 500;
 }
 .offcanvas-body::-webkit-scrollbar {
   width: 0.5em;
