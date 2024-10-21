@@ -42,7 +42,7 @@
                     <div class="row g-3 py-3">
                         <div class="col-md-6">
                             <label class="form-label" for="sec_id">Sector</label>
-                            <select class="form-select" id="sec_id" name="sec_id" required="">
+                            <select class="form-select" id="sec_id" name="sec_id">
                                 <option selected="" value="">Select Sector</option>
                                 <% if(sec_dt.length > 0){ 
                                     sec_dt.forEach(dt => {
@@ -55,7 +55,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="ind_id">Industries</label>
-                            <select class="form-select" id="ind_id" name="ind_id" required="">
+                            <select class="form-select" id="ind_id" name="ind_id">
                               <option selected="" value="">Select Industries</option>
                               <% if(ind_list.length > 0){ 
                                   ind_list.forEach(dt => { 
@@ -86,6 +86,11 @@
                             <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="submit">Save</button>
                         </div>
                     </div>
+                    <div class="row" id="save_btn_point" style="display: none;">
+                        <div class="col-md-12">
+                            <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="submit">Save</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -109,12 +114,14 @@
                 $('#prev_img').parent().parent().show()
                 $('#prev_img').removeAttr('src')
                 $('#prev_img').attr('src', URL.createObjectURL(file))
+                $('#save_btn_point').show()
             }else{
                 $('#prev_img').parent().parent().hide()
                 $('#prev_img').removeAttr('src')
                 $('#prev_img').attr('src', '#')
                 $(this).val('')
                 alert("Only jpg/jpeg and png files are allowed!");
+                $('#save_btn_point').hide()
             }
         }
     })
@@ -197,6 +204,7 @@
                 success: function (result) {
                     var top_res = JSON.parse(result);
                     if(top_res.suc > 0 && top_res.msg.length > 0 && sel_sec_id > 0){
+                        $('#save_btn_point').hide()
                         $('#data_topic_table_div').show()
                         var i = 1, prev_id = '';
                         $.each(top_res.msg, async function (j, dt) {                            

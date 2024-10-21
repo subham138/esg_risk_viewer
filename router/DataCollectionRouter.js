@@ -983,7 +983,7 @@ DataCollectionRouter.get('/data_point_entry', async (req, res) => {
 DataCollectionRouter.post('/data_point_entry', async (req, res) => {  
   var data = req.body, file = req.files ? req.files.flag_img : null,
   user = req.session.user.user_name,
-  datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt;
+  datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt = {}, img_dt = {};
 
   if(file){
     var img_path = file.name;
@@ -1001,7 +1001,7 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
           img_vals = `('${data.flag}', '${img_path}', '${user}', '${datetime}')`,
           img_whr = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? `id = ${img_chk_dt.msg[0].id}` : null,
           img_flag = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? 1 : 0;
-          var img_dt = await db_Insert('md_data_point', img_fld, img_vals, img_whr, img_flag)
+          img_dt = await db_Insert('md_data_point', img_fld, img_vals, img_whr, img_flag)
         }
       })
     }catch(err){
@@ -1009,7 +1009,7 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
     }
   }
 
-  if(data.sus_dis_top_met_id.length > 0){
+  if(data.sus_dis_top_met_id && data.sus_dis_top_met_id.length > 0){
     for(let dt of data.sus_dis_top_met_id){
       if(Array.isArray(data[`point_codes_${dt}`])){
         var i = 0
@@ -1047,8 +1047,8 @@ DataCollectionRouter.post('/data_point_entry', async (req, res) => {
   //   }
   // }
   req.session.message = {
-    type: res_dt.suc > 0 ? "success" : "danger",
-    message: res_dt.msg,
+    type: res_dt.suc > 0 ? "success" : (file ? "success" : "danger"),
+    message: res_dt.suc > 0 ? res_dt.msg : file ? 'Image Uploaded' : 'No Data Found',
   };
   res.redirect(
     `/data_point?flag=${encodeURIComponent(
