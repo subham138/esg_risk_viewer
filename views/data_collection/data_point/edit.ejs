@@ -205,7 +205,7 @@
                                 
                                 if(now_id == prev_id){
                                     setTimeout(async () => {
-                                        add_row(dt.sus_id, 1, `${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}`, `${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}`)
+                                        add_row(dt.sus_id, 1, `${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}`, `${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}`, dt.id > 0 ? dt.id : 0)
                                     }, 1000);
                                 }else{
                                     prev_id = dt.sus_id
@@ -310,7 +310,7 @@
     //     </tr>`);
     // }
 
-    async function created_row(sus_dis_top_met_id, next_id, prev_id, repo_flag_id, point_codes){
+    async function created_row(sus_dis_top_met_id, next_id, prev_id, repo_flag_id, point_codes, dt_row_id){
         var frame_opt = await create_frame_opt(repo_flag_id)
         
         $(`#row_${sus_dis_top_met_id}_${next_id-1}`).after(`
@@ -324,14 +324,14 @@
                     <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3">${point_codes}</textarea>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-trash"></i></button>
+                    <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id}, ${dt_row_id})"><i class="icofont icofont-trash"></i></button>
                     <!-- <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-plus-circle"></i></button> -->
                 </td>
             </tr>
         `)
     }
 
-    function add_row(sus_dis_top_met_id, id, repo_flag_id = '', point_codes = '') {
+    function add_row(sus_dis_top_met_id, id, repo_flag_id = '', point_codes = '', dt_row_id = 0) {
         var row = $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr('rowspan')
         // var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
         let next_id = parseInt(row) + 1;
@@ -339,30 +339,30 @@
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", next_id);
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).attr("rowspan", next_id);
-        created_row(sus_dis_top_met_id, next_id, id, repo_flag_id, point_codes)
+        created_row(sus_dis_top_met_id, next_id, id, repo_flag_id, point_codes, dt_row_id)
     }
 
-    function remove_row(sus_dis_top_met_id, id, sus_id) {
+    function remove_row(sus_dis_top_met_id, id, tab_id = 0) {
     if(confirm('Are you sure, you want to delete permanently?')){
       var row = parseInt($(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan"));
       let prev_id = row - 1;
-    //   if(sus_id > 0){
-    //     $.ajax({
-    //       method: "POST",
-    //       url: "/sus_disc_del_ajax",
-    //       data: { id: sus_id },
-    //       dataType: "html",
-    //       beforeSend: function () {
-    //         $(".loader-wrapper").show();
-    //       },
-    //       success: function (result) {
-    //         var res = JSON.parse(result);
-    //       },
-    //       complete: function () {
-    //         $(".loader-wrapper").hide();
-    //       },
-    //     })
-    //   }
+      if(tab_id > 0){
+        $.ajax({
+          method: "POST",
+          url: "/delete_data_topic_list_ajax",
+          data: { id: tab_id },
+          dataType: "html",
+          beforeSend: function () {
+            $(".loader-wrapper").show();
+          },
+          success: function (result) {
+            var res = JSON.parse(result);
+          },
+          complete: function () {
+            $(".loader-wrapper").hide();
+          },
+        })
+      }
       $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).removeAttr("rowspan");
       $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
       $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", prev_id);

@@ -218,7 +218,7 @@
         }
     })
 
-    function fetchData(){
+    function fetchDataStream(){
         var ind_id = $('#ind_id').val(),
         sec_id = $('#sec_id').val(),
         flag = $('#flag').val();
@@ -303,6 +303,50 @@
         // })
     }
 
+    function fetchData(){
+        var ind_id = $('#ind_id').val(),
+        sec_id = $('#sec_id').val(),
+        flag = $('#flag').val();
+
+        $('#data_topic_table_div').show()
+
+        $.ajax({
+            method: "GET",
+            url: "/get_sus_dis_point_dt_ajax",
+            data: { sec_id: sec_id, flag: flag, ind_id: ind_id },
+            dataType: "html",
+            beforeSend: function () {
+                $(".loader-wrapper").show();
+            },
+            success: function (result) {
+                var res = JSON.parse(result);
+                
+                if (res.suc > 0 && res.msg.length > 0){
+                    var prev_dt = ''
+                    $.each(res.msg, function (i, item) {
+                        var now_dt = ''
+                        try{
+                            now_dt = item.id
+                            if(now_dt == prev_dt){
+                                appendRowToTable(item, false, i+1);  // Function to add row to table
+                            }else{
+                                prev_dt = item.id
+                                i++
+                                appendRowToTable(item, true, i+1);  // Function to add row to table
+                                createEditor(`info_desc_${item.id}_1`, `info_desc_text_${item.id}_1`)
+                            }
+                        }catch(e){
+                            console.log('Error parsing row:', e);
+                        }
+                    });
+                }
+            },
+            complete: function () {
+                $(".loader-wrapper").hide();
+            },
+        });
+    }
+    
     $("#ind_id").on("change", function () {
         var ind_id = $(this).val(),
         sec_id = $('#sec_id').val(),

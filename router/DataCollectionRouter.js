@@ -1063,6 +1063,14 @@ DataCollectionRouter.post("/get_data_topic_list_ajax", async (req, res) => {
   res.send(res_dt)
 });
 
+DataCollectionRouter.post('/delete_data_topic_list_ajax', async (req, res) => {
+  var data = req.body;
+  var table_name = 'md_data_point_dt',
+  whr = `id = ${data.id}`;
+  var res_dt = await db_Delete(table_name, whr)
+  res.send(res_dt)
+})
+
 DataCollectionRouter.get('/set_sus_dis_info_point', async (req, res) => {
   var enc_dt = req.query.flag,
     flag = new Buffer.from(enc_dt, "base64").toString();
@@ -1129,7 +1137,7 @@ DataCollectionRouter.post("/set_sus_dis_info_point_entry", async (req, res) => {
   }
 });
 
-DataCollectionRouter.get('/get_sus_dis_point_dt_ajax', async (req, res) => {
+DataCollectionRouter.get('/get_sus_dis_point_dt_ajax_stream', async (req, res) => {
   const db = require('../db/db'), data = req.query;
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Transfer-Encoding", "chunked");
@@ -1148,14 +1156,14 @@ WHERE a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = 
     queryStream.on("data", (row) => {
       // console.log(row, '+++++++++++++++++++++');
       const sanitizedRow = {};
-      for (let key in row) {
-        if (typeof row[key] === 'string') {
-          sanitizedRow[key] = row[key].replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-        } else {
-          sanitizedRow[key] = row[key];
-        }
-      }
-      res.write(JSON.stringify(sanitizedRow) + '\n');
+      // for (let key in row) {
+      //   if (typeof row[key] === 'string') {
+      //     sanitizedRow[key] = row[key].replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      //   } else {
+      //     sanitizedRow[key] = row[key];
+      //   }
+      // }
+      res.write(JSON.stringify(row) + '\n');
       // res.write(JSON.stringify(row)); // Send each row as a JSON string
     });
 
@@ -1186,6 +1194,17 @@ WHERE a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = 
   // queryStream.on("error", (error) => {
   //   res.send(error.message);
   // });
+})
+
+DataCollectionRouter.get('/get_sus_dis_point_dt_ajax', async (req, res) => {
+  var data = req.query;
+  var select = `a.id, a.sec_id, a.ind_id, a.repo_flag, a.code, b.tab_title, b.tab_info`,
+  table_name = `td_sus_dis_top_met a JOIN md_industries_topics c ON a.top_id=c.id
+LEFT JOIN td_sus_dist_point_info b ON a.id=b.code_id AND a.repo_flag=b.repo_flag AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id`,
+  whr = `a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = ${data.ind_id}`,
+  order = `HAVING a.code !=''`;
+  var res_dt = await db_Select(select, table_name, whr, order)
+  res.send(res_dt)
 })
 
 module.exports = { DataCollectionRouter };
