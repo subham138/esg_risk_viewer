@@ -46943,7 +46943,7 @@ img#prev_img{
 .dt-pnt {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* Optional: to distribute space between boxes */
+  justify-content: flex-start; /* Optional: to distribute space between boxes */
 }
 
 .dt-pnt-id {
@@ -46957,9 +46957,11 @@ img#prev_img{
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: 85px;
 }
 .dt-pnt-id p{
   margin-bottom: 0px;
+  font-size: 10px;
 }
 .offcanvas-body::-webkit-scrollbar {
   width: 0.5em;
@@ -46975,7 +46977,7 @@ img#prev_img{
 .cust-tabs {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   padding: 10px;
 }
 
@@ -46986,6 +46988,7 @@ img#prev_img{
   padding: 5px;
   border-radius: 10px;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 a.cust-tab-link {
@@ -47036,4 +47039,26 @@ a.cust-tab-link:hover {
 }
 .border-tab.nav-tabs .nav-item .nav-link{
   padding: 10px 15px;
+}
+.cust-first-tab img{
+  width: 13%;
+  height: 20%;
+}
+.offcanvas-body{
+  padding: 0px 15px;
+}
+.offcanvas.offcanvas-end{
+  width: 490px;
+}
+.offcanvas-title{
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.dt-pnt-id{
+  border: 1px solid #50dfdc;
+  background: none;
+  color: #000;
+}
+.dt-pnt-id:hover{
+  background: #50dfdc;
+  cursor: pointer;
 }
