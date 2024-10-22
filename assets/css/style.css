@@ -47058,6 +47058,7 @@ a.cust-tab-link:hover {
   border: 1px solid #50dfdc;
   background: none;
   color: #000;
+  border-radius: 10px;
 }
 .dt-pnt-id:hover{
   background: #50dfdc;
