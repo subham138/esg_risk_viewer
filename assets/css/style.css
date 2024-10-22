@@ -46895,3 +46895,8 @@ img.icon-img-tripple {
 .custom-card-head h5{
   padding-left: 0px !important;
 }
+.tab-img-icon{
+  height: 30px;
+  width: 30px;
+  margin-right: 10px;
+}

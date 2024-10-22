@@ -1,48 +1,156 @@
 <%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6 row">
-                <!-- <div class="col-md-4">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-6 row">
+                    <!-- <div class="col-md-4">
                     <h5 class="text-muted mt-2"><%= header %></h5>
                 </div> -->
-                <div class="col-md-8">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                        <li class="breadcrumb-item"><%= header %></li>
-                    </ol>
+                    <div class="col-md-8">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item">
+                                <%= header %>
+                            </li>
+                        </ol>
+                    </div>
                 </div>
             </div>
+            <hr>
         </div>
-        <hr>
     </div>
-</div>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12">
-            <% if(message){ %>
-                <script>
-                    setTimeout(() => {
-                        initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
-                    }, 1000);
-                </script>
-            <% } %>
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <button class="card-btn-item btn btn-primary wow lightSpeedIn">1st</button>
-                            <button class="card-btn-item btn btn-danger wow rollIn center">2nd</button>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <% if(message){ %>
+                    <script>
+                        setTimeout(() => {
+                            initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                        }, 1000);
+                    </script>
+                    <% } %>
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs border-tab" id="top-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link" id="top-home-tab" data-bs-toggle="tab" href="#top-home" role="tab" aria-controls="top-home" aria-selected="true">
+                                    <img class="tab-img-icon" src="/images/other-images/carbon-neutral.png" alt="Carbon Nautral">
+                                    Scope 1
+                                </a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" id="profile-top-tab" data-bs-toggle="tab" href="#top-profile" role="tab" aria-controls="top-profile" aria-selected="false">
+                                    <img class="tab-img-icon" src="/images/other-images/industrial-emissions.png" alt="Carbon Nautral">
+                                    Scope 2
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="contact-top-tab" data-bs-toggle="tab" href="#top-contact" role="tab" aria-controls="top-contact" aria-selected="false">
+                                    <img class="tab-img-icon" src="/images/other-images/carbon-neutral_3.png" alt="Carbon Nautral">
+                                    Scope 3
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="top-tabContent">
+                            <div class="tab-pane fade" id="top-home" role="tabpanel"
+                                aria-labelledby="top-home-tab">
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                                    Lorem Ipsum has been the industry's standard dummy text ever since the
+                                    1500s, when an unknown printer took a galley of type and scrambled it to
+                                    make a type specimen book. It has survived not only five centuries, but also
+                                    the leap into electronic typesetting, remaining essentially unchanged. It
+                                    was popularised in the 1960s with the release of Letraset sheets containing
+                                    Lorem Ipsum passages, and more recently with desktop publishing software
+                                    like Aldus PageMaker including versions of Lorem Ipsum</p>
+                            </div>
+                            <div class="tab-pane fade show active" id="top-profile" role="tabpanel"
+                                aria-labelledby="profile-top-tab">
+                                <div class="row">
+                                    <div class="col-sm-3 tabs-responsive-side">
+                                        <div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                            <a class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="false">Stationary Combustion Sources</a>
+                                            <a class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Mobile Combustion Sources</a>
+                                            <a class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Refrigerant and Other Processes</a>
+                                            <a class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="true">Land Use, Change in Land Use and Forests</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <div class="tab-content" id="v-pills-tabContent">
+                                            <div class="tab-pane fade bounceInRight animated active show" id="v-pills-home" role="tabpanel"
+                                                aria-labelledby="v-pills-home-tab">
+                                                <div class="question-box">
+                                                    <div class="quest-text">
+                                                        <p class="fadeIn animated">1. Do you own or control any physical locations?</p>
+                                                    </div>
+                                                    <div class="quest-opt-btn">
+                                                        <button type="button">Yes</button>
+                                                        <button type="button">No</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+                                                aria-labelledby="v-pills-profile-tab">
+                                                <p>Lorem Ipsum is simply dummy text of the printing and
+                                                    typesetting industry. Lorem Ipsum has been the industry's
+                                                    standard dummy text ever since the 1500s, when an unknown
+                                                    printer took a galley of type and scrambled it to make a
+                                                    type specimen book. It has survived not only five centuries,
+                                                    but also the leap into electronic typesetting, remaining
+                                                    essentially unchanged. It was popularised in the 1960s with
+                                                    the release of Letraset sheets containing Lorem Ipsum
+                                                    passages, and more recently with desktop publishing software
+                                                    like Aldus PageMaker including versions of Lorem Ipsum</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+                                                aria-labelledby="v-pills-messages-tab">
+                                                <p>Lorem Ipsum is simply dummy text of the printing and
+                                                    typesetting industry. Lorem Ipsum has been the industry's
+                                                    standard dummy text ever since the 1500s, when an unknown
+                                                    printer took a galley of type and scrambled it to make a
+                                                    type specimen book. It has survived not only five centuries,
+                                                    but also the leap into electronic typesetting, remaining
+                                                    essentially unchanged. It was popularised in the 1960s with
+                                                    the release of Letraset sheets containing Lorem Ipsum
+                                                    passages, and more recently with desktop publishing software
+                                                    like Aldus PageMaker including versions of Lorem Ipsum</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-settings"
+                                                role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                                                <p>Lorem Ipsum is simply dummy text of the printing and
+                                                    typesetting industry. Lorem Ipsum has been the industry's
+                                                    standard dummy text ever since the 1500s, when an unknown
+                                                    printer took a galley of type and scrambled it to make a
+                                                    type specimen book. It has survived not only five centuries,
+                                                    but also the leap into electronic typesetting, remaining
+                                                    essentially unchanged. It was popularised in the 1960s with
+                                                    the release of Letraset sheets containing Lorem Ipsum
+                                                    passages, and more recently with desktop publishing software
+                                                    like Aldus PageMaker including versions of Lorem Ipsum</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="top-contact" role="tabpanel"
+                                aria-labelledby="contact-top-tab">
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                                    Lorem Ipsum has been the industry's standard dummy text ever since the
+                                    1500s, when an unknown printer took a galley of type and scrambled it to
+                                    make a type specimen book. It has survived not only five centuries, but also
+                                    the leap into electronic typesetting, remaining essentially unchanged. It
+                                    was popularised in the 1960s with the release of Letraset sheets containing
+                                    Lorem Ipsum passages, and more recently with desktop publishing software
+                                    like Aldus PageMaker including versions of Lorem Ipsum</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<script src="/js/animation/animate-custom.js"></script>
+    <script src="/js/animation/animate-custom.js"></script>
 
-<%- include('../templates/footer.ejs') %>
+    <%- include('../templates/footer.ejs') %>
