@@ -200,7 +200,7 @@ module.exports = {
                 // console.log(filter_res);
                 
                 for(let dt of filter_res){
-                    var select = `a.id, a.sec_id, a.ind_id, a.repo_flag_id, a.point_codes, b.code, c.img_path`,
+                    var select = `a.id, a.sec_id, a.ind_id, a.repo_flag_id, a.point_codes, b.code, c.img_path, c.img_height, c.img_width`,
                     table_name = 'md_data_point_dt a, td_sus_dis_top_met b, md_data_point c',
                     whr = `a.sus_dis_top_met_id=b.id AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id AND a.repo_flag=b.repo_flag AND a.repo_flag_id=c.repo_flag AND b.code = '${code}' AND a.sec_id = ${sec_id} AND a.ind_id = ${ind_id} AND a.repo_flag = '${repo_flag}' AND a.sus_dis_top_met_id=${dt}`,
                     order = null;

@@ -240,9 +240,9 @@ module.exports = {
   },
   getDataPointList: (flag, sec_id = 0, ind_id = 0) => {
     return new Promise(async (resolve, reject) => {
-      var select = "a.id sus_id, a.ind_id, a.code, b.id, b.repo_flag, b.sec_id, b.sus_dis_top_met_id, b.repo_flag_id, b.point_codes",
+      var select = "a.id sus_id, a.ind_id, a.code, b.id, b.repo_flag, b.sec_id, b.sus_dis_top_met_id, b.repo_flag_id, b.point_codes, e.topic_name",
         table_name = `td_sus_dis_top_met a
-        JOIN md_industries_topics d ON a.top_id=d.id
+        JOIN md_industries_topics d ON a.top_id=d.id AND a.repo_flag=d.repo_flag AND a.ind_id=d.ind_id JOIN md_topic e ON d.topic_id=e.id AND d.repo_flag=e.repo_flag
         LEFT JOIN md_data_point_dt b ON a.id=b.sus_dis_top_met_id AND a.ind_id=b.ind_id AND a.sec_id=b.sec_id AND a.repo_flag=b.repo_flag ${sec_id > 0 ? `AND b.sec_id = ${sec_id}` : ''}`,
         whr = `a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''} ${sec_id > 0 ? `AND a.ind_id = ${ind_id}` : ''}`,
         order = `HAVING a.code != '' ORDER BY a.id, b.id`;

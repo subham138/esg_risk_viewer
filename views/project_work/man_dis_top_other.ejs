@@ -789,7 +789,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                         var point_div = `<div role="tabpanel" class="tab-pane fade active show cust-first-tab mt-2" id="tab${i}" aria-labelledby="public-tab" aria-expanded="true"><div class="row">`
                         res[0].point_dt.forEach(dt => {
                             point_div = point_div + `<div class="col-md-12 mb-5">`
-                            point_div = point_div + `<img height="100%" width="100%" src="/uploads/flag_icon/${dt.img_path}">`
+                            point_div = point_div + `<div style="height:${dt.img_height}px;width:${dt.img_width}px;"><img height="100%" width="100%" src="/uploads/flag_icon/${dt.img_path}"></div>`
                             var point_code_div = ''
                             var point_codes = dt.point_codes.split(',')
                             if(point_codes.length > 0){
