@@ -148,10 +148,10 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                                                                         <!-- <div class="col-md-1 ediDiv">
                                                                             <div for="editor_topic_<%# ediR %>" class="editLabelBull"></div>
                                                                         </div> -->
-                                                                        <div class="<%= fdt.info_desc && fdt.info_title ? 'col-md-11' : 'col-md-12' %>">
+                                                                        <div class="<%= fdt.info_title ? 'col-md-11' : 'col-md-12' %>">
                                                                             <input class="form-control" type="text" name="editor_topic_<%= fdt.top_id %>" id="editor_topic_<%= ediR %>" value="<%= fdt.code %>" <%= user.user_type == 'V' ? 'disabled' : '' %>>
                                                                         </div>
-                                                                        <% if(fdt.info_desc && fdt.info_title){ %>
+                                                                        <% if(fdt.info_title){ %>
                                                                         <div class="col-md-1" style="display: flex; align-items: center; flex-direction: column; justify-content: center;">
                                                                             <i class="icon-info-alt info-btn" style="font-size: 22px; cursor: pointer;" onclick="pointInfoFunc(this, '<%= fdt.code %>', '<%= ediR %>')"></i>
                                                                             <!-- <i class="icon-info-alt" data-bs-toggle="modal" data-bs-target="#man_dis_top_info_<%= ediR %>" style="font-size: 22px; cursor: pointer;"></i> -->
@@ -833,6 +833,7 @@ var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${us
                         bsOffcanvas.toggle()
                         // reAdjust()
                     // }, 1000);
+                    arrangeModalArrow()
                     document.querySelector('.cust-point-nav').addEventListener('wheel', function(e) {
                         if (e.deltaY > 0) {
                             this.scrollLeft += 100;  // Scroll to the right

@@ -1211,9 +1211,8 @@ WHERE a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = 
 
 DataCollectionRouter.get('/get_sus_dis_point_dt_ajax', async (req, res) => {
   var data = req.query;
-  var select = `a.id, a.sec_id, a.ind_id, a.repo_flag, a.code, b.tab_title, b.tab_info`,
-  table_name = `td_sus_dis_top_met a JOIN md_industries_topics c ON a.top_id=c.id
-LEFT JOIN td_sus_dist_point_info b ON a.id=b.code_id AND a.repo_flag=b.repo_flag AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id`,
+  var select = `a.id, a.sec_id, a.ind_id, a.repo_flag, a.code, b.tab_title, b.tab_info, d.topic_name`,
+  table_name = `td_sus_dis_top_met a JOIN md_industries_topics c ON a.top_id=c.id AND a.repo_flag=c.repo_flag AND a.ind_id=c.ind_id JOIN md_topic d ON c.topic_id=d.id AND c.repo_flag=d.repo_flag LEFT JOIN td_sus_dist_point_info b ON a.id=b.code_id AND a.repo_flag=b.repo_flag AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id`,
   whr = `a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = ${data.ind_id}`,
   order = `HAVING a.code !=''`;
   var res_dt = await db_Select(select, table_name, whr, order)

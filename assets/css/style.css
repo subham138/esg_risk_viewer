@@ -46916,7 +46916,7 @@ img#prev_img{
   position:absolute;
   left:0px;
   top:0px;
-  min-width:3500px;
+  min-width:100%;
   margin-top:0px;
 }
 
@@ -47040,6 +47040,7 @@ a.cust-tab-link:hover {
 }
 .border-tab.nav-tabs .nav-item .nav-link{
   padding: 10px 15px;
+  text-wrap: nowrap;
 }
 .cust-first-tab img{
   width: 13%;

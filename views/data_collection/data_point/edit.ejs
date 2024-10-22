@@ -223,7 +223,7 @@
                                     <tr id="row_${dt.sus_id}_1">
                                         <td rowspan="1">${i}</td>
                                         <td rowspan="1">
-                                            <label>${dt.code}</label>
+                                            <label>${dt.code} (<small>${dt.topic_name}</small>)</label>
                                             <input type="hidden" name="sus_dis_top_met_id" value="${dt.sus_id}">
                                         </td>
                                         <td>
@@ -235,7 +235,7 @@
                                             <textarea class="form-control" name="point_codes_${dt.sus_id}" id="point_codes_${dt.sus_id}" rows="3">${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}</textarea>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1, '${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}', ${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''})"><i class="icofont icofont-plus-circle"></i></button>    
+                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1, '${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}', '${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}')"><i class="icofont icofont-plus-circle"></i></button>    
                                         </td>
                                     </tr>
                                     `)
