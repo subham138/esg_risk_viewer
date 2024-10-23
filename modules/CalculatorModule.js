@@ -151,5 +151,23 @@ module.exports = {
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
         })
+    },
+    getCalQuestUserDt: (scope_id = 1) => {
+        return new Promise(async (resolve, reject) => {
+            var res_dt = {suc:0, msg:[]}
+            var select = 'sec_name',
+            whr = `scope_id = ${scope_id}`,
+            order = null;
+            var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
+            if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
+                var newData = {}
+                for(let dt of cal_sec_dt.msg){
+                    // var s
+                    // newData[dt]
+                }
+            }
+            res_dt = cal_sec_dt
+            resolve(res_dt)
+        })
     }
 }

@@ -46900,3 +46900,20 @@ img.icon-img-tripple {
   width: 30px;
   margin-right: 10px;
 }
+.quest-text {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.quest-text p{
+  margin-bottom: 0px;
+}
+.cust-badge-quest{
+  cursor: pointer;
+  display: none;
+}
+.question-box{
+  margin-bottom: 20px;
+}

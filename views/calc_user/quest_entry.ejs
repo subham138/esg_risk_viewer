@@ -77,15 +77,25 @@
                                     </div>
                                     <div class="col-sm-9">
                                         <div class="tab-content" id="v-pills-tabContent">
-                                            <div class="tab-pane fade bounceInRight animated active show" id="v-pills-home" role="tabpanel"
-                                                aria-labelledby="v-pills-home-tab">
+                                            <div class="tab-pane fade bounceInRight animated active show" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                                                 <div class="question-box">
                                                     <div class="quest-text">
                                                         <p class="fadeIn animated">1. Do you own or control any physical locations?</p>
+                                                        <span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10">Yes</span><i class="icofont icofont-ui-edit"></i></span>
                                                     </div>
-                                                    <div class="quest-opt-btn">
-                                                        <button type="button">Yes</button>
-                                                        <button type="button">No</button>
+                                                    <div class="quest-opt-btn mt-2">
+                                                        <button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">Yes</button>
+                                                        <button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">No</button>
+                                                    </div>
+                                                </div>
+                                                <div class="question-box">
+                                                    <div class="quest-text">
+                                                        <p class="fadeIn animated">1. Do you own or control any physical locations?</p>
+                                                        <span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10">Yes</span><i class="icofont icofont-ui-edit"></i></span>
+                                                    </div>
+                                                    <div class="quest-opt-btn mt-2">
+                                                        <button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">Yes</button>
+                                                        <button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">No</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -150,7 +160,31 @@
         </div>
     </div>
 
-
-    <script src="/js/animation/animate-custom.js"></script>
+    <script>
+        function clickAct(e){
+            var isBtn = $(e).attr('type') ? true : false
+            if(isBtn){
+                var txt = $(e).text()
+                $(e).parent().prev().children().children().closest('span.cust-badge-quest-txt').text(txt)
+                $(e).parent().addClass('bounceOutLeft animated')
+                $(e).parent().prev().children('.badge').addClass('bounceInRight animated')
+                $(e).parent().prev().children('.badge').show()
+                setTimeout(() => {
+                    $(e).parent().hide()
+                    $(e).parent().removeClass('bounceOutLeft animated')
+                    $(e).parent().prev().children('.badge').removeClass('bounceInRight animated')
+                }, 1000);
+            }else{
+                $(e).parent().next().show()
+                $(e).parent().next().addClass('bounceInLeft animated')
+                $(e).addClass('bounceOutRight animated')
+                setTimeout(() => {
+                    $(e).hide()
+                    $(e).parent().next().removeClass('bounceInLeft animated')
+                    $(e).removeClass('bounceOutRight animated')
+                }, 1000);
+            }
+        }
+    </script>
 
     <%- include('../templates/footer.ejs') %>
