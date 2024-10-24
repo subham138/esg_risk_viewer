@@ -32,28 +32,29 @@
                     <% } %>
                 <div class="card">
                     <div class="card-body">
-                        <ul class="nav nav-tabs border-tab" id="top-tab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link" id="top-home-tab" data-bs-toggle="tab" href="#top-home" role="tab" aria-controls="top-home" aria-selected="true">
-                                    <img class="tab-img-icon" src="/images/other-images/carbon-neutral.png" alt="Carbon Nautral">
-                                    Scope 1
-                                </a>
-                            </li>
-                            <li class="nav-item active">
-                                <a class="nav-link" id="profile-top-tab" data-bs-toggle="tab" href="#top-profile" role="tab" aria-controls="top-profile" aria-selected="false">
-                                    <img class="tab-img-icon" src="/images/other-images/industrial-emissions.png" alt="Carbon Nautral">
-                                    Scope 2
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="contact-top-tab" data-bs-toggle="tab" href="#top-contact" role="tab" aria-controls="top-contact" aria-selected="false">
-                                    <img class="tab-img-icon" src="/images/other-images/carbon-neutral_3.png" alt="Carbon Nautral">
-                                    Scope 3
-                                </a>
-                            </li>
+                        <ul class="nav nav-tabs border-tab" id="sope-tab" role="tablist">
+                            <% var i = 0
+                            scope_list.forEach(dt => { %>
+                                <li class="nav-item" scope-id="<%= dt.id %>">
+                                    <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= dt.name.split(' ').join('_') %>_tab" data-bs-toggle="tab" href="#<%= dt.name.split(' ').join('_') %>" role="tab" aria-controls="<%= dt.name.split(' ').join('_') %>" aria-selected="true" onclick="getQuestDtlsChangeUser(this)">
+                                        <img class="tab-img-icon" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                                        <%= dt.name %>
+                                    </a>
+                                </li>
+                            <% i++; }) %>
                         </ul>
-                        <div class="tab-content" id="top-tabContent">
-                            <div class="tab-pane fade" id="top-home" role="tabpanel"
+                        <div class="tab-content" id="sope-tabContent">
+                            <% var j = 0
+                            scope_list.forEach(dt => { %>
+                                <div class="tab-pane fade <%= j == 0 ? 'show active' : '' %>" id="<%= dt.name.split(' ').join('_') %>" role="tabpanel" aria-labelledby="<%= dt.name.split(' ').join('_') %>_tab">
+                                    <div class="row quest-tab-context">
+                                        <div class="col-md-12 text-center">
+                                            <strong class="text-danger">No Data Found</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% j++; }) %>
+                            <!-- <div class="tab-pane fade" id="top-home" role="tabpanel"
                                 aria-labelledby="top-home-tab">
                                 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                                     Lorem Ipsum has been the industry's standard dummy text ever since the
@@ -152,7 +153,7 @@
                                     was popularised in the 1960s with the release of Letraset sheets containing
                                     Lorem Ipsum passages, and more recently with desktop publishing software
                                     like Aldus PageMaker including versions of Lorem Ipsum</p>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -184,6 +185,104 @@
                     $(e).removeClass('bounceOutRight animated')
                 }, 1000);
             }
+        }
+    </script>
+    <script>
+        $(document).ready(function(){
+            if($('#sope-tab li').length > 0){
+                $($('#sope-tab li')[0]).children('a.nav-link').click()
+                // var scope_id = $($('#sope-tab li')[0]).attr('scope-id')
+                // if(scope_id > 0)
+                // getQuestDtlsChangeUser(scope_id)
+            }
+        })
+
+        function getQuestDtlsChangeUser(e){
+            var tabId = $(e).attr('href')
+            var scope_id = $(e).parent('.nav-item').attr('scope-id')
+            $.ajax({
+                method:'POST',
+                url: '/get_question_list_by_scope_user_ajax',
+                data: {scope_id: scope_id},
+                dataType: 'html',
+                beforeSend: function(){
+                    $('.loader-wrapper').show()
+                },
+                success: function(result){
+                    var res = JSON.parse(result);
+                    console.log(res);
+                    if(res.suc > 0){
+                        if(Object.keys(res.msg).length > 0){
+                            $(`${tabId}`).children('.quest-tab-context').empty()
+                            var divElement = '', divContentElemt = '';
+                            divElement = divElement + '<div class="col-sm-3 tabs-responsive-side">'
+                            divElement = divElement + '<div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">'
+
+                            divContentElemt = divContentElemt + '<div class="col-sm-9"><div class="tab-content" id="v-pills-tabContent">'
+                            $.each(Object.keys(res.msg), function (i, dt) {
+                                divElement = divElement + `<a class="nav-link ${i == 0 ? 'active' : ''}" id="${dt.split(' ').join('_')}_tab" data-bs-toggle="pill" href="#${dt.split(' ').join('_')}" role="tab" aria-controls="${dt.split(' ').join('_')}" aria-selected="false">${dt}</a>`
+                                divContentElemt = divContentElemt + `<div class="tab-pane fade bounceInRight animated ${i == 0 ? 'active show' : ''}" id="${dt.split(' ').join('_')}" role="tabpanel" aria-labelledby="${dt.split(' ').join('_')}_tab">`
+                                if(res.msg[dt].length > 0){
+                                    $.each(res.msg[dt], function (j, qdt) {
+                                        divContentElemt = divContentElemt + `<div class="question-box">
+                                            <div class="quest-text">
+                                                <p class="fadeIn animated">
+                                                    ${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))} &nbsp; ${qdt.input_label}
+                                                </p>
+                                                ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+                                            </div>
+                                            <div class="quest-opt-btn mt-2">
+                                                ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`)}
+                                            </div>
+                                        </div>`
+                                    })
+                                }else{
+                                    divContentElemt = divContentElemt + '<div class="text-center"><strong class="text-danger">No Data Found</strong></div>'
+                                }
+                                divContentElemt = divContentElemt + '</div>'
+                            })
+                            divElement = divElement + '</div></div>'
+                            divContentElemt = divContentElemt + '</div></div>'
+                            $(`${tabId}`).children('.quest-tab-context').append(divElement + divContentElemt)
+                        }
+                    }
+                },
+                complete: function(){
+                    $('.loader-wrapper').hide()
+                }
+            })
+            // console.log($(e).attr('href'));
+            
+        }
+        function createActionQuest(option, flag, label = ''){
+            var optEle = ''
+            switch (flag) {
+                case 'R':
+                    $.each(option, function(i, dt){
+                        optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                    })
+                    break;
+                case 'C':
+                    $.each(option, function(i, dt){
+                        optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                    })
+                    break;
+                case 'S':
+                    $.each(option, function(i, dt){
+                        optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                    })
+                    break;
+                case 'I':
+                    optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
+                    break;
+                case 'A':
+                    optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
+                    break;
+            
+                default:
+                    break;
+            }
+            return optEle;
         }
     </script>
 

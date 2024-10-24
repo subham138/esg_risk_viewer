@@ -105,7 +105,7 @@ INPUT_TYPE_LIST = {
   emi_type: "E",
   emi_unit: "U",
 },
-SCOPE_LIST = [{id: 1, name: 'Scope 1'},{id: 2, name: 'Scope 2'},{id: 3, name: 'Scope 3'}],
+SCOPE_LIST = [{id: 1, name: 'Scope 1', img: 'carbon-neutral.png'},{id: 2, name: 'Scope 2', img: 'industrial-emissions.png'},{id: 3, name: 'Scope 3', img: 'carbon-neutral_3.png'}],
 PLATFORM_MODE = {C: 'Calculator', E: 'ESG Full'};
 
 module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE };
