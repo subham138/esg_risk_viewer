@@ -223,7 +223,14 @@
                                 divElement = divElement + `<a class="nav-link ${i == 0 ? 'active' : ''}" id="${dt.split(' ').join('_')}_tab" data-bs-toggle="pill" href="#${dt.split(' ').join('_')}" role="tab" aria-controls="${dt.split(' ').join('_')}" aria-selected="false">${dt}</a>`
                                 divContentElemt = divContentElemt + `<div class="tab-pane fade bounceInRight animated ${i == 0 ? 'active show' : ''}" id="${dt.split(' ').join('_')}" role="tabpanel" aria-labelledby="${dt.split(' ').join('_')}_tab">`
                                 if(res.msg[dt].length > 0){
-                                    $.each(res.msg[dt], function (j, qdt) {
+                                    var emiTypeQuestId = res.msg[dt].filter(fdt => fdt.input_type == 'E'),
+                                    unitQuestId = res.msg[dt].filter(fdt => fdt.input_type == 'U');
+
+                                    emiTypeQuestId = emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0
+                                    unitQuestId = unitQuestId.length > 0 ? unitQuestId[0].id : 0
+                                    
+                                    $.each(res.msg[dt], function (j, qdt){
+                                        var lastTable = qdt.next_qst_action_val == 'E' ? createTable(qdt.id, qdt.emi_head_opt1, qdt.emi_head_opt2, qdt.emi_head_opt3) : ''
                                         divContentElemt = divContentElemt + `<div class="question-box">
                                             <div class="quest-text">
                                                 <p class="fadeIn animated">
@@ -231,9 +238,10 @@
                                                 </p>
                                                 ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                             </div>
-                                            <div class="quest-opt-btn mt-2">
-                                                ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`)}
+                                            <div class="quest-opt-btn mt-2" id="inputActionDiv${qdt.id}">
+                                                ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, emiTypeQuestId, unitQuestId)}
                                             </div>
+                                            ${lastTable}
                                         </div>`
                                     })
                                 }else{
@@ -254,7 +262,7 @@
             // console.log($(e).attr('href'));
             
         }
-        function createActionQuest(option, flag, label = ''){
+        function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0){
             var optEle = ''
             switch (flag) {
                 case 'R':
@@ -276,7 +284,29 @@
                     optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
                     break;
                 case 'A':
-                    optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
+                    // setTimeout(() => {
+                        getCalActDtls(1, 'E').then(function (actData) {
+                            console.log(actData, 'here');
+                            var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" onchange = "getCalEmiTypeDtls(this)"><option value="">Select Activity</option>`
+                            if(actData.length > 0){
+                                $.each(actData, function(i, dt){
+                                    optEle = optEle + `<option value="${dt.id}">${dt.act_name}</option>`
+                                })
+                            }
+                            optEle = optEle + '</select></div>'
+                            $(`#inputActionDiv${id}`).append(optEle)
+                        }).catch((err) => {
+                            console.log(err);
+                        }) 
+                    // optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
+                    break;
+                case 'Y':
+                    var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Queterly'}, {id: 'M', name: 'Monthly'}]
+                    optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}"><option value="">Select Mode</option>`
+                    $.each(year_opt, function(i, dt){
+                        optEle = optEle + `<option value="${dt.id}">${dt.name}</option>`
+                    })
+                    optEle = optEle + '</select></div>'
                     break;
             
                 default:
@@ -284,6 +314,123 @@
             }
             return optEle;
         }
+        const getCalActDtls = (type_id, flag) => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    method:'POST',
+                    url: '/get_cal_act_ajax',
+                    data: {type_id: type_id, flag: flag},
+                    beforeSend: function(){
+                        $('.loader-wrapper').show()
+                    }
+                }).done(function(result){
+                    $('.loader-wrapper').hide()
+                    resolve(result.suc > 0 ? result.msg : []);
+                }).fail(function(err){
+                    $('.loader-wrapper').hide()
+                    reject(err)
+                })
+            })
+        }
+
+        const getCalEmiTypeDtls = (e, flag='E') => {
+            var type_id = $(e).attr('data-type-id'),
+            act_id = $(e).val(),
+            unit_id = $(e).attr('unit-id'),
+            id = $(e).attr('id').split('_')[$(e).attr('id').split('_').length - 1],
+            next_id = $(e).attr('next-id'),
+            unit_q_id = $(e).attr('unit-id');
+
+            $.ajax({
+                method:'POST',
+                url: '/get_cal_emi_type_ajax',
+                data: {type_id, act_id, flag: flag},
+                beforeSend: function(){
+                    $('.loader-wrapper').show()
+                },
+                success: function(result){
+                    var res = result
+                    if(res.suc > 0){
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${id}" data-type-id="${type_id}" next-id="${unit_q_id}" onchange = "getCalUnitDtls(this)"><option value="">Select Emission Source</option>`
+                        if(res.msg.length > 0){
+                            $.each(res.msg, function(i, dt){
+                                optEle = optEle + `<option value="${dt.id}">${dt.emi_name}</option>`
+                            })
+                        }
+                        optEle = optEle + '</select></div>'
+                        $(`#inputActionDiv${next_id}`).append(optEle)
+                    }
+                },
+                complete: function(){
+                    $('.loader-wrapper').hide()
+                }
+            })
+        }
+
+        const getCalUnitDtls = (e, flag='E') => {
+            var type_id = $(e).attr('data-type-id'),
+            emi_type_id = $(e).val(),
+            id = $(e).attr('id').split('_')[$(e).attr('id').split('_').length - 1],
+            next_id = $(e).attr('next-id');
+
+            var act_id = $(`act_id_${id}`).val()
+
+            $.ajax({
+                method:'POST',
+                url: '/get_cal_unit_list_ajax',
+                data: {type_id, act_id, emi_type_id, year: 0, flag: flag},
+                beforeSend: function(){
+                    $('.loader-wrapper').show()
+                },
+                success: function(result){
+                    var res = result
+                    if(res.suc > 0){
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${id}"><option value="">Select Unit</option>`
+                        if(res.msg.length > 0){
+                            $.each(res.msg, function(i, dt){
+                                optEle = optEle + `<option value="${dt.id}">${dt.unit_name}</option>`
+                            })
+                        }
+                        optEle = optEle + '</select></div>'
+                        $(`#inputActionDiv${next_id}`).append(optEle)
+                    }
+                },
+                complete: function(){
+                    $('.loader-wrapper').hide()
+                }
+            })
+        }
+
+        
+        function createTable(id, th1, th2, th3){
+            var tableEleData = `
+            <div class="col-md-12 emi-table">
+                <table class="table table-bordered" id="userTable${id}">
+                    <thead>
+                        <tr>
+                            <th>
+                                ${th1}
+                            </th>
+                            <th>
+                                ${th2}
+                            </th>
+                            <th>
+                                ${th3}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `
+        }
+        return tableEleData;
     </script>
 
     <%- include('../templates/footer.ejs') %>
