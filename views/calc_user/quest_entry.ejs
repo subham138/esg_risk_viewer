@@ -218,7 +218,7 @@
                             divElement = divElement + '<div class="col-sm-3 tabs-responsive-side">'
                             divElement = divElement + '<div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">'
 
-                            divContentElemt = divContentElemt + '<div class="col-sm-9"><div class="tab-content" id="v-pills-tabContent">'
+                            divContentElemt = divContentElemt + '<div class="col-sm-9 cust-quest-scroll"><div class="tab-content" id="v-pills-tabContent">'
                             $.each(Object.keys(res.msg), function (i, dt) {
                                 divElement = divElement + `<a class="nav-link ${i == 0 ? 'active' : ''}" id="${dt.split(' ').join('_')}_tab" data-bs-toggle="pill" href="#${dt.split(' ').join('_')}" role="tab" aria-controls="${dt.split(' ').join('_')}" aria-selected="false">${dt}</a>`
                                 divContentElemt = divContentElemt + `<div class="tab-pane fade bounceInRight animated ${i == 0 ? 'active show' : ''}" id="${dt.split(' ').join('_')}" role="tabpanel" aria-labelledby="${dt.split(' ').join('_')}_tab">`
@@ -404,7 +404,7 @@
         
         function createTable(id, th1, th2, th3){
             var tableEleData = `
-            <div class="col-md-12 emi-table">
+            <div class="col-md-12 mt-4 emi-table">
                 <table class="table table-bordered" id="userTable${id}">
                     <thead>
                         <tr>
@@ -429,8 +429,30 @@
                 </table>
             </div>
             `
+            return tableEleData;
         }
-        return tableEleData;
+
+        function createModeTableTr(flag, id){
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var eleTr = ''
+            $('')
+            switch (flag) {
+                case 'Y':
+                    
+                    break;
+                
+                case 'Q':
+                    
+                    break;
+                    
+                case 'M':
+                    
+                    break;
+            
+                default:
+                    break;
+            }
+        }
     </script>
 
     <%- include('../templates/footer.ejs') %>
