@@ -104,6 +104,7 @@ INPUT_TYPE_LIST = {
   act: "A",
   emi_type: "E",
   emi_unit: "U",
+  mode: "Y",
 },
 SCOPE_LIST = [{id: 1, name: 'Scope 1', img: 'carbon-neutral.png'},{id: 2, name: 'Scope 2', img: 'industrial-emissions.png'},{id: 3, name: 'Scope 3', img: 'carbon-neutral_3.png'}],
 PLATFORM_MODE = {C: 'Calculator', E: 'ESG Full'};

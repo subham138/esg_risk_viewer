@@ -61,53 +61,57 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header b-b-success border-3">
-                            <h6>Build Logic</h6>
-                        </div>
-                        <form action="/build_logic" method="post">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <p>
-                                            <label for="">Scope: </label> <span><%= q_data ? q_data.q_scope : '' %></span>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <p>
-                                            <label for="">Section: </label> <span><%= q_data ? q_data.q_sec_name : '' %></span>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <p>
-                                            <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-12 mt-2 dyn-opt-div">
-                                        <div class="form-group">
-                                            <select class="form-select dynamic-option" name="quest_list" id="quest_list_1" onchange="dynamicQuestSelect(this)" card-id="card-1">
-                                                <option value="">Select Question</option>
-                                                <% if(q_data){
-                                                    q_data.q_data.forEach(dt => {
-                                                        var _selected = ''
-                                                        if(logic_dt.length > 0){
-                                                            if(dt.id == logic_dt[0].id){
-                                                                _selected = 'selected'
+                    <% var scope_dt = q_data.q_data.filter(dt => dt.is_parent == 'N' && dt.is_sub_parent == 'Y'), i = 1;
+                    scope_dt.forEach(qdt => {%>
+                        <div class="card">
+                            <div class="card-header b-b-success border-3">
+                                <h6>Build Logic</h6>
+                            </div>
+                            <form action="/build_logic" method="post">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p>
+                                                <label for="">Scope: </label> <span><%= q_data ? q_data.q_scope : '' %></span>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <p>
+                                                <label for="">Section: </label> <span><%= q_data ? q_data.q_sec_name : '' %></span>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <p>
+                                                <h6><u><%= q_data ? q_data.q_header : '' %></u></h6>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 mt-2 dyn-opt-div">
+                                            <div class="form-group">
+                                                <select class="form-select dynamic-option" name="quest_list" id="quest_list_1_<%= i %>" onchange="dynamicQuestSelect(this)" card-id="card-<%= i %>">
+                                                    <option value="">Select Question</option>
+                                                    <% if(q_data){
+                                                        q_data.q_data.forEach(dt => {
+                                                            var _selected = ''
+                                                            if(logic_dt.length > 0){
+                                                                if(dt.id == logic_dt[0].id){
+                                                                    _selected = 'selected'
+                                                                }
                                                             }
-                                                        }
-                                                        %>
-                                                        <option value="<%= dt.id %>" <%= _selected %>><%= `${dt.is_parent=='Y' ? `${dt.sequence}.` : (dt.parent_id > 0 && dt.is_sub_parent == 'Y' ? `${dt.parent_id}.${dt.sequence}` : (dt.sub_parent_id > 0 && dt.is_parent == 'N' && dt.is_sub_parent == 'N' ? `${dt.parent_id}.${dt.sub_parent_id}.${dt.sequence}` : `${dt.sequence}.`))}` %> &nbsp;<%= dt.input_label %></option>
-                                                    <% })
-                                                } %>
-                                            </select>
+                                                            %>
+                                                            <option value="<%= dt.id %>" <%= _selected %>><%= `${dt.is_parent=='Y' ? `${dt.sequence}.` : (dt.parent_id > 0 && dt.is_sub_parent == 'Y' ? `${dt.parent_id}.${dt.sequence}` : (dt.sub_parent_id > 0 && dt.is_parent == 'N' && dt.is_sub_parent == 'N' ? `${dt.parent_id}.${dt.sub_parent_id}.${dt.sequence}` : `${dt.sequence}.`))}` %> &nbsp;<%= dt.input_label %></option>
+                                                        <% })
+                                                    } %>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <input type="hidden" name="scope_id" value="<%= scope_id %>">
-                            <input type="hidden" name="type_id" value="<%= type_id %>">
-                        </form>
-                    </div>
+                                <input type="hidden" name="scope_id" value="<%= scope_id %>">
+                                <input type="hidden" name="type_id" value="<%= type_id %>">
+                            </form>
+                        </div>
+                    <% i++ })
+                    %>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
@@ -148,6 +152,8 @@
     }
     function dynamicQuestSelect(e){        
         var filterData = quest_master_data.filter(dt => dt.id == $(e).val())
+        console.log(filterData);
+        
         if($(e).parent().parent().next().closest('.q-opt-dyn').length > 0){
             $(e).parent().parent().next().closest('.q-opt-dyn').detach()
             $(e).parent().parent().next().closest('.action-div').detach()
@@ -527,6 +533,8 @@
 
     function nxtQstActChange(e){
         // console.log($(e).val());
+        console.log($(e).parent().parent().parent());
+        
         var checkedVal = $(e).val()
         var tot_row = $('.dynamic-option').length;
         if($(e).parent().next().find('hr')){
@@ -604,7 +612,11 @@
 
     $(document).ready(function(){
         if(cal_logic_data.length > 0){
-            $('select[name="quest_list"]').change()
+            $('select[name="quest_list"]').each((i, dt) => {
+                if($(dt).val() > 0){
+                    $(dt).change()
+                }
+            })
         }
     })
 </script>

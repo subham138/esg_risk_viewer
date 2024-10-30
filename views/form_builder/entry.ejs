@@ -125,7 +125,7 @@
                             <div class="col-md-6">
                                 <select class="form-select" id="sec_id" name="sec_id" required>
                                     <option>Select Calculator Section Type</option>
-                                    <% sec_list.forEach(dt => {
+                                    <% console.log(sec_list); sec_list.forEach(dt => {
                                         var _selected = ''
                                         if(dt.id == sec_id) _selected = 'selected'
                                         %>
