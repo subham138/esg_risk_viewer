@@ -132,6 +132,8 @@
     cal_act = <%- JSON.stringify(cal_act) %>,
     cal_emi_type = <%- JSON.stringify(cal_emi_type) %>,
     cal_unit = <%- JSON.stringify(cal_unit) %>, cal_type_id = 0, cal_logic_data = <%- JSON.stringify(logic_dt) %>;
+    console.log(quest_master_data);
+    
     function editLabel(elm) {
         var jelm = $(elm);
         var htmlElm = jelm[0];
@@ -532,9 +534,6 @@
     }
 
     function nxtQstActChange(e){
-        // console.log($(e).val());
-        console.log($(e).parent().parent().parent());
-        
         var checkedVal = $(e).val()
         var tot_row = $('.dynamic-option').length;
         if($(e).parent().next().find('hr')){
@@ -542,8 +541,10 @@
         }
         if(checkedVal == 'Q'){
             var sel_dt = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').length > 0 ? $(e).parent().prev().prev().prev().closest('.dyn-opt-div').clone() : $(e).parent().prev().prev().prev().prev().closest('.dyn-opt-div').clone()
+            var card_id = $(sel_dt).children().find('.dynamic-option').attr('card-id')
+            card_id = card_id.split('-')[card_id.split('-').length - 1]
             $(sel_dt).children().find('.dynamic-option').removeAttr('id')
-            $(sel_dt).children().find('.dynamic-option').attr('id', `quest_list_${tot_row+1}`)
+            $(sel_dt).children().find('.dynamic-option').attr('id', `quest_list_${tot_row+1}_${card_id}`)
             var selectElement = $(sel_dt).children().find('.dynamic-option')
             // $(sel_dt).children().find('.dynamic-option').val('')
             if($('select.dynamic-option').length > 0 && cal_logic_data.length > 0){
