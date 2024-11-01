@@ -168,9 +168,7 @@
             $(e).parent().parent().next().closest('.quest_action').detach()
         }
         var op_act_next = '', op_act_end = '', op_act_sel_quest = '', op_act_sel_emi = '', op_chk_val_sel = '', has_logic_dt = false;
-        if(filterData.length > 0){
-            console.log(cal_logic_data, '++++++++', $(e).val());
-            
+        if(filterData.length > 0){            
             if(cal_logic_data.length > 0 && chkSeqQuestData){
                 has_logic_dt = true;
                 var logic_filter_dt = cal_logic_data.filter(dt => dt.id == $(e).val())
@@ -180,7 +178,7 @@
                    op_act_sel_quest = logic_filter_dt[0].next_qst_action_val == 'Q' ? 'checked' : ''
                    op_act_sel_emi = logic_filter_dt[0].next_qst_action_val == 'E' ? 'checked' : ''
                    op_chk_val_sel = logic_filter_dt[0].option_val ? logic_filter_dt[0].option_val : ''
-                   console.log(logic_filter_dt, '=======');
+                //    console.log(logic_filter_dt, '=======');
                 }
             }
             
