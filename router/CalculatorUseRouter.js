@@ -1,15 +1,22 @@
 const CalcUserRouter = require('express').Router()
 const { getCalQuestUserDt, getCalAct } = require('../modules/CalculatorModule');
-const { SCOPE_LIST } = require('../modules/MasterModule');
+const { SCOPE_LIST, YEAR_LIST } = require('../modules/MasterModule');
 
 CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
   var scope_list = SCOPE_LIST,
-  cal_act = await getCalAct(0, 0);
+  cal_act = await getCalAct(0, 0),
+  currDate = new Date(),
+  yearList = YEAR_LIST;
+  var currYear = currDate.getFullYear()
+  yearList.includes(currYear) ? '' : yearList.push(currYear)
     var data = {
         header: "Manage User",
         scope_list,
-        cal_act: cal_act.suc > 0 ? cal_act.msg : []
+        cal_act: cal_act.suc > 0 ? cal_act.msg : [],
+        year_list: yearList
       };
+    console.log(yearList, currYear, yearList.includes(currYear));
+      
     res.render('calc_user/quest_entry', data)
 })
 
