@@ -62,7 +62,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <% var scope_dt = q_data.q_data.filter(dt => dt.is_parent == 'N' && dt.is_sub_parent == 'Y'), i = 1;
-                    scope_dt.forEach(qdt => {%>
+                    scope_dt.forEach(qdt => {
+                        var logicFilterDt = logic_dt.filter(dt => dt.id == qdt.id)
+                        var build_dt_flag = logicFilterDt.length > 0
+                        %>
                         <div class="card">
                             <div class="card-header b-b-success border-3">
                                 <h6>Build Logic</h6>
@@ -87,13 +90,13 @@
                                         </div>
                                         <div class="col-md-12 mt-2 dyn-opt-div">
                                             <div class="form-group">
-                                                <select class="form-select dynamic-option" name="quest_list" id="quest_list_1_<%= i %>" onchange="dynamicQuestSelect(this)" card-id="card-<%= i %>">
+                                                <select class="form-select dynamic-option" name="quest_list" id="quest_list_1_<%= i %>" onchange="dynamicQuestSelect(this)" card-id="card-<%= qdt.id %>">
                                                     <option value="">Select Question</option>
                                                     <% if(q_data){
                                                         q_data.q_data.forEach(dt => {
                                                             var _selected = ''
                                                             if(logic_dt.length > 0){
-                                                                if(dt.id == logic_dt[0].id){
+                                                                if(dt.id == logic_dt[0].id && build_dt_flag){
                                                                     _selected = 'selected'
                                                                 }
                                                             }
@@ -154,7 +157,10 @@
     }
     function dynamicQuestSelect(e){        
         var filterData = quest_master_data.filter(dt => dt.id == $(e).val())
-        console.log(filterData);
+        var seqCardId = $(e).attr('card-id')
+        seqCardId = seqCardId.split('-')[seqCardId.split('-').length - 1]
+        console.log(filterData, '--------');
+        var chkSeqQuestData = cal_logic_data.filter(dt => dt.id == seqCardId).length > 0
         
         if($(e).parent().parent().next().closest('.q-opt-dyn').length > 0){
             $(e).parent().parent().next().closest('.q-opt-dyn').detach()
@@ -163,7 +169,9 @@
         }
         var op_act_next = '', op_act_end = '', op_act_sel_quest = '', op_act_sel_emi = '', op_chk_val_sel = '', has_logic_dt = false;
         if(filterData.length > 0){
-            if(cal_logic_data.length > 0){
+            console.log(cal_logic_data, '++++++++', $(e).val());
+            
+            if(cal_logic_data.length > 0 && chkSeqQuestData){
                 has_logic_dt = true;
                 var logic_filter_dt = cal_logic_data.filter(dt => dt.id == $(e).val())
                 if(logic_filter_dt.length > 0){
@@ -172,7 +180,7 @@
                    op_act_sel_quest = logic_filter_dt[0].next_qst_action_val == 'Q' ? 'checked' : ''
                    op_act_sel_emi = logic_filter_dt[0].next_qst_action_val == 'E' ? 'checked' : ''
                    op_chk_val_sel = logic_filter_dt[0].option_val ? logic_filter_dt[0].option_val : ''
-                   console.log(logic_filter_dt);
+                   console.log(logic_filter_dt, '=======');
                 }
             }
             
@@ -180,19 +188,19 @@
             var tot_row = $(e).val();
             var action_btn =
                 `<div class="col-md-12 action-div" style="display: none;">
-                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="nxt_${tot_row}" autocomplete="off" value="N" ${op_act_next} onchange="optActChange(this)">
-                    <label class="btn cust-q-opt" for="nxt_${tot_row}">Next</label>
+                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="nxt_${tot_row}_${seqCardId}" autocomplete="off" value="N" ${op_act_next} onchange="optActChange(this)">
+                    <label class="btn cust-q-opt" for="nxt_${tot_row}_${seqCardId}">Next</label>
 
-                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="die_${tot_row}" autocomplete="off" value="D" ${op_act_end} onchange="optActChange(this)">
-                    <label class="btn cust-q-opt" for="die_${tot_row}">End</label>
+                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="die_${tot_row}_${seqCardId}" autocomplete="off" value="D" ${op_act_end} onchange="optActChange(this)">
+                    <label class="btn cust-q-opt" for="die_${tot_row}_${seqCardId}">End</label>
                 </div>`
             var quest_btn = 
                 `<div class="col-md-12 quest_action" style="display: none;">
-                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="quest_${tot_row}" autocomplete="off" value="Q" ${op_act_sel_quest} onchange="nxtQstActChange(this)">
-                    <label class="btn cust-q-opt" for="quest_${tot_row}">Select Question</label>
+                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="quest_${tot_row}_${seqCardId}" autocomplete="off" value="Q" ${op_act_sel_quest} onchange="nxtQstActChange(this)">
+                    <label class="btn cust-q-opt" for="quest_${tot_row}_${seqCardId}">Select Question</label>
 
-                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="inp_${tot_row}" autocomplete="off" value="E" ${op_act_sel_emi} onchange="nxtQstActChange(this)">
-                    <label class="btn cust-q-opt" for="inp_${tot_row}">Emission User Input</label>
+                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="inp_${tot_row}_${seqCardId}" autocomplete="off" value="E" ${op_act_sel_emi} onchange="nxtQstActChange(this)">
+                    <label class="btn cust-q-opt" for="inp_${tot_row}_${seqCardId}">Emission User Input</label>
                 </div>`
             // console.log(filterData[0].input_type, '--------------');
             
@@ -543,6 +551,8 @@
             var sel_dt = $(e).parent().prev().prev().prev().closest('.dyn-opt-div').length > 0 ? $(e).parent().prev().prev().prev().closest('.dyn-opt-div').clone() : $(e).parent().prev().prev().prev().prev().closest('.dyn-opt-div').clone()
             var card_id = $(sel_dt).children().find('.dynamic-option').attr('card-id')
             card_id = card_id.split('-')[card_id.split('-').length - 1]
+            var chkSeqQuestData = cal_logic_data.filter(dt => dt.id == card_id).length > 0
+
             $(sel_dt).children().find('.dynamic-option').removeAttr('id')
             $(sel_dt).children().find('.dynamic-option').attr('id', `quest_list_${tot_row+1}_${card_id}`)
             var selectElement = $(sel_dt).children().find('.dynamic-option')
@@ -553,7 +563,7 @@
                 // console.log($(sel_dt).children().find(`.dynamic-option option[value="${selectElement.val()}"]`), '++//++');
                 
                 $(sel_dt).children().find(`.dynamic-option option[value="${selectElement.val()}"]`).removeAttr('selected')
-                var calDt = cal_logic_data.length >= $('select.dynamic-option').length ? cal_logic_data[$('select.dynamic-option').length] : {}
+                var calDt = cal_logic_data.length >= $('select.dynamic-option').length && chkSeqQuestData ? cal_logic_data[$('select.dynamic-option').length] : {}
                 // // console.log(selectElement.val(), $(`#${sel_id} option[value="${selectElement.val()}"]`), '---////-----');
                 
                 $(sel_dt).children().find(`.dynamic-option`).val(calDt.id ? calDt.id : '')
@@ -577,19 +587,19 @@
                                 <th>
                                     <div class="form-group mb-0">
                                         <p class="label-view" onclick="editLabel(this)">Value(s)</p>
-                                        <input type="text" value="Value(s)" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_1" style="display: none;">
+                                        <input type="text" value="Value(s)" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_${card_id}_1" style="display: none;">
                                     </div>
                                 </th>
                                 <th>
                                     <div class="form-group mb-0">
                                         <p class="label-view" onclick="editLabel(this)">Emission factor</p>
-                                        <input type="text" value="Emission factor" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_2" style="display: none;">
+                                        <input type="text" value="Emission factor" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_${card_id}_2" style="display: none;">
                                     </div>
                                 </th>
                                 <th>
                                     <div class="form-group mb-0">
                                         <p class="label-view" onclick="editLabel(this)">tCO2e</p>
-                                        <input type="text" value="tCO2e" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_3" style="display: none;">
+                                        <input type="text" value="tCO2e" name="em_hed_${opt_val}" class="edit mb-2 form-control" id="em_hed_${opt_val}_${card_id}_3" style="display: none;">
                                     </div>
                                 </th>
                             </tr>
