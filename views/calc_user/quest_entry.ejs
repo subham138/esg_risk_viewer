@@ -64,6 +64,13 @@
     <script>
         function clickAct(e){
             var isBtn = $(e).attr('type') ? true : false
+
+            if($(e).parent().hasClass('last-emi-tab')){
+                var divId = $(e).parent().attr('id')
+                divId = divId.split('-')[divId.split('-').length - 1]
+                changeProvTable(divId, $(e).text()== 'Yes' ? true : false)
+            }
+
             if(isBtn){
                 var txt = $(e).text()
                 $(e).parent().prev().children().children().closest('span.cust-badge-quest-txt').text(txt)
@@ -125,7 +132,7 @@
                                 if(res.msg[dt].length > 0){
                                     var parentQuest = res.msg[dt].filter(Subdt => Subdt.is_parent == 'Y' && Subdt.parent_id == 0),
                                     subParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'Y' && Subdt.sub_parent_id == 0),emiTypeQuestIdArr = [], unitQuestIdArr = [];
-                                    console.log(subParentData, parentQuest, 'subParentData');
+                                    // console.log(subParentData, parentQuest, 'subParentData');
 
                                     divContentElemt = divContentElemt + `<div class="question-box">
                                         <div class="quest-text">
@@ -134,7 +141,7 @@
                                             </p>
                                             ${['R','C', 'S'].includes(parentQuest[0].input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                         </div>
-                                        <div class="quest-opt-btn mt-2" id="inputActionDiv${parentQuest[0].id}">
+                                        <div class="quest-opt-btn mt-2" id="inputActionDiv-${parentQuest[0].id}">
                                             ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0)}
                                         </div>
                                     </div>`
@@ -148,7 +155,7 @@
                                                 </p>
                                                 ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                             </div>
-                                            <div class="quest-opt-btn mt-2" id="inputActionDiv${qdt.id}">
+                                            <div class="quest-opt-btn mt-2" id="inputActionDiv-${qdt.id}">
                                                 ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, 0, 0)}
                                             </div>
                                         </div>`
@@ -166,6 +173,9 @@
                                                 unitQuestId = unitQuestId.length > 0 ? unitQuestId[0].id : 0
                                                 lastTabId = lastTabId.length > 0 && sqdt.input_type == 'Y' ? lastTabId[0].id : 0
 
+                                                // console.log(emiTypeQuestId, unitQuestId, lastTabId, '/./././././././.');
+                                                
+
                                                 divContentElemt = divContentElemt + `<div class="question-box">
                                                     <div class="quest-text">
                                                         <p class="fadeIn animated">
@@ -173,7 +183,7 @@
                                                         </p>
                                                         ${['R','C', 'S'].includes(sqdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                                     </div>
-                                                    <div class="quest-opt-btn mt-2" id="inputActionDiv${sqdt.id}">
+                                                    <div class="quest-opt-btn mt-2 ${sqdt.next_qst_action_val == 'E' ? 'last-emi-tab' : ''}" id="inputActionDiv-${sqdt.id}">
                                                         ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId)}
                                                     </div>
                                                     ${lastTable}
@@ -260,7 +270,7 @@
                                 })
                             }
                             optEle = optEle + '</select></div>'
-                            $(`#inputActionDiv${id}`).append(optEle)
+                            $(`#inputActionDiv-${id}`).append(optEle)
                         }).catch((err) => {
                             console.log(err);
                         }) 
@@ -268,7 +278,7 @@
                     break;
                 case 'Y':
                     var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quaterly'}, {id: 'M', name: 'Monthly'}]
-                    optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" onchange="createModeTableTr(this, ${id}, ${lat_table_id})"><option value="">Select Mode</option>`
+                    optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id})"><option value="">Select Mode</option>`
                     $.each(year_opt, function(i, dt){
                         optEle = optEle + `<option value="${dt.id}">${dt.name}</option>`
                     })
@@ -317,14 +327,15 @@
                 success: function(result){
                     var res = result
                     if(res.suc > 0){
-                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${id}" data-type-id="${type_id}" next-id="${unit_q_id}" onchange = "getCalUnitDtls(this)"><option value="">Select Emission Source</option>`
+                        $(`#inputActionDiv-${next_id}`).empty()
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" onchange = "getCalUnitDtls(this)"><option value="">Select Emission Source</option>`
                         if(res.msg.length > 0){
                             $.each(res.msg, function(i, dt){
                                 optEle = optEle + `<option value="${dt.id}">${dt.emi_name}</option>`
                             })
                         }
                         optEle = optEle + '</select></div>'
-                        $(`#inputActionDiv${next_id}`).append(optEle)
+                        $(`#inputActionDiv-${next_id}`).append(optEle)
                     }
                 },
                 complete: function(){
@@ -351,14 +362,15 @@
                 success: function(result){
                     var res = result
                     if(res.suc > 0){
-                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${id}"><option value="">Select Unit</option>`
+                        $(`#inputActionDiv-${next_id}`).empty()
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${next_id}"><option value="">Select Unit</option>`
                         if(res.msg.length > 0){
                             $.each(res.msg, function(i, dt){
-                                optEle = optEle + `<option value="${dt.id}" co-val="${dt.co_val}">${dt.unit_name}</option>`
+                                optEle = optEle + `<option value="${dt.unit_id}" co-val="${dt.co_val}">${dt.unit_name}</option>`
                             })
                         }
                         optEle = optEle + '</select></div>'
-                        $(`#inputActionDiv${next_id}`).append(optEle)
+                        $(`#inputActionDiv-${next_id}`).append(optEle)
                     }
                 },
                 complete: function(){
@@ -430,29 +442,30 @@
             return tableEleData;
         }
 
-        function createModeTableTr(e, id, lat_table_id){
+        function createModeTableTr(e, id, lat_table_id, emi_id, unit_id){
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             quaterMon = ['Q 1', 'Q 2', 'Q 3', 'Q 4'];
             var flag = $(e).val()
             var eleTr = ''
             console.log(flag, id, lat_table_id, 'asasas');
-            
+            var col_val = $(`#unit_id_${unit_id}`).find('option:selected').attr('co-val')
             switch (flag) {
                 case 'Y':
                     $(`#strt_month_${lat_table_id}`).parent().hide()
                     $(`#strt_month_${lat_table_id}`).removeAttr('required')
+                    // $(`#userTable${lat_table_id}`).attr('mode-emi', flag)
                     $(`#userTable${lat_table_id} tbody`).empty()
                     $(`#userTable${lat_table_id} tbody`).append(`
                     <tr>
                         <td><span id="input-mode-span-${lat_table_id}"></span></td>
                         <td>
-                            <input class="form-control" id="cal_val_1_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="">
+                            <input class="form-control" id="cal_val_1_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this)">
                         </td>
                         <td>
-                            <input class="form-control" id="emi_fact_val_1_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="" required="">
+                            <input class="form-control" id="emi_fact_val_1_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="${col_val}" required="" onchange="calTabValue(this)" readonly>
                         </td>
                         <td>
-                            <input class="form-control" id="co_val_1_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="">
+                            <input class="form-control" id="co_val_1_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this)">
                         </td>
                     </tr>
                     `)
@@ -465,13 +478,13 @@
                         <tr>
                             <td><span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span></td>
                             <td>
-                                <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="">
+                                <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this)">
                             </td>
                             <td>
-                                <input class="form-control" id="emi_fact_val_${i+1}_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="" required="">
+                                <input class="form-control" id="emi_fact_val_${i+1}_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="${col_val}" required="" onchange="calTabValue(this)" readonly>
                             </td>
                             <td>
-                                <input class="form-control" id="co_val_${i+1}_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="">
+                                <input class="form-control" id="co_val_${i+1}_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this)">
                             </td>
                         </tr>
                         `)
@@ -479,7 +492,23 @@
                     break;
                     
                 case 'M':
-                    
+                $(`#userTable${lat_table_id} tbody`).empty()
+                    $.each(months, function(i, mdt){
+                        $(`#userTable${lat_table_id} tbody`).append(`
+                        <tr>
+                            <td><span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span></td>
+                            <td>
+                                <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this)">
+                            </td>
+                            <td>
+                                <input class="form-control" id="emi_fact_val_${i+1}_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="${col_val}" required="" onchange="calTabValue(this)" readonly>
+                            </td>
+                            <td>
+                                <input class="form-control" id="co_val_${i+1}_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this)">
+                            </td>
+                        </tr>
+                        `)
+                    })
                     break;
             
                 default:
@@ -488,20 +517,82 @@
         }
 
         function changeRepoPer(e, id){
-            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
             if(!$(`#strt_month_${id}`).is('visible')){
                 $(`#input-mode-span-${id}`).text($(e).val())
             }
         }
 
         function changeStMon(e, id){
-            if($(`#userTable${lat_table_id} tbody tr`).length == 4){
-                var i = 1
-                $(`#userTable${lat_table_id} tbody tr`).each(dt => {
-                    
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            var sel_mon = $(e).val()
+            var sel_index = months.findIndex(dt => dt == sel_mon), quater_arr = [], sel_year = $(`#repo_period_${id}`).val();
+            
+            if($(`#userTable${id} tbody tr`).length == 4){
+                var tot_month = 12, j = 1;
+                for(let i = 0; i < 4; i++){
+                    var monLen = tot_month % sel_index
+                    if(monLen > 0 && (tot_month - sel_index) < 3){
+                        quater_arr.push(`Q ${j}, ${sel_year.toString()}-${(parseInt(sel_year)+1).toString().substring(2)}`)
+                        sel_index = sel_index - tot_month
+                        sel_year = parseInt(sel_year)+1
+                    }else if((tot_month - sel_index) == 0 && monLen == 0){
+                        sel_index = sel_index - tot_month
+                        sel_year = parseInt(sel_year)+1
+                        quater_arr.push(`Q ${j}, ${sel_year.toString()}`)
+                    }else{
+                        quater_arr.push(`Q ${j}, ${sel_year.toString()}`)
+                        sel_index = parseInt(sel_index) + 3
+                    }
+                    j++
+                }
+
+                j = 0
+                $(`#userTable${id} tbody tr`).each(function(i, dt) {
+                    $(dt).children().find(`#input-mode-span-${j+1}-${id}`).text(quater_arr[i])
+                    j++
                 })
             }
-            if($(`#userTable${lat_table_id} tbody tr`).length == 12){}
+            if($(`#userTable${id} tbody tr`).length == 12){
+                var monthCount = sel_index,
+                currMonth = [];
+                for(let dt of months){
+                    if(monthCount > (months.length-1)){
+                        monthCount = 0
+                    }
+                    currMonth.push(months[monthCount])
+                    monthCount++;
+                }
+
+                var j = 0
+                $(`#userTable${id} tbody tr`).each(function(i, dt) {
+                    $(dt).children().find(`#input-mode-span-${j+1}-${id}`).text(currMonth[i])
+                    j++
+                })
+            }
+        }
+
+        function changeProvTable(id, active){
+            var j = 0
+            $(`#userTable${id} tbody tr`).each(function(i, dt) {
+                if(active){
+                    $(dt).children().find(`#emi_fact_val_${j+1}_${id}`).removeAttr('readonly')
+                }else{
+                    $(dt).children().find(`#emi_fact_val_${j+1}_${id}`).attr('readonly', 'readonly')
+                }
+                j++
+            })
+        }
+
+        function calTabValue(e){
+            console.log($(e).parent().parent());
+            var totCo2 = 0
+            $(e).parent().parent().each(function(i, dt){
+                var emi_val = $($(dt).children()[1]).find('input').val() > 0 ? $($(dt).children()[1]).find('input').val() : 0
+                var emi_fact = $($(dt).children()[2]).find('input').val() > 0 ? $($(dt).children()[2]).find('input').val() : 0
+                var co2 = emi_val * emi_fact
+                totCo2 += co2
+                $($(dt).children()[2]).find('input').val(co2)
+            })
         }
     </script>
 
