@@ -68,7 +68,8 @@ ProjectRouter.get("/my_project", async (req, res) => {
     0,
     req.session.user.client_id,
     user_type != "A" && user_type != "C" && user_type != "S" ? user_id : 0,
-    flag
+    flag,
+    req.session.user.platform_mode
   );
   var data = {
     lang: lang,
@@ -97,7 +98,8 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
       id,
       req.session.user.client_id,
       0,
-      flag
+      flag,
+      req.session.user.platform_mode
     );
   }
 
@@ -134,7 +136,8 @@ ProjectRouter.post("/my_project_save", async (req, res) => {
   var res_dt = await saveProject(
     data,
     req.session.user.client_id,
-    req.session.user.user_name
+    req.session.user.user_name,
+    req.session.user.platform_mode
   );
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
@@ -154,7 +157,8 @@ ProjectRouter.post("/my_project_save_ajax", async (req, res) => {
   var res_dt = await saveProject(
     data,
     req.session.user.client_id,
-    req.session.user.user_name
+    req.session.user.user_name,
+    req.session.user.platform_mode
   );
   // req.session.message = {
   //     type: res_dt.suc > 0 ? "success" : "danger",
@@ -184,7 +188,8 @@ ProjectRouter.get("/proj_work", async (req, res) => {
     req.query.id,
     req.session.user.client_id,
     0,
-    flag
+    flag,
+    req.session.user.platform_mode
   );
   var data = {
     lang: lang,
@@ -336,7 +341,8 @@ ProjectRouter.get("/proj_work_view", async (req, res) => {
       data.proj_id,
       req.session.user.client_id,
       0,
-      data.flag
+      data.flag,
+      req.session.user.platform_mode
     );
   // console.log(project_data);
 
@@ -440,7 +446,8 @@ ProjectRouter.get("/project_report_view", async (req, res) => {
     data.proj_id,
     req.session.user.client_id,
     0,
-    data.flag
+    data.flag,
+    req.session.user.platform_mode
   );
 
   var risk_info_dt = await getRiskOprnDtls(data.flag, data.sec_id, data.ind_id);
@@ -685,7 +692,8 @@ ProjectRouter.get("/report_full_view", async (req, res) => {
     data.proj_id,
     req.session.user.client_id,
     0,
-    data.flag
+    data.flag,
+    req.session.user.platform_mode
   );
   var met_note_dtls = await getMetNote(0, data.flag);
   console.log(met_note_dtls);

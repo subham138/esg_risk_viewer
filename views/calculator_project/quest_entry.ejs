@@ -1,0 +1,627 @@
+
+<!-- <div class="card">
+    <div class="card-body"> -->
+        <ul class="nav nav-tabs border-tab" id="sope-tab" role="tablist">
+            <% var i = 0
+            scope_list.forEach(dt => { %>
+                <li class="nav-item" scope-id="<%= dt.id %>">
+                    <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= dt.name.split(' ').join('_') %>_tab" data-bs-toggle="tab" href="#<%= dt.name.split(' ').join('_') %>" role="tab" aria-controls="<%= dt.name.split(' ').join('_') %>" aria-selected="true" onclick="getQuestDtlsChangeUser(this)">
+                        <img class="tab-img-icon" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                        <%= dt.name %>
+                    </a>
+                </li>
+            <% i++; }) %>
+        </ul>
+        <div class="tab-content" id="sope-tabContent">
+            <% var j = 0
+            scope_list.forEach(dt => { %>
+                <div class="tab-pane fade <%= j == 0 ? 'show active' : '' %>" id="<%= dt.name.split(' ').join('_') %>" role="tabpanel" aria-labelledby="<%= dt.name.split(' ').join('_') %>_tab">
+                    <div class="row quest-tab-context">
+                        <div class="col-md-12 text-center">
+                            <strong class="text-danger">No Data Found</strong>
+                        </div>
+                    </div>
+                </div>
+            <% j++; }) %>
+        </div>
+    <!-- </div>
+</div> -->
+
+<script>
+    function clickAct(e){
+        var isBtn = $(e).attr('type') ? true : false
+
+        console.log($(e));
+        
+
+        if($(e).parent().parent().hasClass('parent-quest')){
+            if($(e).text() == 'Yes' && isBtn)
+                $(e).parent().parent().parent().find('.sub-parent-quest').show()
+            else
+                $(e).parent().parent().parent().find('.sub-parent-quest').hide()
+        }
+
+        if($(e).parent().parent().hasClass('sub-parent-quest')){
+            if($(e).text() == 'Yes' && isBtn){
+                $(e).parent().parent().next('.sub-sub-section').children().each(function (i, dt){
+                    if($(dt).children().closest('.quest-opt-btn').children('input').length > 0 || $(dt).children().closest('.quest-opt-btn').children().children('select').length > 0){
+                        $(dt).show()
+                        // console.log($(dt).children().closest('.quest-opt-btn').children('input'))
+                    }else{
+                        return false;
+                    }
+                })
+            }
+        }
+        
+
+        if($(e).parent().hasClass('last-emi-tab')){
+            if(isBtn){
+                $(e).parent().next().show()
+            }else{
+                $(e).parent().next().hide()
+            }
+            var divId = $(e).parent().attr('id')
+            divId = divId.split('-')[divId.split('-').length - 1]
+            changeProvTable(divId, $(e).text()== 'Yes' ? true : false)
+        }
+
+        if(isBtn){
+            var txt = $(e).text()
+            $(e).parent().prev().children().children().closest('span.cust-badge-quest-txt').text(txt)
+            $(e).parent().addClass('bounceOutLeft animated')
+            $(e).parent().prev().children('.badge').addClass('bounceInRight animated')
+            $(e).parent().prev().children('.badge').show()
+            setTimeout(() => {
+                $(e).parent().hide()
+                $(e).parent().removeClass('bounceOutLeft animated')
+                $(e).parent().prev().children('.badge').removeClass('bounceInRight animated')
+            }, 1000);
+        }else{
+            $(e).parent().next().show()
+            $(e).parent().next().addClass('bounceInLeft animated')
+            $(e).addClass('bounceOutRight animated')
+            setTimeout(() => {
+                $(e).hide()
+                $(e).parent().next().removeClass('bounceInLeft animated')
+                $(e).removeClass('bounceOutRight animated')
+            }, 1000);
+        }
+    }
+</script>
+<script>
+    $(document).ready(function(){
+        if($('#sope-tab li').length > 0){
+            $($('#sope-tab li')[0]).children('a.nav-link').click()
+            // var scope_id = $($('#sope-tab li')[0]).attr('scope-id')
+            // if(scope_id > 0)
+            // getQuestDtlsChangeUser(scope_id)
+        }
+    })
+
+    function getQuestDtlsChangeUser(e){
+        var tabId = $(e).attr('href')
+        var scope_id = $(e).parent('.nav-item').attr('scope-id')
+        $.ajax({
+            method:'POST',
+            url: '/get_question_list_by_scope_user_ajax',
+            data: {scope_id: scope_id},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                console.log(res);
+                if(res.suc > 0){
+                    if(Object.keys(res.msg).length > 0){
+                        $(`${tabId}`).children('.quest-tab-context').empty()
+                        var divElement = '', divContentElemt = '';
+                        divElement = divElement + '<div class="col-sm-3 tabs-responsive-side">'
+                        divElement = divElement + '<div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">'
+
+                        divContentElemt = divContentElemt + '<div class="col-sm-9 cust-quest-scroll"><div class="tab-content" id="v-pills-tabContent">'
+                        $.each(Object.keys(res.msg), function (i, dt) {
+                            divElement = divElement + `<a class="nav-link ${i == 0 ? 'active' : ''}" id="${dt.split(' ').join('_')}_tab" data-bs-toggle="pill" href="#${dt.split(' ').join('_')}" role="tab" aria-controls="${dt.split(' ').join('_')}" aria-selected="false">${dt}</a>`
+                            divContentElemt = divContentElemt + `<div class="tab-pane fade bounceInRight animated ${i == 0 ? 'active show' : ''}" id="${dt.split(' ').join('_')}" role="tabpanel" aria-labelledby="${dt.split(' ').join('_')}_tab">`
+                            if(res.msg[dt].length > 0){
+                                var parentQuest = res.msg[dt].filter(Subdt => Subdt.is_parent == 'Y' && Subdt.parent_id == 0),
+                                subParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'Y' && Subdt.sub_parent_id == 0),emiTypeQuestIdArr = [], unitQuestIdArr = [];
+                                // console.log(subParentData, parentQuest, 'subParentData');
+
+                                divContentElemt = divContentElemt + `<div class="question-box parent-quest">
+                                    <div class="quest-text">
+                                        <p class="fadeIn animated">
+                                            ${parentQuest[0].is_parent=='Y' ? `${parentQuest[0].sequence}.` : (parentQuest[0].parent_id > 0 && parentQuest[0].is_sub_parent == 'Y' ? `${parentQuest[0].parent_id}.${parentQuest[0].sequence}` : (parentQuest[0].sub_parent_id > 0 && parentQuest[0].is_parent == 'N' && parentQuest[0].is_sub_parent == 'N' ? `${parentQuest[0].parent_id}.${parentQuest[0].sub_parent_id}.${parentQuest[0].sequence}` : `${parentQuest[0].sequence}.`))} &nbsp; ${parentQuest[0].input_label}
+                                        </p>
+                                        ${['R','C', 'S'].includes(parentQuest[0].input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+                                    </div>
+                                    <div class="quest-opt-btn mt-2" id="inputActionDiv-${parentQuest[0].id}">
+                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0)}
+                                    </div>
+                                </div>`
+                                
+                                $.each(subParentData, function (j, qdt){
+                                    var subSubParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'N' && Subdt.sub_parent_id == qdt.sequence)
+                                    divContentElemt = divContentElemt + `<div class="question-box sub-parent-quest" style="display:none;">
+                                        <div class="quest-text">
+                                            <p class="fadeIn animated">
+                                                ${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))} &nbsp; ${qdt.input_label}
+                                            </p>
+                                            ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+                                        </div>
+                                        <div class="quest-opt-btn mt-2" id="inputActionDiv-${qdt.id}">
+                                            ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, 0, 0)}
+                                        </div>
+                                    </div>
+                                    <div class="sub-sub-section">`
+                                    if(subSubParentData.length > 0){
+                                        $.each(subSubParentData, function (j, sqdt){
+                                            var lastTable = sqdt.next_qst_action_val == 'E' ? createTable(sqdt.id, sqdt.emi_head_opt1, sqdt.emi_head_opt2, sqdt.emi_head_opt3) : '';
+                                            
+                                            var emiTypeQuestId = subSubParentData.filter(fdt => fdt.input_type == 'E' && fdt.sub_parent_id == qdt.sequence),
+                                                unitQuestId = subSubParentData.filter(fdt => fdt.input_type == 'U' && fdt.sub_parent_id == qdt.sequence),
+                                                lastTabId = subSubParentData.filter(fdt => fdt.next_qst_action_val == 'E' && fdt.sub_parent_id == qdt.sequence);
+
+                                            // console.log(emiTypeQuestId, unitQuestId, dt, '-----/////////////')
+
+                                            emiTypeQuestId = emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0
+                                            unitQuestId = unitQuestId.length > 0 ? unitQuestId[0].id : 0
+                                            lastTabId = lastTabId.length > 0 && sqdt.input_type == 'Y' ? lastTabId[0].id : 0
+
+                                            // console.log(emiTypeQuestId, unitQuestId, lastTabId, '/./././././././.');
+                                            
+
+                                            divContentElemt = divContentElemt + `<div class="question-box sub-sub-parent-quest" style="display:none;">
+                                                <div class="quest-text">
+                                                    <p class="fadeIn animated">
+                                                        ${sqdt.is_parent=='Y' ? `${sqdt.sequence}.` : (sqdt.parent_id > 0 && sqdt.is_sub_parent == 'Y' ? `${sqdt.parent_id}.${sqdt.sequence}` : (sqdt.sub_parent_id > 0 && sqdt.is_parent == 'N' && sqdt.is_sub_parent == 'N' ? `${sqdt.parent_id}.${sqdt.sub_parent_id}.${sqdt.sequence}` : `${sqdt.sequence}.`))} &nbsp; ${sqdt.input_label}
+                                                    </p>
+                                                    ${['R','C', 'S'].includes(sqdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+                                                </div>
+                                                <div class="quest-opt-btn mt-2 ${sqdt.next_qst_action_val == 'E' ? 'last-emi-tab' : ''}" id="inputActionDiv-${sqdt.id}">
+                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId)}
+                                                </div>
+                                                ${lastTable}
+                                            </div>`
+                                        })
+                                    }
+                                    divContentElemt = divContentElemt + '</div>'
+                                })
+
+                                // $.each(subParentData, function (j, qdt){
+                                //     var emiTypeQuestId = res.msg[dt].filter(fdt => fdt.input_type == 'E' && fdt.sub_parent_id == qdt.sequence),
+                                //     unitQuestId = res.msg[dt].filter(fdt => fdt.input_type == 'U' && fdt.sub_parent_id == qdt.sequence);
+
+                                //     console.log(emiTypeQuestId, '----');
+                                    
+                                //     emiTypeQuestIdArr.push({seq: qdt.sub_parent_id, msg: emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0})
+                                //     // emiTypeQuestId = emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0
+                                //     // unitQuestId = unitQuestId.length > 0 ? unitQuestId[0].id : 0
+                                // })
+                                // console.log(emiTypeQuestIdArr, '+++++++');
+                                
+                                // $.each(res.msg[dt], function (j, qdt){
+
+                                //     var lastTable = qdt.next_qst_action_val == 'E' ? createTable(qdt.id, qdt.emi_head_opt1, qdt.emi_head_opt2, qdt.emi_head_opt3) : ''
+                                //     divContentElemt = divContentElemt + `<div class="question-box">
+                                //         <div class="quest-text">
+                                //             <p class="fadeIn animated">
+                                //                 ${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))} &nbsp; ${qdt.input_label}
+                                //             </p>
+                                //             ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+                                //         </div>
+                                //         <div class="quest-opt-btn mt-2" id="inputActionDiv${qdt.id}">
+                                //             ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, emiTypeQuestId, unitQuestId)}
+                                //         </div>
+                                //         ${lastTable}
+                                //     </div>`
+                                // })
+                            }else{
+                                divContentElemt = divContentElemt + '<div class="text-center"><strong class="text-danger">No Data Found</strong></div>'
+                            }
+                            divContentElemt = divContentElemt + '</div>'
+                        })
+                        divElement = divElement + '</div></div>'
+                        divContentElemt = divContentElemt + '</div></div>'
+                        $(`${tabId}`).children('.quest-tab-context').append(divElement + divContentElemt)
+                    }
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+        // console.log($(e).attr('href'));
+        
+    }
+    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0){
+        var optEle = ''
+        switch (flag) {
+            case 'R':
+                $.each(option, function(i, dt){
+                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                })
+                break;
+            case 'C':
+                $.each(option, function(i, dt){
+                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                })
+                break;
+            case 'S':
+                $.each(option, function(i, dt){
+                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                })
+                break;
+            case 'I':
+                optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
+                break;
+            case 'A':
+                // setTimeout(() => {
+                    getCalActDtls(option_val, 'E').then(function (actData) {
+                        console.log(actData, 'here');
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" onchange = "getCalEmiTypeDtls(this)"><option value="">Select Activity</option>`
+                        if(actData.length > 0){
+                            $.each(actData, function(i, dt){
+                                optEle = optEle + `<option value="${dt.id}">${dt.act_name}</option>`
+                            })
+                        }
+                        optEle = optEle + '</select></div>'
+                        $(`#inputActionDiv-${id}`).append(optEle)
+                    }).catch((err) => {
+                        console.log(err);
+                    }) 
+                // optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
+                break;
+            case 'Y':
+                var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quaterly'}, {id: 'M', name: 'Monthly'}]
+                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id})"><option value="">Select Mode</option>`
+                $.each(year_opt, function(i, dt){
+                    optEle = optEle + `<option value="${dt.id}">${dt.name}</option>`
+                })
+                optEle = optEle + '</select></div>'
+                break;
+        
+            default:
+                break;
+        }
+        return optEle;
+    }
+    const getCalActDtls = (type_id, flag) => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                method:'POST',
+                url: '/get_cal_act_ajax',
+                data: {type_id: type_id, flag: flag},
+                beforeSend: function(){
+                    $('.loader-wrapper').show()
+                }
+            }).done(function(result){
+                $('.loader-wrapper').hide()
+                resolve(result.suc > 0 ? result.msg : []);
+            }).fail(function(err){
+                $('.loader-wrapper').hide()
+                reject(err)
+            })
+        })
+    }
+
+    const getCalEmiTypeDtls = (e, flag='E') => {
+        var type_id = $(e).attr('data-type-id'),
+        act_id = $(e).val(),
+        unit_id = $(e).attr('unit-id'),
+        id = $(e).attr('id').split('_')[$(e).attr('id').split('_').length - 1],
+        next_id = $(e).attr('next-id'),
+        unit_q_id = $(e).attr('unit-id');
+
+        $.ajax({
+            method:'POST',
+            url: '/get_cal_emi_type_ajax',
+            data: {type_id, act_id, flag: flag},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = result
+                if(res.suc > 0){
+                    $(`#inputActionDiv-${next_id}`).parent().show()
+                    $(`#inputActionDiv-${next_id}`).empty()
+                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" onchange = "getCalUnitDtls(this)"><option value="">Select Emission Source</option>`
+                    if(res.msg.length > 0){
+                        $.each(res.msg, function(i, dt){
+                            optEle = optEle + `<option value="${dt.id}">${dt.emi_name}</option>`
+                        })
+                    }
+                    optEle = optEle + '</select></div>'
+                    $(`#inputActionDiv-${next_id}`).append(optEle)
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    }
+
+    const getCalUnitDtls = (e, flag='E') => {
+        var type_id = $(e).attr('data-type-id'),
+        emi_type_id = $(e).val(),
+        id = $(e).attr('id').split('_')[$(e).attr('id').split('_').length - 1],
+        next_id = $(e).attr('next-id');
+
+        var act_id = $(`act_id_${id}`).val()
+
+        $.ajax({
+            method:'POST',
+            url: '/get_cal_unit_list_ajax',
+            data: {type_id, act_id, emi_type_id, year: 0, flag: flag},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = result
+                if(res.suc > 0){
+                    $(`#inputActionDiv-${next_id}`).parent().show()
+                    $(`#inputActionDiv-${next_id}`).empty()
+                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${next_id}" onchange="unitEmiChange(this)"><option value="">Select Unit</option>`
+                    if(res.msg.length > 0){
+                        $.each(res.msg, function(i, dt){
+                            optEle = optEle + `<option value="${dt.unit_id}" co-val="${dt.co_val}">${dt.unit_name}</option>`
+                        })
+                    }
+                    optEle = optEle + '</select></div>'
+                    $(`#inputActionDiv-${next_id}`).append(optEle)
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    }
+
+    function unitEmiChange(e){
+        // console.log($(e));
+        $(e).parent().parent().parent().nextAll().each(function (i, dt){
+            if($(dt).children().closest('.quest-opt-btn').children('input').length > 0 || $(dt).children().closest('.quest-opt-btn').children().children('select').length > 0){
+                $(dt).show()
+            }else{
+                return false;
+            }
+        })
+        // $(e).parent().parent().parent().next().show()
+    }
+
+    function createTable(id, th1, th2, th3){
+        var year_list = <%- JSON.stringify(year_list) %>,
+        month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var reportingOpt = '', monthOpt = '';
+        year_list.forEach(dt => {
+            reportingOpt += `<option value="${dt}">${dt}</option>`
+        });
+        month_list.forEach(dt => {
+            monthOpt += `<option value="${dt}">${dt}</option>`
+        });
+        var reportingSelect = `
+        <div class="col-md-6 m-t-10">
+            <label class="form-label float-start" for="repo_period_${id}">Reporting Period</label>
+            <select class="form-select" id="repo_period_${id}" name="repo_period" required="" onchange="changeRepoPer(this, ${id})">
+                <option selected="" value="">Select Reporting Period</option>
+                ${reportingOpt}
+            </select>
+        </div>
+        `
+        var monthSelect = `
+        <div class="col-md-6 m-t-10">
+            <label class="form-label float-start" for="strt_month_${id}">Start Month</label>
+            <select class="form-select" id="strt_month_${id}" name="strt_month" required="" onchange="changeStMon(this, ${id})">
+                <option selected="" value="">Select Start Month</option>
+                ${monthOpt}
+            </select>
+        </div>
+        `
+        var tableEleData = `
+        <div class="row" id="emiEntryTab-${id}" style="display:none;">
+            ${reportingSelect}
+            ${monthSelect}
+            <div class="col-md-12 mt-4 emi-table">
+                <table class="table table-bordered" id="userTable${id}" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>
+                                ${th1}
+                            </th>
+                            <th>
+                                ${th2}
+                            </th>
+                            <th>
+                                ${th3}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="h5">Total</td>
+                            <td id="tot_emi_cal_${id}"></td>
+                        </tr>    
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        `
+        return tableEleData;
+    }
+
+    function createModeTableTr(e, id, lat_table_id, emi_id, unit_id){
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        quaterMon = ['Q 1', 'Q 2', 'Q 3', 'Q 4'];
+        var flag = $(e).val()
+        var eleTr = ''
+        $(e).parent().parent().parent().next().show()
+        // console.log(flag, id, lat_table_id, 'asasas');
+        var col_val = $(`#unit_id_${unit_id}`).find('option:selected').attr('co-val')
+        switch (flag) {
+            case 'Y':
+                $(`#strt_month_${lat_table_id}`).parent().hide()
+                $(`#strt_month_${lat_table_id}`).removeAttr('required')
+                // $(`#userTable${lat_table_id}`).attr('mode-emi', flag)
+                $(`#userTable${lat_table_id} tbody`).empty()
+                $(`#tot_emi_cal_${lat_table_id}`).text('')
+                $(`#userTable${lat_table_id} tbody`).append(`
+                <tr>
+                    <td><span id="input-mode-span-${lat_table_id}"></span></td>
+                    <td>
+                        <input class="form-control" id="cal_val_1_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
+                    </td>
+                    <td>
+                        <input class="form-control" id="emi_fact_val_1_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="${col_val}" required="" onchange="calTabValue(this, ${lat_table_id})" readonly>
+                    </td>
+                    <td>
+                        <input class="form-control" id="co_val_1_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
+                    </td>
+                </tr>
+                `)
+                break;
+            
+            case 'Q':
+                $(`#strt_month_${lat_table_id}`).parent().show()
+                $(`#userTable${lat_table_id} tbody`).empty()
+                $(`#tot_emi_cal_${lat_table_id}`).text('')
+                $.each(quaterMon, function(i, mdt){
+                    $(`#userTable${lat_table_id} tbody`).append(`
+                    <tr>
+                        <td><span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span></td>
+                        <td>
+                            <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
+                        </td>
+                        <td>
+                            <input class="form-control" id="emi_fact_val_${i+1}_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="${col_val}" required="" onchange="calTabValue(this, ${lat_table_id})" readonly>
+                        </td>
+                        <td>
+                            <input class="form-control" id="co_val_${i+1}_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
+                        </td>
+                    </tr>
+                    `)
+                })
+                break;
+                
+            case 'M':
+            $(`#strt_month_${lat_table_id}`).parent().show()
+            $(`#userTable${lat_table_id} tbody`).empty()
+            $(`#tot_emi_cal_${lat_table_id}`).text('')
+                $.each(months, function(i, mdt){
+                    $(`#userTable${lat_table_id} tbody`).append(`
+                    <tr>
+                        <td><span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span></td>
+                        <td>
+                            <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
+                        </td>
+                        <td>
+                            <input class="form-control" id="emi_fact_val_${i+1}_${lat_table_id}" name="emi_fact_val_${lat_table_id}" type="text" value="${col_val}" required="" onchange="calTabValue(this, ${lat_table_id})" readonly>
+                        </td>
+                        <td>
+                            <input class="form-control" id="co_val_${i+1}_${lat_table_id}" name="co_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
+                        </td>
+                    </tr>
+                    `)
+                })
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    function changeRepoPer(e, id){
+        if(!$(`#strt_month_${id}`).is('visible')){
+            $(`#userTable${id}`).show()
+            $(`#input-mode-span-${id}`).text($(e).val())
+        }else{
+            $(`#userTable${id}`).hide()
+        }
+    }
+
+    function changeStMon(e, id){
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        var sel_mon = $(e).val()
+        var sel_index = months.findIndex(dt => dt == sel_mon), quater_arr = [], sel_year = $(`#repo_period_${id}`).val();
+
+        $(`#userTable${id}`).show()
+
+        if($(`#userTable${id} tbody tr`).length == 4){
+            var tot_month = 12, j = 1;
+            for(let i = 0; i < 4; i++){
+                var monLen = tot_month % sel_index
+                if(monLen > 0 && (tot_month - sel_index) < 3){
+                    quater_arr.push(`Q ${j}, ${sel_year.toString()}-${(parseInt(sel_year)+1).toString().substring(2)}`)
+                    sel_index = sel_index - tot_month
+                    sel_year = parseInt(sel_year)+1
+                }else if((tot_month - sel_index) == 0 && monLen == 0){
+                    sel_index = sel_index - tot_month
+                    sel_year = parseInt(sel_year)+1
+                    quater_arr.push(`Q ${j}, ${sel_year.toString()}`)
+                }else{
+                    quater_arr.push(`Q ${j}, ${sel_year.toString()}`)
+                    sel_index = parseInt(sel_index) + 3
+                }
+                j++
+            }
+
+            j = 0
+            $(`#userTable${id} tbody tr`).each(function(i, dt) {
+                $(dt).children().find(`#input-mode-span-${j+1}-${id}`).text(quater_arr[i])
+                j++
+            })
+        }
+        if($(`#userTable${id} tbody tr`).length == 12){
+            var monthCount = sel_index,
+            currMonth = [];
+            for(let dt of months){
+                if(monthCount > (months.length-1)){
+                    monthCount = 0
+                }
+                currMonth.push(months[monthCount])
+                monthCount++;
+            }
+
+            var j = 0
+            $(`#userTable${id} tbody tr`).each(function(i, dt) {
+                $(dt).children().find(`#input-mode-span-${j+1}-${id}`).text(currMonth[i])
+                j++
+            })
+        }
+    }
+
+    function changeProvTable(id, active){
+        var j = 0
+        $(`#userTable${id} tbody tr`).each(function(i, dt) {
+            if(active){
+                $(dt).children().find(`#emi_fact_val_${j+1}_${id}`).removeAttr('readonly')
+            }else{
+                $(dt).children().find(`#emi_fact_val_${j+1}_${id}`).attr('readonly', 'readonly')
+            }
+            j++
+        })
+    }
+
+    function calTabValue(e, id){
+        // console.log($(e).parent().parent().parent());
+        var totCo2 = 0
+        $(e).parent().parent().parent().children().each(function(i, dt){
+            var emi_val = $($(dt).children()[1]).find('input').val() > 0 ? $($(dt).children()[1]).find('input').val() : 0
+            var emi_fact = $($(dt).children()[2]).find('input').val() > 0 ? $($(dt).children()[2]).find('input').val() : 0
+            
+            var co2 = emi_val * emi_fact
+            totCo2 = parseFloat(totCo2) + parseFloat(co2)
+            $($(dt).children()[3]).find('input').val(co2.toFixed(2))
+            $(`#tot_emi_cal_${id}`).text(totCo2.toFixed(2))
+        })
+    }
+</script>
