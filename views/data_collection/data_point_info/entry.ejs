@@ -125,9 +125,10 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 5%;">#</th>
-                                        <th style="width: 20%;">Code</th>
-                                        <th style="width: 20%;">Tab Title</th>
-                                        <th style="width: 47%;">Info</th>
+                                        <th style="width: 15%;">Code</th>
+                                        <th style="width: 9%;">Sl No.</th>
+                                        <th style="width: 18%;">Tab Title</th>
+                                        <th style="width: 45%;">Info</th>
                                         <th style="width: 4%;"></th>
                                         <th style="width: 4%;"></th>
                                     </tr>
@@ -273,8 +274,11 @@
                     <tr id="row_${row.id}_1">
                         <td rowspan="1">${i}</td>
                         <td rowspan="1">
-                            <label>${row.code}</label>
+                            <label>${row.code} (<snall><i><strong>${row.topic_name}</strong></i></small>)</label>
                             <input type="hidden" name="sus_dis_top_met_id" value="${row.id}">
+                        </td>
+                        <td>
+                            <input class="form-control" id="sl_no_${row.id}_1" name="sl_no_${row.id}" type="text" value="${row.sl_no && row.sl_no != '' ? row.sl_no : '0'}">
                         </td>
                         <td>
                             <input class="form-control" id="info_title_${row.id}_1" name="info_title_${row.id}" type="text" value="${row.tab_title && row.tab_title != '' ? row.tab_title : ''}">
@@ -297,7 +301,7 @@
                     // }, 1000);
                     // resolve(true);
             }else{
-                add_row(row.id, 1, `${row.tab_title && row.tab_title != '' ? row.tab_title : ''}`, `${row.tab_info && row.tab_info != '' ? row.tab_info : ''}`)
+                add_row(row.id, 1, `${row.tab_title && row.tab_title != '' ? row.tab_title : ''}`, `${row.tab_info && row.tab_info != '' ? row.tab_info : ''}`, `${row.sl_no && row.sl_no != '' ? row.sl_no : '0'}`)
                 // resolve(true)
             }
         // })
@@ -464,9 +468,12 @@
         }
     })
 
-    async function created_row(sus_dis_top_met_id, next_id, prev_id, tab_title = '', tab_info = ''){        
+    async function created_row(sus_dis_top_met_id, next_id, prev_id, tab_title = '', tab_info = '', sl_no = 0){        
         $(`#row_${sus_dis_top_met_id}_${next_id-1}`).after(`
             <tr id="row_${sus_dis_top_met_id}_${next_id}">
+                <td>
+                    <input class="form-control" id="sl_no_${sus_dis_top_met_id}_${next_id}" name="sl_no_${sus_dis_top_met_id}" type="text" value="${sl_no}">
+                </td>
                 <td>
                     <input class="form-control" id="info_title_${sus_dis_top_met_id}_${next_id}" name="info_title_${sus_dis_top_met_id}" type="text" value="${tab_title}">
                 </td>
@@ -488,7 +495,7 @@
         createEditor(`info_desc_${sus_dis_top_met_id}_${next_id}`, `info_desc_text_${sus_dis_top_met_id}_${next_id}`)
     }
 
-    function add_row(sus_dis_top_met_id, id, tab_title = '', tab_info = '') {
+    function add_row(sus_dis_top_met_id, id, tab_title = '', tab_info = '', sl_no = 0) {
         console.log($(`#row_${sus_dis_top_met_id}_1`))
         var row = $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr('rowspan')
         // var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
@@ -497,7 +504,7 @@
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", next_id);
         $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).attr("rowspan", next_id);
-        created_row(sus_dis_top_met_id, next_id, id, tab_title, tab_info)
+        created_row(sus_dis_top_met_id, next_id, id, tab_title, tab_info, sl_no)
     }
 
     function remove_row(sus_dis_top_met_id, id, sus_id) {
@@ -556,7 +563,7 @@ function uploadChunk(chunk, chunkIndex, totalChunks, onSuccess, onError, sus_dis
   $.ajax({
     url: '/set_sus_dis_info_point_entry',
     type: 'POST',
-    data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val(), code_id: sus_dis_top_met_id, info_title: $(`#info_title_${sus_dis_top_met_id}_${sl_no}`).val()}),
+    data: JSON.stringify({ chunk, chunkIndex, totalChunks, sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), flag: $('#flag').val(), code_id: sus_dis_top_met_id, sl_no: $(`#sl_no_${sus_dis_top_met_id}_${sl_no}`).val(), info_title: $(`#info_title_${sus_dis_top_met_id}_${sl_no}`).val()}),
     contentType: 'application/json',
     success: onSuccess,
     error: onError

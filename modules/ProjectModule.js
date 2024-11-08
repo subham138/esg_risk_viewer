@@ -188,10 +188,10 @@ module.exports = {
     getSusDistPointDt: (sec_id, ind_id, repo_flag, code) => {
         return new Promise(async (resolve, reject) => {
             var result = []
-            var select = `a.sec_id, a.ind_id, a.repo_flag, a.tab_title, a.tab_info, b.code, b.id suc_dis_id`,
+            var select = `a.sec_id, a.ind_id, a.repo_flag, a.sl_no, a.tab_title, a.tab_info, b.code, b.id suc_dis_id`,
             table_name = 'td_sus_dist_point_info a, td_sus_dis_top_met b',
             whr = `a.code_id=b.id AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id AND a.repo_flag=b.repo_flag AND b.code = '${code}' AND a.sec_id = ${sec_id} AND a.ind_id = ${ind_id} AND a.repo_flag = '${repo_flag}'`,
-            order = null;
+            order = 'ORDER BY a.sl_no ASC';
             var res_dt = await db_Select(select, table_name, whr, order)
             // console.log(res_dt);
             
