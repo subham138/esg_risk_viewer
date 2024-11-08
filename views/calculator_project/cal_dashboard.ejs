@@ -1,0 +1,38 @@
+<script src="js/chart/google/google-chart-loader.js"></script>
+
+<div id="stackedBarChart" style="width: 100%; height: 500px;"></div>
+
+<script type="text/javascript">
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        // Define the chart data
+        var data = google.visualization.arrayToDataTable([
+            ['Year', 'Scope 1 - Category A', 'Scope 2 - Category A', 'Scope 3 - Category A', 'Scope 1 - Category B', 'Scope 2 - Category B', 'Scope 3 - Category B'],
+            ['2024', 3, 4, 5, 2, 3, 4],  // 2024 with two stacked bars (Category A and B)
+            ['2025', 2.5, 3.8, 4.7, 1.8, 3.2, 4],  // 2025 with two stacked bars (Category A and B)
+            ['2026', 2.2, 3.6, 4.4, 1.5, 2.9, 3.6],  // 2026 with two stacked bars (Category A and B)
+            // Add more years as needed
+        ]);
+
+        // Set chart options
+        var options = {
+            title: 'Stacked Bar Chart with Multiple Bars per Year',
+            isStacked: true,
+            hAxis: {
+                title: 'Total Emissions',
+                minValue: 0
+            },
+            vAxis: {
+                title: 'Year'
+            },
+            legend: { position: 'top', maxLines: 3 },
+            colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#aec7e8', '#ffbb78', '#98df8a'] // Colors for Scope 1, 2, 3 for each category
+        };
+
+        // Instantiate and draw the chart
+        var chart = new google.visualization.BarChart(document.getElementById('stackedBarChart'));
+        chart.draw(data, options);
+    }
+</script>

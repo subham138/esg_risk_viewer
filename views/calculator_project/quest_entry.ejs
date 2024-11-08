@@ -35,10 +35,14 @@
         
 
         if($(e).parent().parent().hasClass('parent-quest')){
-            if($(e).text() == 'Yes' && isBtn)
+            if($(e).text() == 'Yes' && isBtn){
+                $(e).parent().parent().parent().find('.sub-parent-container').show()
                 $(e).parent().parent().parent().find('.sub-parent-quest').show()
-            else
+            }
+            else{
+                $(e).parent().parent().parent().find('.sub-parent-container').hide()
                 $(e).parent().parent().parent().find('.sub-parent-quest').hide()
+            }
         }
 
         if($(e).parent().parent().hasClass('sub-parent-quest')){
@@ -143,7 +147,7 @@
                                 
                                 $.each(subParentData, function (j, qdt){
                                     var subSubParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'N' && Subdt.sub_parent_id == qdt.sequence)
-                                    divContentElemt = divContentElemt + `<div class="question-box sub-parent-quest" style="display:none;">
+                                    divContentElemt = divContentElemt + `<div class="sub-parent-container"><div class="question-box sub-parent-quest" style="display:none;">
                                         <div class="quest-text">
                                             <p class="fadeIn animated">
                                                 ${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))} &nbsp; ${qdt.input_label}
@@ -186,7 +190,7 @@
                                             </div>`
                                         })
                                     }
-                                    divContentElemt = divContentElemt + '</div>'
+                                    divContentElemt = divContentElemt + '</div></div>'
                                 })
 
                                 // $.each(subParentData, function (j, qdt){

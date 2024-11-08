@@ -190,3 +190,11 @@ footer.close_nav {
             color-stop(0.86, rgb(27 100 120)));
 }
 /* END */
+.sub-parent-container{
+    border: 1.5px solid #75309c;
+    padding: 15px;
+    border-radius: 10px 0px;
+    box-shadow: 4px 4px #ebebeb;
+    margin-bottom: 10px;
+    display: none;
+}
