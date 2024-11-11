@@ -1,37 +1,38 @@
 
-<!-- <div class="card">
-    <div class="card-body"> -->
-        <ul class="nav nav-tabs border-tab" id="sope-tab" role="tablist">
-            <% var i = 0
-            scope_list.forEach(dt => { %>
-                <li class="nav-item" scope-id="<%= dt.id %>">
-                    <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= dt.name.split(' ').join('_') %>_tab" data-bs-toggle="tab" href="#<%= dt.name.split(' ').join('_') %>" role="tab" aria-controls="<%= dt.name.split(' ').join('_') %>" aria-selected="true" onclick="getQuestDtlsChangeUser(this)">
-                        <img class="tab-img-icon" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
-                        <%= dt.name %>
-                    </a>
-                </li>
-            <% i++; }) %>
-        </ul>
-        <div class="tab-content" id="sope-tabContent">
-            <% var j = 0
-            scope_list.forEach(dt => { %>
-                <div class="tab-pane fade <%= j == 0 ? 'show active' : '' %>" id="<%= dt.name.split(' ').join('_') %>" role="tabpanel" aria-labelledby="<%= dt.name.split(' ').join('_') %>_tab">
-                    <div class="row quest-tab-context">
-                        <div class="col-md-12 text-center">
-                            <strong class="text-danger">No Data Found</strong>
-                        </div>
-                    </div>
+<ul class="nav nav-tabs border-tab" id="sope-tab" role="tablist">
+    <% var i = 0
+    scope_list.forEach(dt => { %>
+        <li class="nav-item" scope-id="<%= dt.id %>">
+            <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= dt.name.split(' ').join('_') %>_tab" data-bs-toggle="tab" href="#<%= dt.name.split(' ').join('_') %>" role="tab" aria-controls="<%= dt.name.split(' ').join('_') %>" aria-selected="true" onclick="getQuestDtlsChangeUser(this)">
+                <img class="tab-img-icon" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                <%= dt.name %>
+            </a>
+        </li>
+    <% i++; }) %>
+</ul>
+<div class="tab-content" id="sope-tabContent">
+    <% var j = 0
+    scope_list.forEach(dt => { %>
+        <div class="tab-pane fade <%= j == 0 ? 'show active' : '' %>" id="<%= dt.name.split(' ').join('_') %>" role="tabpanel" aria-labelledby="<%= dt.name.split(' ').join('_') %>_tab">
+            <div class="row quest-tab-context">
+                <div class="col-md-12 text-center">
+                    <strong class="text-danger">No Data Found</strong>
                 </div>
-            <% j++; }) %>
+            </div>
         </div>
-    <!-- </div>
-</div> -->
+    <% j++; }) %>
+</div>
+
+<input type="hidden" name="proj_id" id="proj_id" value="<%= project_id %>">
+<input type="hidden" name="top_id" id="top_id" value="<%= top_id %>">
+<input type="hidden" name="sec_id" id="sec_id" value="<%= sec_id %>">
+<input type="hidden" name="ind_id" id="ind_id" value="<%= ind_id %>">
 
 <script>
     function clickAct(e){
         var isBtn = $(e).attr('type') ? true : false
 
-        console.log($(e));
+        // console.log($(e));
         
 
         if($(e).parent().parent().hasClass('parent-quest')){
@@ -76,11 +77,18 @@
             $(e).parent().addClass('bounceOutLeft animated')
             $(e).parent().prev().children('.badge').addClass('bounceInRight animated')
             $(e).parent().prev().children('.badge').show()
+            try{
+                saveData($(e).attr('quest-dt'), $(e).text())
+            }catch(err){
+                console.log(err);                
+            }
+
             setTimeout(() => {
                 $(e).parent().hide()
                 $(e).parent().removeClass('bounceOutLeft animated')
                 $(e).parent().prev().children('.badge').removeClass('bounceInRight animated')
             }, 1000);
+            
         }else{
             $(e).parent().next().show()
             $(e).parent().next().addClass('bounceInLeft animated')
@@ -102,6 +110,24 @@
             // getQuestDtlsChangeUser(scope_id)
         }
     })
+
+    function saveData(quest_enc_dt, quest_ans){
+        $.ajax({
+            method:'POST',
+            url: '/cal_quest_save',
+            data: {enc_dt: quest_enc_dt, quest_ans},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                console.log(result);
+                
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    }
 
     function getQuestDtlsChangeUser(e){
         var tabId = $(e).attr('href')
@@ -131,31 +157,38 @@
                             if(res.msg[dt].length > 0){
                                 var parentQuest = res.msg[dt].filter(Subdt => Subdt.is_parent == 'Y' && Subdt.parent_id == 0),
                                 subParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'Y' && Subdt.sub_parent_id == 0),emiTypeQuestIdArr = [], unitQuestIdArr = [];
-                                // console.log(subParentData, parentQuest, 'subParentData');
+
+                                var qSeq = `${parentQuest[0].is_parent=='Y' ? `${parentQuest[0].sequence}.` : (parentQuest[0].parent_id > 0 && parentQuest[0].is_sub_parent == 'Y' ? `${parentQuest[0].parent_id}.${parentQuest[0].sequence}` : (parentQuest[0].sub_parent_id > 0 && parentQuest[0].is_parent == 'N' && parentQuest[0].is_sub_parent == 'N' ? `${parentQuest[0].parent_id}.${parentQuest[0].sub_parent_id}.${parentQuest[0].sequence}` : `${parentQuest[0].sequence}.`))}`
+                                // console.log(parentQuest, 'subParentData');
 
                                 divContentElemt = divContentElemt + `<div class="question-box parent-quest">
+                                    ${parentQuest[0].input_heading != '' && parentQuest[0].input_heading ? `<h4 class="fadeIn animated">${parentQuest[0].input_heading}</h4>` : ''}
                                     <div class="quest-text">
                                         <p class="fadeIn animated">
-                                            ${parentQuest[0].is_parent=='Y' ? `${parentQuest[0].sequence}.` : (parentQuest[0].parent_id > 0 && parentQuest[0].is_sub_parent == 'Y' ? `${parentQuest[0].parent_id}.${parentQuest[0].sequence}` : (parentQuest[0].sub_parent_id > 0 && parentQuest[0].is_parent == 'N' && parentQuest[0].is_sub_parent == 'N' ? `${parentQuest[0].parent_id}.${parentQuest[0].sub_parent_id}.${parentQuest[0].sequence}` : `${parentQuest[0].sequence}.`))} &nbsp; ${parentQuest[0].input_label}
+                                            ${qSeq} &nbsp; ${parentQuest[0].input_label}
                                         </p>
                                         ${['R','C', 'S'].includes(parentQuest[0].input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                     </div>
                                     <div class="quest-opt-btn mt-2" id="inputActionDiv-${parentQuest[0].id}">
-                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0)}
+                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0, 0, scope_id, qSeq)}
                                     </div>
                                 </div>`
                                 
                                 $.each(subParentData, function (j, qdt){
                                     var subSubParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'N' && Subdt.sub_parent_id == qdt.sequence)
+
+                                    var qSeq = `${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))}`
+
                                     divContentElemt = divContentElemt + `<div class="sub-parent-container"><div class="question-box sub-parent-quest" style="display:none;">
+                                        ${qdt.input_heading != '' && qdt.input_heading ? `<h5 class="fadeIn animated">${qdt.input_heading}</h5>` : ''}
                                         <div class="quest-text">
                                             <p class="fadeIn animated">
-                                                ${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))} &nbsp; ${qdt.input_label}
+                                                ${qSeq} &nbsp; ${qdt.input_label}
                                             </p>
                                             ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                         </div>
                                         <div class="quest-opt-btn mt-2" id="inputActionDiv-${qdt.id}">
-                                            ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, 0, 0)}
+                                            ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, 0, 0, 0, scope_id, qSeq)}
                                         </div>
                                     </div>
                                     <div class="sub-sub-section">`
@@ -174,17 +207,20 @@
                                             lastTabId = lastTabId.length > 0 && sqdt.input_type == 'Y' ? lastTabId[0].id : 0
 
                                             // console.log(emiTypeQuestId, unitQuestId, lastTabId, '/./././././././.');
+
+                                            var qSeq = `${sqdt.is_parent=='Y' ? `${sqdt.sequence}.` : (sqdt.parent_id > 0 && sqdt.is_sub_parent == 'Y' ? `${sqdt.parent_id}.${sqdt.sequence}` : (sqdt.sub_parent_id > 0 && sqdt.is_parent == 'N' && sqdt.is_sub_parent == 'N' ? `${sqdt.parent_id}.${sqdt.sub_parent_id}.${sqdt.sequence}` : `${sqdt.sequence}.`))}`
                                             
 
                                             divContentElemt = divContentElemt + `<div class="question-box sub-sub-parent-quest" style="display:none;">
+                                                ${sqdt.input_heading != '' && sqdt.input_heading ? `<h5 class="fadeIn animated">${sqdt.input_heading}</h5>` : ''}
                                                 <div class="quest-text">
                                                     <p class="fadeIn animated">
-                                                        ${sqdt.is_parent=='Y' ? `${sqdt.sequence}.` : (sqdt.parent_id > 0 && sqdt.is_sub_parent == 'Y' ? `${sqdt.parent_id}.${sqdt.sequence}` : (sqdt.sub_parent_id > 0 && sqdt.is_parent == 'N' && sqdt.is_sub_parent == 'N' ? `${sqdt.parent_id}.${sqdt.sub_parent_id}.${sqdt.sequence}` : `${sqdt.sequence}.`))} &nbsp; ${sqdt.input_label}
+                                                        ${qSeq} &nbsp; ${sqdt.input_label}
                                                     </p>
                                                     ${['R','C', 'S'].includes(sqdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                                 </div>
                                                 <div class="quest-opt-btn mt-2 ${sqdt.next_qst_action_val == 'E' ? 'last-emi-tab' : ''}" id="inputActionDiv-${sqdt.id}">
-                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId)}
+                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId, scope_id, qSeq)}
                                                 </div>
                                                 ${lastTable}
                                             </div>`
@@ -192,35 +228,6 @@
                                     }
                                     divContentElemt = divContentElemt + '</div></div>'
                                 })
-
-                                // $.each(subParentData, function (j, qdt){
-                                //     var emiTypeQuestId = res.msg[dt].filter(fdt => fdt.input_type == 'E' && fdt.sub_parent_id == qdt.sequence),
-                                //     unitQuestId = res.msg[dt].filter(fdt => fdt.input_type == 'U' && fdt.sub_parent_id == qdt.sequence);
-
-                                //     console.log(emiTypeQuestId, '----');
-                                    
-                                //     emiTypeQuestIdArr.push({seq: qdt.sub_parent_id, msg: emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0})
-                                //     // emiTypeQuestId = emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0
-                                //     // unitQuestId = unitQuestId.length > 0 ? unitQuestId[0].id : 0
-                                // })
-                                // console.log(emiTypeQuestIdArr, '+++++++');
-                                
-                                // $.each(res.msg[dt], function (j, qdt){
-
-                                //     var lastTable = qdt.next_qst_action_val == 'E' ? createTable(qdt.id, qdt.emi_head_opt1, qdt.emi_head_opt2, qdt.emi_head_opt3) : ''
-                                //     divContentElemt = divContentElemt + `<div class="question-box">
-                                //         <div class="quest-text">
-                                //             <p class="fadeIn animated">
-                                //                 ${qdt.is_parent=='Y' ? `${qdt.sequence}.` : (qdt.parent_id > 0 && qdt.is_sub_parent == 'Y' ? `${qdt.parent_id}.${qdt.sequence}` : (qdt.sub_parent_id > 0 && qdt.is_parent == 'N' && qdt.is_sub_parent == 'N' ? `${qdt.parent_id}.${qdt.sub_parent_id}.${qdt.sequence}` : `${qdt.sequence}.`))} &nbsp; ${qdt.input_label}
-                                //             </p>
-                                //             ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
-                                //         </div>
-                                //         <div class="quest-opt-btn mt-2" id="inputActionDiv${qdt.id}">
-                                //             ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, emiTypeQuestId, unitQuestId)}
-                                //         </div>
-                                //         ${lastTable}
-                                //     </div>`
-                                // })
                             }else{
                                 divContentElemt = divContentElemt + '<div class="text-center"><strong class="text-danger">No Data Found</strong></div>'
                             }
@@ -239,22 +246,23 @@
         // console.log($(e).attr('href'));
         
     }
-    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0){
-        var optEle = ''
+    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0){
+        var optEle = '',
+        btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: id, quest_type: flag, proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val()}));
         switch (flag) {
             case 'R':
                 $.each(option, function(i, dt){
-                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" quest-dt="${btnData}" onclick="clickAct(this)">${dt.option_name}</button>`
                 })
                 break;
             case 'C':
                 $.each(option, function(i, dt){
-                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" quest-dt="${btnData}" onclick="clickAct(this)">${dt.option_name}</button>`
                 })
                 break;
             case 'S':
                 $.each(option, function(i, dt){
-                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" onclick="clickAct(this)">${dt.option_name}</button>`
+                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" quest-dt="${btnData}" onclick="clickAct(this)">${dt.option_name}</button>`
                 })
                 break;
             case 'I':
@@ -264,7 +272,7 @@
                 // setTimeout(() => {
                     getCalActDtls(option_val, 'E').then(function (actData) {
                         console.log(actData, 'here');
-                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" onchange = "getCalEmiTypeDtls(this)"><option value="">Select Activity</option>`
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange = "getCalEmiTypeDtls(this)"><option value="">Select Activity</option>`
                         if(actData.length > 0){
                             $.each(actData, function(i, dt){
                                 optEle = optEle + `<option value="${dt.id}">${dt.act_name}</option>`
@@ -279,7 +287,7 @@
                 break;
             case 'Y':
                 var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quaterly'}, {id: 'M', name: 'Monthly'}]
-                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id})"><option value="">Select Mode</option>`
+                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id})"><option value="">Select Mode</option>`
                 $.each(year_opt, function(i, dt){
                     optEle = optEle + `<option value="${dt.id}">${dt.name}</option>`
                 })

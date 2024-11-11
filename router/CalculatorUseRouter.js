@@ -1,7 +1,8 @@
-const CalcUserRouter = require('express').Router()
-const { getCalQuestUserDt, getCalAct } = require('../modules/CalculatorModule');
-const { SCOPE_LIST, YEAR_LIST, PROJECT_LIST } = require('../modules/MasterModule');
-const { getProjectList } = require('../modules/ProjectModule');
+const CalcUserRouter = require('express').Router(),
+{ getCalQuestUserDt, getCalAct } = require('../modules/CalculatorModule'),
+{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select } = require('../modules/MasterModule'),
+{ getProjectList } = require('../modules/ProjectModule'),
+dateFormat = require('dateformat');
 
 CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
   var scope_list = SCOPE_LIST,
@@ -70,6 +71,22 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
     year_list: yearList
   };
   res.render("calculator_project/report_view", res_data)
+})
+
+CalcUserRouter.post('/cal_quest_save', async (req, res) => {
+  var enc_dt = req.body.enc_dt, quest_ans = req.body.quest_ans, dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), currDate = dateFormat(new Date(), 'yyyy-mm-dd'), user = req.session.user;
+  var data = new Buffer.from(enc_dt, 'base64').toString()
+  data = JSON.parse(data)
+
+  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id}`)
+
+  var table_name = 'td_ghg_quest',
+  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
+  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans}', '${user.user_id}', '${dateTime}')`,
+  whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+  flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+  var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  res.send(res_dt)
 })
 
 module.exports = {CalcUserRouter}
