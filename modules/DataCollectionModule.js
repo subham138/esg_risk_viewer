@@ -5,15 +5,20 @@ module.exports = {
   getSusDiscList: (sec_id, ind_id, top_id, flag = "I") => {
     return new Promise(async (resolve, reject) => {
       var select =
-          "a.id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.top_id, a.sl_no, a.ind_agn, a.metric, a.catg, a.unit, a.code, e.topic_name, a.words, a.info_title",
+          "a.id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.top_id, a.sl_no, a.ind_agn, a.metric, a.catg, a.unit, a.code, e.topic_name, a.words, f.point_codes info_title",
         table_name =
-          "td_sus_dis_top_met a, md_sector b, md_industries c, md_industries_topics d, md_topic e",
-        whr = `a.sec_id=b.id AND a.ind_id=c.id AND b.id=c.sec_id AND a.top_id=d.id AND d.topic_id=e.id AND a.repo_flag = '${flag}' ${
+          `td_sus_dis_top_met a
+          JOIN md_sector b ON a.sec_id=b.id
+          JOIN md_industries c ON a.ind_id=c.id AND b.id=c.sec_id
+          JOIN md_industries_topics d ON a.top_id=d.id
+          JOIN md_topic e ON d.topic_id=e.id
+          LEFT JOIN md_data_point_dt f ON a.id=f.sus_dis_top_met_id`,
+        whr = `a.repo_flag = '${flag}' ${
           sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ""
         } ${ind_id > 0 ? `AND a.ind_id = ${ind_id}` : ""} ${
           top_id > 0 ? `AND a.top_id = ${top_id}` : ""
         }`,
-        order = "ORDER BY a.top_id, a.sl_no";
+        order = "GROUP BY a.id ORDER BY a.top_id, a.sl_no";
       var res_dt = await db_Select(select, table_name, whr, order);
       resolve(res_dt);
     });
