@@ -24,7 +24,7 @@ CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
 
 CalcUserRouter.post('/get_question_list_by_scope_user_ajax', async (req, res) => {
   var data = req.body
-  var res_dt = await getCalQuestUserDt(data.scope_id > 0 ? data.scope_id : 1)
+  var res_dt = await getCalQuestUserDt(data.scope_id > 0 ? data.scope_id : 1, data.proj_id, req.session.user.client_id)
   res.send(res_dt)
 })
 
@@ -87,6 +87,11 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
   res.send(res_dt)
+})
+
+CalcUserRouter.post('/get_cal_save_dt_ajax', async (req, res) => {
+  var data = req.body, user = req.session.user;
+  var res_dt = await db_Select('*', 'td_ghg_quest', `client_id=${user.client_id} AND scope_id=${data.scope_id} AND project_id=${data.proj_id}`)
 })
 
 module.exports = {CalcUserRouter}

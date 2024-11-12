@@ -152,7 +152,7 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getCalQuestUserDt: (scope_id = 1) => {
+    getCalQuestUserDt: (scope_id = 1, proj_id, client_id) => {
         return new Promise(async (resolve, reject) => {
             var res_dt = {suc:0, msg:[]}
             var select = 'id, sec_name',
@@ -180,7 +180,8 @@ module.exports = {
                     }
                     newData[dt.sec_name] = qstDtlsAndLogic.suc > 0 ? qstDtlsAndLogic.msg : []
                 }
-                res_dt = {suc: 1, msg: newData}
+                var q_ans_dt = await db_Select('*', 'td_ghg_quest', `client_id=${client_id} AND scope=${scope_id} AND project_id=${proj_id}`)
+                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : []}
             }else{
                 res_dt = cal_sec_dt
             }

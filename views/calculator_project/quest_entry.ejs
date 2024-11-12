@@ -32,7 +32,7 @@
     function clickAct(e){
         var isBtn = $(e).attr('type') ? true : false
 
-        // console.log($(e));
+        console.log($(e), '-------------------------');
         
 
         if($(e).parent().parent().hasClass('parent-quest')){
@@ -131,11 +131,12 @@
 
     function getQuestDtlsChangeUser(e){
         var tabId = $(e).attr('href')
-        var scope_id = $(e).parent('.nav-item').attr('scope-id')
+        var scope_id = $(e).parent('.nav-item').attr('scope-id'),
+        proj_id = $('#proj_id').val();
         $.ajax({
             method:'POST',
             url: '/get_question_list_by_scope_user_ajax',
-            data: {scope_id: scope_id},
+            data: {scope_id: scope_id, proj_id},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()
@@ -158,6 +159,9 @@
                                 var parentQuest = res.msg[dt].filter(Subdt => Subdt.is_parent == 'Y' && Subdt.parent_id == 0),
                                 subParentData = res.msg[dt].filter(Subdt => Subdt.is_parent == 'N' && Subdt.is_sub_parent == 'Y' && Subdt.sub_parent_id == 0),emiTypeQuestIdArr = [], unitQuestIdArr = [];
 
+                                var qAnsDt = res.proj_q_ans_dt.filter(asDt => asDt.quest_id == parentQuest[0].id)
+                                var isParentHasAns = qAnsDt.length > 0 ? true : false
+
                                 var qSeq = `${parentQuest[0].is_parent=='Y' ? `${parentQuest[0].sequence}.` : (parentQuest[0].parent_id > 0 && parentQuest[0].is_sub_parent == 'Y' ? `${parentQuest[0].parent_id}.${parentQuest[0].sequence}` : (parentQuest[0].sub_parent_id > 0 && parentQuest[0].is_parent == 'N' && parentQuest[0].is_sub_parent == 'N' ? `${parentQuest[0].parent_id}.${parentQuest[0].sub_parent_id}.${parentQuest[0].sequence}` : `${parentQuest[0].sequence}.`))}`
                                 // console.log(parentQuest, 'subParentData');
 
@@ -167,10 +171,10 @@
                                         <p class="fadeIn animated">
                                             ${qSeq} &nbsp; ${parentQuest[0].input_label}
                                         </p>
-                                        ${['R','C', 'S'].includes(parentQuest[0].input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)"><span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+                                        ${['R','C', 'S'].includes(parentQuest[0].input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)" style="display:${isParentHasAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${isParentHasAns ? qAnsDt[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                     </div>
-                                    <div class="quest-opt-btn mt-2" id="inputActionDiv-${parentQuest[0].id}">
-                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0, 0, scope_id, qSeq)}
+                                    <div class="quest-opt-btn mt-2" id="inputActionDiv-${parentQuest[0].id}" style="display:${!isParentHasAns ? 'block' : 'none'};">
+                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0, 0, scope_id, qSeq, isParentHasAns, isParentHasAns ? qAnsDt[0].quest_ans : '')}
                                     </div>
                                 </div>`
                                 
@@ -246,13 +250,18 @@
         // console.log($(e).attr('href'));
         
     }
-    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0){
+    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0, hasAns = false, ansVal = ''){
         var optEle = '',
         btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: id, quest_type: flag, proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val()}));
         switch (flag) {
             case 'R':
                 $.each(option, function(i, dt){
-                    optEle = optEle + `<button class="btn btn-pill btn-custom m-r-40" type="button" quest-dt="${btnData}" onclick="clickAct(this)">${dt.option_name}</button>`
+                    var optEleSep = `<button class="btn btn-pill btn-custom m-r-40" type="button" quest-dt="${btnData}" onclick="clickAct(this)">${dt.option_name}</button>`
+                    optEle = optEle + optEleSep
+                    console.log(hasAns && dt.option_name == ansVal && ansVal == 'Yes')
+                    if(hasAns && dt.option_name == ansVal && ansVal == 'Yes') {
+                        clickAct($(optEleSep))
+                    }
                 })
                 break;
             case 'C':
