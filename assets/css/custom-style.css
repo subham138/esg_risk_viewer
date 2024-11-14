@@ -198,3 +198,58 @@ footer.close_nav {
     margin-bottom: 10px;
     display: none;
 }
+.trans-indigator{
+    background: #000;
+    color: #fff;
+    padding: 5px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.drop-item.form-group {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 0px;
+}
+.drop-item .edit-btn {
+    display: none;
+}
+
+.edit.form-control:hover ~ .edit-btn {
+    display: none;
+}
+
+.drop-item:hover .edit-btn {
+    display: block;
+}
+.edit-btn {
+    background: no-repeat;
+    border: none;
+    font-size: 11px;
+    color: #1b6478;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+.vertical-align-center{
+    vertical-align: middle;
+}
+.cust-border-tab-left{
+    border-right: 1px solid #75309c;
+    border-radius: 10px;
+    margin-right: -3.9px;
+}
+.cust-border-tab-right{
+    border-left: 1px solid #75309c;
+    border-radius: 10px;
+}
+.border-none-tab-custom{
+    border: none;
+}
+.add-note-custom i{
+    font-size: 20px;
+    font-weight: 500;
+    color: #bb8a32;
+    cursor: pointer;
+}

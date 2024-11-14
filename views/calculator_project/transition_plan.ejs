@@ -1,0 +1,322 @@
+<link rel="stylesheet" href="/editor/richtexteditor/rte_theme_default.css" />
+<script type="text/javascript" src="/editor/richtexteditor/rte.js"></script>
+<script type="text/javascript" src='/editor/richtexteditor/plugins/all_plugins.js'></script>
+<style>
+    .rte-modern.rte-desktop.rte-toolbar-default {
+        min-width: 100% !important;
+    }
+    .rte-toolbar-desktop{
+        display: inline !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-5 cust-border-tab-left">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="trans-indigator">Current Year Calculations</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label>Start Date: <span>14/11/2024</span></label>
+            </div>
+            <div class="col-md-6">
+                <label>Selected Mode: <span>Quaterly</span></label>
+            </div>
+        </div>
+        <hr>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th scope="col">Mode</th>
+                  <th scope="col">Scope 1</th>
+                  <th scope="col">Scope 2</th>
+                  <th scope="col">Scope 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Q 1, 2024-25</th>
+                  <td>0.75</td>
+                  <td>0.51</td>
+                  <td>1.26</td>
+                </tr>
+                <tr>
+                  <th scope="row">Q 2, 2025</th>
+                  <td>0.75</td>
+                  <td>0.51</td>
+                  <td>1.26</td>
+                </tr>
+                <tr>
+                  <th scope="row">Q 3, 2025</th>
+                  <td>0.75</td>
+                  <td>0.51</td>
+                  <td>1.26</td>
+                </tr>
+                <tr>
+                  <th scope="row">Q 4, 2025</th>
+                  <td>0.75</td>
+                  <td>0.51</td>
+                  <td>1.26</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                    <th scope="row" class="text-end">Total</th>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>5</td>
+                </tr>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-7 cust-border-tab-right">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="trans-indigator">Transition Plan</div>
+            </div>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th scope="col" colspan="2">Mode</th>
+                  <th scope="col">Scope 1</th>
+                  <th scope="col">Scope 2</th>
+                  <th scope="col">Scope 3</th>
+                  <th class="border-none-tab-custom"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row" class="vertical-align-center" id="tens_pln_1" rowspan="2">2024</th>
+                  <td>Actual</td>
+                  <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">3</span>
+                        <input type="text" value="3" name="act_sc1" class="edit form-control" id="act_sc1_1" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">2</span>
+                        <input type="text" value="" name="act_sc2" class="edit form-control" id="act_sc2_1" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">5</span>
+                        <input type="text" value="" name="act_sc3" class="edit form-control" id="act_sc3_1" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                  </td>
+                  <td class="vertical-align-center border-none-tab-custom" rowspan="2">
+                    <a onclick="ceateNoteModal(this, 2024)" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#testModal" data-bs-original-title="" title="Add Comments">
+                        <i class="icofont icofont-clip-board"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Pathway</td>
+                    <td>
+                        <div class="drop-item form-group">
+                            <span class="form-label-edit" onclick="editLabel(this)">2.8</span>
+                            <input type="text" value="2.8" name="path_sc1" class="edit form-control" id="path_sc1_1" style="display: none;">
+                            <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="drop-item form-group">
+                            <span class="form-label-edit" onclick="editLabel(this)">1.7</span>
+                            <input type="text" value="1.7" name="path_sc2" class="edit form-control" id="path_sc2_1" style="display: none;">
+                            <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="drop-item form-group">
+                            <span class="form-label-edit" onclick="editLabel(this)">4.5</span>
+                            <input type="text" value="4.5" name="path_sc3" class="edit form-control" id="path_sc3_1" style="display: none;">
+                            <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                        </div>
+                    </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                    <td colspan="5" class="text-end">
+                        <button class="btn btn-custom" onclick="addCalRow(this)">
+                            <i class="icofont icofont-meeting-add mr-4"></i>
+                            <span>Add new year</span>
+                        </button>
+                    </td>
+                </tr>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modal title</h5>
+          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
+        </div>
+        <div class="modal-body">
+          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+          <button class="btn btn-primary" type="button" data-bs-original-title="" title="">Save changes</button>
+        </div>
+      </div>
+    </div>
+</div> -->
+
+<script>
+    var editorList= {};
+    var editorCfg = {}
+    editorCfg.galleryImages = [
+    "/images/icons/colored/french/1.png",
+    "/images/icons/colored/french/2.png",
+    "/images/icons/colored/french/3.png",
+    "/images/icons/colored/french/4.png",
+    "/images/icons/colored/french/5.png",
+    "/images/icons/colored/french/6.png",
+    "/images/icons/colored/french/7.png",
+    "/images/icons/colored/french/8.png",
+    "/images/icons/colored/french/9.png",
+    "/images/icons/colored/french/10.png",
+    "/images/icons/colored/french/11.png",
+    "/images/icons/colored/french/12.png",
+    "/images/icons/colored/french/13.png",
+    "/images/icons/colored/french/14.png",
+    "/images/icons/colored/french/15.png",
+    "/images/icons/colored/french/16.png",
+    "/images/icons/colored/french/17.png",
+    ];
+</script>
+
+<script>
+    function editLabel(elm) {
+        var jelm = $(elm);
+        var htmlElm = jelm[0];
+        $(htmlElm).hide();
+        $(htmlElm).siblings('.edit').show();
+        $(htmlElm).siblings('.edit').focus()
+        var initial_text = $(htmlElm).text();
+        $(htmlElm).siblings('.edit').focusout(function () {
+            var editedInput = $(htmlElm).siblings('.edit').val();
+            $(htmlElm).siblings('.edit').hide();
+            if (editedInput != '') {
+                $(htmlElm).show().text(editedInput);
+            }
+            else {
+                $(htmlElm).show().text(initial_text);
+            }
+        });
+    }
+</script>
+<script>
+    function addCalRow(e){
+        console.log($(e));
+        
+        var totRow = $(e).parent().parent().parent().parent().children('tbody').children('tr').length / 2,
+        currDate = new Date();
+        var last_input_year = parseInt($(`#tens_pln_${totRow}`).text()) + 1
+        $(e).parent().parent().parent().parent().children('tbody').append(`
+            <tr>
+                <th scope="row" class="vertical-align-center" rowspan="2">
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" id="tens_pln_${totRow+1}" onclick="editLabel(this)">${last_input_year}</span>
+                        <input type="number" value="${last_input_year}" name="tens_pln" class="edit form-control" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </th>
+                <td>Actual</td>
+                <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                        <input type="text" value="" name="act_sc1" class="edit form-control" id="act_sc1_${totRow+1}" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </td>
+                <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                        <input type="text" value="" name="act_sc2" class="edit form-control" id="act_sc2_${totRow+1}" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </td>
+                <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                        <input type="text" value="" name="act_sc3" class="edit form-control" id="act_sc3_${totRow+1}" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Pathway</td>
+                <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                        <input type="text" value="0" name="path_sc1" class="edit form-control" id="path_sc1_${totRow+1}" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </td>
+                <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                        <input type="text" value="0" name="path_sc2" class="edit form-control" id="path_sc2_${totRow+1}" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </td>
+                <td>
+                    <div class="drop-item form-group">
+                        <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                        <input type="text" value="0" name="path_sc3" class="edit form-control" id="path_sc3_${totRow+1}" style="display: none;">
+                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `)
+    }
+
+    function ceateNoteModal(e, year){
+        var modalId = $(e).attr('data-bs-target').split('#')[1]
+        var modal_containts = `
+        <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Note for the year ${year}</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 colEditor">
+                                <div id="div_editor_1"></div>
+                                <textarea id="editor_1" name="editor" cols="30" rows="10" style="display:none;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+                        <button class="btn btn-primary" type="button" data-bs-original-title="" title="">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `
+        $(modal_containts).modal('show')
+        setTimeout(() => {
+            editorList['div_editor_1'] = new RichTextEditor("#div_editor_1", editorCfg);
+        }, 800);
+    }
+</script>
