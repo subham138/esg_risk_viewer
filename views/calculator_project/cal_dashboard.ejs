@@ -1,169 +1,213 @@
 <script src="js/chart/google/google-chart-loader.js"></script>
-
-<!-- <div id="stackedBarChart" style="width: 100%; height: 500px;"></div> -->
 <style>
     .chart-container {
         display: flex;
         align-items: center;
-      }
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
 
-      .chart-container .filters {
+    .chart-container .filters {
+        display: flex;
+        flex-direction: row;
+        margin-left: 20px;
+        align-items: center;
+    }
+
+    .filter-checkbox {
+        margin: 5px 10px;
+        cursor: pointer;
+    }
+    .checkbox label {
+        font-size: 10px;
+        padding-left: 6px;
+    }
+    .checkbox label::before {
+        margin-top: 1px;
+        width: 15px;
+        height: 15px;
+    }
+    .chart-cust-container{
         display: flex;
         flex-direction: column;
-        margin-left: 20px;
-      }
-
-      .filter-checkbox {
-        margin: 5px 0;
-        cursor: pointer;
-      }
+        justify-content: space-between;
+    }
   </style>
-<div class="row">
-    <div class="col-md-4">
+<div class="row ml-0">
+    <div class="col-md-4 p-l-0 chart-cust-container">
+        <div id="act-chart"></div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'A')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-4 p-l-0 chart-cust-container">
         <div class="chart-container">
-            <div id="curve_chart"></div>
+            <div id="sub-trans-chart"></div>
             <div class="filters">
-              <label class="filter-checkbox">
-                <input type="checkbox" id="checkbox-scope1" checked onchange="updateChart()"> Show Scope 1
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" id="checkbox-scope2" checked onchange="updateChart()"> Show Scope 2
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" id="checkbox-scope3" checked onchange="updateChart()"> Show Scope 3
-              </label>
+                <div class="form-check form-check-inline checkbox checkbox-primary">
+                    <input class="form-check-input" type="checkbox" id="checkbox-scope1" checked onchange="updateChart()">
+                    <label class="form-check-label" for="checkbox-scope1">Scope 1</label>
+                </div>
+                <div class="form-check form-check-inline checkbox checkbox-primary">
+                    <input class="form-check-input" type="checkbox" id="checkbox-scope2" checked onchange="updateChart()">
+                    <label class="form-check-label" for="checkbox-scope2">Scope 2</label>
+                </div>
+                <div class="form-check form-check-inline checkbox checkbox-primary">
+                    <input class="form-check-input" type="checkbox" id="checkbox-scope3" checked onchange="updateChart()">
+                    <label class="form-check-label" for="checkbox-scope3">Scope 3</label>
+                </div>
             </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'S')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-4 p-l-0 chart-cust-container">
+        <div id="pathway-chart"></div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'P')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
         </div>
     </div>
 </div>
 
-<!-- <script src="/js/chart/flot-chart/excanvas.js"></script>
-<script src="/js/chart/flot-chart/jquery.flot.js"></script> -->
-<!-- <script src="/js/chart/flot-chart/jquery.flot.time.js"></script>
-<script src="/js/chart/flot-chart/jquery.flot.categories.js"></script>
-<script src="/js/chart/flot-chart/jquery.flot.stack.js"></script>
-<script src="/js/chart/flot-chart/jquery.flot.pie.js"></script>
-<script src="/js/chart/flot-chart/jquery.flot.symbol.js"></script> -->
-<!-- <script src="/js/chart/flot-chart/flot-script.js"></script> -->
-
-<!-- <script>
-    $(document).ready(function() {
-    var datasets = {
-        "usa": {
-            label: "USA",
-            data: [[1988, 483994], [1989, 479060], [1990, 457648], [1991, 401949], [1992, 424705], [1993, 402375], [1994, 377867], [1995, 357382], [1996, 337946], [1997, 336185], [1998, 328611], [1999, 329421], [2000, 342172], [2001, 344932], [2002, 387303], [2003, 440813], [2004, 480451], [2005, 504638], [2006, 528692]]
-        },
-        "russia": {
-            label: "Russia",
-            data: [[1988, 218000], [1989, 203000], [1990, 171000], [1992, 42500], [1993, 37600], [1994, 36600], [1995, 21700], [1996, 19200], [1997, 21300], [1998, 13600], [1999, 14000], [2000, 19100], [2001, 21300], [2002, 23600], [2003, 25100], [2004, 26100], [2005, 31100], [2006, 34700]]
-        },
-        "uk": {
-            label: "UK",
-            data: [[1988, 62982], [1989, 62027], [1990, 60696], [1991, 62348], [1992, 58560], [1993, 56393], [1994, 54579], [1995, 50818], [1996, 50554], [1997, 48276], [1998, 47691], [1999, 47529], [2000, 47778], [2001, 48760], [2002, 50949], [2003, 57452], [2004, 60234], [2005, 60076], [2006, 59213]]
-        },
-        "germany": {
-            label: "Germany",
-            data: [[1988, 55627], [1989, 55475], [1990, 58464], [1991, 55134], [1992, 52436], [1993, 47139], [1994, 43962], [1995, 43238], [1996, 42395], [1997, 40854], [1998, 40993], [1999, 41822], [2000, 41147], [2001, 40474], [2002, 40604], [2003, 40044], [2004, 38816], [2005, 38060], [2006, 36984]]
-        },
-        "denmark": {
-            label: "Denmark",
-            data: [[1988, 3813], [1989, 3719], [1990, 3722], [1991, 3789], [1992, 3720], [1993, 3730], [1994, 3636], [1995, 3598], [1996, 3610], [1997, 3655], [1998, 3695], [1999, 3673], [2000, 3553], [2001, 3774], [2002, 3728], [2003, 3618], [2004, 3638], [2005, 3467], [2006, 3770]]
-        },
-        "sweden": {
-            label: "Sweden",
-            data: [[1988, 6402], [1989, 6474], [1990, 6605], [1991, 6209], [1992, 6035], [1993, 6020], [1994, 6000], [1995, 6018], [1996, 3958], [1997, 5780], [1998, 5954], [1999, 6178], [2000, 6411], [2001, 5993], [2002, 5833], [2003, 5791], [2004, 5450], [2005, 5521], [2006, 5271]]
-        },
-        "norway": {
-            label: "Norway",
-            data: [[1988, 4382], [1989, 4498], [1990, 4535], [1991, 4398], [1992, 4766], [1993, 4441], [1994, 4670], [1995, 4217], [1996, 4275], [1997, 4203], [1998, 4482], [1999, 4506], [2000, 4358], [2001, 4385], [2002, 5269], [2003, 5066], [2004, 5194], [2005, 4887], [2006, 4891]]
-        }
-    };
-    var i = 0;
-    $.each(datasets, function(key, val) {
-        val.color = i;
-        ++i;
-    });
-    var choiceContainer = $("#choices");
-    $.each(datasets, function(key, val) {
-        choiceContainer.append("<div class='checkbox checkbox-primary m-squar'><input type='checkbox' name='" + key +
-            "' checked='checked' id='id" + key + "'></input>" +
-            "<label for='id" + key + "'>"
-            + val.label + "</label></div>");
-    });
-    choiceContainer.find("input").click(plotAccordingToChoices);
-    function plotAccordingToChoices() {
-        var data = [];
-        choiceContainer.find("input:checked").each(function () {
-            var key = $(this).attr("name");
-            if (key && datasets[key]) {
-                data.push(datasets[key]);
-            }
-        });
-        if (data.length > 0) {
-            $.plot("#toggling-series-flot", data, {
-                yaxis: {
-                    min: 0
-                },
-                xaxis: {
-                    tickDecimals: 0
-                },
-                grid: {
-
-                    borderWidth: 0
-                },
-                colors: ['#316379', "#ba895" ,"#222222" ,"#717171" ,"#e2c636", "#d22d3d" ,"#e6edef"]
-
-            });
-        }
-    }
-    plotAccordingToChoices();
-});
-</script> -->
-
 <script type="text/javascript">
     google.charts.load('current', {packages: ['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawChart);
 
-      let chart, data, options;
+    let chart, subTrnsDt, subTrnsRawDt, options, actData, actRawData, pathData, pathRawData;
 
-      // Define custom colors for each scope
-      const seriesColors = ['#4285F4', '#EA4335', '#34A853']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
+    // Define custom colors for each scope
+    const seriesColors = ['#4285F4', '#EA4335', '#34A853']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
 
-      function drawChart() {
-        // Initialize data with three scopes
-        data = google.visualization.arrayToDataTable([
-          ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
-          ['2016', 1000, 400, 600],
-          ['2017', 1170, 460, 720],
-          ['2018', 660, 1120, 820],
-          ['2019', 1030, 540, 940]
-        ]);
+    function drawChart() {
+        drawStackedActChart()
+        drawStackedPathChart()
+        drawSubTrnsDtChart()
+    }
+
+    function drawSubTrnsDtChart(){
+        // Initialize subTrnsDt with three scopes
+        subTrnsRawDt = [
+            ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
+            ['2016', 1000, 401, 600],
+            ['2017', 1170, 460, 720],
+            ['2018', 661, 1120, 820],
+            ['2019', 1030, 540, 940]
+        ]
+        subTrnsDt = google.visualization.arrayToDataTable(subTrnsRawDt);
 
         // Define initial options
         options = {
-          title: 'Emission Scopes Performance',
-          curveType: 'function',
-          tooltip: { isHtml: true },
-          legend: { position: 'bottom',
-            alignment: 'center',  // Center align the legend
-            maxLines: 2,          // Allow up to 2 lines if needed
-            textStyle: {fontSize: 12, color: '#555'} },
-          colors: seriesColors,
-          lineWidth: 2,
-          series: {
-            0: { pointSize: 7 }, // Scope 1 points size
-            1: { pointSize: 7 }, // Scope 2 points size
-            2: { pointSize: 7 }  // Scope 3 points size
-          }
+            title: 'Pathway - Actual',
+            chartArea: {width: '50%', height: '80%'},
+            curveType: 'function',
+            tooltip: { isHtml: true },
+            legend: { 
+                position: 'right',
+                alignment: 'left',  // Center align the legend
+                maxLines: 2,          // Allow up to 2 lines if needed
+                textStyle: {fontSize: 8, color: '#555'}
+            },
+            colors: seriesColors,
+            lineWidth: 2,
+            series: {
+                0: { pointSize: 7 }, // Scope 1 points size
+                1: { pointSize: 7 }, // Scope 2 points size
+                2: { pointSize: 7 }  // Scope 3 points size
+            }
         };
 
         // Initialize chart and apply dynamic resizing on load
-        chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        chart = new google.visualization.LineChart(document.getElementById('sub-trans-chart'));
         window.onload = updateChart;
-        window.onresize = () => chart.draw(data, options);
-      }
+        window.onresize = () => chart.draw(subTrnsDt, options);
+    }
 
-      function updateChart() {
+    function drawStackedActChart(){
+        actRawData = [
+          ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
+          ['2016', 1000, 400, 600],
+          ['2017', 1170, 462, 720],
+          ['2018', 660, 1120, 820],
+          ['2019', 1030, 542, 940]
+        ]
+        actData = google.visualization.arrayToDataTable(actRawData);
+
+        const actOptions = {
+          title: 'Actual',
+          chartArea: {width: '50%', height: '80%'},
+          isStacked: true,
+          tooltip: { isHtml: true },
+          colors: seriesColors,
+          vAxis: {
+            title: 'Total Emissions',
+            },
+        //   vAxis: {
+        //     title: 'Total Emissions',
+        //     // minValue: 0
+        //   },
+        //   hAxis: {
+        //     title: 'Year',
+        //     slantedText: true, // Makes year labels angled for better readability if there are many
+        //     slantedTextAngle: 45 // Sets the angle for slanted text
+        //   },
+          legend: {
+            position: 'right',
+            alignment: 'left',  // Center align the legend
+            maxLines: 2,          // Allow up to 2 lines if needed
+            textStyle: {fontSize: 8, color: '#555'}
+          }
+        };
+
+        const chart = new google.visualization.ColumnChart(document.getElementById('act-chart'));
+        chart.draw(actData, actOptions);
+    }
+
+    function drawStackedPathChart(){
+        pathRawData = [
+          ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
+          ['2016', 1003, 400, 600],
+          ['2017', 1170, 460, 720],
+          ['2018', 660, 1120, 820],
+          ['2019', 1030, 545, 940]
+        ]
+        pathData = google.visualization.arrayToDataTable(pathRawData);
+
+        const pathOptions = {
+          title: 'Pathway',
+          chartArea: {width: '50%', height: '80%'},
+          isStacked: true,
+          tooltip: { isHtml: true },
+          colors: seriesColors,
+        //   hAxis: {
+        //     title: 'Year',
+        //     minValue: 0
+        //   },
+          vAxis: {
+            title: 'Total Emissions'
+          },
+          legend: {
+            position: 'right',
+            alignment: 'top',  // Center align the legend
+            maxLines: 2,          // Allow up to 2 lines if needed
+            textStyle: {fontSize: 8, color: '#555'}
+          }
+        };
+
+        const chart = new google.visualization.ColumnChart(document.getElementById('pathway-chart'));
+        chart.draw(pathData, pathOptions);
+    }
+
+    function updateChart() {
         const scope1Checkbox = document.getElementById("checkbox-scope1");
         const scope2Checkbox = document.getElementById("checkbox-scope2");
         const scope3Checkbox = document.getElementById("checkbox-scope3");
@@ -174,13 +218,13 @@
 
         // Ensure at least one scope is visible
         if (!scope1Visible && !scope2Visible && !scope3Visible) {
-          scope3Checkbox.checked = true;
+            scope3Checkbox.checked = true;
         }
 
-        // Update data visibility based on checkboxes
-        data.setColumnProperty(1, 'role', scope1Checkbox.checked ? null : 'certainty');
-        data.setColumnProperty(2, 'role', scope2Checkbox.checked ? null : 'certainty');
-        data.setColumnProperty(3, 'role', scope3Checkbox.checked ? null : 'certainty');
+        // Update subTrnsDt visibility based on checkboxes
+        subTrnsDt.setColumnProperty(1, 'role', scope1Checkbox.checked ? null : 'certainty');
+        subTrnsDt.setColumnProperty(2, 'role', scope2Checkbox.checked ? null : 'certainty');
+        subTrnsDt.setColumnProperty(3, 'role', scope3Checkbox.checked ? null : 'certainty');
 
         // Update visible colors for the selected scopes only
         const visibleColors = [];
@@ -190,40 +234,78 @@
         options.colors = visibleColors;
 
         // Draw chart with updated options
-        chart.draw(data, options);
+        chart.draw(subTrnsDt, options);
     }
+
+    function showModal(e, flag){
+        var data = [], title = '';
+        switch (flag) {
+            case 'A':
+                data = actRawData                
+                title = 'Calculation for Actual Value'
+                break;
+            case 'S':
+                data = subTrnsRawDt
+                title = 'Calculation for Actual Value - Pathway Value'
+                break;
+            case 'P':
+                data = pathRawData
+                title = 'Calculation for Pathway Value'
+                break;
+            default:
+                break;
+        }
+        var table_data = ''        
+        if(data.length > 0){
+            let i = 0
+            data.forEach(dt => {
+                table_data = table_data + `<tr>`
+                if(i == 0){
+                    dt.forEach(ndt => {
+                        table_data = table_data + `<th scope="col">${ndt}</th>`
+                    })
+                }else{
+                    dt.forEach(ndt => {
+                        table_data = table_data + `<td>${ndt}</td>`
+                    })
+                }
+                table_data = table_data + `</tr>`
+                i++
+            });
+        }else{
+            table_data = table_data + `<tr><td class="text-danger text-center">NO DATA FOUND</td></tr>`
+        }
+
+        var modal_containts = `
+        <div class="modal fade" id="chart-modal" tabindex="-1" aria-labelledby="chart-modal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${title}</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered text-center">
+                                        ${table_data}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+                        <!-- <button class="btn btn-primary" type="button" data-bs-original-title="" title="">Save changes</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        `
+        $(modal_containts).modal('show')
+    }
+    $(document).on('hide.bs.modal','#chart-modal', function () {
+        $(this).detach()
+    });
 </script>
-<!-- <script type="text/javascript">
-    google.charts.load('current', { packages: ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        // Define the chart data
-        var data = google.visualization.arrayToDataTable([
-            ['Year', 'Scope 1 - Category A', 'Scope 2 - Category A', 'Scope 3 - Category A', 'Scope 1 - Category B', 'Scope 2 - Category B', 'Scope 3 - Category B'],
-            ['2024', 3, 4, 5, 2, 3, 4],  // 2024 with two stacked bars (Category A and B)
-            ['2025', 2.5, 3.8, 4.7, 1.8, 3.2, 4],  // 2025 with two stacked bars (Category A and B)
-            ['2026', 2.2, 3.6, 4.4, 1.5, 2.9, 3.6],  // 2026 with two stacked bars (Category A and B)
-            // Add more years as needed
-        ]);
-
-        // Set chart options
-        var options = {
-            title: 'Stacked Bar Chart with Multiple Bars per Year',
-            isStacked: true,
-            hAxis: {
-                title: 'Total Emissions',
-                minValue: 0
-            },
-            vAxis: {
-                title: 'Year'
-            },
-            legend: { position: 'top', maxLines: 3 },
-            colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#aec7e8', '#ffbb78', '#98df8a'] // Colors for Scope 1, 2, 3 for each category
-        };
-
-        // Instantiate and draw the chart
-        var chart = new google.visualization.BarChart(document.getElementById('stackedBarChart'));
-        chart.draw(data, options);
-    }
-</script> -->

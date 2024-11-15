@@ -30,9 +30,25 @@ CalcUserRouter.post('/get_question_list_by_scope_user_ajax', async (req, res) =>
 
 CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
   var enc_data = req.query.enc_data,
-    data_set = {};
+    data_set = {},
+    client_id = req.session.user.client_id;
   var data = Buffer.from(enc_data, "base64");
-  data = JSON.parse(data);
+  data = JSON.parse(data),
+  currDate = new Date();
+
+  var currYrSel = 'a.repo_period, a.scope, SUM(a.tot_co_val_sc1) tot_co_val_sc1, SUM(a.tot_co_val_sc2) tot_co_val_sc2, SUM(a.tot_co_val_sc3) tot_co_val_sc3',
+  currYrWhr = null,
+  currYrFrm = `(
+SELECT repo_period, scope, SUM(co_val) tot_co_val_sc1, 0 tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 1
+UNION
+SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 2
+UNION
+SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 3
+) a`,
+  currYrOrder = 'GROUP BY a.repo_period, a.scope';
+  var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
+
+  var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id}`, 'ORDER BY trans_year ASC')
 
   var project_data = await getProjectList(
     data.proj_id,
@@ -44,7 +60,6 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
 
   var scope_list = SCOPE_LIST,
   cal_act = await getCalAct(0, 0),
-  currDate = new Date(),
   yearList = YEAR_LIST;
   var currYear = currDate.getFullYear()
   yearList.includes(currYear) ? '' : yearList.push(currYear)
@@ -68,7 +83,10 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
     flag_name: PROJECT_LIST[data.flag],
     scope_list,
     cal_act: cal_act.suc > 0 ? cal_act.msg : [],
-    year_list: yearList
+    year_list: yearList,
+    curr_yr_cal_dt: currYearCalData.suc > 0 ? currYearCalData.msg : [],
+    currYear,
+    trans_data: transData.suc > 0 ? transData.msg : []
   };
   res.render("calculator_project/report_view", res_data)
 })

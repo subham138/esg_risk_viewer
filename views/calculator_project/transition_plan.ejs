@@ -29,7 +29,7 @@
             <table class="table table-bordered text-center">
               <thead>
                 <tr>
-                  <th scope="col">Mode</th>
+                  <th scope="col"></th>
                   <th scope="col">Scope 1</th>
                   <th scope="col">Scope 2</th>
                   <th scope="col">Scope 3</th>
@@ -37,36 +37,18 @@
               </thead>
               <tbody>
                 <tr>
-                  <th scope="row">Q 1, 2024-25</th>
-                  <td>0.75</td>
-                  <td>0.51</td>
-                  <td>1.26</td>
-                </tr>
-                <tr>
-                  <th scope="row">Q 2, 2025</th>
-                  <td>0.75</td>
-                  <td>0.51</td>
-                  <td>1.26</td>
-                </tr>
-                <tr>
-                  <th scope="row">Q 3, 2025</th>
-                  <td>0.75</td>
-                  <td>0.51</td>
-                  <td>1.26</td>
-                </tr>
-                <tr>
-                  <th scope="row">Q 4, 2025</th>
-                  <td>0.75</td>
-                  <td>0.51</td>
-                  <td>1.26</td>
+                    <th scope="row"><%= currYear %></th>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                     <th scope="row" class="text-end">Total</th>
-                    <td>3</td>
-                    <td>2</td>
-                    <td>5</td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
                 </tr>
               </tfoot>
             </table>
@@ -90,60 +72,70 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row" class="vertical-align-center" id="tens_pln_1" rowspan="2">2024</th>
-                  <td>Actual</td>
-                  <td>
-                    <div class="drop-item form-group">
-                        <span class="form-label-edit" onclick="editLabel(this)">3</span>
-                        <input type="text" value="3" name="act_sc1" class="edit form-control" id="act_sc1_1" style="display: none;">
-                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="drop-item form-group">
-                        <span class="form-label-edit" onclick="editLabel(this)">2</span>
-                        <input type="text" value="" name="act_sc2" class="edit form-control" id="act_sc2_1" style="display: none;">
-                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="drop-item form-group">
-                        <span class="form-label-edit" onclick="editLabel(this)">5</span>
-                        <input type="text" value="" name="act_sc3" class="edit form-control" id="act_sc3_1" style="display: none;">
-                        <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
-                    </div>
-                  </td>
-                  <td class="vertical-align-center border-none-tab-custom" rowspan="2">
-                    <a onclick="ceateNoteModal(this, 2024)" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#testModal" data-bs-original-title="" title="Add Comments">
-                        <i class="icofont icofont-clip-board"></i>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Pathway</td>
-                    <td>
-                        <div class="drop-item form-group">
-                            <span class="form-label-edit" onclick="editLabel(this)">2.8</span>
-                            <input type="text" value="2.8" name="path_sc1" class="edit form-control" id="path_sc1_1" style="display: none;">
-                            <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="drop-item form-group">
-                            <span class="form-label-edit" onclick="editLabel(this)">1.7</span>
-                            <input type="text" value="1.7" name="path_sc2" class="edit form-control" id="path_sc2_1" style="display: none;">
-                            <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="drop-item form-group">
-                            <span class="form-label-edit" onclick="editLabel(this)">4.5</span>
-                            <input type="text" value="4.5" name="path_sc3" class="edit form-control" id="path_sc3_1" style="display: none;">
-                            <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
-                        </div>
-                    </td>
-                </tr>
+                <% if(trans_data.length > 0){
+                    var i = 1
+                    trans_data.forEach(dt => {
+                        var isCurrYearData = dt.trans_year == currYear
+                        %>
+                        <tr>
+                          <th scope="row" class="vertical-align-center" id="tens_pln_<%= i %>" rowspan="2"><%= dt.trans_year %></th>
+                          <td>Actual</td>
+                          <td>
+                            <div class="drop-item form-group">
+                                <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_1 %></span>
+                                <input type="text" value="<%= dt.act_sc_1 %>" name="act_sc1" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc1_<%= i %>" style="display: none;">
+                                <% if(!isCurrYearData){ %>
+                                    <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                <% } %>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="drop-item form-group">
+                                <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_2 %></span>
+                                <input type="text" value="<%= dt.act_sc_2 %>" name="act_sc2" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc2_<%= i %>" style="display: none;">
+                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="drop-item form-group">
+                                <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_3 %></span>
+                                <input type="text" value="<%= dt.act_sc_3 %>" name="act_sc3" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc3_<%= i %>" style="display: none;">
+                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                            </div>
+                          </td>
+                          <td class="vertical-align-center border-none-tab-custom" rowspan="2">
+                            <a onclick="ceateNoteModal(this, 2024)" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#testModal" data-bs-original-title="" title="Add Comments">
+                                <i class="icofont icofont-clip-board"></i>
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Pathway</td>
+                            <td>
+                                <div class="drop-item form-group">
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_1 %></span>
+                                    <input type="text" value="<%= dt.path_sc_1 %>" name="path_sc1" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc1_<%= i %>" style="display: none;">
+                                    <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="drop-item form-group">
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_2 %></span>
+                                    <input type="text" value="<%= dt.path_sc_2 %>" name="path_sc2" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc2_<%= i %>" style="display: none;">
+                                    <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="drop-item form-group">
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_3 %></span>
+                                    <input type="text" value="<%= dt.path_sc_3 %>" name="path_sc3" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc3_<%= i %>" style="display: none;">
+                                    <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% i++
+                    })
+                } %>
               </tbody>
               <tfoot>
                 <tr>
