@@ -89,7 +89,7 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_c
     year_list: yearList,
     curr_yr_cal_dt: currYearCalData.suc > 0 ? currYearCalData.msg : [],
     currYear,
-    trans_data: transData.suc > 0 ? transData.msg : []
+    trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : []
   };
   res.render("calculator_project/report_view", res_data)
 })
