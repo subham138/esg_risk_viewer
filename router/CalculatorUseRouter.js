@@ -45,8 +45,11 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_c
 UNION
 SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 3
 ) a`,
-  currYrOrder = 'GROUP BY a.repo_period, a.scope';
+  currYrOrder = 'GROUP BY a.repo_period, a.scope HAVING a.repo_period IS NOT null';
   var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
+  
+  console.log(currYearCalData);
+  
 
   var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id}`, 'ORDER BY trans_year ASC')
 
@@ -110,6 +113,71 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
 CalcUserRouter.post('/get_cal_save_dt_ajax', async (req, res) => {
   var data = req.body, user = req.session.user;
   var res_dt = await db_Select('*', 'td_ghg_quest', `client_id=${user.client_id} AND scope_id=${data.scope_id} AND project_id=${data.proj_id}`)
+})
+
+CalcUserRouter.post('/trans_val_save_ajax', async (req, res) => {
+  var data = req.body,
+  user = req.session.user,
+  dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+
+  var table_name = 'td_trans_plan', values = '', fields = '', whr = data.id > 0 ? `id=${data.id}` : null, flag = data.id > 0 ? 1 : 0;
+  switch (data.flag) {
+    case 'aSc1':
+      values = data.id > 0 ? null : `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, ${data.trns_val}, '${user.user_id}', '${dateTime}')`
+      fields = data.id > 0 ? `trans_year = ${data.emi_year}, act_sc_1 = ${data.trns_val}, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, act_sc_1, created_by, created_dt)'
+      break;
+    case 'aSc2':
+      values = data.id > 0 ? null : `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, ${data.trns_val}, '${user.user_id}', '${dateTime}')`
+      fields = data.id > 0 ? `trans_year = ${data.emi_year}, act_sc_2 = ${data.trns_val}, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, act_sc_2, created_by, created_dt)'
+      break;
+    case 'aSc3':
+      values = data.id > 0 ? null : `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, ${data.trns_val}, '${user.user_id}', '${dateTime}')`
+      fields = data.id > 0 ? `trans_year = ${data.emi_year}, act_sc_3 = ${data.trns_val}, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, act_sc_3, created_by, created_dt)'
+      break;
+    case 'pSc1':
+      values = data.id > 0 ? null : `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, ${data.trns_val}, '${user.user_id}', '${dateTime}')`
+      fields = data.id > 0 ? `trans_year = ${data.emi_year}, path_sc_1 = ${data.trns_val}, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, path_sc_1, created_by, created_dt)'
+      break;
+    case 'pSc2':
+      values = data.id > 0 ? null : `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, ${data.trns_val}, '${user.user_id}', '${dateTime}')`
+      fields = data.id > 0 ? `trans_year = ${data.emi_year}, path_sc_2 = ${data.trns_val}, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, path_sc_2, created_by, created_dt)'
+      break;
+    case 'pSc3':
+      values = data.id > 0 ? null : `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, ${data.trns_val}, '${user.user_id}', '${dateTime}')`
+      fields = data.id > 0 ? `trans_year = ${data.emi_year}, path_sc_3 = ${data.trns_val}, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, path_sc_3, created_by, created_dt)'
+      break;
+  
+    default:
+      break;
+  }
+  var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  res.send(res_dt)
+})
+
+CalcUserRouter.post('/get_trans_plan_note_ajax', async (req, res) => {
+  var data = req.body,
+  user = req.session.user;
+
+  var res_dt = await db_Select('*', 'td_trans_pan_note', `proj_id = ${data.proj_id} AND trans_year = ${data.trans_year} AND client_id = ${user.client_id}`, 'ORDER BY sl_no ASC')
+
+  res.send(res_dt)
+})
+
+CalcUserRouter.post('/save_trans_plan_note_ajax', async (req, res) => {
+  var data = req.body,
+  user = req.session.user,
+  dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+
+  var max_sl_no = await db_Select('IF(max(sl_no) > 0, max(sl_no), 0)+1 max_sl_no', 'td_trans_pan_note', `proj_id = ${data.proj_id} AND trans_year = ${data.trans_year} AND client_id = ${user.client_id}`, 'ORDER BY sl_no ASC')
+
+  var table_name = 'td_trans_pan_note',
+  fields = data.id > 0 ? `trans_note = '${data.note != '' ? data.note.split("'").join("\\'") : ""}', modified_by = '${user.user_name}', modified_dt = '${dateTime}'` : '(client_id, proj_id, trans_year, sl_no, trans_note, created_by, created_dt)',
+  values = `(${user.client_id}, ${data.proj_id}, ${data.trans_year}, ${max_sl_no.msg[0].max_sl_no}, '${data.note != '' ? data.note.split("'").join("\\'") : ""}', '${user.user_name}', '${dateTime}')`,
+  whr = data.id > 0 ? `id = ${data.id}` : null,
+  flag = data.id > 0 ? 1 : 0;
+  var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  res_dt['sl_no'] = max_sl_no.msg[0].max_sl_no
+  res.send(res_dt)
 })
 
 module.exports = {CalcUserRouter}

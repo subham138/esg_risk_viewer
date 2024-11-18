@@ -79,32 +79,69 @@
                         %>
                         <tr>
                           <th scope="row" class="vertical-align-center" id="tens_pln_<%= i %>" rowspan="2"><%= dt.trans_year %></th>
-                          <td>Actual</td>
+                            <td>
+                                Actual
+                                <input type="hidden" value="<%= dt.id %>" name="trns_id" id="trns_id_<%= i %>">
+                            </td>
                           <td>
                             <div class="drop-item form-group">
-                                <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_1 %></span>
-                                <input type="text" value="<%= dt.act_sc_1 %>" name="act_sc1" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc1_<%= i %>" style="display: none;">
+                                <% if(!isCurrYearData){ %>
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_1 %></span>
+                                <% }else{ %>
+                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></span>
+                                <% } %>
+                                <input type="text" value="<%= !isCurrYearData ? dt.act_sc_1 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0) %>" name="act_sc1" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc1_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc1')" style="display: none;">
                                 <% if(!isCurrYearData){ %>
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                <% }else{ %>
+                                    <script>
+                                        $(document).ready(function(){
+                                            $('#act_sc1_<%= i %>').change()
+                                        })
+                                    </script>
                                 <% } %>
                             </div>
                           </td>
                           <td>
                             <div class="drop-item form-group">
-                                <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_2 %></span>
-                                <input type="text" value="<%= dt.act_sc_2 %>" name="act_sc2" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc2_<%= i %>" style="display: none;">
-                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                <% if(!isCurrYearData){ %>
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_2 %></span>
+                                <% }else{ %>
+                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></span>
+                                <% } %>
+                                <input type="text" value="<%= !isCurrYearData ? dt.act_sc_2 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0) %>" name="act_sc2" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc2_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc2')" style="display: none;">
+                                <% if(!isCurrYearData){ %>
+                                    <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                <% }else{ %>
+                                    <script>
+                                        $(document).ready(function(){
+                                            $('#act_sc2_<%= i %>').change()
+                                        })
+                                    </script>
+                                <% } %>
                             </div>
                           </td>
                           <td>
                             <div class="drop-item form-group">
-                                <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_3 %></span>
-                                <input type="text" value="<%= dt.act_sc_3 %>" name="act_sc3" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc3_<%= i %>" style="display: none;">
-                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                <% if(!isCurrYearData){ %>
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_3 %></span>
+                                <% }else{ %>
+                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></span>
+                                <% } %>
+                                <input type="text" value="<%= !isCurrYearData ? dt.act_sc_3 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0) %>" name="act_sc3" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc3_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc3')" style="display: none;">
+                                <% if(!isCurrYearData){ %>
+                                    <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                                <% }else{ %>
+                                    <script>
+                                        $(document).ready(function(){
+                                            $('#act_sc3_<%= i %>').change()
+                                        })
+                                    </script>
+                                <% } %>
                             </div>
                           </td>
                           <td class="vertical-align-center border-none-tab-custom" rowspan="2">
-                            <a onclick="ceateNoteModal(this, 2024)" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#testModal" data-bs-original-title="" title="Add Comments">
+                            <a onclick="ceateNoteModal(this, '<%= dt.trans_year %>')" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                                 <i class="icofont icofont-clip-board"></i>
                             </a>
                           </td>
@@ -113,29 +150,108 @@
                           <td>Pathway</td>
                             <td>
                                 <div class="drop-item form-group">
-                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_1 %></span>
-                                    <input type="text" value="<%= dt.path_sc_1 %>" name="path_sc1" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc1_<%= i %>" style="display: none;">
+                                    <% if(dt.trans_year < currYear){ %>
+                                        <span class="form-label-edit"><%= dt.path_sc_1 %></span>
+                                    <% }else{ %>
+                                        <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_1 %></span>
+                                    <% } %>
+                                    <input type="text" value="<%= dt.path_sc_1 %>" name="path_sc1" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc1_<%= i %>"  onchange="saveTransVal('<%= i %>', $(this).val(), 'pSc1')"style="display: none;">
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                                 </div>
                             </td>
                             <td>
                                 <div class="drop-item form-group">
-                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_2 %></span>
-                                    <input type="text" value="<%= dt.path_sc_2 %>" name="path_sc2" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc2_<%= i %>" style="display: none;">
+                                    <% if(dt.trans_year < currYear){ %>
+                                        <span class="form-label-edit"><%= dt.path_sc_2 %></span>
+                                    <% }else{ %>
+                                        <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_2 %></span>
+                                    <% } %>
+                                    <input type="text" value="<%= dt.path_sc_2 %>" name="path_sc2" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc2_<%= i %>"  onchange="saveTransVal('<%= i %>', $(this).val(), 'pSc2')" style="display: none;">
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                                 </div>
                             </td>
                             <td>
                                 <div class="drop-item form-group">
-                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_3 %></span>
-                                    <input type="text" value="<%= dt.path_sc_3 %>" name="path_sc3" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc3_<%= i %>" style="display: none;">
+                                    <% if(dt.trans_year < currYear){ %>
+                                        <span class="form-label-edit"><%= dt.path_sc_3 %></span>
+                                    <% }else{ %>
+                                        <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_3 %></span>
+                                    <% } %>
+                                    <input type="text" value="<%= dt.path_sc_3 %>" name="path_sc3" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc3_<%= i %>"  onchange="saveTransVal('<%= i %>', $(this).val(), 'pSc3')" style="display: none;">
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                                 </div>
                             </td>
                         </tr>
                     <% i++
                     })
-                } %>
+                }else{ %>
+                    <tr>
+                        <th scope="row" class="vertical-align-center" id="tens_pln_1" rowspan="2"><%= currYear %></th>
+                        <td>
+                            Actual
+                            <input type="hidden" value="0" name="trns_id" id="trns_id_1">
+                        </td>
+                        <td>
+                        <div class="drop-item form-group">
+                            <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></span>
+                            <input type="text" value="<%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %>" name="act_sc1" class="form-control" id="act_sc1_1" style="display: none;">
+                        </div>
+                        </td>
+                        <td>
+                        <div class="drop-item form-group">
+                            <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></span>
+                            <input type="text" value="<%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %>" name="act_sc2" class="form-control" id="act_sc2_1" style="display: none;">
+                        </div>
+                        </td>
+                        <td>
+                        <div class="drop-item form-group">
+                            <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></span>
+                            <input type="text" value="<%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %>" name="act_sc3" class="form-control" id="act_sc3_1" style="display: none;">
+                        </div>
+                        </td>
+                        <td class="vertical-align-center border-none-tab-custom" rowspan="2">
+                            <a onclick="ceateNoteModal(this, $('#act_sc1_1').val())" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
+                                <i class="icofont icofont-clip-board"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Pathway</td>
+                        <td>
+                            <div class="drop-item form-group">
+                                <% if(dt.trans_year < currYear){ %>
+                                    <span class="form-label-edit"><%= dt.path_sc_1 %></span>
+                                <% }else{ %>
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_1 %></span>
+                                <% } %>
+                                <input type="text" value="<%= dt.path_sc_1 %>" name="path_sc1" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc1_1" onchange="saveTransVal(1, $(this).val(), 'pSc1')" style="display: none;">
+                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="drop-item form-group">
+                                <% if(dt.trans_year < currYear){ %>
+                                    <span class="form-label-edit"><%= dt.path_sc_2 %></span>
+                                <% }else{ %>
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_2 %></span>
+                                <% } %>
+                                <input type="text" value="<%= dt.path_sc_2 %>" name="path_sc2" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc2_1"  onchange="saveTransVal(1, $(this).val(), 'pSc2')" style="display: none;">
+                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="drop-item form-group">
+                                <% if(dt.trans_year < currYear){ %>
+                                    <span class="form-label-edit"><%= dt.path_sc_3 %></span>
+                                <% }else{ %>
+                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_3 %></span>
+                                <% } %>
+                                <input type="text" value="<%= dt.path_sc_3 %>" name="path_sc3" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc3_1" onchange="saveTransVal(1, $(this).val(), 'pSc3')" style="display: none;">
+                                <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                <% } %>
               </tbody>
               <tfoot>
                 <tr>
@@ -151,24 +267,6 @@
         </div>
     </div>
 </div>
-
-<!-- <div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
-          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
-        </div>
-        <div class="modal-body">
-          <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
-          <button class="btn btn-primary" type="button" data-bs-original-title="" title="">Save changes</button>
-        </div>
-      </div>
-    </div>
-</div> -->
 
 <script>
     var editorList= {};
@@ -216,11 +314,12 @@
 </script>
 <script>
     function addCalRow(e){
-        console.log($(e));
+        // console.log($(e));
         
         var totRow = $(e).parent().parent().parent().parent().children('tbody').children('tr').length / 2,
         currDate = new Date();
         var last_input_year = parseInt($(`#tens_pln_${totRow}`).text()) + 1
+        last_input_year = last_input_year > 0 ? last_input_year : currDate.getFullYear()
         $(e).parent().parent().parent().parent().children('tbody').append(`
             <tr>
                 <th scope="row" class="vertical-align-center" rowspan="2">
@@ -230,27 +329,35 @@
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
                 </th>
-                <td>Actual</td>
+                <td>
+                    Actual
+                    <input type="hidden" value="0" name="trns_id" id="trns_id_${totRow+1}">
+                </td>
                 <td>
                     <div class="drop-item form-group">
                         <span class="form-label-edit" onclick="editLabel(this)">0</span>
-                        <input type="text" value="" name="act_sc1" class="edit form-control" id="act_sc1_${totRow+1}" style="display: none;">
+                        <input type="text" value="" name="act_sc1" class="edit form-control" id="act_sc1_${totRow+1}" onchange="saveTransVal(${totRow+1}, $(this).val(), 'aSc1')" style="display: none;">
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
                 </td>
                 <td>
                     <div class="drop-item form-group">
                         <span class="form-label-edit" onclick="editLabel(this)">0</span>
-                        <input type="text" value="" name="act_sc2" class="edit form-control" id="act_sc2_${totRow+1}" style="display: none;">
+                        <input type="text" value="" name="act_sc2" class="edit form-control" id="act_sc2_${totRow+1}" onchange="saveTransVal(${totRow+1}, $(this).val(), 'aSc2')" style="display: none;">
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
                 </td>
                 <td>
                     <div class="drop-item form-group">
                         <span class="form-label-edit" onclick="editLabel(this)">0</span>
-                        <input type="text" value="" name="act_sc3" class="edit form-control" id="act_sc3_${totRow+1}" style="display: none;">
+                        <input type="text" value="" name="act_sc3" class="edit form-control" id="act_sc3_${totRow+1}" onchange="saveTransVal(${totRow+1}, $(this).val(), 'aSc3')" style="display: none;">
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
+                </td>
+                <td class="vertical-align-center border-none-tab-custom" rowspan="2">
+                    <a onclick="ceateNoteModal(this, $('#act_sc1_${totRow+1}').val())" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
+                        <i class="icofont icofont-clip-board"></i>
+                    </a>
                 </td>
             </tr>
             <tr>
@@ -258,21 +365,21 @@
                 <td>
                     <div class="drop-item form-group">
                         <span class="form-label-edit" onclick="editLabel(this)">0</span>
-                        <input type="text" value="0" name="path_sc1" class="edit form-control" id="path_sc1_${totRow+1}" style="display: none;">
+                        <input type="text" value="0" name="path_sc1" class="edit form-control" id="path_sc1_${totRow+1}" onchange="saveTransVal(${totRow+1}, $(this).val(), 'pSc1')" style="display: none;">
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
                 </td>
                 <td>
                     <div class="drop-item form-group">
                         <span class="form-label-edit" onclick="editLabel(this)">0</span>
-                        <input type="text" value="0" name="path_sc2" class="edit form-control" id="path_sc2_${totRow+1}" style="display: none;">
+                        <input type="text" value="0" name="path_sc2" class="edit form-control" id="path_sc2_${totRow+1}" onchange="saveTransVal(${totRow+1}, $(this).val(), 'pSc2')" style="display: none;">
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
                 </td>
                 <td>
                     <div class="drop-item form-group">
                         <span class="form-label-edit" onclick="editLabel(this)">0</span>
-                        <input type="text" value="0" name="path_sc3" class="edit form-control" id="path_sc3_${totRow+1}" style="display: none;">
+                        <input type="text" value="0" name="path_sc3" class="edit form-control" id="path_sc3_${totRow+1}" onchange="saveTransVal(${totRow+1}, $(this).val(), 'pSc3')" style="display: none;">
                         <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                     </div>
                 </td>
@@ -280,35 +387,159 @@
         `)
     }
 
+    function saveTransVal(id, inputVal, flag){
+        var proj_id = $('#proj_id').val(),
+        val = inputVal,
+        emi_year = $(`#tens_pln_${id}`).text(),
+        trns_id = $(`#trns_id_${id}`).val();
+
+        $.ajax({
+            method:'POST',
+            url: '/trans_val_save_ajax',
+            data: {flag, trns_val: val, id: trns_id, emi_year, proj_id},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                console.log(result);
+                if(result.suc > 0){
+                    var inserTedId = result.lastId.insertId
+                    if(trns_id < 1){
+                        $(`#trns_id_${id}`).val(inserTedId)
+                    }
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    }
+
     function ceateNoteModal(e, year){
-        var modalId = $(e).attr('data-bs-target').split('#')[1]
-        var modal_containts = `
-        <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Note for the year ${year}</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
-                    </div>
-                    <div class="modal-body">
+        var proj_id = $('#proj_id').val(),
+        trans_year = year;
+
+        $.ajax({
+            method:'POST',
+            url: '/get_trans_plan_note_ajax',
+            data: {trans_year, proj_id},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var modalId = $(e).attr('data-bs-target').split('#')[1], content = '<div id="trans_plan_note_container">';
+                if(result.suc > 0 && result.msg.length > 0){
+                    result.msg.forEach(dt => {
+                        content = content + `
                         <div class="row">
-                            <div class="col-md-12 colEditor">
-                                <div id="div_editor_1"></div>
-                                <textarea id="editor_1" name="editor" cols="30" rows="10" style="display:none;"></textarea>
+                            <div class="col-md-12">
+                                <label>Created By: ${dt.created_by}</label><br>
+                                <label>Created Date: ${dt.created_dt}</label>
+                            </div>
+                            <div class="col-md-12 log-desc">
+                                ${dt.trans_note}
+                            </div>
+                            <div class="col-md-12">
+                                <a class="float-end" onclick="transPlanLogEdit(this, ${dt.id},${dt.sl_no}, ${year})">Edit</a>
+                            </div>
+                        </div>
+                        <hr>`
+                    });
+                }
+                content = content + '</div>'
+                var modal_containts = `
+                <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Note for the year ${year}</h5>
+                                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
+                            </div>
+                            <div class="modal-body">
+                                ${content}
+                                <div class="row">
+                                    <div class="col-md-12 colEditor">
+                                        <div id="div_editor_${year}"></div>
+                                        <textarea id="editor_${year}" name="editor" cols="30" rows="10" style="display:none;"></textarea>
+                                        <input type="hidden" id="trans_pan_note_id_${year}" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+                                <button class="btn btn-primary" type="button" data-bs-original-title="" id="trans_note_save_btn" onclick="saveTransPlanNote(${year})" title="">Save changes</button>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
-                        <button class="btn btn-primary" type="button" data-bs-original-title="" title="">Save changes</button>
-                    </div>
                 </div>
-            </div>
-        </div>
-        `
-        $(modal_containts).modal('show')
-        setTimeout(() => {
-            editorList['div_editor_1'] = new RichTextEditor("#div_editor_1", editorCfg);
-        }, 800);
+                `
+                $(modal_containts).modal('show')
+                setTimeout(() => {
+                    editorList[`div_editor_${year}`] = new RichTextEditor(`#div_editor_${year}`, editorCfg);
+                }, 800);
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
     }
+
+    function saveTransPlanNote(year, id=0, sl_no=0){
+        var note_html = editorList[`div_editor_${year}`].getHTML(),
+        user_name = '<%= user.user_name %>',
+        currDate = new Date(),
+        proj_id = $('#proj_id').val();
+
+        $.ajax({
+            method:'POST',
+            url: '/save_trans_plan_note_ajax',
+            data: {trans_year: year, proj_id, note: note_html, id},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                console.log(result);
+                if(result.suc > 0){
+                    var inserTedId = id > 0 ? id : result.lastId.insertId,
+                    new_sl_no = sl_no > 0 ? sl_no : result.sl_no;
+
+                    var content = ''
+                    content = content + `
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Created By: ${user_name}</label><br>
+                            <label>Created Date: ${currDate}</label>
+                        </div>
+                        <div class="col-md-12 log-desc">
+                            ${note_html}
+                        </div>
+                        <div class="col-md-12">
+                            <a class="float-end" onclick="transPlanLogEdit(this, ${inserTedId},${new_sl_no}, ${year})">Edit</a>
+                        </div>
+                    </div>
+                    <hr>`
+                    $('#trans_plan_note_container').append(content)
+                    editorList[`div_editor_${year}`].selectDoc()
+                    editorList[`div_editor_${year}`].delete();
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    }
+
+    function transPlanLogEdit(e, id, sl_no, year){
+        console.log($(e));
+        
+        var logHtml = $(e).parent().prev('.log-desc').html()
+        editorList[`div_editor_${year}`].insertHTML(logHtml)
+        $('#trans_note_save_btn').removeAttr('onclick')
+        $('#trans_note_save_btn').attr('onclick', `saveTransPlanNote(${year}, ${id}, ${sl_no})`)
+        $(e).parent().parent().detach()
+    }
+
+    $(document).on('hide.bs.modal','#addNotesModal', function () {
+        $(this).detach()
+    });
 </script>

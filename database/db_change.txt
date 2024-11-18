@@ -156,3 +156,51 @@ create table `md_cal_sec_type` (
 insert into `md_cal_sec_type` (`id`, `scope_id`, `sec_name`, `created_by`, `created_dt`, `modified_by`, `modified_dt`) values('1','1','Fuel Emissions','Super Admin','2024-09-13 15:24:46',NULL,NULL);
 insert into `md_cal_sec_type` (`id`, `scope_id`, `sec_name`, `created_by`, `created_dt`, `modified_by`, `modified_dt`) values('2','1','Mobile Combustion source','Super Admin','2024-09-20 17:15:20',NULL,NULL);
 insert into `md_cal_sec_type` (`id`, `scope_id`, `sec_name`, `created_by`, `created_dt`, `modified_by`, `modified_dt`) values('3','1','Refrigerant and Other Processes','Super Admin','2024-09-26 16:51:11',NULL,NULL);
+
+---------------------------------------------------------------------------------------------------------------------
+CREATE TABLE `td_trans_plan` (
+  `id` int(11) NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `proj_id` int(11) NOT NULL,
+  `trans_year` int(11) NOT NULL,
+  `act_sc_1` float(10,2) DEFAULT 0.00,
+  `act_sc_2` float(10,2) DEFAULT 0.00,
+  `act_sc_3` float(10,2) DEFAULT 0.00,
+  `path_sc_1` float(10,2) DEFAULT 0.00,
+  `path_sc_2` float(10,2) DEFAULT 0.00,
+  `path_sc_3` float(10,2) DEFAULT 0.00,
+  `created_by` varchar(50) DEFAULT NULL,
+  `created_dt` datetime DEFAULT NULL,
+  `modified_by` varchar(50) DEFAULT NULL,
+  `modified_dt` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `td_trans_plan`
+--
+
+INSERT INTO `td_trans_plan` (`id`, `client_id`, `proj_id`, `trans_year`, `act_sc_1`, `act_sc_2`, `act_sc_3`, `path_sc_1`, `path_sc_2`, `path_sc_3`, `created_by`, `created_dt`, `modified_by`, `modified_dt`) VALUES
+(1, 41, 16, 2024, 5.26, 0.00, 0.00, 2.70, 1.80, 4.50, 'Admin', '2024-11-15 00:00:00', 'cal_user@gmail.com', '2024-11-18 06:36:46'),
+(3, 41, 16, 2025, 2.70, 1.80, 4.50, 2.97, 1.98, 4.95, 'cal_user@gmail.com', '2024-11-17 17:07:45', 'cal_user@gmail.com', '2024-11-17 23:20:16'),
+(4, 41, 16, 2026, 2.43, 1.62, 4.05, 2.19, 1.78, 4.46, 'cal_user@gmail.com', '2024-11-17 23:20:33', 'cal_user@gmail.com', '2024-11-17 23:21:12'),
+(5, 41, 16, 2027, 2.19, 1.46, 3.65, 2.41, 1.60, 4.01, 'cal_user@gmail.com', '2024-11-17 23:21:26', 'cal_user@gmail.com', '2024-11-17 23:22:09');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `td_trans_plan`
+--
+ALTER TABLE `td_trans_plan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `td_trans_plan`
+--
+ALTER TABLE `td_trans_plan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
