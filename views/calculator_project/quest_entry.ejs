@@ -201,12 +201,13 @@
 
                                             var lastTable = sqdt.next_qst_action_val == 'E' ? createTable(sqdt.id, sqdt.emi_head_opt1, sqdt.emi_head_opt2, sqdt.emi_head_opt3) : '';
                                             
-                                            var emiTypeQuestId = subSubParentData.filter(fdt => fdt.input_type == 'E' && fdt.sub_parent_id == qdt.sequence),
+                                            var actTypeQuestId = subSubParentData.filter(fdt => fdt.input_type == 'A' && fdt.sub_parent_id == qdt.sequence),
+                                            emiTypeQuestId = subSubParentData.filter(fdt => fdt.input_type == 'E' && fdt.sub_parent_id == qdt.sequence),
                                                 unitQuestId = subSubParentData.filter(fdt => fdt.input_type == 'U' && fdt.sub_parent_id == qdt.sequence),
                                                 lastTabId = subSubParentData.filter(fdt => fdt.next_qst_action_val == 'E' && fdt.sub_parent_id == qdt.sequence), emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal = false;
 
                                             // console.log(emiTypeQuestId, unitQuestId, dt, '-----/////////////')
-
+                                            actTypeQuestId = actTypeQuestId.length > 0 ? actTypeQuestId[0].id : 0
                                             emiTypeQuestId = emiTypeQuestId.length > 0 ? emiTypeQuestId[0].id : 0
                                             unitQuestId = unitQuestId.length > 0 ? unitQuestId[0].id : 0
                                             lastTabId = lastTabId.length > 0 && sqdt.input_type == 'Y' ? lastTabId[0].id : 0
@@ -236,7 +237,7 @@
                                                     ${['R','C', 'S'].includes(sqdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)" style="display:${isSubSubParentHasAns ? 'block' : 'none'};">${isSubSubParentHasAns ? qAnsDt[0].quest_ans : ''}<span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                                 </div>
                                                 <div class="quest-opt-btn mt-2 ${sqdt.next_qst_action_val == 'E' ? 'last-emi-tab' : ''}" id="inputActionDiv-${sqdt.id}">
-                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId, scope_id, qSeq, isSubSubParentHasAns, isSubSubParentHasAns ? qAnsDt[0].quest_ans : '', emiVal, unitVal, hasEmiVal, hasUnitVal)}
+                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId, scope_id, qSeq, isSubSubParentHasAns, isSubSubParentHasAns ? qAnsDt[0].quest_ans : '', emiVal, unitVal, hasEmiVal, hasUnitVal, actTypeQuestId)}
                                                 </div>
                                                 ${lastTable}
                                             </div>`
@@ -262,7 +263,7 @@
         // console.log($(e).attr('href'));
         
     }
-    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0, hasAns = false, ansVal = '', emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal = false){
+    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0, hasAns = false, ansVal = '', emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal = false, act_id = 0){
         var optEle = '',
         btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: id, quest_type: flag, proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val()}));
         switch (flag) {
@@ -315,7 +316,7 @@
                 break;
             case 'Y':
                 var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quaterly'}, {id: 'M', name: 'Monthly'}]
-                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id})"><option value="">Select Mode</option>`
+                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id})"><option value="">Select Mode</option>`
                 $.each(year_opt, function(i, dt){
                     var _selected = ''
                     if(hasAns && ansVal == dt.id) _selected = 'selected'
@@ -526,16 +527,25 @@
                     </tfoot>
                 </table>
             </div>
+            <div class="col-md-12">
+                <button class="btn btn-pill btn-custom float-end" type="button" data-bs-original-title title="Save" onclick="saveCalValue(this, ${id})">
+                    <i class="icofont icofont-save">Save</i>
+                </button>
+            </div>
         </div>
         `
         return tableEleData;
     }
 
-    function createModeTableTr(e, id, lat_table_id, emi_id, unit_id){
+    function createModeTableTr(e, id, lat_table_id, emi_id, unit_id, ansVal, act_id){
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        quaterMon = ['Q 1', 'Q 2', 'Q 3', 'Q 4'];
+        quaterMon = ['Q 1', 'Q 2', 'Q 3', 'Q 4'],
+        quest_dt = $(e).attr('quest-dt');
         var flag = $(e).val()
         var eleTr = ''
+
+        if(ansVal != flag) saveData(quest_dt, flag)
+
         $(e).parent().parent().parent().next().show()
         // console.log(flag, id, lat_table_id, 'asasas');
         var col_val = $(`#unit_id_${unit_id}`).find('option:selected').attr('co-val')
@@ -548,7 +558,14 @@
                 $(`#tot_emi_cal_${lat_table_id}`).text('')
                 $(`#userTable${lat_table_id} tbody`).append(`
                 <tr>
-                    <td><span id="input-mode-span-${lat_table_id}"></span></td>
+                    <td>
+                        <span id="input-mode-span-${lat_table_id}"></span>
+                        <input type="hidden" name="mode_quest_id" id="mode_quest_id_${lat_table_id}" value="${id}">
+                        <input type="hidden" name="mode_quest_val" id="mode_quest_val_${lat_table_id}" value="${flag}">
+                        <input type="hidden" id="act_id_tab_${lat_table_id}" value="${act_id}">
+                        <input type="hidden" id="emi_id_tab_${lat_table_id}" value="${emi_id}">
+                        <input type="hidden" id="unit_id_tab_${lat_table_id}" value="${unit_id}">
+                    </td>
                     <td>
                         <input class="form-control" id="cal_val_1_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
                     </td>
@@ -569,7 +586,14 @@
                 $.each(quaterMon, function(i, mdt){
                     $(`#userTable${lat_table_id} tbody`).append(`
                     <tr>
-                        <td><span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span></td>
+                        <td>
+                            <span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span>
+                            <input type="hidden" name="mode_quest_id" id="mode_quest_id_${lat_table_id}" value="${id}">
+                            <input type="hidden" name="mode_quest_val" id="mode_quest_val_${lat_table_id}" value="${flag}">
+                            <input type="hidden" id="act_id_tab_${lat_table_id}" value="${act_id}">
+                            <input type="hidden" id="emi_id_tab_${lat_table_id}" value="${emi_id}">
+                            <input type="hidden" id="unit_id_tab_${lat_table_id}" value="${unit_id}">
+                        </td>
                         <td>
                             <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
                         </td>
@@ -591,7 +615,14 @@
                 $.each(months, function(i, mdt){
                     $(`#userTable${lat_table_id} tbody`).append(`
                     <tr>
-                        <td><span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span></td>
+                        <td>
+                            <span id="input-mode-span-${i+1}-${lat_table_id}">${mdt}</span>
+                            <input type="hidden" name="mode_quest_id" id="mode_quest_id_${lat_table_id}" value="${id}">
+                            <input type="hidden" name="mode_quest_val" id="mode_quest_val_${lat_table_id}" value="${flag}">
+                            <input type="hidden" id="act_id_tab_${lat_table_id}" value="${act_id}">
+                            <input type="hidden" id="emi_id_tab_${lat_table_id}" value="${emi_id}">
+                            <input type="hidden" id="unit_id_tab_${lat_table_id}" value="${unit_id}">
+                        </td>
                         <td>
                             <input class="form-control" id="cal_val_${i+1}_${lat_table_id}" name="cal_val_${lat_table_id}" type="text" value="" required="" onchange="calTabValue(this, ${lat_table_id})">
                         </td>
@@ -695,5 +726,48 @@
             $($(dt).children()[3]).find('input').val(co2.toFixed(2))
             $(`#tot_emi_cal_${id}`).text(totCo2.toFixed(2))
         })
+    }
+
+    function saveCalValue(e, id){
+        var repo_period = $(`#repo_period_${id}`).val(),
+        strt_month = $(`#strt_month_${id}`).val(),
+        mode_quest_id = $(`#mode_quest_id_${id}`).val(),
+        mode_quest_val = $(`#mode_quest_val_${id}`).val(),
+        act_id = $(`#act_id_tab_${id}`).val(),
+        emi_id = $(`#emi_id_tab_${id}`).val(),
+        unit_id = $(`#unit_id_tab_${id}`).val(),
+        quest_dt = $(`#mode_type_${mode_quest_id}`).attr('quest-dt'),
+        cal_val = [],
+        emi_fact_val = [],
+        co_val = [];
+        $(`input[name="cal_val_${id}"]`).each(function (i, dt){
+            cal_val.push($(dt).val())
+        })
+        $(`input[name="emi_fact_val_${id}"]`).each(function (i, dt){
+            emi_fact_val.push($(dt).val())
+        })
+        $(`input[name="co_val_${id}"]`).each(function (i, dt){
+            co_val.push($(dt).val())
+        })
+
+        console.log(repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, '-----------');
+
+        $.ajax({
+            method:'POST',
+            url: '/save_co_cal_ajax',
+            data: {enc_dt: quest_dt, repo_period, strt_month, cal_val: JSON.stringify(cal_val), emi_fact_val: JSON.stringify(emi_fact_val), co_val: JSON.stringify(co_val), mode_quest_id, mode_quest_val, quest_id: id, act_id, emi_id, unit_id},
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = result
+                console.log(res);
+                
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+        
     }
 </script>

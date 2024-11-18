@@ -115,6 +115,45 @@ CalcUserRouter.post('/get_cal_save_dt_ajax', async (req, res) => {
   var res_dt = await db_Select('*', 'td_ghg_quest', `client_id=${user.client_id} AND scope_id=${data.scope_id} AND project_id=${data.proj_id}`)
 })
 
+CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
+  var {enc_dt, repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, quest_id, act_id, emi_id, unit_id} = req.body
+
+  cal_val = JSON.parse(cal_val)
+  emi_fact_val = JSON.parse(emi_fact_val)
+  co_val = JSON.parse(co_val)
+
+  var dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), 
+  currDate = dateFormat(new Date(), 'yyyy-mm-dd'), 
+  user = req.session.user, res_dt= {};
+
+  var data = new Buffer.from(enc_dt, 'base64').toString()
+  data = JSON.parse(data)
+
+  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${mode_quest_id} AND scope = ${data.scope_id}`)
+
+  var table_name = 'td_ghg_quest',
+  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${mode_quest_val}', repo_start_year = '${repo_period}', repo_start_month = '${strt_month}', repo_start_date = 0, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, entry_dt, quest_id, quest_type, quest_seq, quest_ans, repo_start_year, repo_start_month, repo_start_date, created_by, created_dt)',
+  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${mode_quest_val}', '${repo_period}', '${strt_month}', 0, '${user.user_id}', '${dateTime}')`,
+  whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
+  flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+  var quest_dt = await db_Insert(table_name, fields, values, whr, flag)
+  
+  if(cal_val.length > 0){
+    var max_sl_no_dt = await db_Select('IF(MAX(sl_no) > 0, MAX(sl_no), 0)+1 next_sl_no', 'td_ghg_quest_cal', `scope=${data.scope_id} AND client_id = ${user.client_id} AND project_id=${data.proj_id} AND quest_id=${quest_id}`, null)
+    var i = 0
+    for(let dt of cal_val){
+      var table_name = 'td_ghg_quest_cal',
+      fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+      values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${data.sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
+      whr = null,
+      flag = 0;
+      res_dt = await db_Insert(table_name, fields, values, whr, flag)
+      i++
+    }
+  }
+  res.send(res_dt)
+})
+
 CalcUserRouter.post('/trans_val_save_ajax', async (req, res) => {
   var data = req.body,
   user = req.session.user,
