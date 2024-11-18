@@ -83,7 +83,7 @@
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
-    let chart, subTrnsDt, subTrnsRawDt, options, actData, actRawData, pathData, pathRawData;
+    var chart, subTrnsDt, subTrnsRawDt, options, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
 
     // Define custom colors for each scope
     const seriesColors = ['#4285F4', '#EA4335', '#34A853']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
@@ -97,12 +97,26 @@
     function drawSubTrnsDtChart(){
         // Initialize subTrnsDt with three scopes
         subTrnsRawDt = [
-            ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
-            ['2016', 1000, 401, 600],
-            ['2017', 1170, 460, 720],
-            ['2018', 661, 1120, 820],
-            ['2019', 1030, 540, 940]
+            ['Year', 'Scope 1', 'Scope 2', 'Scope 3']
         ]
+        if(trnsFullData.length > 0){
+            trnsFullData.forEach(dt => {
+                var newData = []
+                newData.push(dt.trans_year.toString())
+                newData.push(+((dt.path_sc_1 - dt.act_sc_1).toFixed(2)))
+                newData.push(+((dt.path_sc_2 - dt.act_sc_2).toFixed(2)))
+                newData.push(+((dt.path_sc_3 - dt.act_sc_3).toFixed(2)))
+                subTrnsRawDt.push(newData)
+            })
+        }
+        
+        // subTrnsRawDt = [
+        //     ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
+        //     ['2016', 1000, 401, 600],
+        //     ['2017', 1170, 460, 720],
+        //     ['2018', 661, 1120, 820],
+        //     ['2019', 1030, 540, 940]
+        // ]
         subTrnsDt = google.visualization.arrayToDataTable(subTrnsRawDt);
 
         // Define initial options
@@ -134,12 +148,18 @@
 
     function drawStackedActChart(){
         actRawData = [
-          ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
-          ['2016', 1000, 400, 600],
-          ['2017', 1170, 462, 720],
-          ['2018', 660, 1120, 820],
-          ['2019', 1030, 542, 940]
+          ['Year', 'Scope 1', 'Scope 2', 'Scope 3']
         ]
+        if(trnsFullData.length > 0){
+            trnsFullData.forEach(dt => {
+                var newData = []
+                newData.push(dt.trans_year.toString())
+                newData.push(dt.act_sc_1)
+                newData.push(dt.act_sc_2)
+                newData.push(dt.act_sc_3)
+                actRawData.push(newData)
+            })
+        }
         actData = google.visualization.arrayToDataTable(actRawData);
 
         const actOptions = {
@@ -174,12 +194,18 @@
 
     function drawStackedPathChart(){
         pathRawData = [
-          ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
-          ['2016', 1003, 400, 600],
-          ['2017', 1170, 460, 720],
-          ['2018', 660, 1120, 820],
-          ['2019', 1030, 545, 940]
+          ['Year', 'Scope 1', 'Scope 2', 'Scope 3']
         ]
+        if(trnsFullData.length > 0){
+            trnsFullData.forEach(dt => {
+                var newData = []
+                newData.push(dt.trans_year.toString())
+                newData.push(dt.path_sc_1)
+                newData.push(dt.path_sc_2)
+                newData.push(dt.path_sc_3)
+                pathRawData.push(newData)
+            })
+        }
         pathData = google.visualization.arrayToDataTable(pathRawData);
 
         const pathOptions = {

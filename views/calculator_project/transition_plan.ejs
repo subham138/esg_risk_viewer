@@ -219,34 +219,22 @@
                         <td>Pathway</td>
                         <td>
                             <div class="drop-item form-group">
-                                <% if(dt.trans_year < currYear){ %>
-                                    <span class="form-label-edit"><%= dt.path_sc_1 %></span>
-                                <% }else{ %>
-                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_1 %></span>
-                                <% } %>
-                                <input type="text" value="<%= dt.path_sc_1 %>" name="path_sc1" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc1_1" onchange="saveTransVal(1, $(this).val(), 'pSc1')" style="display: none;">
+                                <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                                <input type="text" value="0" name="path_sc1" class="edit form-control" id="path_sc1_1" onchange="saveTransVal(1, $(this).val(), 'pSc1')" style="display: none;">
                                 <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                             </div>
                         </td>
                         <td>
                             <div class="drop-item form-group">
-                                <% if(dt.trans_year < currYear){ %>
-                                    <span class="form-label-edit"><%= dt.path_sc_2 %></span>
-                                <% }else{ %>
-                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_2 %></span>
-                                <% } %>
-                                <input type="text" value="<%= dt.path_sc_2 %>" name="path_sc2" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc2_1"  onchange="saveTransVal(1, $(this).val(), 'pSc2')" style="display: none;">
+                                <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                                <input type="text" value="0" name="path_sc2" class="edit form-control" id="path_sc2_1"  onchange="saveTransVal(1, $(this).val(), 'pSc2')" style="display: none;">
                                 <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                             </div>
                         </td>
                         <td>
                             <div class="drop-item form-group">
-                                <% if(dt.trans_year < currYear){ %>
-                                    <span class="form-label-edit"><%= dt.path_sc_3 %></span>
-                                <% }else{ %>
-                                    <span class="form-label-edit" onclick="editLabel(this)"><%= dt.path_sc_3 %></span>
-                                <% } %>
-                                <input type="text" value="<%= dt.path_sc_3 %>" name="path_sc3" class="<%= dt.trans_year < currYear ? '' : 'edit' %> form-control" id="path_sc3_1" onchange="saveTransVal(1, $(this).val(), 'pSc3')" style="display: none;">
+                                <span class="form-label-edit" onclick="editLabel(this)">0</span>
+                                <input type="text" value="0" name="path_sc3" class="edit form-control" id="path_sc3_1" onchange="saveTransVal(1, $(this).val(), 'pSc3')" style="display: none;">
                                 <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                             </div>
                         </td>
