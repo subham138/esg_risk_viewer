@@ -160,7 +160,7 @@ module.exports = {
             order = null;
             var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
             if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
-                var newData = {}
+                var newData = {}, calNewData = {};
                 for(let dt of cal_sec_dt.msg){
                     var q_select = `a.id, a.scope_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
                     q_whr = `a.id = b.quest_id AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
@@ -178,10 +178,19 @@ module.exports = {
                             }
                         }
                     }
+                    try{
+                        var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name`,
+                        calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.scope = ${scope_id} AND a.client_id = ${client_id} AND b.sec_id = ${dt.id}`;
+                        var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.sl_no`)
+                        calNewData[dt.sec_name] = calVal.suc > 0 ? (calVal.msg.length > 0 ? calVal.msg : []) : []
+                    }catch(err){
+                        console.log(err);
+                        calNewData[dt.sec_name] = []
+                    }
                     newData[dt.sec_name] = qstDtlsAndLogic.suc > 0 ? qstDtlsAndLogic.msg : []
                 }
                 var q_ans_dt = await db_Select('*', 'td_ghg_quest', `client_id=${client_id} AND scope=${scope_id} AND project_id=${proj_id}`)
-                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : []}
+                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : [], cal_val: calNewData}
             }else{
                 res_dt = cal_sec_dt
             }
