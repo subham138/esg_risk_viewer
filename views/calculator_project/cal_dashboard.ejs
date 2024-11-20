@@ -33,6 +33,150 @@
         justify-content: space-between;
     }
   </style>
+<div class="row">
+    <div class="col-md-5 cust-border-tab-left">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="trans-indigator">Current Year Calculations</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label>Start Date: <span>14/11/2024</span></label>
+            </div>
+            <div class="col-md-6">
+                <label>Selected Mode: <span>Quaterly</span></label>
+            </div>
+        </div>
+        <hr>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col">Scope 1</th>
+                  <th scope="col">Scope 2</th>
+                  <th scope="col">Scope 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                    <th scope="row"><%= currYear %></th>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                    <th scope="row" class="text-end">Total</th>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
+                </tr>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-1">
+            <div class="accordion-item my-3 caruBackCol1">
+                <h2 class="accordion-header" id="GhgDashHeading-Scope-1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-1" aria-expanded="true" aria-controls="collapseDashGhg-Scope-1">
+                        Scope 1
+                    </button>
+                </h2>
+                <div id="collapseDashGhg-Scope-1" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-1" data-bs-parent="#accordionDashGhg-Scope-1">
+                    <div class="accordion-body">
+                        <div class="col-md-12">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Mode</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                        <tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr>
+                                    </tfoot> -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-2">
+            <div class="accordion-item my-3 caruBackCol1">
+                <h2 class="accordion-header" id="GhgDashHeading-Scope-2">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-2" aria-expanded="true" aria-controls="collapseDashGhg-Scope-2">
+                        Scope 2
+                    </button>
+                </h2>
+                <div id="collapseDashGhg-Scope-2" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-2" data-bs-parent="#accordionDashGhg-Scope-2">
+                    <div class="accordion-body">
+                        <div class="col-md-12">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Mode</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                        <tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr>
+                                    </tfoot> -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-3">
+            <div class="accordion-item my-3 caruBackCol1">
+                <h2 class="accordion-header" id="GhgDashHeading-Scope-3">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-3" aria-expanded="true" aria-controls="collapseDashGhg-Scope-3">
+                        Scope 3
+                    </button>
+                </h2>
+                <div id="collapseDashGhg-Scope-3" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-3" data-bs-parent="#accordionDashGhg-Scope-3">
+                    <div class="accordion-body">
+                        <div class="col-md-12">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Mode</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                        <tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr>
+                                    </tfoot> -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row ml-0">
     <div class="col-md-4 p-l-0 chart-cust-container">
         <div id="act-chart"></div>

@@ -1,5 +1,5 @@
 const CalcUserRouter = require('express').Router(),
-{ getCalQuestUserDt, getCalAct } = require('../modules/CalculatorModule'),
+{ getCalQuestUserDt, getCalAct, getGhgCalList } = require('../modules/CalculatorModule'),
 { SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select } = require('../modules/MasterModule'),
 { getProjectList } = require('../modules/ProjectModule'),
 dateFormat = require('dateformat');
@@ -47,11 +47,16 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_c
 ) a`,
   currYrOrder = 'GROUP BY a.repo_period, a.scope HAVING a.repo_period IS NOT null';
   var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
+
+
   
-  console.log(currYearCalData);
+  // console.log(currYearCalData);
+
   
 
   var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id}`, 'ORDER BY trans_year ASC')
+
+  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id)
 
   var project_data = await getProjectList(
     data.proj_id,
@@ -89,7 +94,8 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_c
     year_list: yearList,
     curr_yr_cal_dt: currYearCalData.suc > 0 ? currYearCalData.msg : [],
     currYear,
-    trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : []
+    trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : [],
+    allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : []
   };
   res.render("calculator_project/report_view", res_data)
 })
