@@ -116,11 +116,12 @@ CalcUserRouter.post('/get_cal_save_dt_ajax', async (req, res) => {
 })
 
 CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
-  var {enc_dt, repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, quest_id, act_id, emi_id, unit_id} = req.body
+  var {enc_dt, repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, quest_id, act_id, emi_id, unit_id, repo_mode_label, subSeq} = req.body
 
   cal_val = JSON.parse(cal_val)
   emi_fact_val = JSON.parse(emi_fact_val)
   co_val = JSON.parse(co_val)
+  repo_mode_label = JSON.parse(repo_mode_label)
 
   var dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), 
   currDate = dateFormat(new Date(), 'yyyy-mm-dd'), 
@@ -143,12 +144,18 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
     var i = 0
     for(let dt of cal_val){
       var table_name = 'td_ghg_quest_cal',
-      fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
-      values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${data.sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
+      fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+      values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${data.sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
       whr = null,
       flag = 0;
       res_dt = await db_Insert(table_name, fields, values, whr, flag)
       i++
+    }
+
+    try{
+      await db_Insert('td_ghg_quest a, md_cal_form_builder b', `a.end_flag = 'Y', a.modified_by = '${user.user_id}', a.modified_dt = '${dateTime}'`, null, `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.quest_seq LIKE "${subSeq}%" AND a.end_flag = 'N'`, 1)
+    }catch(err){
+      console.log(err);
     }
   }
   res.send(res_dt)
