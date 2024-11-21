@@ -240,16 +240,7 @@
     <div class="col-5"><hr class="cust-hr"></div>
 </div>
 <div class="row mt-5 ml-0">
-    <div class="col-md-4 p-l-0 chart-cust-container">
-        <div id="act-chart"></div>
-        <div class="text-center">
-            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'A')">
-                <i class="icofont icofont-eye-alt"></i>
-                <span class="ml-3">View Calculation</span>
-            </button>
-        </div>
-    </div>
-    <div class="col-md-4 p-l-0 chart-cust-container">
+    <div class="col-md-12 p-l-0 chart-cust-container">
         <div class="chart-container">
             <div id="sub-trans-chart"></div>
             <div class="filters">
@@ -274,7 +265,16 @@
             </button>
         </div>
     </div>
-    <div class="col-md-4 p-l-0 chart-cust-container">
+    <div class="col-md-6 p-l-0 chart-cust-container">
+        <div id="act-chart"></div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'A')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-6 p-l-0 chart-cust-container">
         <div id="pathway-chart"></div>
         <div class="text-center">
             <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'P')">
@@ -328,7 +328,7 @@
         // Define initial options
         options = {
             title: 'Pathway - Actual',
-            chartArea: {width: '50%', height: '80%'},
+            // chartArea: {width: '100%', height: '80%'},
             curveType: 'function',
             tooltip: { isHtml: true },
             legend: { 
@@ -370,7 +370,7 @@
 
         const actOptions = {
           title: 'Actual',
-          chartArea: {width: '50%', height: '80%'},
+        //   chartArea: {width: '80%', height: '80%'},
           isStacked: true,
           tooltip: { isHtml: true },
           colors: seriesColors,
@@ -416,7 +416,7 @@
 
         const pathOptions = {
           title: 'Pathway',
-          chartArea: {width: '50%', height: '80%'},
+        //   chartArea: {width: '80%', height: '80%'},
           isStacked: true,
           tooltip: { isHtml: true },
           colors: seriesColors,
