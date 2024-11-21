@@ -253,3 +253,30 @@ footer.close_nav {
     color: #bb8a32;
     cursor: pointer;
 }
+.cust-hr{
+    height: 2px !important;
+    background-color: #dbc5e7;
+}
+.caruBackCol1 {
+    border-radius: 5px;
+}
+.accordion-button:focus {
+    border-color: #dec5e5;
+    -webkit-box-shadow: 0 0 0 0.10rem rgb(222 197 229 / 45%);
+    box-shadow: 0 0 0 0.10rem rgb(222 197 229 / 45%);
+}
+.accordion-button {
+    color: #4f216b;
+    background-color: transparent;
+    border: 1px solid #fff;
+    border-bottom: 1px solid #4f216b;
+}
+.accordion-button:not(.collapsed) {
+    color: #4f216b;
+    background-color: #fff;
+}
+.accordion-item:last-of-type .accordion-button.collapsed {
+    border-bottom-width: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}

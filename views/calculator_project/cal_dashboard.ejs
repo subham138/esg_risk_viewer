@@ -33,7 +33,13 @@
         justify-content: space-between;
     }
   </style>
-<div class="row">
+  
+<div class="row align-items-center">
+    <div class="col-5"><hr class="cust-hr"></div>
+    <div class="col-2 text-center px-0"><strong>Emissions Overview</strong></div>
+    <div class="col-5"><hr class="cust-hr"></div>
+</div>
+<div class="row mt-4 mb-5">
     <div class="col-md-5 cust-border-tab-left">
         <div class="row">
             <div class="col-md-7">
@@ -82,29 +88,80 @@
         <div class="accordion custom-span-card" id="accordionDashGhg-Scope-1">
             <div class="accordion-item my-3 caruBackCol1">
                 <h2 class="accordion-header" id="GhgDashHeading-Scope-1">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-1" aria-expanded="true" aria-controls="collapseDashGhg-Scope-1">
+                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-1" aria-controls="collapseDashGhg-Scope-1" aria-expanded="false">
                         Scope 1
-                    </button>
+                    </a>
                 </h2>
                 <div id="collapseDashGhg-Scope-1" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-1" data-bs-parent="#accordionDashGhg-Scope-1">
                     <div class="accordion-body">
-                        <div class="col-md-12">
-                            <div class="table-responsive mt-3">
-                                <table class="table table-bordered text-center">
-                                    <thead>
-                                        <tr>
-                                            <th>Mode</th>
-                                            <th>1</th>
-                                            <th>2</th>
-                                            <th>3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                    <!-- <tfoot>
-                                        <tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr>
-                                    </tfoot> -->
-                                </table>
+                        <div class="row">
+                            <div class="col-md-12 PX-0">
+                                <% var filterGhgData = allGhgList.filter(dt => dt.scope == 1)
+                                    if(filterGhgData.length > 0){
+                                        var ghgSlNoList = filterGhgData.map(dt => dt.sl_no)
+                                        ghgSlNoList = ghgSlNoList.length > 0 ? [...new Set(ghgSlNoList)] : [];
+                                        ghgSlNoList.forEach(dt => {
+                                            // var filterCalSecdata = filterGhgData.filter(sdt => )
+                                            var filterCalData = filterGhgData.filter(cdt => cdt.sl_no == dt)
+                                            var totEmiCalVal = 0
+                                            filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
+                                        %>
+                                        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-1-<%= dt %>">
+                                            <div class="accordion-item my-3 caruBackCol1">
+                                                <h2 class="accordion-header" id="GhgDashHeading-Scope-1-<%= dt %>">
+                                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-1-<%= dt %>" aria-controls="collapseDashGhg-Scope-1-<%= dt %>" aria-expanded="false">
+                                                        <span class="infoCalLeb"><%= filterCalData.length > 0 ? filterCalData[0].act_name : '' %> - <%= filterCalData.length > 0 ? filterCalData[0].emi_name : '' %> - </span><span class="infoCalVal"> <%= totEmiCalVal.toFixed(2) %> kg CO2e </span>
+                                                    </a>
+                                                </h2>
+                                                <div id="collapseDashGhg-Scope-1-<%= dt %>" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-1-<%= dt %>" data-bs-parent="#accordionDashGhg-Scope-1-<%= dt %>">
+                                                    <div class="accordion-body">
+                                                        <div class="col-md-12">
+                                                            <div class="table-responsive mt-3">
+                                                                <table class="table table-bordered text-center">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Mode</th>
+                                                                            <th>Value(s)</th>
+                                                                            <th>Emission factor</th>
+                                                                            <th>tCO2e</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <% if(filterCalData.length > 0){
+                                                                            filterCalData.forEach(calDt => { %>
+                                                                                <tr>
+                                                                                    <td><%= calDt.repo_mode_label %></td>
+                                                                                    <td><%= calDt.cal_val %></td>
+                                                                                    <td><%= calDt.emi_fact_val %></td>
+                                                                                    <td><%= calDt.co_val %></td>
+                                                                                </tr>
+                                                                            <% })
+                                                                        } %>
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr>
+                                                                            <td colspan="3">Total:</td>
+                                                                            <td><%= totEmiCalVal.toFixed(2) %></td>
+                                                                        </tr>
+                                                                    </tfoot>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% if(filterCalData.length > 0){
+                                                filterCalData.forEach(cdt => {
+
+                                                })
+                                            }
+                                        })
+                                    }else{ %>
+                                        <span class="text-center text-danger">No Data Found</span>
+                                    <% }
+                                %>
+                                
                             </div>
                         </div>
                     </div>
@@ -114,9 +171,9 @@
         <div class="accordion custom-span-card" id="accordionDashGhg-Scope-2">
             <div class="accordion-item my-3 caruBackCol1">
                 <h2 class="accordion-header" id="GhgDashHeading-Scope-2">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-2" aria-expanded="true" aria-controls="collapseDashGhg-Scope-2">
+                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-2" aria-controls="collapseDashGhg-Scope-2" aria-expanded="false">
                         Scope 2
-                    </button>
+                    </a>
                 </h2>
                 <div id="collapseDashGhg-Scope-2" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-2" data-bs-parent="#accordionDashGhg-Scope-2">
                     <div class="accordion-body">
@@ -146,9 +203,9 @@
         <div class="accordion custom-span-card" id="accordionDashGhg-Scope-3">
             <div class="accordion-item my-3 caruBackCol1">
                 <h2 class="accordion-header" id="GhgDashHeading-Scope-3">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-3" aria-expanded="true" aria-controls="collapseDashGhg-Scope-3">
+                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-3" aria-controls="collapseDashGhg-Scope-3" aria-expanded="false">
                         Scope 3
-                    </button>
+                    </a>
                 </h2>
                 <div id="collapseDashGhg-Scope-3" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-3" data-bs-parent="#accordionDashGhg-Scope-3">
                     <div class="accordion-body">
@@ -177,7 +234,12 @@
         </div>
     </div>
 </div>
-<div class="row ml-0">
+<div class="row align-items-center">
+    <div class="col-5"><hr class="cust-hr"></div>
+    <div class="col-2 text-center"><strong>Statistics</strong></div>
+    <div class="col-5"><hr class="cust-hr"></div>
+</div>
+<div class="row mt-5 ml-0">
     <div class="col-md-4 p-l-0 chart-cust-container">
         <div id="act-chart"></div>
         <div class="text-center">

@@ -528,6 +528,10 @@
     }
 
     $(document).on('hide.bs.modal','#addNotesModal', function () {
+        if(Object.keys(editorList).length > 0){
+            Object.keys(editorList).forEach(dt => editorList[dt].delete())
+        }
+        editorList = {}
         $(this).detach()
     });
 </script>
