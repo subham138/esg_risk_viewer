@@ -202,7 +202,10 @@
                                         totCalRow = totCalRow.length > 0 ? [...new Set(totCalRow)] : [];
                                         var prevCalSlNo = 1
                                         $.each(totCalRow, function(ci, csl){
-                                            var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0;
+                                            var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0
+
+                                            // qAnsDtCal = res.proj_q_ans_dt.filter(asDt => asDt.end_flag != 'Y' && asDt.pro_sl_no == csl);
+
                                             var totEmiCalVal = 0
                                             filterCalDtNew.forEach(tfDt => totEmiCalVal += tfDt.co_val)
                                             accordionEle = accordionEle + `

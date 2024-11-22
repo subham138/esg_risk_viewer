@@ -209,3 +209,5 @@ ALTER TABLE `td_trans_plan`
 ALTER TABLE `esg_risk_viewer`.`td_ghg_quest_cal` ADD COLUMN `client_id` INT(11) NOT NULL AFTER `id`; 
 ALTER TABLE `esg_risk_viewer`.`td_ghg_quest` CHANGE `repo_start_month` `repo_start_month` VARCHAR(5) DEFAULT '0' NULL; 
 ALTER TABLE `esg_risk_viewer`.`td_ghg_quest_cal` ADD COLUMN `repo_mode_label` VARCHAR(20) NULL AFTER `repo_month`;
+------------------------------------------------------
+ALTER TABLE `esg_risk_viewer`.`td_ghg_quest` ADD COLUMN `pro_sl_no` INT(11) NULL AFTER `project_id`; 

@@ -1,5 +1,56 @@
 <%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: `"${projName}"`, show_br: true}) %>
 
+<script src="js/chart/google/google-chart-loader.js"></script>
+<style>
+    .chart-container {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        flex-wrap: wrap;
+        width: 100%;
+        height: auto;
+    }
+
+    .chart-container .filters {
+        display: flex;
+        flex-direction: row;
+        margin-left: 20px;
+        align-items: center;
+    }
+
+    .filter-checkbox {
+        margin: 5px 10px;
+        cursor: pointer;
+    }
+    .checkbox label {
+        font-size: 10px;
+        padding-left: 6px;
+    }
+    .checkbox label::before {
+        margin-top: 1px;
+        width: 15px;
+        height: 15px;
+    }
+    .chart-cust-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        /* width: 50%;
+        height: auto; */
+    }
+    .chart-cust-container-line{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        height: auto;
+    }
+    .cust-chart{
+        height: auto;
+        width: 100%;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
@@ -67,5 +118,25 @@
       }
     }
 </script> -->
+
+<script>
+    var prevToggle = $('body').hasClass('sidebar-icon-only')
+    $('#info-tab .nav-link').on('click', function(e){        
+        if(e.target.id == 'dash-top-tab'){
+            if(!$('body').hasClass('sidebar-icon-only')){
+                $('.toggleSidebarTogle').click()
+                prevToggle = false
+            }
+            setTimeout(() => {
+                if(!$('#checkbox-scope1').is(':checked'))
+                    $('#checkbox-scope1').click()
+            }, 200);
+        }else{
+            if(!prevToggle){
+                $('body').removeClass('sidebar-icon-only')
+            }
+        }
+    })
+</script>
 
 <%- include('../templates/footer.ejs') %>
