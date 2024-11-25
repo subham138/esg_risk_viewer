@@ -169,7 +169,7 @@
                                         ${['R','C', 'S'].includes(parentQuest[0].input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)" style="display:${isParentHasAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${isParentHasAns ? qAnsDt[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                     </div>
                                     <div class="quest-opt-btn mt-2" id="inputActionDiv-${parentQuest[0].id}" style="display:${!isParentHasAns ? 'block' : 'none'};">
-                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0, 0, scope_id, qSeq, isParentHasAns, isParentHasAns ? qAnsDt[0].quest_ans : '')}
+                                        ${createActionQuest(parentQuest[0].qu_option, parentQuest[0].input_type, `user_input_${parentQuest[0].id}`, parentQuest[0].id, parentQuest[0].option_val, 0, 0, 0, scope_id, qSeq, isParentHasAns, isParentHasAns ? qAnsDt[0].quest_ans : '', 0, 0, false, false, 0, parentQuest[0].pro_sec_id)}
                                     </div>
                                 </div>`
                                 
@@ -202,9 +202,31 @@
                                         totCalRow = totCalRow.length > 0 ? [...new Set(totCalRow)] : [];
                                         var prevCalSlNo = 1
                                         $.each(totCalRow, function(ci, csl){
-                                            var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0
+                                            var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0, questPrevData = '';
 
-                                            // qAnsDtCal = res.proj_q_ans_dt.filter(asDt => asDt.end_flag != 'Y' && asDt.pro_sl_no == csl);
+                                            var qAnsDtCal = res.quest_ans_sec[dt].filter(asDt => asDt.end_flag != 'N' && asDt.pro_sl_no == csl);
+                                            
+                                            questPrevData = questPrevData + `<div class="col-md-12">`
+                                            if(qAnsDtCal.length > 0){
+                                                $.each(qAnsDtCal, function(qai, qaDt){                                                    
+                                                    if(qaDt.input_type == 'A'){
+                                                        return false;
+                                                    }
+                                                    if(qaDt.input_heading != ''){
+                                                        questPrevData = questPrevData + `<p class="sub-title">${qaDt.input_heading}</p>`
+                                                    }
+                                                    questPrevData = questPrevData + `
+                                                    <div class="figure d-block">
+                                                        <blockquote class="blockquote">
+                                                            <p class="mb-0">${qaDt.quest_seq} ${qaDt.input_label}</p>
+                                                        </blockquote>
+                                                        <div class="blockquote-footer">${qaDt.quest_ans}</div>
+                                                    </div>
+                                                    `
+                                                })
+                                            }
+                                            questPrevData = questPrevData + `</div>`
+                                            
 
                                             var totEmiCalVal = 0
                                             filterCalDtNew.forEach(tfDt => totEmiCalVal += tfDt.co_val)
@@ -212,18 +234,19 @@
                                             <div class="accordion custom-span-card" id="accordionForIndCal${csl}">
                                                 <div class="accordion-item my-3 caruBackCol1">
                                                     <h2 class="accordion-header" id="clCalHeading${csl}">
-                                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${csl}" aria-expanded="true" aria-controls="collapseColVal${csl}">
-                                                            <span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span><span class="infoCalVal"> ${totEmiCalVal.toFixed(2)} kg CO2e </span>
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${csl}" aria-expanded="false" aria-controls="collapseColVal${csl}">
+                                                            <span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>
                                                         </button>
                                                     </h2>
                                                     <div id="collapseColVal${csl}" class="accordion-collapse collapse" aria-labelledby="clCalHeading${csl}" data-bs-parent="#accordionForIndCal${csl}">
-                                                        <div class="accordion-body">
+                                                        <div class="accordion-body row">
+                                                            ${questPrevData}
                                                             <div class="col-md-12">
                                                                 <div class="table-responsive mt-3">
                                                                     <table class="table table-bordered text-center">
                                                                         <thead>
                                                                             <tr>
-                                                                                <th>Mode</th>    
+                                                                                <th></th>    
                                                                                 <th>${lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt1 : ''}</th>    
                                                                                 <th>${lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt2 : ''}</th>    
                                                                                 <th>${lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt3 : ''}</th>    
@@ -243,7 +266,14 @@
                                                 </tr>
                                                 `
                                             })
-                                            accordionEle = accordionEle + `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr></tfoot></table></div></div></div></div></div></div>`
+                                            accordionEle = accordionEle + `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr></tfoot></table></div></div>`
+                                            accordionEle = accordionEle + `<div class="col-md-12 mt-3">
+                                                <div class="float-end">
+                                                    <button type="button" class="btn btn-pill btn-custom" onclick="delCalExt('${window.btoa(JSON.stringify(filterCalDtNew[0]))}')"><i class="icofont icofont-trash text-danger"></i></button>
+                                                    <button type="button" class="btn btn-pill btn-custom" onclick="editCalExt('${window.btoa(JSON.stringify({cal_dt: filterCalDtNew, hd1: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt1.split("'").join("\\'") : '', hd2: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt2.split("'").join("\\'") : '', hd3: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt3.split("'").join("\\'") : '', title: `<span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>`}))}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
+                                                </div>
+                                            </div>`
+                                            accordionEle = accordionEle + `</div></div></div></div>`
                                         })
                                     }
 
@@ -257,7 +287,7 @@
                                             ${['R','C', 'S'].includes(qdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)" style="display:${isSubParentHasAns ? 'block' : 'none'};">${isSubParentHasAns ? qAnsDt[0].quest_ans : ''}<span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                         </div>
                                         <div class="quest-opt-btn mt-2" id="inputActionDiv-${qdt.id}" style="display:${!isSubParentHasAns ? 'block' : 'none'};">
-                                            ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, 0, 0, 0, scope_id, qSeq, isSubParentHasAns, isSubParentHasAns ? qAnsDt[0].quest_ans : '')}
+                                            ${createActionQuest(qdt.qu_option, qdt.input_type, `user_input_${qdt.id}`, qdt.id, qdt.option_val, 0, 0, 0, scope_id, qSeq, isSubParentHasAns, isSubParentHasAns ? qAnsDt[0].quest_ans : '', 0, 0, false, false, 0, qdt.pro_sec_id)}
                                         </div>
                                     </div>
                                     <div class="sub-sub-section">`
@@ -295,7 +325,7 @@
                                                     ${['R','C', 'S'].includes(sqdt.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="clickAct(this)" style="display:${isSubSubParentHasAns ? 'block' : 'none'};">${isSubSubParentHasAns ? qAnsDt[0].quest_ans : ''}<span class="cust-badge-quest-txt m-r-10"></span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                                                 </div>
                                                 <div class="quest-opt-btn mt-2 ${sqdt.next_qst_action_val == 'E' ? 'last-emi-tab' : ''}" id="inputActionDiv-${sqdt.id}">
-                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId, scope_id, qSeq, isSubSubParentHasAns, isSubSubParentHasAns ? qAnsDt[0].quest_ans : '', emiVal, unitVal, hasEmiVal, hasUnitVal, actTypeQuestId)}
+                                                    ${createActionQuest(sqdt.qu_option, sqdt.input_type, `user_input_${sqdt.id}`, sqdt.id, sqdt.option_val, emiTypeQuestId, unitQuestId, lastTabId, scope_id, qSeq, isSubSubParentHasAns, isSubSubParentHasAns ? qAnsDt[0].quest_ans : '', emiVal, unitVal, hasEmiVal, hasUnitVal, actTypeQuestId, sqdt.pro_sec_id)}
                                                 </div>
                                                 ${lastTable}
                                             </div>`
@@ -321,9 +351,9 @@
         // console.log($(e).attr('href'));
         
     }
-    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0, hasAns = false, ansVal = '', emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal = false, act_id = 0){
+    function createActionQuest(option, flag, label = '', id = 0, option_val= '', emi_id = 0, unit_id = 0, lat_table_id = 0, scope_id = 0, quest_seq = 0, hasAns = false, ansVal = '', emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal = false, act_id = 0, quest_sec_id = 0){
         var optEle = '',
-        btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: id, quest_type: flag, proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val()}));
+        btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: id, quest_type: flag, proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), quest_sec_id}));
         switch (flag) {
             case 'R':
                 $.each(option, function(i, dt){
@@ -352,7 +382,7 @@
                 // setTimeout(() => {
                     getCalActDtls(option_val, 'E').then(function (actData) {
                         // console.log(actData, 'here');
-                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="getCalEmiTypeDtls(this, ${hasAns ? ansVal : 0}, ${emiVal > 0 ? emiVal : 0}, ${unitVal > 0 ? unitVal : 0}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}')"><option value="">Select Activity</option>`
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="getCalEmiTypeDtls(this, ${hasAns ? ansVal : 0}, ${emiVal > 0 ? emiVal : 0}, ${unitVal > 0 ? unitVal : 0}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Activity</option>`
                         if(actData.length > 0){
                             $.each(actData, function(i, dt){
                                 var _selected = ''
@@ -374,7 +404,7 @@
                 break;
             case 'Y':
                 var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quaterly'}, {id: 'M', name: 'Monthly'}]
-                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id})"><option value="">Select Mode</option>`
+                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id}, ${quest_sec_id})"><option value="">Select Mode</option>`
                 $.each(year_opt, function(i, dt){
                     var _selected = ''
                     if(hasAns && ansVal == dt.id) _selected = 'selected'
@@ -408,7 +438,7 @@
         })
     }
 
-    const getCalEmiTypeDtls = (e, selVal, emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal=false, scope_id, quest_seq, flag='E') => {  
+    const getCalEmiTypeDtls = (e, selVal, emiVal = 0, unitVal = 0, hasEmiVal = false, hasUnitVal=false, scope_id, quest_seq, quest_sec_id, flag='E') => {  
         // console.log(e, '---------');
               
         var type_id = $(e).attr('data-type-id'),
@@ -419,7 +449,7 @@
         unit_q_id = $(e).attr('unit-id'),
         quest_dt = $(e).attr('quest-dt');
 
-        var btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: next_id, quest_type: 'E', proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val()}));
+        var btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: next_id, quest_type: 'E', proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), quest_sec_id}));
 
         if(selVal != act_id) saveData(quest_dt, act_id)
         // console.log('ajhskdahlksdjahlksdhalkds', type_id, act_id);
@@ -436,7 +466,7 @@
                 if(res.suc > 0){
                     $(`#inputActionDiv-${next_id}`).parent().show()
                     $(`#inputActionDiv-${next_id}`).empty()
-                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" quest-dt="${btnData}" onchange = "getCalUnitDtls(this, ${emiVal}, ${unitVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}')"><option value="">Select Emission Source</option>`
+                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" quest-dt="${btnData}" onchange = "getCalUnitDtls(this, ${emiVal}, ${unitVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Emission Source</option>`
                     if(res.msg.length > 0){
                         $.each(res.msg, function(i, dt){
                             var _selected = ''
@@ -457,7 +487,7 @@
         })
     }
 
-    const getCalUnitDtls = (e, emiVal, unitVal, hasUnitVal, scope_id, quest_seq, flag='E') => {
+    const getCalUnitDtls = (e, emiVal, unitVal, hasUnitVal, scope_id, quest_seq, quest_sec_id, flag='E') => {
         var type_id = $(e).attr('data-type-id'),
         emi_type_id = $(e).val(),
         id = $(e).attr('id').split('_')[$(e).attr('id').split('_').length - 1],
@@ -466,7 +496,7 @@
 
         var act_id = $(`act_id_${id}`).val()
 
-        var btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: next_id, quest_type: 'U', proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val()}));
+        var btnData = window.btoa(JSON.stringify({scope_id, quest_seq, quest_id: next_id, quest_type: 'U', proj_id: $('#proj_id').val(), top_id: $('#top_id').val(), sec_id: $('#sec_id').val(), ind_id: $('#ind_id').val(), quest_sec_id}));
 
         if(emi_type_id != emiVal) saveData(quest_dt, emi_type_id)
 
@@ -482,7 +512,7 @@
                 if(res.suc > 0){
                     $(`#inputActionDiv-${next_id}`).parent().show()
                     $(`#inputActionDiv-${next_id}`).empty()
-                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${next_id}" quest-dt="${btnData}" onchange="unitEmiChange(this, ${unitVal}, ${scope_id}, '${quest_seq}')"><option value="">Select Unit</option>`
+                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${next_id}" quest-dt="${btnData}" onchange="unitEmiChange(this, ${unitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Unit</option>`
                     if(res.msg.length > 0){
                         $.each(res.msg, function(i, dt){
                             var _selected = ''
@@ -504,10 +534,13 @@
         })
     }
 
-    function unitEmiChange(e, unitVal, scope_id, quest_seq){
+    function unitEmiChange(e, unitVal, scope_id, quest_seq, quest_sec_id){
         // console.log($(e));
         var quest_dt = $(e).attr('quest-dt'),
         unit_val = $(e).val();
+
+        // var decData = window.atob(quest_dt)
+        // decData = JSON.parse(decData)
 
         if(unit_val != unitVal) saveData(quest_dt, unit_val)
 
@@ -595,7 +628,7 @@
         return tableEleData;
     }
 
-    function createModeTableTr(e, id, lat_table_id, emi_id, unit_id, ansVal, act_id){
+    function createModeTableTr(e, id, lat_table_id, emi_id, unit_id, ansVal, act_id, quest_sec_id){
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         quaterMon = ['Q 1', 'Q 2', 'Q 3', 'Q 4'],
         quest_dt = $(e).attr('quest-dt');
@@ -827,7 +860,7 @@
             success: function(result){
                 var res = result
                 console.log(res);
-                if(res.suc > 0) location.reload();
+                if(res.suc > 0) location.reload(true);
                 
             },
             complete: function(){
@@ -835,5 +868,60 @@
             }
         })
         
+    }
+
+    async function delCalExt(encDt){
+        var data = window.atob(encDt)
+        data = JSON.parse(data)
+        var text = 'Are you sure, you want to delete?',
+        title = "You won't be able to revert this!";
+        if(await inititate_sweet_conf_alert(text, title) > 0){
+            // console.log('True');
+            $.ajax({
+                method:'POST',
+                url: '/delete_ghg_ext_cal_mod_ajax',
+                data: {enc_dt: encDt},
+                beforeSend: function(){
+                    $('.loader-wrapper').show()
+                },
+                success: function(result){
+                    var res = result
+                    // console.log(res);
+                    if(res.suc > 0) $(`#accordionForIndCal${data.sl_no}`).detach()
+                    
+                },
+                complete: function(){
+                    $('.loader-wrapper').hide()
+                }
+            })
+        }
+        
+    }
+
+    async function editCalExt(encDt, flag = 0) {
+        var data = window.atob(encDt)
+        data = JSON.parse(data)
+        var text = 'Are you sure, you want to edit?',
+        title = "You won't be able to revert this!";
+        if(await inititate_sweet_conf_alert(text, title) > 0){
+            $.ajax({
+                method:'POST',
+                url: '/ghg_edit_cal_data_ajax',
+                data: {enc_dt: encDt, flag},
+                beforeSend: function(){
+                    $('.loader-wrapper').show()
+                },
+                success: function(result){
+                    var res = result
+                    console.log(res);
+                    // if(res.suc > 0) $(`#accordionForIndCal${data.sl_no}`).detach()
+                    $(res).modal('show')
+                    
+                },
+                complete: function(){
+                    $('.loader-wrapper').hide()
+                }
+            })            
+        }
     }
 </script>

@@ -1,0 +1,46 @@
+<% if(cal_data.cal_dt.length > 0){ %>
+    <div class="modal fade" id="chart-modal" tabindex="-1" aria-labelledby="chart-modal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><%- cal_data.title %></h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th></th>    
+                                            <th><%= cal_data.hd1 %></th>    
+                                            <th><%= cal_data.hd2 %></th>    
+                                            <th><%= cal_data.hd3 %></th>    
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% cal_data.cal_dt.forEach(dt => { %>
+                                            <tr>
+                                                <td><%= dt.repo_mode_label %></td>
+                                                <td><%= dt.cal_val %></td>
+                                                <td><%= dt.emi_fact_val %></td>
+                                                <td><%= dt.co_val %></td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <div class="float-end">
+                                <button class="btn btn-custom" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Save</button>
+                                <button class="btn btn-custom" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>

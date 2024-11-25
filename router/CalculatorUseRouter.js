@@ -1,6 +1,6 @@
 const CalcUserRouter = require('express').Router(),
 { getCalQuestUserDt, getCalAct, getGhgCalList } = require('../modules/CalculatorModule'),
-{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select } = require('../modules/MasterModule'),
+{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select, db_Delete } = require('../modules/MasterModule'),
 { getProjectList } = require('../modules/ProjectModule'),
 dateFormat = require('dateformat');
 
@@ -105,11 +105,22 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
 
-  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id}`)
+  var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = 'N'`, null)
+
+  console.log(ansChk, 'Chk DT');
+
+  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 1) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = 'Y'`, null)
+
+  maxQuestSlNo = ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no) : 1) : (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1)) : 1
+  console.log(maxQuestSlNo, 'sl_no');
+  
+  
+
+  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND end_flag = 'N'`)
 
   var table_name = 'td_ghg_quest',
-  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
-  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans}', '${user.user_id}', '${dateTime}')`,
+  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
+  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans}', '${user.user_id}', '${dateTime}')`,
   whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -230,6 +241,30 @@ CalcUserRouter.post('/save_trans_plan_note_ajax', async (req, res) => {
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
   res_dt['sl_no'] = max_sl_no.msg[0].max_sl_no
   res.send(res_dt)
+})
+
+CalcUserRouter.post('/delete_ghg_ext_cal_mod_ajax', async (req, res) => {
+  const {enc_dt} = req.body,
+  client_id = req.session.user.client_id;
+  var data = new Buffer.from(enc_dt, 'base64').toString()
+  data = JSON.parse(data)
+  var res_dt = await db_Delete('td_ghg_quest_cal', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND sl_no = ${data.sl_no} AND sec_id = ${data.sec_id} AND act_id = ${data.act_id}`)
+  if(res_dt.suc > 0){
+    var cal_quest_del = await db_Delete('td_ghg_quest', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND pro_sl_no = ${data.sl_no} AND end_flag = 'Y'`)
+  }
+  res.send(res_dt)
+})
+
+CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
+  const {enc_dt, flag} = req.body,
+  client_id = req.session.user.client_id;
+  var data = new Buffer.from(enc_dt, 'base64').toString()
+  data = JSON.parse(data)
+  if(flag > 0){
+
+  }else{
+    res.render("calculator_project/calTabModal", {cal_data: data})
+  }
 })
 
 module.exports = {CalcUserRouter}

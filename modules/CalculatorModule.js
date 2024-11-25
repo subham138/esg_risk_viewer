@@ -160,9 +160,9 @@ module.exports = {
             order = null;
             var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
             if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
-                var newData = {}, calNewData = {};
+                var newData = {}, calNewData = {}, calQuestDt = {};
                 for(let dt of cal_sec_dt.msg){
-                    var q_select = `a.id, a.scope_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
+                    var q_select = `a.id, a.scope_id, a.sec_id pro_sec_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
                     q_whr = `a.id = b.quest_id AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
                     var qstDtlsAndLogic = await db_Select(q_select, 'md_cal_form_builder a, md_cal_form_build_logic b', q_whr, null)
                     if(qstDtlsAndLogic.suc > 0 && qstDtlsAndLogic.msg.length > 0){
@@ -187,10 +187,19 @@ module.exports = {
                         console.log(err);
                         calNewData[dt.sec_name] = []
                     }
+                    try{
+                        var calQuestList = await db_Select('a.*, b.input_label, b.input_heading, b.input_type', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id=${client_id} AND a.scope=${scope_id} AND a.project_id=${proj_id} AND b.sec_id = ${dt.id}`, `ORDER BY a.pro_sl_no, a.quest_seq`)
+                        console.log(calQuestList);
+                        
+                        calQuestDt[dt.sec_name] = calQuestList.suc > 0 ? (calQuestList.msg.length > 0 ? calQuestList.msg : []) : []
+                    }catch(err){
+                        console.log(err);
+                        calQuestDt[dt.sec_name] = []
+                    }
                     newData[dt.sec_name] = qstDtlsAndLogic.suc > 0 ? qstDtlsAndLogic.msg : []
                 }
                 var q_ans_dt = await db_Select('*', 'td_ghg_quest', `client_id=${client_id} AND scope=${scope_id} AND project_id=${proj_id}`)
-                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : [], cal_val: calNewData}
+                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : [], cal_val: calNewData, quest_ans_sec: calQuestDt}
             }else{
                 res_dt = cal_sec_dt
             }
