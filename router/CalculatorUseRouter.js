@@ -109,7 +109,7 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
 
   console.log(ansChk, 'Chk DT');
 
-  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 1) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
+  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
 
   console.log(maxQuestSlNo, 'Max CHk');
   
