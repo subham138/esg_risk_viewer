@@ -105,11 +105,14 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
 
-  var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = 'N'`, null)
+  var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = 'N' AND a.quest_seq != '1.'`, null)
 
   console.log(ansChk, 'Chk DT');
 
-  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 1) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = 'Y'`, null)
+  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 1) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
+
+  console.log(maxQuestSlNo, 'Max CHk');
+  
 
   maxQuestSlNo = ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no) : 1) : (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1)) : 1
   console.log(maxQuestSlNo, 'sl_no');
@@ -160,12 +163,14 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
     var max_sl_no_dt = await db_Select('IF(MAX(sl_no) > 0, MAX(sl_no), 0)+1 next_sl_no', 'td_ghg_quest_cal', `scope=${data.scope_id} AND client_id = ${user.client_id} AND project_id=${data.proj_id} AND quest_id=${quest_id}`, null)
     var i = 0
     for(let dt of cal_val){
-      var table_name = 'td_ghg_quest_cal',
-      fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
-      values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${data.sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
-      whr = null,
-      flag = 0;
-      res_dt = await db_Insert(table_name, fields, values, whr, flag)
+      if(co_val[i] > 0){
+        var table_name = 'td_ghg_quest_cal',
+        fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+        values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${data.sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
+        whr = null,
+        flag = 0;
+        res_dt = await db_Insert(table_name, fields, values, whr, flag)
+      }
       i++
     }
 
@@ -256,13 +261,31 @@ CalcUserRouter.post('/delete_ghg_ext_cal_mod_ajax', async (req, res) => {
 })
 
 CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
-  const {enc_dt, flag} = req.body,
-  client_id = req.session.user.client_id;
-  var data = new Buffer.from(enc_dt, 'base64').toString()
-  data = JSON.parse(data)
-  if(flag > 0){
+  var req_data = req.body,
+  client_id = req.session.user.client_id,
+  user_name = req.session.user.user_name,
+  dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt;
+  if(req_data.flag > 0){
+    if(req_data.cal_val.length > 0){
+      var i = 0
+      for(let dt of req_data.cal_val){
+        var chk_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id=${req_data.project_id} AND sl_no=${req_data.sl_no} AND quest_id=${req_data.quest_id} AND repo_period='${req_data.repo_period}' AND repo_month = '${req_data.repo_month}' AND repo_mode_label='${req_data.repo_mode_label[i]}'`)
 
+        var table_name = 'td_ghg_quest_cal',
+        fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `cal_val = ${dt}, emi_fact_val = ${req_data.emi_fact_val[i]}, co_val = ${req_data.co_val[i]}, modified_by = '${user_name}', modified_ct = '${dateTime}'` : `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+        values = `(${client_id}, ${req_data.scope}, ${req_data.project_id}, ${req_data.quest_id}, ${req_data.sl_no}, ${req_data.sec_id}, ${req_data.act_id}, ${req_data.emi_type_id}, ${req_data.repo_period}, '${req_data.repo_month}', '${req_data.repo_mode_label[i]}', ${req_data.emi_type_unit_id}, ${dt}, ${req_data.emi_fact_val[i]}, ${req_data.co_val[i]}, '${user_name}', '${dateTime}')`,
+        whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id=${chk_dt.msg[0].id}` : null,
+        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+        res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        i++
+      }
+    }
+    console.log(req_data.url, 'URL');
+    
+    res.redirect(`/cal_proj_report_view?${req_data.url}`)
   }else{
+    var data = new Buffer.from(req_data.enc_dt, 'base64').toString()
+    data = JSON.parse(data)
     res.render("calculator_project/calTabModal", {cal_data: data})
   }
 })

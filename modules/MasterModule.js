@@ -106,7 +106,7 @@ INPUT_TYPE_LIST = {
   emi_unit: "U",
   mode: "Y",
 },
-SCOPE_LIST = [{id: 1, name: 'Scope 1', img: 'carbon-neutral.png'},{id: 2, name: 'Scope 2', img: 'industrial-emissions.png'},{id: 3, name: 'Scope 3', img: 'carbon-neutral_3.png'}],
+SCOPE_LIST = [{id: 1, name: 'Scope 1', img: 'Scope_1_Icon.png'},{id: 2, name: 'Scope 2', img: 'Scope_2_Icon.png'},{id: 3, name: 'Scope 3', img: 'Scope_3_Icon.png'}],
 PLATFORM_MODE = {C: 'Calculator', E: 'ESG Full'};
 YEAR_LIST = [2024,2023,2022,2021,2020,2019]
 

@@ -1,4 +1,6 @@
-<% if(cal_data.cal_dt.length > 0){ %>
+<% if(cal_data.cal_dt.length > 0){
+    var imp_repo_mode = false;
+    imp_repo_mode = (cal_data.repo_mode == 'M' ? (cal_data.cal_dt.length < 12 ? true : false) : false); %>
     <div class="modal fade" id="chart-modal" tabindex="-1" aria-labelledby="chart-modal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -7,38 +9,77 @@
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="table-responsive mt-3">
-                                <table class="table table-bordered text-center">
-                                    <thead>
-                                        <tr>
-                                            <th></th>    
-                                            <th><%= cal_data.hd1 %></th>    
-                                            <th><%= cal_data.hd2 %></th>    
-                                            <th><%= cal_data.hd3 %></th>    
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% cal_data.cal_dt.forEach(dt => { %>
+                    <form action="/ghg_edit_cal_data_ajax" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered text-center" id="modCalTab">
+                                        <thead>
                                             <tr>
-                                                <td><%= dt.repo_mode_label %></td>
-                                                <td><%= dt.cal_val %></td>
-                                                <td><%= dt.emi_fact_val %></td>
-                                                <td><%= dt.co_val %></td>
+                                                <th></th>    
+                                                <th><%= cal_data.hd1 %></th>    
+                                                <th><%= cal_data.hd2 %></th>    
+                                                <th><%= cal_data.hd3 %></th>
+                                                <th>
+                                                    <% if(imp_repo_mode){ %>
+                                                        <button class="btn btn-custom" type="button" onclick="addModTabRw('modCalTab')"><i class="icofont icofont-pencil-alt-5"></i></button>
+                                                    <% } %>
+                                                </th>  
                                             </tr>
-                                        <% }) %>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <% var i = 1, tot_co_val = 0;
+                                            cal_data.cal_dt.forEach(dt => {
+                                                tot_co_val += dt.co_val
+                                                %>
+                                                <tr>
+                                                    <td>
+                                                        <%= dt.repo_mode_label %>
+                                                        <input type="hidden" id="repo_mode_label_<%= i %>" name="repo_mode_label" value="<%= dt.repo_mode_label %>">
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" id="cal_val_<%= i %>" name="cal_val" type="text" value="<%= dt.cal_val %>" required=""  onchange="calTabValue(this, 'Md')">
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" id="emi_fact_val_<%= i %>" name="emi_fact_val" type="text" value="<%= dt.emi_fact_val %>" required=""  onchange="calTabValue(this, 'Md')" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" id="co_val_<%= i %>" name="co_val" type="text" value="<%= dt.co_val %>" required=""  onchange="calTabValue(this, 'Md')">
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            <% i++; }) %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="3" class="h5">Total</td>
+                                                <td id="tot_emi_cal_Md"><%= tot_co_val.toFixed(2) %></td>
+                                                <td></td>
+                                            </tr>    
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-4">
+                                <div class="float-end">
+                                    <input type="hidden" name="flag" value="1">
+                                    <input type="hidden" name="scope" value="<%= cal_data.cal_dt[0].scope %>">
+                                    <input type="hidden" name="project_id" value="<%= cal_data.cal_dt[0].project_id %>">
+                                    <input type="hidden" name="quest_id" value="<%= cal_data.cal_dt[0].quest_id %>">
+                                    <input type="hidden" name="sec_id" value="<%= cal_data.cal_dt[0].sec_id %>">
+                                    <input type="hidden" name="act_id" value="<%= cal_data.cal_dt[0].act_id %>">
+                                    <input type="hidden" name="emi_type_id" value="<%= cal_data.cal_dt[0].emi_type_id %>">
+                                    <input type="hidden" name="sl_no" value="<%= cal_data.cal_dt[0].sl_no %>">
+                                    <input type="hidden" name="repo_period" value="<%= cal_data.cal_dt[0].repo_period %>">
+                                    <input type="hidden" name="repo_month" value="<%= cal_data.cal_dt[0].repo_month %>">
+                                    <input type="hidden" name="emi_type_unit_id" value="<%= cal_data.cal_dt[0].emi_type_unit_id %>">
+                                    <input type="hidden" name="url" id="url" value="">
+                                    <button class="btn btn-custom" type="submit" title="Save">Save</button>
+                                    <button class="btn btn-custom" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="Close">Close</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-12 mt-4">
-                            <div class="float-end">
-                                <button class="btn btn-custom" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Save</button>
-                                <button class="btn btn-custom" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
