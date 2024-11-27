@@ -1,6 +1,6 @@
 <div class="row align-items-center">
     <div class="col-5"><hr class="cust-hr"></div>
-    <div class="col-2 text-center px-0"><strong>Emissions Overview</strong></div>
+    <div class="col-2 text-center px-0"><strong>In-Year Progress Monitor</strong></div>
     <div class="col-5"><hr class="cust-hr"></div>
 </div>
 <div class="row mt-4 mb-5">
@@ -200,7 +200,7 @@
 </div>
 <div class="row align-items-center">
     <div class="col-5"><hr class="cust-hr"></div>
-    <div class="col-2 text-center"><strong>Statistics</strong></div>
+    <div class="col-2 text-center"><strong>Transition Plan Progress</strong></div>
     <div class="col-5"><hr class="cust-hr"></div>
 </div>
 <div class="row mt-5 ml-0">
@@ -227,6 +227,31 @@
                 <i class="icofont icofont-eye-alt"></i>
                 <span class="ml-3">View Calculation</span>
             </button>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="row align-items-center">
+            <div class="col-md-8 row">
+                <% scope_list.forEach(dt => { %>
+                    <div class="col-md-4">
+                        <div class="scope-title">
+                            <img src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                            <h6><%= dt.name %></h6>
+                        </div>
+                        <div class="scope-desc">
+                            <label>Number of years below target: <span class="ml-3 text-danger">0</span></label>
+                            <label>Number of years above target: <span class="ml-3 text-success">27</span></label>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            <div class="col-md-4">
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <div class="progress-value" id="progress-value">0%</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-md-6 p-l-0 chart-cust-container">

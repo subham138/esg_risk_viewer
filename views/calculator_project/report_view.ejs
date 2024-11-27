@@ -120,6 +120,26 @@
 </script> -->
 
 <script>
+    const progressValue = $("#progress-value");
+    const progressCircle = $(".progress-circle");
+    let percentage = 0;
+    const targetPercentage = 75;
+    let hasAnimated = false;
+
+    const animateProgress = () => {
+        const interval = setInterval(() => {
+            if (percentage <= targetPercentage) {
+                progressValue.text(percentage + "%");
+                progressCircle.css("background", `conic-gradient(
+                    #75309c ${percentage * 3.6}deg, 
+                    #e0e0e0 ${percentage * 3.6}deg
+                )`);
+                percentage++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 30);
+    };
     var prevToggle = $('body').hasClass('sidebar-icon-only')
     $('#info-tab .nav-link').on('click', function(e){        
         if(e.target.id == 'dash-top-tab'){
@@ -131,7 +151,16 @@
                 if(!$('#checkbox-scope1').is(':checked'))
                     $('#checkbox-scope1').click()
             }, 200);
+            console.log(hasAnimated, 'sadasdasdasd');
+            
+            if (!hasAnimated) {
+                animateProgress();
+            }
         }else{
+            percentage = 0
+            progressValue.text('0%');
+            progressCircle.css("background", 'conic-gradient(#e0e0e0 0deg, #e0e0e0 360deg)');
+            hasAnimated = false; // Allow re-animation when returning to Tab 2
             if(!prevToggle){
                 $('body').removeClass('sidebar-icon-only')
             }
