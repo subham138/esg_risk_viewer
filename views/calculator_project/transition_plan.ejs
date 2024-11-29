@@ -29,14 +29,19 @@
             <table class="table table-bordered text-center">
               <thead>
                 <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Scope 1</th>
-                  <th scope="col">Scope 2</th>
-                  <th scope="col">Scope 3</th>
+                    <th scope="col"></th>
+                    <% scope_list.forEach(dt => { %>
+                        <th scope="col">
+                            <div class="scope-title-table">
+                                <img class="trns-cust-sc-img" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                                <span class="scp-trns-title"><%= dt.name %></span>
+                            </div>
+                        </th>
+                    <% }) %>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr class="scope-curr-cal">
                     <th scope="row"><%= currYear %></th>
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
@@ -64,11 +69,16 @@
             <table class="table table-bordered text-center">
               <thead>
                 <tr>
-                  <th scope="col" colspan="2">Mode</th>
-                  <th scope="col">Scope 1</th>
-                  <th scope="col">Scope 2</th>
-                  <th scope="col">Scope 3</th>
-                  <th class="border-none-tab-custom"></th>
+                    <th scope="col" colspan="2">Mode</th>
+                    <% scope_list.forEach(dt => { %>
+                        <th scope="col">
+                            <div class="scope-title-table">
+                                <img class="trns-cust-sc-img" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                                <span class="scp-trns-title"><%= dt.name %></span>
+                            </div>
+                        </th>
+                    <% }) %>
+                    <th class="border-none-tab-custom"></th>
                 </tr>
               </thead>
               <tbody>
@@ -77,7 +87,7 @@
                     trans_data.forEach(dt => {
                         var isCurrYearData = dt.trans_year == currYear
                         %>
-                        <tr>
+                        <tr class="<%= isCurrYearData ? 'scope-curr-cal-trns' : '' %>">
                           <th scope="row" class="vertical-align-center" id="tens_pln_<%= i %>" rowspan="2"><%= dt.trans_year %></th>
                             <td>
                                 Actual

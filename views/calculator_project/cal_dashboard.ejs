@@ -1,8 +1,10 @@
 <div class="row align-items-center">
     <div class="col-5"><hr class="cust-hr"></div>
-    <div class="col-2 text-center px-0"><strong>In-Year Progress Monitor</strong></div>
+    <div class="col-2 text-center px-0"><span class="div-hr-cust-text">In-Year Progress Monitor</span></div>
     <div class="col-5"><hr class="cust-hr"></div>
 </div>
+
+<!-- EMISSION SECTION DATA PREVIEW START -->
 <div class="row mt-4 mb-5">
     <div class="col-md-5 cust-border-tab-left">
         <div class="row">
@@ -23,14 +25,19 @@
             <table class="table table-bordered text-center">
               <thead>
                 <tr>
-                  <th scope="col"></th>
-                  <th scope="col">Scope 1</th>
-                  <th scope="col">Scope 2</th>
-                  <th scope="col">Scope 3</th>
+                    <th scope="col"></th>
+                    <% scope_list.forEach(dt => { %>
+                        <th scope="col">
+                            <div class="scope-title-table">
+                                <img class="dash-cust-sc-img" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                                <span><%= dt.name %></span>
+                            </div>
+                        </th>
+                    <% }) %>
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr class="scope-curr-cal">
                     <th scope="row"><%= currYear %></th>
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
@@ -43,6 +50,50 @@
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
                     <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-end">Progress</th>
+                    <td>
+                        <div class="progress-container">
+                            <% var nowDate = new Date()
+                            var curr_sc1_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0,
+                            curr_path_data = trans_data.length > 0 ? trans_data.filter(dt => dt.trans_year == nowDate.getFullYear()) : [];
+                            var curr_sc1_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_1 : 1
+                            var sc1_per = Math.abs(100 - Math.round(((curr_sc1_path - curr_sc1_act)/curr_sc1_path)*100))
+                            %>
+                            <div class="progress-circle-sc" style="background:conic-gradient( #75309c <%= sc1_per * 3.6 %>deg, #e0e0e0 <%= sc1_per * 3.6 %>deg );">
+                                <div class="progress-value-sc" id="prog-val-sc1">
+                                    <%= sc1_per %>%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-circle-sc">
+                                <div class="progress-value-sc" id="prog-val-sc2">
+                                    <% var curr_sc2_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0;
+                                    var curr_sc2_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_2 : 1
+                                    var sc2_per = Math.abs(100 - Math.round(((curr_sc2_path - curr_sc2_act)/curr_sc2_path)*100))
+                                    %>
+                                    <%= sc2_per %>%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-circle-sc">
+                                <div class="progress-value-sc" id="prog-val-sc3">
+                                    <% var curr_sc3_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0;
+                                    var curr_sc3_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_3 : 1
+                                    var sc3_per = Math.abs(100 - Math.round(((curr_sc3_path - curr_sc3_act)/curr_sc3_path)*100))
+                                    %>
+                                    <%= sc3_per %>%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
               </tfoot>
             </table>
@@ -198,11 +249,15 @@
         </div>
     </div>
 </div>
+<!-- EMISSION SECTION DATA PREVIEW END -->
+
 <div class="row align-items-center">
     <div class="col-5"><hr class="cust-hr"></div>
-    <div class="col-2 text-center"><strong>Transition Plan Progress</strong></div>
+    <div class="col-2 text-center"><span class="div-hr-cust-text">Transition Plan Progress</span></div>
     <div class="col-5"><hr class="cust-hr"></div>
 </div>
+
+<!-- CHART SECTION START -->
 <div class="row mt-5 ml-0">
     <div class="col-md-12 p-l-0 chart-cust-container-line">
         <div class="chart-container">
@@ -229,23 +284,23 @@
             </button>
         </div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 my-4">
         <div class="row align-items-center">
-            <div class="col-md-8 row">
+            <div class="col-md-9 row">
                 <% scope_list.forEach(dt => { %>
-                    <div class="col-md-4">
+                    <div class="col-md-4 sc-div-border">
                         <div class="scope-title">
                             <img src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
                             <h6><%= dt.name %></h6>
                         </div>
                         <div class="scope-desc">
-                            <label>Number of years below target: <span class="ml-3 text-danger">0</span></label>
-                            <label>Number of years above target: <span class="ml-3 text-success">27</span></label>
+                            <label>Number of years below target: <span class="ml-3 text-danger"><%= dash_sc_cal.length > 0 ? dash_sc_cal[0][`less_yr_sc${dt.id}`] : 0 %></span></label>
+                            <label>Number of years above target: <span class="ml-3 text-success"><%= dash_sc_cal.length > 0 ? dash_sc_cal[0][`grt_year_sc${dt.id}`] : 0 %></span></label>
                         </div>
                     </div>
                 <% }) %>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="progress-container">
                     <div class="progress-circle">
                         <div class="progress-value" id="progress-value">0%</div>
@@ -273,6 +328,7 @@
         </div>
     </div>
 </div>
+<!-- CHART SECTION END -->
 
 <script type="text/javascript">
     google.charts.load('current', {packages: ['corechart']});

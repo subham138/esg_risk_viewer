@@ -246,6 +246,7 @@ footer.close_nav {
 }
 .border-none-tab-custom{
     border: none;
+    background: none !important;
 }
 .add-note-custom i{
     font-size: 20px;
@@ -313,6 +314,32 @@ footer.close_nav {
     align-items: center;
 }
 
+.progress-circle-sc {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    /* background: conic-gradient(#A065C0 0%, #75309c calc(var(--percentage)* 1%), #e0e0e0 calc(var(--percentage)* 1%)); */
+    background: conic-gradient(#e0e0e0 0deg, #e0e0e0 360deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.progress-value-sc {
+    position: absolute;
+    font-size: 15px;
+    font-weight: bold;
+    color: #75309c;
+    background-color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .scope-title{
     display: flex;
     flex-direction: row;
@@ -330,4 +357,60 @@ footer.close_nav {
     flex-direction: column;
     justify-content: flex-start;
     margin: 0px 0px 10px 5px;
+}
+.sc-div-border{
+    border-right: 1px solid #80808030;
+}
+.scope-desc{
+    font-size: 13.5px;
+}
+
+.align-items-center .row .sc-div-border:last-child{
+    border-right: none;
+}
+.div-hr-cust-text{
+    color: #75309c;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.scope-title-table{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.scope-title-table img.dash-cust-sc-img{
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+}
+.scope-title-table img.trns-cust-sc-img{
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+.scope-curr-cal{
+    background: #1b6478db;
+}
+.scope-curr-cal th, .scope-curr-cal td{
+    color: #fff;
+}
+.scope-curr-cal:hover td{
+    background: #1b6478db !important;
+    color: #fff;
+}
+.scope-curr-cal-trns td{
+    background: #1b6478db;
+    color: #fff;
+}
+.scope-curr-cal-trns:hover td{
+    background: #1b6478db !important;
+    color: #fff;
+}
+.scope-curr-cal-trns:hover td:last-child{
+    background: none !important;
+    color: #000;
+}
+.scp-trns-title{
+    font-size: 12px;
 }

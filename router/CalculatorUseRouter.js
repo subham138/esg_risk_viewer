@@ -48,7 +48,31 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_c
   currYrOrder = 'GROUP BY a.repo_period, a.scope HAVING a.repo_period IS NOT null';
   var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
 
-
+var dashScopeCalData = await db_Select(`SUM(a.less_yr_sc1) less_yr_sc1, SUM(a.grt_year_sc1) grt_year_sc1, SUM(a.less_year_sc2) less_yr_sc2, SUM(a.grt_year_sc2) grt_year_sc2, SUM(a.less_year_sc3) less_yr_sc3, SUM(a.grt_year_sc3) grt_year_sc3`, `(
+SELECT COUNT(trans_year) less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
+FROM td_trans_plan
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_1 - act_sc_1) <= 0
+UNION
+SELECT 0 less_yr_sc1, COUNT(trans_year) grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
+FROM td_trans_plan
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_1 - act_sc_1) > 0
+UNION
+SELECT 0 less_yr_sc1, 0 grt_year_sc1, COUNT(trans_year) less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
+FROM td_trans_plan
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_2 - act_sc_2) <= 0
+UNION
+SELECT 0 less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, COUNT(trans_year) grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
+FROM td_trans_plan
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_2 - act_sc_2) > 0
+UNION
+SELECT 0 less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, COUNT(trans_year) less_year_sc3, 0 grt_year_sc3
+FROM td_trans_plan
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_2 - act_sc_2) <= 0
+UNION
+SELECT 0 less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, COUNT(trans_year) grt_year_sc3
+FROM td_trans_plan
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_3 - act_sc_3) > 0
+)a`, null, null)
   
   // console.log(currYearCalData);
 
@@ -95,7 +119,8 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_c
     curr_yr_cal_dt: currYearCalData.suc > 0 ? currYearCalData.msg : [],
     currYear,
     trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : [],
-    allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : []
+    allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
+    dash_sc_cal: dashScopeCalData.suc > 0 && dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []
   };
   res.render("calculator_project/report_view", res_data)
 })

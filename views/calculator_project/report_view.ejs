@@ -118,12 +118,26 @@
       }
     }
 </script> -->
+<% var currDate = new Date()
+    var currTransData = trans_data.filter(dt => dt.trans_year == currDate.getFullYear()),
+    firstTransData = trans_data.length > 0 ? trans_data[0] : {},
+    lastTransData = trans_data.length > 0 ? trans_data[trans_data.length - 1] : {},
+    totCurrAct = 0,
+    totFirstAct = 0,
+    totLastPath = 0;
+    currTransData.length > 0 ? totCurrAct += parseFloat(currTransData[0].act_sc_1) + parseFloat(currTransData[0].act_sc_2) + parseFloat(currTransData[0].act_sc_2) : ''
 
+    Object.keys(firstTransData).length > 0 ? totFirstAct += parseFloat(firstTransData.act_sc_1) + parseFloat(firstTransData.act_sc_2) + parseFloat(firstTransData.act_sc_2) : ''
+
+    Object.keys(lastTransData).length > 0 ? totLastPath += parseFloat(lastTransData.path_sc_1) + parseFloat(lastTransData.path_sc_2) + parseFloat(lastTransData.path_sc_2) : ''
+
+    var calPercent = Math.abs(Math.round(((totCurrAct - totFirstAct) / (totLastPath - totFirstAct)) * 100))
+%>
 <script>
     const progressValue = $("#progress-value");
     const progressCircle = $(".progress-circle");
     let percentage = 0;
-    const targetPercentage = 75;
+    const targetPercentage = <%= calPercent %>;
     let hasAnimated = false;
 
     const animateProgress = () => {
