@@ -27,7 +27,7 @@
     function clickAct(e){
         var isBtn = $(e).attr('type') ? true : false
 
-        console.log($(e), '-------------------------');
+        // console.log($(e), '-------------------------');
         
 
         if($(e).parent().parent().hasClass('parent-quest')){
@@ -127,11 +127,12 @@
     function getQuestDtlsChangeUser(e){
         var tabId = $(e).attr('href')
         var scope_id = $(e).parent('.nav-item').attr('scope-id'),
-        proj_id = $('#proj_id').val();
+        proj_id = $('#proj_id').val(),
+        sel_year = $('#sel_year_quest').val();
         $.ajax({
             method:'POST',
             url: '/get_question_list_by_scope_user_ajax',
-            data: {scope_id: scope_id, proj_id},
+            data: {scope_id: scope_id, proj_id, sel_year},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()

@@ -1,7 +1,7 @@
 <div class="row align-items-center">
-    <div class="col-5"><hr class="cust-hr"></div>
-    <div class="col-2 text-center px-0"><span class="div-hr-cust-text">In-Year Progress Monitor</span></div>
-    <div class="col-5"><hr class="cust-hr"></div>
+    <div class="col-4"><hr class="cust-hr"></div>
+    <div class="col-4 text-center px-0"><span class="div-hr-cust-text">In-Year Progress Monitor</span></div>
+    <div class="col-4"><hr class="cust-hr"></div>
 </div>
 
 <!-- EMISSION SECTION DATA PREVIEW START -->
@@ -12,14 +12,14 @@
                 <div class="trans-indigator">Current Year Calculations</div>
             </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-md-6">
                 <label>Start Date: <span>14/11/2024</span></label>
             </div>
             <div class="col-md-6">
                 <label>Selected Mode: <span>Quaterly</span></label>
             </div>
-        </div>
+        </div> -->
         <hr>
         <div class="table-responsive mt-3">
             <table class="table table-bordered text-center">
@@ -59,7 +59,7 @@
                             var curr_sc1_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0,
                             curr_path_data = trans_data.length > 0 ? trans_data.filter(dt => dt.trans_year == nowDate.getFullYear()) : [];
                             var curr_sc1_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_1 : 1
-                            var sc1_per = Math.abs(100 - Math.round(((curr_sc1_path - curr_sc1_act)/curr_sc1_path)*100))
+                            var sc1_per = Math.abs(Math.round((curr_sc1_path / curr_sc1_act)*100))
                             %>
                             <div class="progress-circle-sc" style="background:conic-gradient( #75309c <%= sc1_per * 3.6 %>deg, #e0e0e0 <%= sc1_per * 3.6 %>deg );">
                                 <div class="progress-value-sc" id="prog-val-sc1">
@@ -74,7 +74,7 @@
                                 <div class="progress-value-sc" id="prog-val-sc2">
                                     <% var curr_sc2_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0;
                                     var curr_sc2_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_2 : 1
-                                    var sc2_per = Math.abs(100 - Math.round(((curr_sc2_path - curr_sc2_act)/curr_sc2_path)*100))
+                                    var sc2_per = Math.abs(Math.round((curr_sc2_path / curr_sc2_act)*100))
                                     %>
                                     <%= sc2_per %>%
                                 </div>
@@ -87,7 +87,7 @@
                                 <div class="progress-value-sc" id="prog-val-sc3">
                                     <% var curr_sc3_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0;
                                     var curr_sc3_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_3 : 1
-                                    var sc3_per = Math.abs(100 - Math.round(((curr_sc3_path - curr_sc3_act)/curr_sc3_path)*100))
+                                    var sc3_per = Math.abs(Math.round((curr_sc3_path / curr_sc3_act)*100))
                                     %>
                                     <%= sc3_per %>%
                                 </div>
@@ -252,9 +252,9 @@
 <!-- EMISSION SECTION DATA PREVIEW END -->
 
 <div class="row align-items-center">
-    <div class="col-5"><hr class="cust-hr"></div>
-    <div class="col-2 text-center"><span class="div-hr-cust-text">Transition Plan Progress</span></div>
-    <div class="col-5"><hr class="cust-hr"></div>
+    <div class="col-4"><hr class="cust-hr"></div>
+    <div class="col-4 text-center"><span class="div-hr-cust-text">Transition Plan Progress</span></div>
+    <div class="col-4"><hr class="cust-hr"></div>
 </div>
 
 <!-- CHART SECTION START -->
@@ -337,7 +337,7 @@
     var chart, act_chart, pathway_chart, subTrnsDt, subTrnsRawDt, options, actOptions, pathOptions, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
 
     // Define custom colors for each scope
-    const seriesColors = ['#4285F4', '#EA4335', '#34A853']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
+    const seriesColors = ['#202a44', '#186671', '#7030a0']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
 
     function drawChart() {
         drawStackedActChart()

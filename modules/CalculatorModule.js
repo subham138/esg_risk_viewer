@@ -152,7 +152,7 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getCalQuestUserDt: (scope_id = 1, proj_id, client_id) => {
+    getCalQuestUserDt: (scope_id = 1, proj_id, client_id, proj_year) => {
         return new Promise(async (resolve, reject) => {
             var res_dt = {suc:0, msg:[]}
             var select = 'id, sec_name',
@@ -180,7 +180,7 @@ module.exports = {
                     }
                     try{
                         var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name`,
-                        calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.scope = ${scope_id} AND a.client_id = ${client_id} AND b.sec_id = ${dt.id}`;
+                        calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.scope = ${scope_id} AND a.client_id = ${client_id} AND a.repo_period='${proj_year}' AND b.sec_id = ${dt.id}`;
                         var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.sl_no`)
                         calNewData[dt.sec_name] = calVal.suc > 0 ? (calVal.msg.length > 0 ? calVal.msg : []) : []
                     }catch(err){
@@ -188,7 +188,7 @@ module.exports = {
                         calNewData[dt.sec_name] = []
                     }
                     try{
-                        var calQuestList = await db_Select('a.*, b.input_label, b.input_heading, b.input_type', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id=${client_id} AND a.scope=${scope_id} AND a.project_id=${proj_id} AND b.sec_id = ${dt.id}`, `ORDER BY a.pro_sl_no, a.quest_seq`)
+                        var calQuestList = await db_Select('a.*, b.input_label, b.input_heading, b.input_type', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.proj_year='${proj_year}' AND a.client_id=${client_id} AND a.scope=${scope_id} AND a.project_id=${proj_id} AND b.sec_id = ${dt.id}`, `ORDER BY a.pro_sl_no, a.quest_seq`)
                         console.log(calQuestList);
                         
                         calQuestDt[dt.sec_name] = calQuestList.suc > 0 ? (calQuestList.msg.length > 0 ? calQuestList.msg : []) : []
@@ -198,7 +198,7 @@ module.exports = {
                     }
                     newData[dt.sec_name] = qstDtlsAndLogic.suc > 0 ? qstDtlsAndLogic.msg : []
                 }
-                var q_ans_dt = await db_Select('*', 'td_ghg_quest', `client_id=${client_id} AND scope=${scope_id} AND project_id=${proj_id}`)
+                var q_ans_dt = await db_Select('*', 'td_ghg_quest', `client_id=${client_id} AND scope=${scope_id} AND project_id=${proj_id} AND proj_year='${proj_year}'`)
                 res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : [], cal_val: calNewData, quest_ans_sec: calQuestDt}
             }else{
                 res_dt = cal_sec_dt

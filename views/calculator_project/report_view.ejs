@@ -81,11 +81,21 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade show active" id="ghg" role="tabpanel" aria-labelledby="ghg-tab">
-                                    <!-- <div class="row m-3">
-                                        <div class="col-md-12"> -->
-                                            <%- include('quest_entry', {scope_list, cal_act, year_list}) %>
-                                        <!-- </div>
-                                    </div> -->
+                                    <div class="row align-items-center">
+                                        <div class="col-md-10"></div>
+                                        <div class="col-md-2 p-l-0">
+                                            <div class="input-group">
+                                                <!-- <input class="form-control" type="text" placeholder="Email"> -->
+                                                <select class="form-select btn-pill digits text-center" id="sel_year_quest">
+                                                    <% year_list.forEach(dt => { %>
+                                                        <option value="<%= dt %>"><%= dt %></option>
+                                                    <% }) %>
+                                                </select>
+                                                <span class="input-group-text cust-inp-grp"><i class="icofont icofont-ui-calendar"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%- include('quest_entry', {scope_list, cal_act, year_list}) %>
                                 </div>
                                 <div class="tab-pane fade" id="trans-plan" role="tabpanel" aria-labelledby="trans-plan-tab">
                                     <%- include('transition_plan') %>
@@ -179,6 +189,14 @@
                 $('body').removeClass('sidebar-icon-only')
             }
         }
+    })
+    $('#sel_year_quest').on('change', function(){
+        console.log($(this).val());
+        $('#sope-tab .nav-item .nav-link').each(function(i, dt){
+            if($(dt).hasClass('active')){
+                $(dt).click($(dt))
+            }
+        })
     })
 </script>
 

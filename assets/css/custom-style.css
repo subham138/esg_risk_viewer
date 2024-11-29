@@ -237,12 +237,12 @@ footer.close_nav {
 }
 .cust-border-tab-left{
     border-right: 1px solid #75309c;
-    border-radius: 10px;
-    margin-right: -3.9px;
+    /* border-radius: 10px; */
+    /* margin-right: -3.9px; */
 }
 .cust-border-tab-right{
     border-left: 1px solid #75309c;
-    border-radius: 10px;
+    /* border-radius: 10px; */
 }
 .border-none-tab-custom{
     border: none;
@@ -302,9 +302,9 @@ footer.close_nav {
 
 .progress-value {
     position: absolute;
-    font-size: 24px;
+    font-size: 35px;
     font-weight: bold;
-    color: #000;
+    color: #7b2f99;
     background-color: #fff;
     width: 140px;
     height: 140px;
@@ -315,8 +315,8 @@ footer.close_nav {
 }
 
 .progress-circle-sc {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     /* background: conic-gradient(#A065C0 0%, #75309c calc(var(--percentage)* 1%), #e0e0e0 calc(var(--percentage)* 1%)); */
     background: conic-gradient(#e0e0e0 0deg, #e0e0e0 360deg);
@@ -328,12 +328,12 @@ footer.close_nav {
 
 .progress-value-sc {
     position: absolute;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
     color: #75309c;
     background-color: #fff;
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -370,8 +370,8 @@ footer.close_nav {
 }
 .div-hr-cust-text{
     color: #75309c;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 21px;
+    font-weight: 900;
 }
 .scope-title-table{
     display: flex;
@@ -413,4 +413,9 @@ footer.close_nav {
 }
 .scp-trns-title{
     font-size: 12px;
+}
+.cust-inp-grp{
+    border: 1px solid #884caa;
+    background: #884caa;
+    color: #fff;
 }
