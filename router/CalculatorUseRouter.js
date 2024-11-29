@@ -120,7 +120,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_3 - 
     currYear,
     trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : [],
     allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
-    dash_sc_cal: dashScopeCalData.suc > 0 && dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []
+    dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : []
   };
   res.render("calculator_project/report_view", res_data)
 })
