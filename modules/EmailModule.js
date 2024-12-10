@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const project_url = 'https://esgriskviewer.com/';
+const project_url = 'https://platform.esgriskviewer.com/';
 // const project_url = 'https://localhost:3000/';
 
 // const SendUserEmail = (emailId) => {
@@ -61,7 +61,7 @@ const SendUserEmail = (emailId, user_name, enc_dt) => {
                                                     <tbody>
                                                         <tr>
                                                             <td style="text-align: start;"><a href="${project_url}"><img class="img-fluid"
-                                                                        src="https://esgriskviewer.com/images/logo_col.png" alt=""
+                                                                        src="https://platform.esgriskviewer.com/images/logo_col.png" alt=""
                                                                         style=" width: 290px; height: auto; "></a></td>
                                                             <!-- <td style="text-align: right; color:#999"><span>Password Reset</span>
                                                             </td> -->
@@ -164,7 +164,7 @@ const sendOtp = (emailId, user_name, otp) => {
                                                 <tbody>
                                                     <tr>
                                                         <td style="text-align: start;"><a href="${project_url}"><img class="img-fluid"
-                                                                    src="https://esgriskviewer.com/images/logo_col.png" alt=""
+                                                                    src="https://platform.esgriskviewer.com/images/logo_col.png" alt=""
                                                                     style=" width: 290px; height: auto; "></a></td>
                                                         <!-- <td style="text-align: right; color:#999"><span>Password Reset</span>
                                                         </td> -->
