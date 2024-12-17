@@ -104,8 +104,10 @@ INPUT_TYPE_LIST = {
   act: "A",
   emi_type: "E",
   emi_unit: "U",
+  mode: "Y",
 },
-SCOPE_LIST = [{id: 1, name: 'Scope 1'},{id: 2, name: 'Scope 2'},{id: 3, name: 'Scope 3'}],
+SCOPE_LIST = [{id: 1, name: 'Scope 1', img: 'Scope_1_Icon.png'},{id: 2, name: 'Scope 2', img: 'Scope_2_Icon.png'},{id: 3, name: 'Scope 3', img: 'Scope_3_Icon.png'}],
 PLATFORM_MODE = {C: 'Calculator', E: 'ESG Full'};
+YEAR_LIST = [2024,2023,2022,2021,2020,2019]
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE };
+module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST };

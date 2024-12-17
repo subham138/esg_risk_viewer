@@ -1,0 +1,604 @@
+<div class="row align-items-center">
+    <div class="col-4"><hr class="cust-hr"></div>
+    <div class="col-4 text-center px-0"><span class="div-hr-cust-text">In-Year Progress Monitor</span></div>
+    <div class="col-4"><hr class="cust-hr"></div>
+</div>
+
+<!-- EMISSION SECTION DATA PREVIEW START -->
+<div class="row mt-4 mb-5">
+    <div class="col-md-5 cust-border-tab-left">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="trans-indigator">Current Year Calculations</div>
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="col-md-6">
+                <label>Start Date: <span>14/11/2024</span></label>
+            </div>
+            <div class="col-md-6">
+                <label>Selected Mode: <span>Quaterly</span></label>
+            </div>
+        </div> -->
+        <hr>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <% scope_list.forEach(dt => { %>
+                        <th scope="col">
+                            <div class="scope-title-table">
+                                <img class="dash-cust-sc-img" src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                                <span><%= dt.name %></span>
+                            </div>
+                        </th>
+                    <% }) %>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="scope-curr-cal">
+                    <th scope="row"><%= currYear %></th>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                    <th scope="row" class="text-end">Total</th>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></td>
+                    <td><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-end">Progress</th>
+                    <td>
+                        <div class="progress-container">
+                            <% var nowDate = new Date()
+                            var curr_sc1_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0,
+                            curr_path_data = trans_data.length > 0 ? trans_data.filter(dt => dt.trans_year == nowDate.getFullYear()) : [];
+                            var curr_sc1_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_1 : 1
+                            var sc1_per = Math.abs(Math.round((curr_sc1_path / curr_sc1_act)*100))
+                            %>
+                            <div class="progress-circle-sc" style="background:conic-gradient( #75309c <%= sc1_per * 3.6 %>deg, #e0e0e0 <%= sc1_per * 3.6 %>deg );">
+                                <div class="progress-value-sc" id="prog-val-sc1">
+                                    <%= sc1_per %>%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-circle-sc">
+                                <div class="progress-value-sc" id="prog-val-sc2">
+                                    <% var curr_sc2_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0;
+                                    var curr_sc2_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_2 : 1
+                                    var sc2_per = Math.abs(Math.round((curr_sc2_path / curr_sc2_act)*100))
+                                    %>
+                                    <%= sc2_per %>%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-circle-sc">
+                                <div class="progress-value-sc" id="prog-val-sc3">
+                                    <% var curr_sc3_act = curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0;
+                                    var curr_sc3_path = curr_path_data.length > 0 ? curr_path_data[0].path_sc_3 : 1
+                                    var sc3_per = Math.abs(Math.round((curr_sc3_path / curr_sc3_act)*100))
+                                    %>
+                                    <%= sc3_per %>%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-1">
+            <div class="accordion-item my-3 caruBackCol1">
+                <h2 class="accordion-header" id="GhgDashHeading-Scope-1">
+                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-1" aria-controls="collapseDashGhg-Scope-1" aria-expanded="false">
+                        Scope 1
+                    </a>
+                </h2>
+                <div id="collapseDashGhg-Scope-1" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-1" data-bs-parent="#accordionDashGhg-Scope-1">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-12 PX-0">
+                                <% var filterGhgData = allGhgList.filter(dt => dt.scope == 1)
+                                    if(filterGhgData.length > 0){
+                                        var ghgSlNoList = filterGhgData.map(dt => dt.sl_no)
+                                        ghgSlNoList = ghgSlNoList.length > 0 ? [...new Set(ghgSlNoList)] : [];
+                                        ghgSlNoList.forEach(dt => {
+                                            // var filterCalSecdata = filterGhgData.filter(sdt => )
+                                            var filterCalData = filterGhgData.filter(cdt => cdt.sl_no == dt)
+                                            var totEmiCalVal = 0
+                                            filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
+                                        %>
+                                        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-1-<%= dt %>">
+                                            <div class="accordion-item my-3 caruBackCol1">
+                                                <h2 class="accordion-header" id="GhgDashHeading-Scope-1-<%= dt %>">
+                                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-1-<%= dt %>" aria-controls="collapseDashGhg-Scope-1-<%= dt %>" aria-expanded="false">
+                                                        <span class="infoCalLeb"><%= filterCalData.length > 0 ? filterCalData[0].act_name : '' %> - <%= filterCalData.length > 0 ? filterCalData[0].emi_name : '' %> - </span><span class="infoCalVal"> <%= totEmiCalVal.toFixed(2) %> kg CO2e </span>
+                                                    </a>
+                                                </h2>
+                                                <div id="collapseDashGhg-Scope-1-<%= dt %>" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-1-<%= dt %>" data-bs-parent="#accordionDashGhg-Scope-1-<%= dt %>">
+                                                    <div class="accordion-body">
+                                                        <div class="col-md-12">
+                                                            <div class="table-responsive mt-3">
+                                                                <table class="table table-bordered text-center">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Mode</th>
+                                                                            <th>Value(s)</th>
+                                                                            <th>Emission factor</th>
+                                                                            <th>tCO2e</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <% if(filterCalData.length > 0){
+                                                                            filterCalData.forEach(calDt => { %>
+                                                                                <tr>
+                                                                                    <td><%= calDt.repo_mode_label %></td>
+                                                                                    <td><%= calDt.cal_val %></td>
+                                                                                    <td><%= calDt.emi_fact_val %></td>
+                                                                                    <td><%= calDt.co_val %></td>
+                                                                                </tr>
+                                                                            <% })
+                                                                        } %>
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr>
+                                                                            <td colspan="3">Total:</td>
+                                                                            <td><%= totEmiCalVal.toFixed(2) %></td>
+                                                                        </tr>
+                                                                    </tfoot>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% if(filterCalData.length > 0){
+                                                filterCalData.forEach(cdt => {
+
+                                                })
+                                            }
+                                        })
+                                    }else{ %>
+                                        <span class="text-center text-danger">No Data Found</span>
+                                    <% }
+                                %>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-2">
+            <div class="accordion-item my-3 caruBackCol1">
+                <h2 class="accordion-header" id="GhgDashHeading-Scope-2">
+                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-2" aria-controls="collapseDashGhg-Scope-2" aria-expanded="false">
+                        Scope 2
+                    </a>
+                </h2>
+                <div id="collapseDashGhg-Scope-2" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-2" data-bs-parent="#accordionDashGhg-Scope-2">
+                    <div class="accordion-body">
+                        <div class="col-md-12">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Mode</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                        <tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr>
+                                    </tfoot> -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion custom-span-card" id="accordionDashGhg-Scope-3">
+            <div class="accordion-item my-3 caruBackCol1">
+                <h2 class="accordion-header" id="GhgDashHeading-Scope-3">
+                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-Scope-3" aria-controls="collapseDashGhg-Scope-3" aria-expanded="false">
+                        Scope 3
+                    </a>
+                </h2>
+                <div id="collapseDashGhg-Scope-3" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-Scope-3" data-bs-parent="#accordionDashGhg-Scope-3">
+                    <div class="accordion-body">
+                        <div class="col-md-12">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Mode</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <!-- <tfoot>
+                                        <tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr>
+                                    </tfoot> -->
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- EMISSION SECTION DATA PREVIEW END -->
+
+<div class="row align-items-center">
+    <div class="col-4"><hr class="cust-hr"></div>
+    <div class="col-4 text-center"><span class="div-hr-cust-text">Transition Plan Progress</span></div>
+    <div class="col-4"><hr class="cust-hr"></div>
+</div>
+
+<!-- CHART SECTION START -->
+<div class="row mt-5 ml-0">
+    <div class="col-md-12 p-l-0 chart-cust-container-line">
+        <div class="chart-container">
+            <div id="sub-trans-chart" class="cust-chart"></div>
+            <div class="filters">
+                <div class="form-check form-check-inline checkbox checkbox-primary">
+                    <input class="form-check-input" type="checkbox" id="checkbox-scope1" onchange="updateChart()">
+                    <label class="form-check-label" for="checkbox-scope1">Scope 1</label>
+                </div>
+                <div class="form-check form-check-inline checkbox checkbox-primary">
+                    <input class="form-check-input" type="checkbox" id="checkbox-scope2" checked onchange="updateChart()">
+                    <label class="form-check-label" for="checkbox-scope2">Scope 2</label>
+                </div>
+                <div class="form-check form-check-inline checkbox checkbox-primary">
+                    <input class="form-check-input" type="checkbox" id="checkbox-scope3" checked onchange="updateChart()">
+                    <label class="form-check-label" for="checkbox-scope3">Scope 3</label>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'S')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-12 my-4">
+        <div class="row align-items-center">
+            <div class="col-md-9 row">
+                <% scope_list.forEach(dt => { %>
+                    <div class="col-md-4 sc-div-border">
+                        <div class="scope-title">
+                            <img src="/images/other-images/<%= dt.img %>" alt="<%= dt.name %>">
+                            <h6><%= dt.name %></h6>
+                        </div>
+                        <div class="scope-desc">
+                            <label>Number of years below target: <span class="ml-3 text-danger"><%= dash_sc_cal.length > 0 ? dash_sc_cal[0][`less_yr_sc${dt.id}`] : 0 %></span></label>
+                            <label>Number of years above target: <span class="ml-3 text-success"><%= dash_sc_cal.length > 0 ? dash_sc_cal[0][`grt_year_sc${dt.id}`] : 0 %></span></label>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            <div class="col-md-3">
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <div class="progress-value" id="progress-value">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 p-l-0 chart-cust-container">
+        <div id="act-chart" class="cust-chart"></div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'A')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-6 p-l-0 chart-cust-container">
+        <div id="pathway-chart" class="cust-chart"></div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'P')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+</div>
+<!-- CHART SECTION END -->
+
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    var chart, act_chart, pathway_chart, subTrnsDt, subTrnsRawDt, options, actOptions, pathOptions, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
+
+    // Define custom colors for each scope
+    const seriesColors = ['#202a44', '#186671', '#7030a0']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
+
+    function drawChart() {
+        drawStackedActChart()
+        drawStackedPathChart()
+        drawSubTrnsDtChart()
+    }
+
+    function drawSubTrnsDtChart(){
+        // Initialize subTrnsDt with three scopes
+        subTrnsRawDt = [
+            ['Year', 'Scope 1', 'Scope 2', 'Scope 3']
+        ]
+        if(trnsFullData.length > 0){
+            trnsFullData.forEach(dt => {
+                var newData = []
+                newData.push(dt.trans_year.toString())
+                newData.push(+((dt.path_sc_1 - dt.act_sc_1).toFixed(2)))
+                newData.push(+((dt.path_sc_2 - dt.act_sc_2).toFixed(2)))
+                newData.push(+((dt.path_sc_3 - dt.act_sc_3).toFixed(2)))
+                subTrnsRawDt.push(newData)
+            })
+        }
+        
+        // subTrnsRawDt = [
+        //     ['Year', 'Scope 1', 'Scope 2', 'Scope 3'],
+        //     ['2016', 1000, 401, 600],
+        //     ['2017', 1170, 460, 720],
+        //     ['2018', 661, 1120, 820],
+        //     ['2019', 1030, 540, 940]
+        // ]
+        subTrnsDt = google.visualization.arrayToDataTable(subTrnsRawDt);
+
+        // Define initial options
+        options = {
+            title: 'Pathway - Actual',
+            chartArea: {width: '85%', height: '85%'},
+            curveType: 'function',
+            tooltip: { isHtml: true },
+            legend: { 
+                position: 'right',
+                alignment: 'left',  // Center align the legend
+                maxLines: 2,          // Allow up to 2 lines if needed
+                textStyle: {fontSize: 8, color: '#555'}
+            },
+            colors: seriesColors,
+            lineWidth: 2,
+            series: {
+                0: { pointSize: 7 }, // Scope 1 points size
+                1: { pointSize: 7 }, // Scope 2 points size
+                2: { pointSize: 7 }  // Scope 3 points size
+            }
+        };
+
+        // Initialize chart and apply dynamic resizing on load
+        chart = new google.visualization.LineChart(document.getElementById('sub-trans-chart'));
+    }
+
+    function drawStackedActChart(){
+        actRawData = [
+          ['Year', 'Scope 1', 'Scope 2', 'Scope 3']
+        ]
+        if(trnsFullData.length > 0){
+            trnsFullData.forEach(dt => {
+                var newData = []
+                newData.push(dt.trans_year.toString())
+                newData.push(dt.act_sc_1)
+                newData.push(dt.act_sc_2)
+                newData.push(dt.act_sc_3)
+                actRawData.push(newData)
+            })
+        }
+        actData = google.visualization.arrayToDataTable(actRawData);
+
+        actOptions = {
+          title: 'Actual',
+          chartArea: {width: '75%', height: '75%'},
+          isStacked: true,
+          tooltip: { isHtml: true },
+          colors: seriesColors,
+          vAxis: {
+            title: 'Total Emissions',
+            },
+        //   vAxis: {
+        //     title: 'Total Emissions',
+        //     // minValue: 0
+        //   },
+        //   hAxis: {
+        //     title: 'Year',
+        //     slantedText: true, // Makes year labels angled for better readability if there are many
+        //     slantedTextAngle: 45 // Sets the angle for slanted text
+        //   },
+          legend: {
+            position: 'right',
+            alignment: 'left',  // Center align the legend
+            maxLines: 2,          // Allow up to 2 lines if needed
+            textStyle: {fontSize: 8, color: '#555'}
+          }
+        };
+
+        act_chart = new google.visualization.ColumnChart(document.getElementById('act-chart'));
+        act_chart.draw(actData, actOptions);
+    }
+
+    function drawStackedPathChart(){
+        pathRawData = [
+          ['Year', 'Scope 1', 'Scope 2', 'Scope 3']
+        ]
+        if(trnsFullData.length > 0){
+            trnsFullData.forEach(dt => {
+                var newData = []
+                newData.push(dt.trans_year.toString())
+                newData.push(dt.path_sc_1)
+                newData.push(dt.path_sc_2)
+                newData.push(dt.path_sc_3)
+                pathRawData.push(newData)
+            })
+        }
+        pathData = google.visualization.arrayToDataTable(pathRawData);
+
+        pathOptions = {
+          title: 'Pathway',
+          chartArea: {width: '75%', height: '75%'},
+          isStacked: true,
+          tooltip: { isHtml: true },
+          colors: seriesColors,
+        //   hAxis: {
+        //     title: 'Year',
+        //     minValue: 0
+        //   },
+          vAxis: {
+            title: 'Total Emissions'
+          },
+          legend: {
+            position: 'right',
+            alignment: 'top',  // Center align the legend
+            maxLines: 2,          // Allow up to 2 lines if needed
+            textStyle: {fontSize: 8, color: '#555'}
+          }
+        };
+
+        pathway_chart = new google.visualization.ColumnChart(document.getElementById('pathway-chart'));
+        pathway_chart.draw(pathData, pathOptions);
+    }
+
+    function updateChart() {
+        const scope1Checkbox = document.getElementById("checkbox-scope1");
+        const scope2Checkbox = document.getElementById("checkbox-scope2");
+        const scope3Checkbox = document.getElementById("checkbox-scope3");
+
+        const scope1Visible = scope1Checkbox.checked;
+        const scope2Visible = scope2Checkbox.checked;
+        const scope3Visible = scope3Checkbox.checked;
+
+        // Ensure at least one scope is visible
+        if (!scope1Visible && !scope2Visible && !scope3Visible) {
+            scope3Checkbox.checked = true;
+        }
+
+        // Update subTrnsDt visibility based on checkboxes
+        subTrnsDt.setColumnProperty(1, 'role', scope1Checkbox.checked ? null : 'certainty');
+        subTrnsDt.setColumnProperty(2, 'role', scope2Checkbox.checked ? null : 'certainty');
+        subTrnsDt.setColumnProperty(3, 'role', scope3Checkbox.checked ? null : 'certainty');
+
+        // Update visible colors for the selected scopes only
+        const visibleColors = [];
+        if (scope1Checkbox.checked) visibleColors.push(seriesColors[0]);
+        if (scope2Checkbox.checked) visibleColors.push(seriesColors[1]);
+        if (scope3Checkbox.checked) visibleColors.push(seriesColors[2]);
+        options.colors = visibleColors;
+
+        // Draw chart with updated options
+        chart.draw(subTrnsDt, options);
+    }
+
+    function showModal(e, flag){
+        var data = [], title = '';
+        switch (flag) {
+            case 'A':
+                data = actRawData                
+                title = 'Calculation for Actual Value'
+                break;
+            case 'S':
+                data = subTrnsRawDt
+                title = 'Calculation for Actual Value - Pathway Value'
+                break;
+            case 'P':
+                data = pathRawData
+                title = 'Calculation for Pathway Value'
+                break;
+            default:
+                break;
+        }
+        var table_data = ''        
+        if(data.length > 0){
+            let i = 0
+            data.forEach(dt => {
+                table_data = table_data + `<tr>`
+                if(i == 0){
+                    dt.forEach(ndt => {
+                        table_data = table_data + `<th scope="col">${ndt}</th>`
+                    })
+                }else{
+                    dt.forEach(ndt => {
+                        table_data = table_data + `<td>${ndt}</td>`
+                    })
+                }
+                table_data = table_data + `</tr>`
+                i++
+            });
+        }else{
+            table_data = table_data + `<tr><td class="text-danger text-center">NO DATA FOUND</td></tr>`
+        }
+
+        var modal_containts = `
+        <div class="modal fade" id="chart-modal" tabindex="-1" aria-labelledby="chart-modal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${title}</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered text-center">
+                                        ${table_data}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+                        <!-- <button class="btn btn-primary" type="button" data-bs-original-title="" title="">Save changes</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        `
+        $(modal_containts).modal('show')
+    }
+
+    
+    window.onload = updateChart;
+    window.onresize = () => {
+        act_chart.draw(actData, actOptions);
+        pathway_chart.draw(pathData, pathOptions);
+        chart.draw(subTrnsDt, options)
+    };
+
+    $('.toggleSidebarTogle').on('click', function(){
+        setTimeout(() => {
+            act_chart.draw(actData, actOptions);
+            pathway_chart.draw(pathData, pathOptions);
+            chart.draw(subTrnsDt, options)
+        }, 800);
+    })
+
+
+    $(document).on('hide.bs.modal','#chart-modal', function () {
+        $(this).detach()
+    });
+</script>

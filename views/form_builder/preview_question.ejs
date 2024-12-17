@@ -44,7 +44,7 @@
                                                     }
                                                 } %>
                                             </dl>
-                                            <% var sub_child_q = q_data.q_data.filter(qdt => qdt.is_sub_parent == 'N' && qdt.is_parent == 'N')
+                                            <% var sub_child_q = q_data.q_data.filter(qdt => qdt.is_sub_parent == 'N' && qdt.is_parent == 'N' && qdt.sub_parent_id == subdt.sequence)
                                                 if(sub_child_q.length > 0){ %>
                                                     <ol>
                                                         <% sub_child_q.forEach(chiDt => { %>

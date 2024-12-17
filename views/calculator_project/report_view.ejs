@@ -1,0 +1,203 @@
+<%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: `"${projName}"`, show_br: true}) %>
+
+<script src="js/chart/google/google-chart-loader.js"></script>
+<style>
+    .chart-container {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        flex-wrap: wrap;
+        width: 100%;
+        height: auto;
+    }
+
+    .chart-container .filters {
+        display: flex;
+        flex-direction: row;
+        margin-left: 20px;
+        align-items: center;
+    }
+
+    .filter-checkbox {
+        margin: 5px 10px;
+        cursor: pointer;
+    }
+    .checkbox label {
+        font-size: 10px;
+        padding-left: 6px;
+    }
+    .checkbox label::before {
+        margin-top: 1px;
+        width: 15px;
+        height: 15px;
+    }
+    .chart-cust-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        /* width: 50%;
+        height: auto; */
+    }
+    .chart-cust-container-line{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        height: auto;
+    }
+    .cust-chart{
+        height: auto;
+        width: 100%;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12" id="myHeader">
+                <ul class="nav nav-tabs border-tab nav-primary" id="info-tab" role="tablist">
+                    <li class="nav-item"><a class="nav-link" id="dash-top-tab" data-bs-toggle="pill" href="#dash-top" role="tab" aria-controls="dash-top" aria-selected="false">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" id="ghg-tab" data-bs-toggle="pill" href="#ghg" role="tab" aria-controls="ghg" aria-selected="true">GHG Emissions</a></li>
+                    <li class="nav-item"><a class="nav-link" id="trans-plan-tab" data-bs-toggle="pill" href="#trans-plan" role="tab" aria-controls="trans-plan" aria-selected="false">Transition Plan</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card_body_Cus">
+                <div class="card-body ml-0">
+                    <div class="row">
+                        <div class="col-sm-12 col-xl-12 xl-100">
+                            <div class="tab-content" id="pills-icontabContent">
+                                <div class="tab-pane fade" id="dash-top" role="tabpanel" aria-labelledby="dash-top-tab">
+                                    <div class="row ml-0">
+                                        <div class="col-md-12 p-l-0">
+                                            <%- include('cal_dashboard') %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade show active" id="ghg" role="tabpanel" aria-labelledby="ghg-tab">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-10"></div>
+                                        <div class="col-md-2 p-l-0">
+                                            <div class="input-group">
+                                                <!-- <input class="form-control" type="text" placeholder="Email"> -->
+                                                <select class="form-select btn-pill digits text-center" id="sel_year_quest">
+                                                    <% year_list.forEach(dt => { %>
+                                                        <option value="<%= dt %>"><%= dt %></option>
+                                                    <% }) %>
+                                                </select>
+                                                <span class="input-group-text cust-inp-grp"><i class="icofont icofont-ui-calendar"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%- include('quest_entry', {scope_list, cal_act, year_list}) %>
+                                </div>
+                                <div class="tab-pane fade" id="trans-plan" role="tabpanel" aria-labelledby="trans-plan-tab">
+                                    <%- include('transition_plan') %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="proj_id" id="proj_id" value="<%= project_id %>">
+<input type="hidden" name="top_id" id="top_id" value="<%= top_id %>">
+<input type="hidden" name="sec_id" id="sec_id" value="<%= sec_id %>">
+<input type="hidden" name="ind_id" id="ind_id" value="<%= ind_id %>">
+
+<!-- <script>
+    window.onscroll = function() {myFunction()};
+    
+    var header = document.getElementById("myHeader");
+    var sticky = header.offsetTop;
+    
+    function myFunction() {
+      if (window.pageYOffset > sticky) {
+        header.classList.add("sticky_esg");
+      } else {
+        header.classList.remove("sticky_esg");
+      }
+    }
+</script> -->
+<% var currDate = new Date()
+    var currTransData = trans_data.filter(dt => dt.trans_year == currDate.getFullYear()),
+    firstTransData = trans_data.length > 0 ? trans_data[0] : {},
+    lastTransData = trans_data.length > 0 ? trans_data[trans_data.length - 1] : {},
+    totCurrAct = 0,
+    totFirstAct = 0,
+    totLastPath = 0;
+    currTransData.length > 0 ? totCurrAct += parseFloat(currTransData[0].act_sc_1) + parseFloat(currTransData[0].act_sc_2) + parseFloat(currTransData[0].act_sc_2) : ''
+
+    Object.keys(firstTransData).length > 0 ? totFirstAct += parseFloat(firstTransData.act_sc_1) + parseFloat(firstTransData.act_sc_2) + parseFloat(firstTransData.act_sc_2) : ''
+
+    Object.keys(lastTransData).length > 0 ? totLastPath += parseFloat(lastTransData.path_sc_1) + parseFloat(lastTransData.path_sc_2) + parseFloat(lastTransData.path_sc_2) : ''
+
+    var calPercent = Math.abs(Math.round(((totCurrAct - totFirstAct) / (totLastPath - totFirstAct)) * 100))
+%>
+<script>
+    const progressValue = $("#progress-value");
+    const progressCircle = $(".progress-circle");
+    let percentage = 0;
+    const targetPercentage = <%= calPercent %>;
+    let hasAnimated = false;
+
+    const animateProgress = () => {
+        const interval = setInterval(() => {
+            if (percentage <= targetPercentage) {
+                progressValue.text(percentage + "%");
+                progressCircle.css("background", `conic-gradient(
+                    #75309c ${percentage * 3.6}deg, 
+                    #e0e0e0 ${percentage * 3.6}deg
+                )`);
+                percentage++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 30);
+    };
+    var prevToggle = $('body').hasClass('sidebar-icon-only')
+    $('#info-tab .nav-link').on('click', function(e){        
+        if(e.target.id == 'dash-top-tab'){
+            if(!$('body').hasClass('sidebar-icon-only')){
+                $('.toggleSidebarTogle').click()
+                prevToggle = false
+            }
+            setTimeout(() => {
+                if(!$('#checkbox-scope1').is(':checked'))
+                    $('#checkbox-scope1').click()
+            }, 200);
+            console.log(hasAnimated, 'sadasdasdasd');
+            
+            if (!hasAnimated) {
+                animateProgress();
+            }
+        }else{
+            percentage = 0
+            progressValue.text('0%');
+            progressCircle.css("background", 'conic-gradient(#e0e0e0 0deg, #e0e0e0 360deg)');
+            hasAnimated = false; // Allow re-animation when returning to Tab 2
+            if(!prevToggle){
+                $('body').removeClass('sidebar-icon-only')
+            }
+        }
+    })
+    $('#sel_year_quest').on('change', function(){
+        console.log($(this).val());
+        $('#sope-tab .nav-item .nav-link').each(function(i, dt){
+            if($(dt).hasClass('active')){
+                $(dt).click($(dt))
+            }
+        })
+    })
+</script>
+
+<%- include('../templates/footer.ejs') %>

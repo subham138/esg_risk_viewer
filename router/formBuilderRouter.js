@@ -94,7 +94,7 @@ FBRouter.get('/form_builder', async (req, res) => {
 
 FBRouter.get('/form_builder_edit', async (req, res) => {
     var scope_dt = SCOPE_LIST, data = req.query, qr_dt = {}, q_header = '',
-    sec_list = await db_Select('scope_id, type_id, sec_name', 'md_cal_sec_type', data.scope > 0 ? `scope_id = ${data.scope}` : null, null);
+    sec_list = await db_Select('id, scope_id, sec_name', 'md_cal_sec_type', data.scope > 0 ? `scope_id = ${data.scope}` : null, null);
     if(data.scope > 0 && data.type_id > 0){
         var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id}`, 'ORDER BY id asc')
         if(resDt.suc > 0){
@@ -113,7 +113,7 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
     }
     console.log(qr_dt);
     
-    res.render('form_builder/entry', {scope: scope_dt, qr_dt, q_header, scope_id: data.scope, sec_id: data.sec_id, sec_list: sec_list.suc > 0 ? sec_list.msg : []})
+    res.render('form_builder/entry', {scope: scope_dt, qr_dt, q_header, scope_id: data.scope, sec_id: data.type_id, sec_list: sec_list.suc > 0 ? sec_list.msg : []})
 })
 
 FBRouter.post('/form_builder_post', async (req, res) => {

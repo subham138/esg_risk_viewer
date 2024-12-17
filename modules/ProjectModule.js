@@ -2,12 +2,12 @@ const { db_Select, db_Insert, db_Delete } = require("./MasterModule");
 const dateFormat = require("dateformat");
 
 module.exports = {
-    getProjectList: (id=null, client_id, user_id=null, flag = 'I') => {
+    getProjectList: (id=null, client_id, user_id=null, flag = 'I', platform_mode = 'E') => {
         return new Promise(async (resolve, reject) => {
             if(user_id > 0){
                 var select = 'b.id, b.project_name, b.sec_id, b.ind_id, b.last_access, b.last_accessed_by, b.business_act, b.bus_act_id, b.location_busi_act',
                     table_name = 'td_user_project a, td_project b',
-                    whr = `a.project_id = b.id AND b.repo_flag = '${flag}' AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''} AND b.active_flag = 'Y'`,
+                    whr = `a.project_id = b.id AND b.repo_flag = '${flag}' AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''} AND b.active_flag = 'Y' AND b.proj_type='${platform_mode}'`,
                     order = 'ORDER BY b.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 resolve(res_dt)
@@ -16,7 +16,7 @@ module.exports = {
             }else{
                 var select = 'a.id, a.project_name, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.last_access, a.last_accessed_by, a.business_act, a.bus_act_id, a.location_busi_act',
                     table_name = 'td_project a LEFT JOIN md_sector b ON a.sec_id=b.id AND a.repo_flag=b.repo_flag LEFT JOIN md_industries c ON a.ind_id=c.id AND a.repo_flag=c.repo_flag AND a.sec_id=c.sec_id',
-                    whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''} AND a.active_flag = 'Y'`,
+                    whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''} AND a.active_flag = 'Y' AND a.proj_type='${platform_mode}'`,
                     order = 'ORDER BY a.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
                 if(id > 0){
@@ -37,13 +37,13 @@ module.exports = {
             }
         })
     },
-    saveProject: (data, client_id, user) => {
+    saveProject: (data, client_id, user, platform_mode) => {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 
             var table_name = 'td_project',
-                fields = data.id > 0 ? `project_name = '${data.project_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(repo_flag, client_id, project_name, created_by, created_dt)`,
-                values = `('${data.flag}', '${client_id}', '${data.project_name}', '${user}', '${datetime}')`,
+                fields = data.id > 0 ? `project_name = '${data.project_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(repo_flag, proj_type, client_id, project_name, created_by, created_dt)`,
+                values = `('${data.flag}', '${platform_mode}', '${client_id}', '${data.project_name}', '${user}', '${datetime}')`,
                 whr = data.id > 0 ? `id = ${data.id}` : null,
                 flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)
