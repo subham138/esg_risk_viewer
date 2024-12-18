@@ -216,14 +216,14 @@ UserRouter.post("/chk_user_login", async (req, res) => {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         if (chk_dt.msg[0].user_type != "S") {
           var otp = Math.floor(1000 + Math.random() * 9000);
-          // console.log(otp);
+          console.log(otp);
           // req.session.message = {otp: otp}
-          var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
-          if(send_email.suc > 0){
+          // var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
+          // if(send_email.suc > 0){
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: otp };
-          }else{
-            res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
-          }
+          // }else{
+          //   res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
+          // }
         } else {
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: 0 };
         }

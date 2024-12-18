@@ -423,21 +423,23 @@ ProjectRouter.get("/project_report_view", async (req, res) => {
     0,
     data.flag
   );
-  var type_list = await getCalTypeList(
-      0,
-      req.session.user.cal_lang_flag != "B"
-        ? req.session.user.cal_lang_flag
-        : "E"
-    ),
+  // var type_list = await getCalTypeList(
+  //     0,
+  //     req.session.user.cal_lang_flag != "B"
+  //       ? req.session.user.cal_lang_flag
+  //       : "E"
+  //   ),
+  var type_list = { suc: 0, msg: [] },
     act_list = { suc: 0, msg: [] },
     emi_type = { suc: 0, msg: [] };
   var year_list = [],
     currDate = new Date();
-  var ghg_emi_list = await getGhgEmiList(
-    req.session.user.client_id,
-    0,
-    data.proj_id
-  );
+  // var ghg_emi_list = await getGhgEmiList(
+  //   req.session.user.client_id,
+  //   0,
+  //   data.proj_id
+  // );
+  var ghg_emi_list = { suc: 0, msg: [] }
   ghg_emi_list =
     ghg_emi_list.suc > 0
       ? ghg_emi_list.msg.length > 0
