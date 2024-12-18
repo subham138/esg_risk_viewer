@@ -18,8 +18,10 @@ const {
   saveWordInfo,
   getCopyLatestWordInfoSet,
   getRiskOprnDtls,
+  getDataPointList,
+  getDataPoint,
 } = require("../modules/DataCollectionModule");
-const { db_Insert, db_Select, db_Delete } = require("../modules/MasterModule");
+const { db_Insert, db_Select, db_Delete, PROJECT_LIST } = require("../modules/MasterModule");
 
 DataCollectionRouter.use((req, res, next) => {
   var user = req.session.user;
@@ -922,5 +924,299 @@ DataCollectionRouter.post("/risk_opr", async (req, res) => {
     res.send({ suc: 2, status: "chunk received" });
   }
 });
+
+DataCollectionRouter.get('/data_point', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var res_dt = await getDataPoint(flag)
+  var view_data = {
+    header: 'Data Point',
+    data: res_dt.suc > 0 ? res_dt.msg : [],
+    flag,
+    enc_dt
+  }
+  res.render('data_collection/data_point/view', view_data)
+})
+
+// DataCollectionRouter.get('/data_point_entry', async (req, res) => {
+//   var enc_dt = req.query.flag,
+//     flag = new Buffer.from(enc_dt, "base64").toString();
+//   var data = req.query;
+//   var sec_data = await getSectorList(0, flag),
+//     ind_list = await getDataPointList(flag, data.sec_id > 0 ? data.sec_id : 0);
+  
+//   var viewData = {
+//     header: "Data Point Entry",
+//     frame_list: PROJECT_LIST,
+//     sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
+//     ind_dt: ind_list.suc > 0 ? ind_list : {},
+//     sec_id: data.sec_id > 0 ? data.sec_id : 0,
+//     flag: flag,
+//   };
+//   res.render("data_collection/data_point/edit", viewData);
+// })
+
+DataCollectionRouter.get('/data_point_entry', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var data = req.query;
+  var sec_data = await getSectorList(0, flag),
+    ind_list = await getDataPointList(flag, data.sec_id > 0 ? data.sec_id : 0),
+    indst_list = {suc: 0};
+
+  if (data.sec_id > 0)
+    indst_list = await getIndustriesList(null, data.sec_id, flag);
+  
+  var viewData = {
+    header: "Data Point Entry",
+    frame_list: PROJECT_LIST,
+    sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
+    ind_dt: ind_list.suc > 0 ? ind_list : {},
+    ind_list: indst_list.suc > 0 ? indst_list.msg : [],
+    sec_id: data.sec_id > 0 ? data.sec_id : 0,
+    ind_id: data.ind_id > 0 ? data.ind_id : 0,
+    flag: flag,
+  };
+  res.render("data_collection/data_point/edit", viewData);
+})
+
+DataCollectionRouter.post('/data_point_entry', async (req, res) => {  
+  var data = req.body, file = req.files ? req.files.flag_img : null,
+  user = req.session.user.user_name,
+  datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt = {}, img_dt = {};
+
+  console.log(data);
+  
+
+  if(file){
+    var img_path = file.name;
+    var dir = 'assets',
+    sub_dir = `${dir}/uploads/flag_icon`;
+    if(!fs.existsSync(sub_dir)){
+      fs.mkdirSync(sub_dir)
+    }
+    try{
+      file.mv(`assets/uploads/flag_icon/${img_path}`, async (err) => {
+        if(err) console.log(err);
+        else{
+          var img_chk_dt = await db_Select('id', 'md_data_point', `repo_flag = '${data.flag}'`, null)
+          var img_fld = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? `img_path = '${img_path}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, img_path, created_by, created_dt)',
+          img_vals = `('${data.flag}', '${img_path}', '${user}', '${datetime}')`,
+          img_whr = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? `id = ${img_chk_dt.msg[0].id}` : null,
+          img_flag = img_chk_dt.suc > 0 && img_chk_dt.msg.length > 0 ? 1 : 0;
+          img_dt = await db_Insert('md_data_point', img_fld, img_vals, img_whr, img_flag)
+        }
+      })
+    }catch(err){
+      console.log(err);      
+    }
+  }
+
+  if(data.sus_dis_top_met_id && data.sus_dis_top_met_id.length > 0){
+    for(let dt of data.sus_dis_top_met_id){
+      if(Array.isArray(data[`point_codes_${dt}`])){
+        var i = 0
+        for(let pdt of data[`point_codes_${dt}`]){
+          if(pdt!='' && pdt){
+            var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND repo_flag_id = '${data[`frame_id_${dt}`][i]}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND sus_dis_top_met_id = ${dt}`, null)
+            var table_name = 'md_data_point_dt',
+            fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `repo_flag_id = '${data[`frame_id_${dt}`][i]}', point_codes = '${pdt}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, sus_dis_top_met_id, repo_flag_id, point_codes, created_by, created_dt)',
+            values = `('${data.flag}', '${data.sec_id}', ${data.ind_id}, ${dt}, '${data[`frame_id_${dt}`][i]}', '${pdt}', '${user}', '${datetime}')`,
+            whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+            flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+            res_dt = await db_Insert(table_name, fields, values, whr, flag)
+            i++
+          }
+        }
+      }else{
+        if(data[`point_codes_${dt}`]!='' && data[`point_codes_${dt}`]){
+          var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND repo_flag_id = '${data[`frame_id_${dt}`]}' AND sec_id = ${data.sec_id} AND ind_id = ${data.ind_id} AND sus_dis_top_met_id = ${dt}`, null)
+          var table_name = 'md_data_point_dt',
+          fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `repo_flag_id = '${data[`frame_id_${dt}`]}', point_codes = '${data[`point_codes_${dt}`]}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, sus_dis_top_met_id, repo_flag_id, point_codes, created_by, created_dt)',
+          values = `('${data.flag}', '${data.sec_id}', ${data.ind_id}, ${dt}, '${data[`frame_id_${dt}`]}', '${data[`point_codes_${dt}`]}', '${user}', '${datetime}')`,
+          whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+          flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+          res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        }
+      }
+    }
+  }
+
+  // if(data.ind_id.length > 0){
+  //   for(let dt of data.ind_id){
+  //     try{
+  //       if(data[`point_codes_${dt}`] != ''){
+  //         var chk_pt_dt = await db_Select('id', 'md_data_point_dt', `repo_flag = '${data.flag}' AND sec_id = ${data.sec_id} AND ind_id = ${dt}`, null)
+  //         var table_name = 'md_data_point_dt',
+  //         fields = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `point_codes = '${data[`point_codes_${dt}`]}', modified_by = '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, point_codes, created_by, created_dt)',
+  //         values = `('${data.flag}', '${data.sec_id}', ${dt}, '${data[`point_codes_${dt}`]}', '${user}', '${datetime}')`,
+  //         whr = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? `id = ${chk_pt_dt.msg[0].id}` : null,
+  //         flag = chk_pt_dt.suc > 0 && chk_pt_dt.msg.length > 0 ? 1 : 0;
+  //         res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  //       }
+  //     }catch(err){
+  //       res_dt = {suc: 0, msg: err}
+  //     }
+  //   }
+  // }
+  req.session.message = {
+    type: res_dt.suc > 0 ? "success" : (file ? "success" : "danger"),
+    message: res_dt.suc > 0 ? res_dt.msg : file ? 'Image Uploaded' : 'No Data Found',
+  };
+  res.redirect(
+    `/data_point?flag=${encodeURIComponent(
+      new Buffer.from(data.flag).toString("base64")
+    )}`
+  );
+})
+
+DataCollectionRouter.post("/get_data_topic_list_ajax", async (req, res) => {
+  var data = req.body
+  var res_dt = await getDataPointList(data.flag, data.sec_id, data.ind_id);
+  res.send(res_dt)
+});
+
+DataCollectionRouter.post('/delete_data_topic_list_ajax', async (req, res) => {
+  var data = req.body;
+  var table_name = 'md_data_point_dt',
+  whr = `id = ${data.id}`;
+  var res_dt = await db_Delete(table_name, whr)
+  res.send(res_dt)
+})
+
+DataCollectionRouter.get('/set_sus_dis_info_point', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var view_data = {
+    flag
+  }
+  res.render('data_collection/data_point_info/view', view_data)
+})
+
+DataCollectionRouter.get('/set_sus_dis_info_point_entry', async (req, res) => {
+  var enc_dt = req.query.flag,
+    flag = new Buffer.from(enc_dt, "base64").toString();
+  var data = req.query;
+  var sec_data = await getSectorList(0, flag),
+    indst_list = {suc: 0};
+
+  if (data.sec_id > 0)
+    indst_list = await getIndustriesList(null, data.sec_id, flag);
+  var view_data = {
+    header: "Data Point Entry",
+    sec_dt: sec_data.suc > 0 ? sec_data.msg : [],
+    ind_list: indst_list.suc > 0 ? indst_list.msg : [],
+    sec_id: data.sec_id > 0 ? data.sec_id : 0,
+    ind_id: data.ind_id > 0 ? data.ind_id : 0,
+    flag: flag,
+  }
+  res.render('data_collection/data_point_info/entry', view_data)
+})
+
+let sus_dis_point_chunks = {};
+DataCollectionRouter.post("/set_sus_dis_info_point_entry", async (req, res) => {
+  const { chunk, chunkIndex, totalChunks, sec_id, ind_id, code_id, sl_no, info_title, flag } = req.body;
+
+  if (!sus_dis_point_chunks[chunkIndex]) {
+    sus_dis_point_chunks[chunkIndex] = chunk;
+  }
+
+  if (Object.keys(sus_dis_point_chunks).length === totalChunks) {
+    const fullData = Object.keys(sus_dis_point_chunks)
+      .sort((a, b) => a - b)
+      .map((key) => sus_dis_point_chunks[key])
+      .join("");
+
+    // Save `fullData` to MySQL database
+    var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss"),
+      user = req.session.user.user_name;
+
+    var chk_whr = `repo_flag = '${flag}' AND sec_id = '${sec_id}' AND ind_id = '${ind_id}' AND code_id = '${code_id}' AND tab_title = "${info_title}"`;
+    var chk_dt = await db_Select('id', 'td_sus_dist_point_info', chk_whr, null)
+
+    var table_name = `td_sus_dist_point_info`,
+      fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `sl_no="${sl_no}", tab_title = "${info_title}", tab_info = '${fullData != "" && fullData ? fullData.split("'").join("\\'") : ""}', modified_by= '${user}', modified_dt = '${datetime}'` : '(repo_flag, sec_id, ind_id, code_id, sl_no, tab_title, tab_info, created_by, created_dt)',
+      values = `('${flag}', ${sec_id}, ${ind_id}, ${code_id}, '${sl_no}', '${info_title}', '${fullData != "" && fullData ? fullData.split("'").join("\\'") : ""}', '${user}', '${datetime}')`,
+      whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id=${chk_dt.msg[0].id}` : null,
+      flagIn = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+    // res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
+
+    var res_dt = await db_Insert(table_name, fields, values, whr, flagIn);
+    sus_dis_point_chunks = {};
+
+    res.send(res_dt);
+  } else {
+    res.send({ suc: 2, status: "chunk received" });
+  }
+});
+
+DataCollectionRouter.get('/get_sus_dis_point_dt_ajax_stream', async (req, res) => {
+  const db = require('../db/db'), data = req.query;
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Transfer-Encoding", "chunked");
+  db.getConnection((err, connection) => {
+    if (err) {
+      return res.status(500).send("Error connecting to the database");
+    }
+
+    const query = `SELECT a.id, a.sec_id, a.ind_id, a.repo_flag, a.code, b.tab_title, b.tab_info FROM td_sus_dis_top_met a JOIN md_industries_topics c ON a.top_id=c.id
+LEFT JOIN td_sus_dist_point_info b ON a.id=b.code_id AND a.repo_flag=b.repo_flag AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id
+WHERE a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = ${data.ind_id} HAVING a.code !=''`;
+    // console.log(query, "--------------------");
+
+    const queryStream = connection.query(query).stream();
+
+    queryStream.on("data", (row) => {
+      // console.log(row, '+++++++++++++++++++++');
+      const sanitizedRow = {};
+      // for (let key in row) {
+      //   if (typeof row[key] === 'string') {
+      //     sanitizedRow[key] = row[key].replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      //   } else {
+      //     sanitizedRow[key] = row[key];
+      //   }
+      // }
+      res.write(JSON.stringify(row) + '\n');
+      // res.write(JSON.stringify(row)); // Send each row as a JSON string
+    });
+
+    queryStream.on("end", () => {
+      res.end(); // End the response once all data is sent
+      connection.release(); // Release the connection back to the pool
+    });
+
+    queryStream.on("error", (error) => {
+      res.status(500).send(error.message);
+      connection.release(); // Ensure connection is released on error
+    });
+  });
+  
+
+  // const queryStream = db.query(query).stream();
+
+  // queryStream.on("data", (row) => {
+  //   console.log(row, '++++');
+    
+  //   res.write(JSON.stringify(row));
+  // });
+
+  // queryStream.on("end", () => {
+  //   res.end(); // End the stream once all rows are sent
+  // });
+
+  // queryStream.on("error", (error) => {
+  //   res.send(error.message);
+  // });
+})
+
+DataCollectionRouter.get('/get_sus_dis_point_dt_ajax', async (req, res) => {
+  var data = req.query;
+  var select = `a.id, a.sec_id, a.ind_id, a.repo_flag, a.code, b.sl_no, b.tab_title, b.tab_info, d.topic_name`,
+  table_name = `td_sus_dis_top_met a JOIN md_industries_topics c ON a.top_id=c.id AND a.repo_flag=c.repo_flag AND a.ind_id=c.ind_id JOIN md_topic d ON c.topic_id=d.id AND c.repo_flag=d.repo_flag LEFT JOIN td_sus_dist_point_info b ON a.id=b.code_id AND a.repo_flag=b.repo_flag AND a.sec_id=b.sec_id AND a.ind_id=b.ind_id`,
+  whr = `a.repo_flag = '${data.flag}' AND a.sec_id = ${data.sec_id} AND a.ind_id = ${data.ind_id}`,
+  order = `HAVING a.code !=''`;
+  var res_dt = await db_Select(select, table_name, whr, order)
+  res.send(res_dt)
+})
 
 module.exports = { DataCollectionRouter };

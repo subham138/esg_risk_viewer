@@ -98,7 +98,7 @@
                                                             </a>
                                                             <% }%>
                                                                 <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                    onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= user.platform_mode != 'C' ? 'project_report_view' : 'cal_proj_report_view' %>`)">
+                                                                    onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= dec_flag != 'IC' ? 'project_report_view' : 'cal_proj_report_view' %>`)">
                                                                     <% if(user_type !='V' ){ %>
                                                                         <i class="icofont icofont-ui-settings"></i>
                                                                         <%= lang.view.manage_btn %>

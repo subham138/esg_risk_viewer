@@ -1,12 +1,9 @@
 <%- include('../templates/header.ejs', {header: "Dashboard", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: `"${projName}"`, show_br: true}) %>
 <script src="/js/chart/google/google-chart-loader.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
-
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script> -->
 
 <!-- morris-chart -->
     <script src="/js/chart/morris-chart/raphael.js"></script>
@@ -192,14 +189,14 @@
                                                                 </div>
                                                             <%# } %>
                                                             <div class="col-md-12">
-                                                                <div class="default-according style-2" id="inghg">
+                                                                <div class="default-according style-2" id="accordion">
                                                                     <div class="card custom-span-card m-b-10">
-                                                                        <div class="card-header caruBackCol1 text-center">
+                                                                        <div class="card-header caruBackCol1 text-center" data-bs-toggle="collapse" data-bs-target="#scope_1" aria-expanded="true" aria-controls="collapse11">
                                                                             <h5 class="mb-0">
                                                                                 <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_1" aria-expanded="true" aria-controls="collapse11"><%= lang.report_edit.tab4.scope1 %></button>
                                                                             </h5>
                                                                         </div>
-                                                                        <div class="collapse show ghg-emi-tab-row" id="scope_1" aria-labelledby="scope_1" data-bs-parent="#accordionoc">
+                                                                        <div class="collapse show ghg-emi-tab-row" id="scope_1" aria-labelledby="scope_1" data-bs-parent="#accordion">
                                                                             <div class="row">
                                                                                 <div class="col-md-12 text-center p-3 row">
                                                                                     <div class="col-md-12 row mt-1">
@@ -460,14 +457,14 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12">
-                                                                        <div class="default-according style-2" id="inghg">
+                                                                        <!-- <div class="default-according style-2" id="inghg"> -->
                                                                             <div class="card custom-span-card m-b-10">
-                                                                                <div class="card-header caruBackCol1 text-center">
+                                                                                <div class="card-header caruBackCol1 text-center" data-bs-toggle="collapse" data-bs-target="#scope_2" aria-expanded="true" aria-controls="collapse11">
                                                                                     <h5 class="mb-0">
                                                                                         <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_2" aria-expanded="true" aria-controls="collapse11"><%= lang.report_edit.tab4.scope2 %></button>
                                                                                     </h5>
                                                                                 </div>
-                                                                                <div class="collapse" id="scope_2" aria-labelledby="scope_2" data-bs-parent="#accordionoc">
+                                                                                <div class="collapse" id="scope_2" aria-labelledby="scope_2" data-bs-parent="#accordion">
                                                                                     <div class="row">
                                                                                         <div class="col-md-12 text-center p-3 row">
                                                                                             <div class="col-md-12 row mt-1">
@@ -730,276 +727,273 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
+                                                                        <!-- </div> -->
                                                                     </div>
                                                                     <div class="col-md-12">
-                                                                        <div class="default-according style-2" id="inghg">
-                                                                    <div class="card custom-span-card m-b-10">
-                                                                        <div class="card-header caruBackCol1 text-center">
-                                                                            <h5 class="mb-0">
-                                                                                <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_3" aria-expanded="true" aria-controls="collapse11"><%= lang.report_edit.tab4.scope3 %></button>
-                                                                            </h5>
-                                                                        </div>
-                                                                        <div class="collapse" id="scope_3" aria-labelledby="scope_3" data-bs-parent="#accordionoc">
-                                                                            <div class="row">
-                                                                                <div class="col-md-12 text-center p-3 row">
-                                                                                    <div class="col-md-12 row mt-1">
-                                                                                        <div class="col-md-6"></div>
-                                                                                        <% if(user_type != 'V'){ %>
-                                                                                            <div class="col-md-6">
-                                                                                                <button class="btn btn-pill btn-sm btn-custom float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s3')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;<%= lang.report_edit.tab4.add_btn %></span></button>
-                                                                                            </div>
-                                                                                        <% } %>
-                                                                                    </div>
-                                                                                    <div class="col-md-12 m-t-10 p-l-20 p-r-20" id="calDetails_s3">
-                                                                                        <% if('s3' in ghg_emi_data){
-                                                                                            var sc_len = ghg_emi_data['s3'].length / 12;
-                                                                                            for(let sc = 1; sc <= sc_len; sc++){
-                                                                                                var newGhgDt = ghg_emi_data['s3'].filter(dt => dt.sl_no == sc && dt.scope == 's3')      
-                                                                                                if(newGhgDt.length > 0){ 
-                                                                                                    var tot_co_val_label = 0;
-                                                                                                    newGhgDt.forEach(dt => tot_co_val_label += dt.co_val)
-                                                                                                    var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'};
-                                                                                                    %>
-                                                                                                    <div class="card">
-                                                                                                        <div class="card-header caruBackCol1">
-                                                                                                            <h5 class="mb-0">
-                                                                                                                <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#s3_cal_<%= sc %>" aria-expanded="true" aria-controls="collapse11"><span class="infoCalLeb"><%= newGhgDt[0].type_name %> - <%= newGhgDt[0].act_name %> - <%= newGhgDt[0].emi_name %> -</span><span class="infoCalVal"> <%= tot_co_val_label %> kg CO2e </span><span class="infoCalLeb">since <%= fullMonths[newGhgDt[0].repo_month] %></span></button>
-                                                                                                            </h5>
-                                                                                                        </div>
-                                                                                                        <div class="collapse" id="s3_cal_<%= sc %>" aria-labelledby="s3_cal_<%= sc %>" data-bs-parent="#accordionoc">
-                                                                                                            <div class="row">
-                                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="type_id_s3_<%= sc %>"><%= lang.report_edit.tab4.emi_sour %></label>
-                                                                                                                    <select class="form-select emission_source" id="type_id_s3_<%= sc %>" name="type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %> onchange="changeTypeId('s3','<%= sc %>')">
-                                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.emi_sour_sel %></option>
-                                                                                                                        <% if(type_list.length > 0){
-                                                                                                                            type_list.forEach(dt => { 
-                                                                                                                                var selected = '';
-                                                                                                                                if(dt.scope == 3){
-                                                                                                                                if(newGhgDt.length > 0)
-                                                                                                                                    if(newGhgDt[0].sec_id == dt.id)
-                                                                                                                                        selected = 'selected'; %>
-                                                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
-                                                                                                                            <% }})
-                                                                                                                        } %>
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <script>
-                                                                                                                    $(document).ready(async function(){
-                                                                                                                        await changeTypeId('s3','<%= sc %>', '<%= newGhgDt[0].act_id %>')
-                                                                                                                        await changeActId('s3','<%= sc %>', '<%= newGhgDt[0].emi_type_id %>')
-                                                                                                                    })
-                                                                                                                </script>
-                                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="act_id_s3_<%= sc %>"><%= lang.report_edit.tab4.act %></label>
-                                                                                                                    <select class="form-select" id="act_id_s3_<%= sc %>" name="act_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %> onchange="changeActId('s3','<%= sc %>')">
-                                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.act_sel %></option>
-                                                                                                                        <% if(act_list.length > 0){
-                                                                                                                            act_list.forEach(dt => { 
-                                                                                                                                var selected = ''; %>
-                                                                                                                                <option value="<%= dt.id %>"><%= dt.act_name %></option>
-                                                                                                                            <% })
-                                                                                                                        } %>
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="emi_type_id_s3_<%= sc %>"><%= lang.report_edit.tab4.emi_type %></label>
-                                                                                                                    <select class="form-select" id="emi_type_id_s3_<%= sc %>" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.emi_type_sel %></option>
-                                                                                                                        <% if(emi_type.length > 0){
-                                                                                                                            emi_type.forEach(dt => { 
-                                                                                                                                var selected = ''; %>
-                                                                                                                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                                                                                                            <% })
-                                                                                                                        } %>
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="repo_period_s3_<%= sc %>"><%= lang.report_edit.tab4.repo_per %></label>
-                                                                                                                    <select class="form-select" id="repo_period_s3_<%= sc %>" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.repo_per_sel %></option>
-                                                                                                                        <% if(year_list.length > 0){
-                                                                                                                            year_list.forEach(dt => { 
-                                                                                                                                var selected = '';
-                                                                                                                                if(newGhgDt.length > 0)
-                                                                                                                                    if(newGhgDt[0].repo_period == dt)
-                                                                                                                                        selected = 'selected'; %>
-                                                                                                                                <option value="<%= dt %>" <%= selected %>><%= dt %></option>
-                                                                                                                            <% })
-                                                                                                                        } %>
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                                    <label class="form-label float-start" for="strt_month_s3_<%= sc %>"><%= lang.report_edit.tab4.st_month %></label>
-                                                                                                                    <select class="form-select" id="strt_month_s3_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s3','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.st_month_sel %></option>
-                                                                                                                        <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                                                                                        if(months.length > 0){
-                                                                                                                            months.forEach(dt => { 
-                                                                                                                                var selected = '';
-                                                                                                                                if(newGhgDt.length > 0)
-                                                                                                                                    if(newGhgDt[0].repo_month == dt)
-                                                                                                                                        selected = 'selected'; %>
-                                                                                                                                <option value="<%= dt %>" <%= selected %>><%= dt %></option>
-                                                                                                                            <% })
-                                                                                                                        } %>
-                                                                                                                    </select>
-                                                                                                                </div>
-                                                                                                                <div class="col-md-12 m-t-10 table-responsive">
-                                                                                                                    <table class="table table-bordered" id="cal_val_entry_table_s3_<%= sc %>">
-                                                                                                                        <thead>
-                                                                                                                            <tr>
-                                                                                                                                <th><%= lang.report_edit.tab4.table.head1 %></th>
-                                                                                                                                <th><%= lang.report_edit.tab4.table.head2 %></th>
-                                                                                                                                <th><%= lang.report_edit.tab4.table.head3 %></th>
-                                                                                                                                <th><%= lang.report_edit.tab4.table.head4 %></th>
-                                                                                                                                <th><%= lang.report_edit.tab4.table.head5 %></th>
-                                                                                                                            </tr>
-                                                                                                                        </thead>
-                                                                                                                        <tbody>
-                                                                                                                            <% if(newGhgDt.length > 0){
-                                                                                                                                var nextCalField = 1;
-                                                                                                                                var tot_cal_val = 0,
-                                                                                                                                    tot_co_val = 0;
-                                                                                                                                newGhgDt.forEach(gdt => {
-                                                                                                                                    gdt.cal_val > 0 ? tot_cal_val += gdt.cal_val : ''
-                                                                                                                                    gdt.co_val > 0 ? tot_co_val += gdt.co_val : ''
-                                                                                                                                    %>
-                                                                                                                                    <tr>
-                                                                                                                                        <td><%= gdt.repo_month %></td>
-                                                                                                                                        <td>
-                                                                                                                                            <select class="form-select" id="emi_type_unit_id_s3_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s3', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                                                                <option selected="" value="">Please select unit of measurement</option>
-                                                                                                                                            </select>
-                                                                                                                                        </td>
-                                                                                                                                        <td><input class="form-control" id="cal_val_s3_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>></td>
-                                                                                                                                        <td><input class="form-control" id="emi_fact_val_s3_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
-                                                                                                                                        <td><input class="form-control" id="co_val_s3_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')"></td>
-                                                                                                                                    </tr>
-                                                                                                                                    <script>
-                                                                                                                                        $(document).ready(async function(){
-                                                                                                                                            await calUnitSet('s3', '<%= sc %>', true, '<%= nextCalField %>', {type_id: '<%= newGhgDt[0].sec_id %>', act_id: '<%= newGhgDt[0].act_id%>', emi_type_id: '<%= newGhgDt[0].emi_type_id%>', year: '<%= newGhgDt[0].repo_month %>'})
-                                                                                                                                        })
-                                                                                                                                    </script>
-                                                                                                                            <%  nextCalField++; }) %> 
-                                                                                                                            <tr>
-                                                                                                                                <td colspan="2">Total</td>
-                                                                                                                                <td><span id="tot_cal_val_s3_<%= sc %>"><%= tot_cal_val %></span></td>
-                                                                                                                                <td></td>
-                                                                                                                                <td><span id="tot_co_val_s3_<%= sc %>"><%= tot_co_val %></span></td>
-                                                                                                                            </tr>
-                                                                                                                            <% } %>
-                                                                                                                        </tbody>
-                                                                                                                    </table>
-                                                                                                                </div>
-                                                                                                                <% if(user_type != 'V'){ %>
-                                                                                                                    <div class="col-md-8"></div>
-                                                                                                                    <div class="col-md-10 m-t-10">
-                                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3','<%= sc %>')"><i class="icofont icofont-save"> <%= lang.report_edit.tab4.save_btn %></i></button>
+                                                                        <!-- <div class="default-according style-2" id="inghg"> -->
+                                                                        <div class="card custom-span-card m-b-10">
+                                                                            <div class="card-header caruBackCol1 text-center" data-bs-toggle="collapse" data-bs-target="#scope_3" aria-expanded="true" aria-controls="collapse11">
+                                                                                <h5 class="mb-0">
+                                                                                    <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#scope_3" aria-expanded="true" aria-controls="collapse11"><%= lang.report_edit.tab4.scope3 %></button>
+                                                                                </h5>
+                                                                            </div>
+                                                                            <div class="collapse" id="scope_3" aria-labelledby="scope_3" data-bs-parent="#accordion">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12 text-center p-3 row">
+                                                                                        <div class="col-md-12 row mt-1">
+                                                                                            <div class="col-md-6"></div>
+                                                                                            <% if(user_type != 'V'){ %>
+                                                                                                <div class="col-md-6">
+                                                                                                    <button class="btn btn-pill btn-sm btn-custom float-end text-center" data-bs-original-title title="Add New Calculator" onclick="AddCal('s3')"><i class="icofont icofont-ui-add"></i><span>&nbsp;&nbsp;<%= lang.report_edit.tab4.add_btn %></span></button>
+                                                                                                </div>
+                                                                                            <% } %>
+                                                                                        </div>
+                                                                                        <div class="col-md-12 m-t-10 p-l-20 p-r-20" id="calDetails_s3">
+                                                                                            <% if('s3' in ghg_emi_data){
+                                                                                                var sc_len = ghg_emi_data['s3'].length / 12;
+                                                                                                for(let sc = 1; sc <= sc_len; sc++){
+                                                                                                    var newGhgDt = ghg_emi_data['s3'].filter(dt => dt.sl_no == sc && dt.scope == 's3')      
+                                                                                                    if(newGhgDt.length > 0){ 
+                                                                                                        var tot_co_val_label = 0;
+                                                                                                        newGhgDt.forEach(dt => tot_co_val_label += dt.co_val)
+                                                                                                        var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'};
+                                                                                                        %>
+                                                                                                        <div class="card">
+                                                                                                            <div class="card-header caruBackCol1">
+                                                                                                                <h5 class="mb-0">
+                                                                                                                    <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#s3_cal_<%= sc %>" aria-expanded="true" aria-controls="collapse11"><span class="infoCalLeb"><%= newGhgDt[0].type_name %> - <%= newGhgDt[0].act_name %> - <%= newGhgDt[0].emi_name %> -</span><span class="infoCalVal"> <%= tot_co_val_label %> kg CO2e </span><span class="infoCalLeb">since <%= fullMonths[newGhgDt[0].repo_month] %></span></button>
+                                                                                                                </h5>
+                                                                                                            </div>
+                                                                                                            <div class="collapse" id="s3_cal_<%= sc %>" aria-labelledby="s3_cal_<%= sc %>" data-bs-parent="#accordionoc">
+                                                                                                                <div class="row">
+                                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                                        <label class="form-label float-start" for="type_id_s3_<%= sc %>"><%= lang.report_edit.tab4.emi_sour %></label>
+                                                                                                                        <select class="form-select emission_source" id="type_id_s3_<%= sc %>" name="type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %> onchange="changeTypeId('s3','<%= sc %>')">
+                                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.emi_sour_sel %></option>
+                                                                                                                            <% if(type_list.length > 0){
+                                                                                                                                type_list.forEach(dt => { 
+                                                                                                                                    var selected = '';
+                                                                                                                                    if(dt.scope == 3){
+                                                                                                                                    if(newGhgDt.length > 0)
+                                                                                                                                        if(newGhgDt[0].sec_id == dt.id)
+                                                                                                                                            selected = 'selected'; %>
+                                                                                                                                    <option value="<%= dt.id %>" dt-set="<%= dt.type %>" <%= selected %>><%= dt.type_name %></option>
+                                                                                                                                <% }})
+                                                                                                                            } %>
+                                                                                                                        </select>
                                                                                                                     </div>
-                                                                                                                    <div class="col-md-2 m-t-10">
-                                                                                                                        <button class="btn btn-pill btn-custom float-right" data-bs-original-title title="delete" onclick=""><i class="icofont icofont-ui-delete"><%= lang.report_edit.tab4.del_btn %></i></button>
+                                                                                                                    <script>
+                                                                                                                        $(document).ready(async function(){
+                                                                                                                            await changeTypeId('s3','<%= sc %>', '<%= newGhgDt[0].act_id %>')
+                                                                                                                            await changeActId('s3','<%= sc %>', '<%= newGhgDt[0].emi_type_id %>')
+                                                                                                                        })
+                                                                                                                    </script>
+                                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                                        <label class="form-label float-start" for="act_id_s3_<%= sc %>"><%= lang.report_edit.tab4.act %></label>
+                                                                                                                        <select class="form-select" id="act_id_s3_<%= sc %>" name="act_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %> onchange="changeActId('s3','<%= sc %>')">
+                                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.act_sel %></option>
+                                                                                                                            <% if(act_list.length > 0){
+                                                                                                                                act_list.forEach(dt => { 
+                                                                                                                                    var selected = ''; %>
+                                                                                                                                    <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                                                                <% })
+                                                                                                                            } %>
+                                                                                                                        </select>
                                                                                                                     </div>
-                                                                                                                <% } %>
+                                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                                        <label class="form-label float-start" for="emi_type_id_s3_<%= sc %>"><%= lang.report_edit.tab4.emi_type %></label>
+                                                                                                                        <select class="form-select" id="emi_type_id_s3_<%= sc %>" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.emi_type_sel %></option>
+                                                                                                                            <% if(emi_type.length > 0){
+                                                                                                                                emi_type.forEach(dt => { 
+                                                                                                                                    var selected = ''; %>
+                                                                                                                                    <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                                                                <% })
+                                                                                                                            } %>
+                                                                                                                        </select>
+                                                                                                                    </div>
+                                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                                        <label class="form-label float-start" for="repo_period_s3_<%= sc %>"><%= lang.report_edit.tab4.repo_per %></label>
+                                                                                                                        <select class="form-select" id="repo_period_s3_<%= sc %>" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.repo_per_sel %></option>
+                                                                                                                            <% if(year_list.length > 0){
+                                                                                                                                year_list.forEach(dt => { 
+                                                                                                                                    var selected = '';
+                                                                                                                                    if(newGhgDt.length > 0)
+                                                                                                                                        if(newGhgDt[0].repo_period == dt)
+                                                                                                                                            selected = 'selected'; %>
+                                                                                                                                    <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                                                <% })
+                                                                                                                            } %>
+                                                                                                                        </select>
+                                                                                                                    </div>
+                                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                                        <label class="form-label float-start" for="strt_month_s3_<%= sc %>"><%= lang.report_edit.tab4.st_month %></label>
+                                                                                                                        <select class="form-select" id="strt_month_s3_<%= sc %>" name="strt_month" required="" onchange="calSelectMonth('s3','<%= sc %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.st_month_sel %></option>
+                                                                                                                            <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                                                            if(months.length > 0){
+                                                                                                                                months.forEach(dt => { 
+                                                                                                                                    var selected = '';
+                                                                                                                                    if(newGhgDt.length > 0)
+                                                                                                                                        if(newGhgDt[0].repo_month == dt)
+                                                                                                                                            selected = 'selected'; %>
+                                                                                                                                    <option value="<%= dt %>" <%= selected %>><%= dt %></option>
+                                                                                                                                <% })
+                                                                                                                            } %>
+                                                                                                                        </select>
+                                                                                                                    </div>
+                                                                                                                    <div class="col-md-12 m-t-10 table-responsive">
+                                                                                                                        <table class="table table-bordered" id="cal_val_entry_table_s3_<%= sc %>">
+                                                                                                                            <thead>
+                                                                                                                                <tr>
+                                                                                                                                    <th><%= lang.report_edit.tab4.table.head1 %></th>
+                                                                                                                                    <th><%= lang.report_edit.tab4.table.head2 %></th>
+                                                                                                                                    <th><%= lang.report_edit.tab4.table.head3 %></th>
+                                                                                                                                    <th><%= lang.report_edit.tab4.table.head4 %></th>
+                                                                                                                                    <th><%= lang.report_edit.tab4.table.head5 %></th>
+                                                                                                                                </tr>
+                                                                                                                            </thead>
+                                                                                                                            <tbody>
+                                                                                                                                <% if(newGhgDt.length > 0){
+                                                                                                                                    var nextCalField = 1;
+                                                                                                                                    var tot_cal_val = 0,
+                                                                                                                                        tot_co_val = 0;
+                                                                                                                                    newGhgDt.forEach(gdt => {
+                                                                                                                                        gdt.cal_val > 0 ? tot_cal_val += gdt.cal_val : ''
+                                                                                                                                        gdt.co_val > 0 ? tot_co_val += gdt.co_val : ''
+                                                                                                                                        %>
+                                                                                                                                        <tr>
+                                                                                                                                            <td><%= gdt.repo_month %></td>
+                                                                                                                                            <td>
+                                                                                                                                                <select class="form-select" id="emi_type_unit_id_s3_<%= nextCalField %>_<%= sc %>" name="emi_type_unit_id" cal-unit-id="<%= gdt.emi_type_unit_id %>" required="" onchange="setCalVal('s3', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                                                                    <option selected="" value="">Please select unit of measurement</option>
+                                                                                                                                                </select>
+                                                                                                                                            </td>
+                                                                                                                                            <td><input class="form-control" id="cal_val_s3_<%= nextCalField %>_<%= sc %>" name="cal_val" type="text" value="<%= gdt.cal_val %>" required="" onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')" <%= user.user_type != 'V' ? '' : 'disabled' %>></td>
+                                                                                                                                            <td><input class="form-control" id="emi_fact_val_s3_<%= nextCalField %>_<%= sc %>" name="emi_fact_val" type="text" value="<%= gdt.emi_fact_val %>" required="" readonly></td>
+                                                                                                                                            <td><input class="form-control" id="co_val_s3_<%= nextCalField %>_<%= sc %>" name="co_val" type="text" value="<%= gdt.co_val %>" required="" readonly onchange="setCoVal('s3', '<%= sc %>', '<%= nextCalField %>')"></td>
+                                                                                                                                        </tr>
+                                                                                                                                        <script>
+                                                                                                                                            $(document).ready(async function(){
+                                                                                                                                                await calUnitSet('s3', '<%= sc %>', true, '<%= nextCalField %>', {type_id: '<%= newGhgDt[0].sec_id %>', act_id: '<%= newGhgDt[0].act_id%>', emi_type_id: '<%= newGhgDt[0].emi_type_id%>', year: '<%= newGhgDt[0].repo_month %>'})
+                                                                                                                                            })
+                                                                                                                                        </script>
+                                                                                                                                <%  nextCalField++; }) %> 
+                                                                                                                                <tr>
+                                                                                                                                    <td colspan="2">Total</td>
+                                                                                                                                    <td><span id="tot_cal_val_s3_<%= sc %>"><%= tot_cal_val %></span></td>
+                                                                                                                                    <td></td>
+                                                                                                                                    <td><span id="tot_co_val_s3_<%= sc %>"><%= tot_co_val %></span></td>
+                                                                                                                                </tr>
+                                                                                                                                <% } %>
+                                                                                                                            </tbody>
+                                                                                                                        </table>
+                                                                                                                    </div>
+                                                                                                                    <% if(user_type != 'V'){ %>
+                                                                                                                        <div class="col-md-8"></div>
+                                                                                                                        <div class="col-md-4 m-t-10">
+                                                                                                                            <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3','<%= sc %>')"><i class="icofont icofont-save"> <%= lang.report_edit.tab4.save_btn %></i></button>
+                                                                                                                        </div>
+                                                                                                                    <% } %>
+                                                                                                                </div>
                                                                                                             </div>
                                                                                                         </div>
+                                                                                                    <% } %>
+                                                                                                    <%
+                                                                                                }
+                                                                                            }else{ %>
+                                                                                                <div class="row">
+                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                        <label class="form-label float-start" for="type_id_s3_1"><%= lang.report_edit.tab4.emi_sour %></label>
+                                                                                                        <select class="form-select emission_source" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.emi_sour_sel %></option>
+                                                                                                            <% if(type_list.length > 0){
+                                                                                                                type_list.forEach(dt => { 
+                                                                                                                    if(dt.scope == 3){
+                                                                                                                    var selected = ''; %>
+                                                                                                                    <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
+                                                                                                                <% }})
+                                                                                                            } %>
+                                                                                                        </select>
                                                                                                     </div>
-                                                                                                <% } %>
-                                                                                                <%
-                                                                                            }
-                                                                                        }else{ %>
-                                                                                            <div class="row">
-                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="type_id_s3_1"><%= lang.report_edit.tab4.emi_sour %></label>
-                                                                                                    <select class="form-select emission_source" id="type_id_s3_1" name="type_id" required="" onchange="changeTypeId('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.emi_sour_sel %></option>
-                                                                                                        <% if(type_list.length > 0){
-                                                                                                            type_list.forEach(dt => { 
-                                                                                                                if(dt.scope == 3){
-                                                                                                                var selected = ''; %>
-                                                                                                                <option value="<%= dt.id %>" dt-set="<%= dt.type %>"><%= dt.type_name %></option>
-                                                                                                            <% }})
-                                                                                                        } %>
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="act_id_s3_1"><%= lang.report_edit.tab4.act %></label>
-                                                                                                    <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.act_sel %></option>
-                                                                                                        <% if(act_list.length > 0){
-                                                                                                            act_list.forEach(dt => { 
-                                                                                                                var selected = ''; %>
-                                                                                                                <option value="<%= dt.id %>"><%= dt.act_name %></option>
-                                                                                                            <% })
-                                                                                                        } %>
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="emi_type_id_s3_1"><%= lang.report_edit.tab4.emi_type %></label>
-                                                                                                    <select class="form-select" id="emi_type_id_s3_1" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.emi_type_sel %></option>
-                                                                                                        <% if(emi_type.length > 0){
-                                                                                                            emi_type.forEach(dt => { 
-                                                                                                                var selected = ''; %>
-                                                                                                                <option value="<%= dt.id %>"><%= dt.emi_name %></option>
-                                                                                                            <% })
-                                                                                                        } %>
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="repo_period_s3_1"><%= lang.report_edit.tab4.repo_per %></label>
-                                                                                                    <select class="form-select" id="repo_period_s3_1" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.repo_per_sel %></option>
-                                                                                                        <% if(year_list.length > 0){
-                                                                                                            year_list.forEach(dt => { 
-                                                                                                                var selected = ''; %>
-                                                                                                                <option value="<%= dt %>"><%= dt %></option>
-                                                                                                            <% })
-                                                                                                        } %>
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                                <div class="col-md-6 m-t-10">
-                                                                                                    <label class="form-label float-start" for="strt_month_s3_1"><%= lang.report_edit.tab4.st_month %></label>
-                                                                                                    <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
-                                                                                                        <option selected="" value=""><%= lang.report_edit.tab4.st_month_sel %></option>
-                                                                                                        <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                                                                                                        if(months.length > 0){
-                                                                                                            months.forEach(dt => { 
-                                                                                                                var selected = ''; %>
-                                                                                                                <option value="<%= dt %>"><%= dt %></option>
-                                                                                                            <% })
-                                                                                                        } %>
-                                                                                                    </select>
-                                                                                                </div>
-                                                                                                <div class="col-md-12 m-t-10 table-responsive">
-                                                                                                    <table class="table table-bordered" id="cal_val_entry_table_s3_1">
-                                                                                                        <thead>
-                                                                                                            <tr>
-                                                                                                                <th><%= lang.report_edit.tab4.table.head1 %></th>
-                                                                                                                <th><%= lang.report_edit.tab4.table.head2 %></th>
-                                                                                                                <th><%= lang.report_edit.tab4.table.head3 %></th>
-                                                                                                                <th><%= lang.report_edit.tab4.table.head4 %></th>
-                                                                                                                <th><%= lang.report_edit.tab4.table.head5 %></th>
-                                                                                                            </tr>
-                                                                                                        </thead>
-                                                                                                        <tbody></tbody>
-                                                                                                    </table>
-                                                                                                </div>
-                                                                                                <% if(user_type != 'V'){ %>
-                                                                                                    <div class="col-md-8"></div>
-                                                                                                    <div class="col-md-4 m-t-10">
-                                                                                                        <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3',1)"><i class="icofont icofont-save"> <%= lang.report_edit.tab4.save_btn %></i></button>
+                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                        <label class="form-label float-start" for="act_id_s3_1"><%= lang.report_edit.tab4.act %></label>
+                                                                                                        <select class="form-select" id="act_id_s3_1" name="act_id" required="" onchange="changeActId('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.act_sel %></option>
+                                                                                                            <% if(act_list.length > 0){
+                                                                                                                act_list.forEach(dt => { 
+                                                                                                                    var selected = ''; %>
+                                                                                                                    <option value="<%= dt.id %>"><%= dt.act_name %></option>
+                                                                                                                <% })
+                                                                                                            } %>
+                                                                                                        </select>
                                                                                                     </div>
-                                                                                                <% } %>
-                                                                                            </div>
-                                                                                        <% } %>
+                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                        <label class="form-label float-start" for="emi_type_id_s3_1"><%= lang.report_edit.tab4.emi_type %></label>
+                                                                                                        <select class="form-select" id="emi_type_id_s3_1" name="emi_type_id" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.emi_type_sel %></option>
+                                                                                                            <% if(emi_type.length > 0){
+                                                                                                                emi_type.forEach(dt => { 
+                                                                                                                    var selected = ''; %>
+                                                                                                                    <option value="<%= dt.id %>"><%= dt.emi_name %></option>
+                                                                                                                <% })
+                                                                                                            } %>
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                        <label class="form-label float-start" for="repo_period_s3_1"><%= lang.report_edit.tab4.repo_per %></label>
+                                                                                                        <select class="form-select" id="repo_period_s3_1" name="repo_period" required="" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.repo_per_sel %></option>
+                                                                                                            <% if(year_list.length > 0){
+                                                                                                                year_list.forEach(dt => { 
+                                                                                                                    var selected = ''; %>
+                                                                                                                    <option value="<%= dt %>"><%= dt %></option>
+                                                                                                                <% })
+                                                                                                            } %>
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                    <div class="col-md-6 m-t-10">
+                                                                                                        <label class="form-label float-start" for="strt_month_s3_1"><%= lang.report_edit.tab4.st_month %></label>
+                                                                                                        <select class="form-select" id="strt_month_s3_1" name="strt_month" required="" onchange="calSelectMonth('s3',1)" <%= user.user_type != 'V' ? '' : 'disabled' %>>
+                                                                                                            <option selected="" value=""><%= lang.report_edit.tab4.st_month_sel %></option>
+                                                                                                            <% var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                                                                                            if(months.length > 0){
+                                                                                                                months.forEach(dt => { 
+                                                                                                                    var selected = ''; %>
+                                                                                                                    <option value="<%= dt %>"><%= dt %></option>
+                                                                                                                <% })
+                                                                                                            } %>
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                    <div class="col-md-12 m-t-10 table-responsive">
+                                                                                                        <table class="table table-bordered" id="cal_val_entry_table_s3_1">
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th><%= lang.report_edit.tab4.table.head1 %></th>
+                                                                                                                    <th><%= lang.report_edit.tab4.table.head2 %></th>
+                                                                                                                    <th><%= lang.report_edit.tab4.table.head3 %></th>
+                                                                                                                    <th><%= lang.report_edit.tab4.table.head4 %></th>
+                                                                                                                    <th><%= lang.report_edit.tab4.table.head5 %></th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody></tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+                                                                                                    <% if(user_type != 'V'){ %>
+                                                                                                        <div class="col-md-8"></div>
+                                                                                                        <div class="col-md-4 m-t-10">
+                                                                                                            <button class="btn btn-pill btn-custom float-end text-center" data-bs-original-title title="Save" onclick="saveCalValue('s3',1)"><i class="icofont icofont-save"> <%= lang.report_edit.tab4.save_btn %></i></button>
+                                                                                                        </div>
+                                                                                                    <% } %>
+                                                                                                </div>
+                                                                                            <% } %>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                    </div>
+                                                                    <!-- </div> -->
                                                                     </div>
                                                                 </div>
                                                             </div>

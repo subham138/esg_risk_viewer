@@ -1,0 +1,81 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h3><%= header %></h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><%= header %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Zero Configuration  Starts-->
+        <div class="col-sm-12">
+            <% if(message){ %>
+                <script>
+                    setTimeout(() => {
+                        initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                    }, 1000);
+                </script>
+                <!-- <div class="alert alert-<%# message.type %> dark alert-dismissible fade show" role="alert">
+                  <i data-feather="clock"></i>
+                  <p><%# message.message %></p>
+                  <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div> -->
+            <% } %>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row py-3">
+                        <div class="col-md-12">
+                            <a href="/data_point_entry?flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">Add</a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="display" id="basic-1">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Sector</th>
+                                    <th>Industrie</th>
+                                    <th>Total Point Entry</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if(data.length > 0){
+                                    let i = 1;
+                                    data.forEach(dt => { %>
+                                <tr>
+                                    <td><%= i %></td>
+                                    <td><%= dt.sec_name %></td>
+                                    <td><%= dt.ind_name %></td>
+                                    <td><%= dt.tot_ind_point_entry %></td>
+                                    <td><a href="/data_point_entry?flag=<%= enc_dt %>&sec_id=<%= dt.sec_id %>&ind_id=<%= dt.ind_id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                        Edit/Update
+                                    </a>
+                                    <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                                        <i class="icofont icofont-ui-delete"></i> Delete
+                                    </a> -->
+                                    </td>
+                                </tr>
+                                <% i++; })}else{ %>
+                                <tr>
+                                    <td colspan="5" class="text-center text-danger">No Data Found</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Zero Configuration  Ends-->
+    </div>
+</div>
+<%- include('../../templates/footer.ejs') %>

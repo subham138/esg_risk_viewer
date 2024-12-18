@@ -16,6 +16,39 @@
     </div>
   </div>
 </div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="demo" aria-labelledby="demo">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offCanvTitl">Data Point/Information</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="cust-tabs">
+      <div class="cust-tab-item active">
+        <a class="cust-tab-link" href="#tab1">Data Point</a>
+      </div>
+      <div class="cust-tab-item">
+        <a class="cust-tab-link" href="#tab2">Information</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="w-100">
+          <!-- <div class="scroller scroller-left float-start mt-2"><i class="fa fa-chevron-left"></i></div>
+          <div class="scroller scroller-right float-end mt-2"><i class="fa fa-chevron-right"></i></div> -->
+          <!-- <div class="wrapper">
+            <nav class="nav nav-tabs list mt-2" id="myTab" role="tablist">
+              <a class="nav-item nav-link active" data-toggle="tab" href="#tab1" role="tab" aria-controls="public" aria-expanded="true">Data Point</a>
+              <a class="nav-item nav-link" data-toggle="tab" href="#tab2" role="tab" aria-controls="public" aria-expanded="true">Information</a>
+            </nav>
+          </div> -->
+          <div class="tab-content p-3" id="myTabContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <%# if(videoPopUp){ %>
   <!-- <div class="modal fade bd-example-modal-lg" id="videoPopupModal" tabindex="-1" role="dialog" aria-labelledby="videoPopupModal" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -59,7 +92,7 @@
     <script src="/js/config.js"></script>
     <!-- Bootstrap js-->
     <script src="/js/bootstrap/popper.min.js"></script>
-    <script src="/js/bootstrap/bootstrap.min.js"></script>
+    <!-- <script src="/js/bootstrap/bootstrap.min.js"></script> -->
     <!-- Plugins JS start-->
     <script src="/js/chart/chartist/chartist.js"></script>
     <script src="/js/chart/chartist/chartist-plugin-tooltip.js"></script>
@@ -203,6 +236,155 @@
         })
       }
     </script>
+
+    <script>
+      function arrangeModalArrow(){
+        var hidWidth;
+        var scrollBarWidths = 40;
+  
+        var widthOfList = function(){
+          var itemsWidth = 0;
+          $('.list .nav-item').each(function(){
+            var itemWidth = $(this).outerWidth();
+            itemsWidth+=itemWidth;
+          });
+          return itemsWidth;
+        };
+  
+        var widthOfHidden = function(){
+          var ww = 0 - $('.wrapper').outerWidth();
+          var hw = (($('.wrapper').outerWidth())-widthOfList()-getLeftPosi())-scrollBarWidths;
+          var rp = $(document).width() - ($('.nav-item .nav-link').last().offset().left + $('.nav-item .nav-link').last().outerWidth());
+          
+          if (ww>hw) {
+            //return ww;
+            return (rp>ww?rp:ww);
+          }
+          else {
+            //return hw;
+            return (rp>hw?rp:hw);
+          }
+        };
+  
+        var getLeftPosi = function(){
+          var ww = 0 - $('.wrapper').outerWidth();
+          var lp = $('.list').position().left;
+          
+          if (ww>lp) {
+            return ww;
+          }else {
+            return lp;
+          }
+        };
+  
+        var reAdjust = function(){
+          // check right pos of last nav item
+          var rp = $(document).width() - ($('.nav-item .nav-link').last().offset().left + $('.nav-item .nav-link').last().outerWidth());
+          if (($('.wrapper').outerWidth()) < widthOfList() && (rp<0)) {
+            $('.scroller-right').show().css('display', 'flex');
+          }
+          else {
+            $('.scroller-right').hide();
+          }
+          
+          if (getLeftPosi()<0) {
+            $('.scroller-left').show().css('display', 'flex');
+          }
+          else {
+            $('.item').animate({left:"-="+getLeftPosi()+"px"},'slow');
+            $('.scroller-left').hide();
+          }
+        }
+        if($('.nav-item .nav-link').length > 0){
+          console.log($('.nav-item .nav-link').length, '++++++++++++++++++++');
+          
+          reAdjust();
+        }
+  
+        $(window).on('resize',function(e){  
+          reAdjust();
+        });
+  
+        $('.scroller-right').click(function() {
+          $('.scroller-left').fadeIn('slow');
+          $('.scroller-right').fadeOut('slow');
+          
+          $('.list').animate({left:"+="+widthOfHidden()+"px"},'slow',function(){
+            reAdjust();
+          });
+        });
+  
+        $('.scroller-left').click(function() {
+          $('.scroller-right').fadeIn('slow');
+          $('.scroller-left').fadeOut('slow');
+          
+          $('.list').animate({left:"-="+getLeftPosi()+"px"},'slow',function(){
+            reAdjust();
+          });
+        });
+      }
+    </script>
+
+    <script>
+      // $('#myTab a').on('click', function(){
+      //   console.log($(this).attr('href'))
+      //   var act_id = $(this).attr('href').split('#').join('')
+      //   $('#myTab a').each((i, dt) => {
+      //     $(dt).removeClass('active')
+      //   })
+      //   $(this).addClass('active')
+      //   $('#myTabContent .tab-pane').each((i, dt) => {
+      //     console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
+      //     if($(dt).attr('id') == act_id){
+      //       if(!$(dt).hasClass('active'))
+      //         $(dt).addClass('active').addClass('show')
+      //     }else{
+      //       $(dt).removeClass('active').removeClass('show')
+      //     }
+      //   })
+      // })
+
+      $('.cust-tab-item a').on('click', function(){
+        console.log($(this).attr('href'))
+        var act_id = $(this).attr('href').split('#').join('')
+        $('.cust-tab-item').each((i, dt) => {
+          $(dt).removeClass('active')
+        })
+        $(this).parent().addClass('active')
+        $('#myTabContent .cust-first-tab').each((i, dt) => {
+          console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
+          if($(dt).attr('id') == act_id){
+            if(!$(dt).hasClass('active'))
+              $(dt).addClass('active').addClass('show')
+          }else{
+            $(dt).removeClass('active').removeClass('show')
+          }
+        })
+      })
+      function clickTabPoint(e){
+        console.log($(e).attr('href'))
+        var act_id = $(e).attr('href').split('#').join('')
+        $('#infoTab a').each((i, dt) => {
+          $(dt).removeClass('active')
+        })
+        $(e).addClass('active')
+        $('#infoTabContent .tab-pane').each((i, dt) => {
+          console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
+          if($(dt).attr('id') == act_id){
+            if(!$(dt).hasClass('active'))
+              $(dt).addClass('active').addClass('show')
+          }else{
+            $(dt).removeClass('active').removeClass('show')
+          }
+        })
+      }
+    </script>
+
+    
+  <script>
+    // Enable horizontal scroll with mouse wheel
+    
+  </script>
 
     </body>
 

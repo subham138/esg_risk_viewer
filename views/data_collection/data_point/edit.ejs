@@ -1,0 +1,382 @@
+<%- include('../../templates/header.ejs') %>
+<div class="container-fluid">
+  <div class="page-header">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3><%= header %></h3>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+          <li class="breadcrumb-item"><%= header %></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+        <% if(message){ %>
+            <script>
+                setTimeout(() => {
+                    initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+                }, 1000);
+            </script>
+        <% } %>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form action="/data_point_entry" method="post" enctype="multipart/form-data">
+                    <div class="row g-3 py-3">
+                        <div class="col-md-8">
+                            <label class="form-label" for="sec_id">Upload Logo For The Framework <%= frame_list[flag] %></label>
+                            <input class="form-control" type="file" name="flag_img" id="flag_img" accept="image/*">
+                        </div>
+                        <div class="col-md-4" style="display: <%= ind_dt.flag_img && ind_dt.flag_img != '' ? 'block' : 'none' %>;">
+                            <label class="form-label" for="sec_id">Preview Logo For The Framework <%= frame_list[flag] %></label>
+                            <div class="up-img-prev">
+                                <img src="<%= ind_dt.flag_img && ind_dt.flag_img != '' ? '/uploads/flag_icon/' + ind_dt.flag_img : '#' %>" alt="" id="prev_img">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 py-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="sec_id">Sector</label>
+                            <select class="form-select" id="sec_id" name="sec_id">
+                                <option selected="" value="">Select Sector</option>
+                                <% if(sec_dt.length > 0){ 
+                                    sec_dt.forEach(dt => {
+                                        var _selected = ''; 
+                                        if(dt.id == sec_id) _selected = 'selected';
+                                %>
+                                <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                <% }) } %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ind_id">Industries</label>
+                            <select class="form-select" id="ind_id" name="ind_id">
+                              <option selected="" value="">Select Industries</option>
+                              <% if(ind_list.length > 0){ 
+                                  ind_list.forEach(dt => { 
+                                      var _selected = ''; 
+                                      if(dt.id == ind_id) _selected = 'selected'; 
+                              %>
+                              <option value="<%= dt.id %>" <%= _selected %>><%= dt.ind_name %></option>
+                              <% }) } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row py-3" id="data_topic_table_div" style="display: none">
+                        <div class="col-md-12">
+                            <table class="table" id="data_topic_table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%;">#</th>
+                                        <th style="width: 30%;">Code</th>
+                                        <th style="width: 20%;">Framework</th>
+                                        <th style="width: 40%;">Point</th>
+                                        <th style="width: 5%;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <input type="hidden" id="id" name="id" value="<%# id ? id : 0 %>">
+                            <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                            <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="submit">Save</button>
+                        </div>
+                    </div>
+                    <div class="row" id="save_btn_point" style="display: none;">
+                        <div class="col-md-12">
+                            <button class="btn btn-pill btn-outline-success btn-air-success my-3 float-end" type="submit">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        var sec_id = '<%= sec_id > 0 ? sec_id : 0 %>';
+        if(sec_id > 0){
+            $('#sec_id').change()
+        }
+    })
+    $('#flag_img').on('change', function(e){
+        var file = e.target.files[0];
+        // console.log(file);
+        if(file){
+            var fileName = file.name;
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (extFile=="jpg" || extFile=="jpeg" || extFile=="png"){
+                $('#prev_img').parent().parent().show()
+                $('#prev_img').removeAttr('src')
+                $('#prev_img').attr('src', URL.createObjectURL(file))
+                $('#save_btn_point').show()
+            }else{
+                $('#prev_img').parent().parent().hide()
+                $('#prev_img').removeAttr('src')
+                $('#prev_img').attr('src', '#')
+                $(this).val('')
+                alert("Only jpg/jpeg and png files are allowed!");
+                $('#save_btn_point').hide()
+            }
+        }
+    })
+
+    $('#prev_img').on('click', function(){
+        var src = $(this).attr('src');
+        window.open(src, '_blank'); 
+    })
+</script>
+
+<script>
+    $('#sec_id').on('change', function(){
+        var sec_id = $(this).val()
+        if(sec_id > 0){
+            $.ajax({
+                method: "GET",
+                url: "/get_ind_list_ajax",
+                data: { sec_id: sec_id, flag: $('#flag').val() },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var res = JSON.parse(result),
+                    sel_ind_id = '<%= ind_id %>'; 
+                    $("#ind_id").empty();
+                    $("#data_set_view").hide()
+                    $("#data_topic_table tbody >").remove()
+                    $("#ind_id").append(
+                    $("<option>", { value: "", text: "Select Industries" })
+                    );
+                    if (res.suc > 0 && res.msg.length > 0)
+                    $.each(res.msg, function (i, item) {
+                        var _sel = false
+                        if(sel_ind_id == item.id) _sel = true
+                        $("#ind_id").append(
+                        $("<option>", { value: item.id, text: item.ind_name, selected: _sel })
+                        );
+                    });
+                    if(sel_ind_id > 0){
+                        $("#ind_id").change()
+                    }
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                },
+            });
+        }
+    })
+
+    function create_frame_opt(repo_flag_id = ''){
+        return new Promise((resolve, reject) => {
+            var frame_list = `<%- JSON.stringify(frame_list) %>`;
+            frame_list = JSON.parse(frame_list)
+            var frame_opt = '', sel_flag_id = repo_flag_id != '' ? repo_flag_id : $('#flag').val();
+            
+            Object.keys(frame_list).forEach(dt => {
+                var _sel = ''
+                if(dt == sel_flag_id) _sel = 'selected'
+                frame_opt = frame_opt + `<option value="${dt}" ${_sel}>${frame_list[dt]}</option>`
+            })
+            resolve(frame_opt.toString())
+        })
+    }
+
+    $("#ind_id").on("change", function () {
+        var ind_id = $(this).val(),
+        sec_id = $('#sec_id').val(),
+        sel_sec_id = '<%= sec_id %>';
+        $("#data_topic_table tbody").empty()
+        if($(this).val() > 0){
+            $.ajax({
+                method: "POST",
+                url: "/get_data_topic_list_ajax",
+                data: { sec_id: sec_id, flag: $('#flag').val(), ind_id: ind_id },
+                dataType: "html",
+                beforeSend: function () {
+                    $(".loader-wrapper").show();
+                },
+                success: function (result) {
+                    var top_res = JSON.parse(result);
+                    if(top_res.suc > 0 && top_res.msg.length > 0 && sel_sec_id > 0){
+                        $('#save_btn_point').hide()
+                        $('#data_topic_table_div').show()
+                        var i = 1, prev_id = '';
+                        $.each(top_res.msg, async function (j, dt) {                            
+                            if(dt.code != '' && dt.code){                          
+                                var now_id = dt.sus_id
+                                
+                                if(now_id == prev_id){
+                                    setTimeout(async () => {
+                                        add_row(dt.sus_id, 1, `${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}`, `${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}`, dt.id > 0 ? dt.id : 0)
+                                    }, 1000);
+                                }else{
+                                    prev_id = dt.sus_id
+                                    
+                                    var frame_opt = await create_frame_opt(dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : '')
+                                    $("#data_topic_table tbody").append(`
+                                    <tr id="row_${dt.sus_id}_1">
+                                        <td rowspan="1">${i}</td>
+                                        <td rowspan="1">
+                                            <label>${dt.code} (<small>${dt.topic_name}</small>)</label>
+                                            <input type="hidden" name="sus_dis_top_met_id" value="${dt.sus_id}">
+                                        </td>
+                                        <td>
+                                            <select class="form-select" id="frame_id_${dt.sus_id}_1" name="frame_id_${dt.sus_id}" required="">
+                                                ${frame_opt}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea class="form-control" name="point_codes_${dt.sus_id}" id="point_codes_${dt.sus_id}" rows="3">${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}</textarea>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.sus_id}, 1, '${dt.repo_flag_id != '' && dt.repo_flag_id ? dt.repo_flag_id : ""}', '${dt.point_codes != '' && dt.point_codes ? dt.point_codes : ''}')"><i class="icofont icofont-plus-circle"></i></button>    
+                                        </td>
+                                    </tr>
+                                    `)
+                                    i++
+                                }
+                            }
+                        })
+                    }else{
+                        $.ajax({
+                            method: "GET",
+                            url: "/sus_disc_ajax",
+                            data: { ind_id: ind_id, sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+                            dataType: "html",
+                            beforeSend: function () {
+                                $(".loader-wrapper").show();
+                            },
+                            success: async function (result) {
+                                var res = JSON.parse(result);
+                                
+                                var frame_opt = await create_frame_opt()
+                                
+                                if (res.suc > 0 && res.msg.length > 0) {
+                                    $('#data_topic_table_div').show()
+                                    var i = 1
+                                    $.each(res.msg, function (j, dt) {
+                                        if(dt.code != '' && dt.code){                            
+                                            $("#data_topic_table tbody").append(`
+                                            <tr id="row_${dt.id}_1">
+                                                <td rowspan="1">${i}</td>
+                                                <td rowspan="1">
+                                                    <label>${dt.code} <br>(<small>${dt.topic_name}</small>)</label>
+                                                    <input type="hidden" name="sus_dis_top_met_id" value="${dt.id}">
+                                                </td>
+                                                <td>
+                                                    <select class="form-select" id="frame_id_${dt.id}_1" name="frame_id_${dt.id}" required="">
+                                                        ${frame_opt}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <textarea class="form-control" name="point_codes_${dt.id}" id="point_codes_${dt.id}" rows="3"></textarea>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${dt.id}, 1)"><i class="icofont icofont-plus-circle"></i></button>    
+                                                </td>
+                                            </tr>
+                                            `)
+                                            i++
+                                        }
+                                    })
+                                }
+                            },
+                            complete: function () {
+                                $(".loader-wrapper").hide();
+                            },
+                        })
+                    }
+                },
+                complete: function () {
+                    $(".loader-wrapper").hide();
+                },
+            })
+        }
+    })
+
+    // function created_row(sus_dis_top_met_id, id, frame_opt='', code_name= '', sl_no = 1, prev_id = 0){
+    //     // console.log(`${prev_id > 0 ? `#row_${top_id}_${prev_id}` : '#suc_disc_table tbody'}`);
+    //     var next_id = $(`.row-${sus_dis_top_met_id}`).length + 1
+    //     $(`${prev_id > 0 ? `#row_${sus_dis_top_met_id}_${prev_id}` : '#data_topic_table tbody'}`).after(`<tr class="row-${sus_dis_top_met_id}" id="row_${sus_dis_top_met_id}_${next_id}">
+    //         ${prev_id > 0 ? '' : `<td rowspan="1">${sl_no}</td><td rowspan="1" class="topic_text"><label>${code_name}</label>
+    //                             <input type="hidden" name="sus_dis_top_met_id" value="${sus_dis_top_met_id}"></td>`}
+    //         <td>
+    //             <select class="form-select" id="frame_id_${sus_dis_top_met_id}_${next_id}" name="frame_id_${sus_dis_top_met_id}" required="">
+    //                 ${frame_opt}
+    //             </select>
+    //         </td>
+    //         <td>
+    //             <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3"></textarea>
+    //         </td>
+    //         <td>${prev_id > 0 ? `<button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-trash"></i></button>` : `<button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${sus_dis_top_met_id}, 1)"><i class="icofont icofont-plus-circle"></i></button>`}</td>
+    //     </tr>`);
+    // }
+
+    async function created_row(sus_dis_top_met_id, next_id, prev_id, repo_flag_id, point_codes, dt_row_id){
+        var frame_opt = await create_frame_opt(repo_flag_id)
+        
+        $(`#row_${sus_dis_top_met_id}_${next_id-1}`).after(`
+            <tr id="row_${sus_dis_top_met_id}_${next_id}">
+                <td>
+                    <select class="form-select" id="frame_id_${sus_dis_top_met_id}_${next_id}" name="frame_id_${sus_dis_top_met_id}" required="">
+                        ${frame_opt}
+                    </select>
+                </td>
+                <td>
+                    <textarea class="form-control" name="point_codes_${sus_dis_top_met_id}" id="point_codes_${sus_dis_top_met_id}_${next_id}" rows="3">${point_codes}</textarea>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-pill btn-outline-danger btn-air-danger" onclick="remove_row(${sus_dis_top_met_id}, ${next_id}, ${dt_row_id})"><i class="icofont icofont-trash"></i></button>
+                    <!-- <button type="button" class="btn btn-pill btn-outline-success btn-air-success" onclick="add_row(${sus_dis_top_met_id}, ${next_id})"><i class="icofont icofont-plus-circle"></i></button> -->
+                </td>
+            </tr>
+        `)
+    }
+
+    function add_row(sus_dis_top_met_id, id, repo_flag_id = '', point_codes = '', dt_row_id = 0) {
+        var row = $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr('rowspan')
+        // var row = parseInt($(`#first_top_td_${top_id}`).attr("rowspan"));
+        let next_id = parseInt(row) + 1;
+        $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).removeAttr("rowspan");
+        $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
+        $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", next_id);
+        $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).attr("rowspan", next_id);
+        created_row(sus_dis_top_met_id, next_id, id, repo_flag_id, point_codes, dt_row_id)
+    }
+
+    function remove_row(sus_dis_top_met_id, id, tab_id = 0) {
+    if(confirm('Are you sure, you want to delete permanently?')){
+      var row = parseInt($(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan"));
+      let prev_id = row - 1;
+      if(tab_id > 0){
+        $.ajax({
+          method: "POST",
+          url: "/delete_data_topic_list_ajax",
+          data: { id: tab_id },
+          dataType: "html",
+          beforeSend: function () {
+            $(".loader-wrapper").show();
+          },
+          success: function (result) {
+            var res = JSON.parse(result);
+          },
+          complete: function () {
+            $(".loader-wrapper").hide();
+          },
+        })
+      }
+      $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).removeAttr("rowspan");
+      $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).removeAttr("rowspan");
+      $(`#row_${sus_dis_top_met_id}_1`).children().eq(0).attr("rowspan", prev_id);
+      $(`#row_${sus_dis_top_met_id}_1`).children().eq(1).attr("rowspan", prev_id);
+      $(`#row_${sus_dis_top_met_id}_${id}`).remove();
+    }
+  }
+</script>
+<%- include('../../templates/footer.ejs') %>

@@ -58,9 +58,6 @@
                                                                     </button>
                                                             </label>
                                                         </th>
-                                                        <!-- <th>
-                                                    
-                                                </th> -->
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -86,8 +83,11 @@
                                                                                 <%= dt.user_name %>
                                                                             </option>
                                                                             <% }) }else{ %>
-                                                                                <option value="<%= user.id %>" <%= id > 0 ? (user.id == udt.user_id ? 'selected' : '') : '' %>>Assign Yourself</option>
-                                                                            <% } %>
+                                                                                <option value="<%= user.id %>" <%=id> 0
+                                                                                    ? (user.id == udt.user_id ?
+                                                                                    'selected' : '') : '' %>>Assign
+                                                                                    Yourself</option>
+                                                                                <% } %>
                                                                     </select>
                                                                 </div>
                                                                 <% if(i> 1){ %>
@@ -122,8 +122,12 @@
                                                                                     %>><%= dt.user_name %>
                                                                                 </option>
                                                                                 <% }) }else{ %>
-                                                                                    <option value="<%= user.id %>" <%= id > 0 ? (user.id == project_data.user_id ? 'selected' : '') : '' %>>Assign Yourself</option>
-                                                                                <% } %>
+                                                                                    <option value="<%= user.id %>"
+                                                                                        <%=id> 0 ? (user.id ==
+                                                                                        project_data.user_id ?
+                                                                                        'selected' : '') : '' %>>Assign
+                                                                                        Yourself</option>
+                                                                                    <% } %>
                                                                         </select>
 
                                                                 </td>
@@ -147,8 +151,10 @@
                                                                         dt.user_name %>
                                                                 </option>
                                                                 <% }) }else{ %>
-                                                                    <option value="<%= user.id %>" <%= id > 0 ? (user.id == project_data.user_id ? 'selected' : '') : '' %>>Assign Yourself</option>
-                                                                <% } %>
+                                                                    <option value="<%= user.id %>" <%=id> 0 ? (user.id
+                                                                        == project_data.user_id ? 'selected' : '') : ''
+                                                                        %>>Assign Yourself</option>
+                                                                    <% } %>
                                                         </select>
                                                     </div>
                                                 </td>
@@ -163,18 +169,22 @@
                                                                 value="<%= id > 0 ? id : 0 %>">
                                                             <input type="hidden" id="flag" name="flag"
                                                                 value="<%= flag ? flag : '' %>">
-                                                        <% if(id> 0){ %>
-                                                            <button class="btn btn-pill btn-custom float-end m-r-40"
-                                                                id="projSub" type="button">
-                                                                <%= project_data.sec_id> 0 && project_data.ind_id > 0 ?
-                                                                    lang.add.submit_btn : lang.add.btn_next %>
-                                                            </button>
-                                                            <% } else { %> 
+                                                            <% if(id> 0){ %>
                                                                 <button class="btn btn-pill btn-custom float-end m-r-40"
-                                                                id="projSub" type="button" disabled>
-                                                                <%= project_data.sec_id > 0 && project_data.ind_id > 0 ? lang.add.submit_btn : lang.add.btn_next %>
-                                                            </button>
-                                                            <% } %>
+                                                                    id="projSub" type="button">
+                                                                    <%= project_data.sec_id> 0 && project_data.ind_id >
+                                                                        0 ?
+                                                                        lang.add.submit_btn : lang.add.btn_next %>
+                                                                </button>
+                                                                <% } else { %>
+                                                                    <button
+                                                                        class="btn btn-pill btn-custom float-end m-r-40"
+                                                                        id="projSub" type="button" disabled>
+                                                                        <%= project_data.sec_id> 0 &&
+                                                                            project_data.ind_id > 0 ?
+                                                                            lang.add.submit_btn : lang.add.btn_next %>
+                                                                    </button>
+                                                                    <% } %>
                                                         </td>
                                                     </tr>
                                                 </tfoot>
@@ -214,7 +224,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <a href="/my_project?flag=<%= enc_flag %>" class="btn btn-pill btn-custom float-end">
+                                        <a href="/my_project?flag=<%= enc_flag %>"
+                                            class="btn btn-pill btn-custom float-end">
                                             <%= lang.add.btn_back_proj_list %>
                                         </a>
                                     </div>
@@ -287,6 +298,7 @@
                                         <input type="hidden" name="proj_id" id="projWorkPId"
                                             value="<%= proj_id > 0 ? proj_id : 0 %>">
                                         <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                                        <input type="hidden" name="dec_flag" value="<%= dec_flag ? dec_flag : '' %>">
                                         <input type="hidden" id="bus_id" name="bus_id" value="0">
                                         <%# if(id> 0){ %>
                                             <button class="btn btn-pill btn-custom float-end" type="submit"
@@ -342,11 +354,11 @@
                         userId.push(e.value)
                 })
             }
-            console.log(userId, 'sdasdas');
+            // console.log(userId, 'sdasdas');
             $.ajax({
                 method: 'POST',
                 url: '/my_project_save_ajax',
-                data: { id: $('[name="id"]').val(), flag: $('[name="flag"]').val(), project_name: $('[name="project_name"]').val(), user_id: userId },
+                data: { id: $('[name="id"]').val(), dec_flag: $('[name="dec_flag"]').val(), flag: $('[name="flag"]').val(), project_name: $('[name="project_name"]').val(), user_id: userId },
                 dataType: 'html',
                 beforeSend: function () {
                     $('.loader-wrapper').show()
@@ -359,7 +371,7 @@
                         $('#projWorkPId').val(res.project_id)
                         $('#profile-info-tab').tab('show')
                         $('#projWorkSubBtn').show()
-                    }else{
+                    } else {
                         initiate_sweet_alert('', 'Data Not Saved. Please try again later.', 'danger')
                     }
                     console.log(res);
@@ -519,39 +531,39 @@
         });
     </script>
 
-<script>
-    $("#project_name").on("change", function (e) {
-        // console.log(e.target.value);
-        var prev_val = "<%= id > 0 ? project_data.project_name.replace(' ', '').toLowerCase() : '' %>", id = $('[name="id"]').val();
-        console.log(id, prev_val, 'HEHEHE')
-        if($(this).val() != '' && $(this).val()){
-            if(prev_val != $(this).val().replace(' ', '').toLowerCase()){
-                $.ajax({
-                    method: "GET",
-                    url: "/exist_project",
-                    data: { project_name: $(this).val(), flag: $('#flag').val()},
-                    dataType: "html",
-                    success: function (result) {
-                        var res_dt = JSON.parse(result);
-                        // console.log(res_dt,'res');
-                        if (res_dt.suc > 0) {
-                            if(res_dt.msg.length > 0){
-                                swal("Project Name is already in use", {
-                                    icon: "error",
-                                });
-                                $("#project_name").val('');
+    <script>
+        $("#project_name").on("change", function (e) {
+            // console.log(e.target.value);
+            var prev_val = "<%= id > 0 ? project_data.project_name.replace(' ', '').toLowerCase() : '' %>", id = $('[name="id"]').val();
+            console.log(id, prev_val, 'HEHEHE')
+            if ($(this).val() != '' && $(this).val()) {
+                if (prev_val != $(this).val().replace(' ', '').toLowerCase()) {
+                    $.ajax({
+                        method: "GET",
+                        url: "/exist_project",
+                        data: { project_name: $(this).val(), flag: $('#flag').val() },
+                        dataType: "html",
+                        success: function (result) {
+                            var res_dt = JSON.parse(result);
+                            // console.log(res_dt,'res');
+                            if (res_dt.suc > 0) {
+                                if (res_dt.msg.length > 0) {
+                                    swal("Project Name is already in use", {
+                                        icon: "error",
+                                    });
+                                    $("#project_name").val('');
+                                }
                             }
-                        } 
-                    },
-                    complete: function () {
-                        $(".loader-wrapper").hide();
-                    },
-                });
+                        },
+                        complete: function () {
+                            $(".loader-wrapper").hide();
+                        },
+                    });
+                }
             }
-        }
-    });
+        });
 
-    
-</script>
+
+    </script>
 
     <%- include('../templates/footer.ejs') %>

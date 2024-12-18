@@ -57,7 +57,7 @@
                                             <td><a href="/topic_edit?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-primary btn-air-primary m-b-5" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
-                                            <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
+                                            <a href="/topic_del?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return delItem();">
                                                 <i class="icofont icofont-ui-delete"></i> Delete
                                             </a> -->
                                             <a href="/topic_del?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return delItem();">

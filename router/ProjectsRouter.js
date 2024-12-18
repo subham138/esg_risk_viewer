@@ -32,6 +32,7 @@ const {
   getActiveTopicList,
   saveCheckedProjectFlag,
   getCheckedProjectTopList,
+  getSusDistPointDt,
 } = require("../modules/ProjectModule");
 const { getUserList } = require("../modules/UserModule");
 const dateFormat = require("dateformat");
@@ -57,7 +58,10 @@ const express = require("express"),
 
 ProjectRouter.get("/my_project", async (req, res) => {
   var enc_dt = req.query.flag,
-    flag = new Buffer.from(enc_dt, "base64").toString();
+    dec_flag = new Buffer.from(enc_dt, "base64").toString();
+  var flag = dec_flag == "IC" ? "I" : dec_flag;
+    // console.log(flag, "flag");
+    
 
   // var req_data = req.query
   var user_type = req.session.user.user_type,
@@ -69,7 +73,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     req.session.user.client_id,
     user_type != "A" && user_type != "C" && user_type != "S" ? user_id : 0,
     flag,
-    req.session.user.platform_mode
+    dec_flag == "IC" ? "C" : req.session.user.platform_mode
   );
   var data = {
     lang: lang,
@@ -78,6 +82,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     header: lang.header, //"Project List",
     enc_dt,
     flag,
+    dec_flag,
     dateFormat,
     flag_name: PROJECT_LIST[flag],
   };
@@ -86,7 +91,9 @@ ProjectRouter.get("/my_project", async (req, res) => {
 
 ProjectRouter.get("/my_project_add", async (req, res) => {
   var enc_dt = req.query.flag,
-    flag = new Buffer.from(enc_dt, "base64").toString();
+    // flag = new Buffer.from(enc_dt, "base64").toString();
+    dec_flag = new Buffer.from(enc_dt, "base64").toString();
+  var flag = dec_flag == "IC" ? "I" : dec_flag;
 
   var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
 
@@ -99,7 +106,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
       req.session.user.client_id,
       0,
       flag,
-      req.session.user.platform_mode
+      dec_flag == "IC" ? "C" : req.session.user.platform_mode
     );
   }
 
@@ -125,6 +132,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
     sub_header: lang.add.sub_header,
     header_url: `/my_project?flag=${enc_dt}`,
     flag,
+    dec_flag,
     flag_name: PROJECT_LIST[flag],
     enc_flag: enc_dt,
   };
@@ -137,7 +145,7 @@ ProjectRouter.post("/my_project_save", async (req, res) => {
     data,
     req.session.user.client_id,
     req.session.user.user_name,
-    req.session.user.platform_mode
+    data.dec_flag == 'IC' ? 'C' : req.session.user.platform_mode
   );
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
@@ -158,7 +166,7 @@ ProjectRouter.post("/my_project_save_ajax", async (req, res) => {
     data,
     req.session.user.client_id,
     req.session.user.user_name,
-    req.session.user.platform_mode
+    data.dec_flag == 'IC' ? 'C' : req.session.user.platform_mode
   );
   // req.session.message = {
   //     type: res_dt.suc > 0 ? "success" : "danger",
@@ -176,7 +184,9 @@ ProjectRouter.post("/delete_my_project", async (req, res) => {
 
 ProjectRouter.get("/proj_work", async (req, res) => {
   var enc_dt = req.query.flag,
-    flag = new Buffer.from(enc_dt, "base64").toString();
+    // flag = new Buffer.from(enc_dt, "base64").toString();
+    dec_flag = new Buffer.from(enc_dt, "base64").toString();
+  var flag = dec_flag == "IC" ? "I" : dec_flag;
 
   var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
 
@@ -189,7 +199,7 @@ ProjectRouter.get("/proj_work", async (req, res) => {
     req.session.user.client_id,
     0,
     flag,
-    req.session.user.platform_mode
+    dec_flag == 'IC' ? 'C' : req.session.user.platform_mode
   );
   var data = {
     lang: lang,
@@ -211,6 +221,7 @@ ProjectRouter.get("/proj_work", async (req, res) => {
     sub_header: lang.manage.sub_header,
     header_url: `/my_project?flag=${enc_dt}`,
     flag,
+    dec_flag,
     flag_name: PROJECT_LIST[flag],
   };
   res.render("project_work/add", data);
@@ -315,7 +326,7 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
     // );
     res.redirect(
       `/my_project?flag=${encodeURIComponent(
-        new Buffer.from(data.flag).toString("base64")
+        new Buffer.from(data.dec_flag).toString("base64")
       )}`
     );
   } else {
@@ -802,6 +813,12 @@ ProjectRouter.get('/exist_project', async (req, res) =>{
       order = null;
     var res_dt = await db_Select (select,table_name,whr,order);
     res.send(res_dt)
+})
+
+ProjectRouter.post('/getSusDistPointDt', async (req, res) => {
+  var data = req.body
+  var res_dt = await getSusDistPointDt(data.sec_id, data.ind_id, data.repo_flag, data.code)
+  res.send(res_dt)
 })
 
 module.exports = { ProjectRouter };
