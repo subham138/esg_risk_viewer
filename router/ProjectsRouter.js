@@ -59,7 +59,7 @@ const express = require("express"),
 ProjectRouter.get("/my_project", async (req, res) => {
   var enc_dt = req.query.flag,
     dec_flag = new Buffer.from(enc_dt, "base64").toString();
-  var flag = dec_flag == "IC" ? "I" : dec_flag;
+  var flag = dec_flag == "IC" ? "I" : (dec_flag == "FC" ? 'F' : dec_flag);
     // console.log(flag, "flag");
     
 
@@ -73,7 +73,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     req.session.user.client_id,
     user_type != "A" && user_type != "C" && user_type != "S" ? user_id : 0,
     flag,
-    dec_flag == "IC" ? "C" : req.session.user.platform_mode
+    dec_flag == "IC" && dec_flag == "FC" ? "C" : req.session.user.platform_mode
   );
   var data = {
     lang: lang,
@@ -93,7 +93,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
   var enc_dt = req.query.flag,
     // flag = new Buffer.from(enc_dt, "base64").toString();
     dec_flag = new Buffer.from(enc_dt, "base64").toString();
-  var flag = dec_flag == "IC" ? "I" : dec_flag;
+  var flag = dec_flag == "IC" ? "I" : (dec_flag == "FC" ? 'F' : dec_flag);
 
   var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
 
@@ -106,7 +106,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
       req.session.user.client_id,
       0,
       flag,
-      dec_flag == "IC" ? "C" : req.session.user.platform_mode
+      dec_flag == "IC" && dec_flag == "FC" ? "C" : req.session.user.platform_mode
     );
   }
 
@@ -186,7 +186,7 @@ ProjectRouter.get("/proj_work", async (req, res) => {
   var enc_dt = req.query.flag,
     // flag = new Buffer.from(enc_dt, "base64").toString();
     dec_flag = new Buffer.from(enc_dt, "base64").toString();
-  var flag = dec_flag == "IC" ? "I" : dec_flag;
+  var flag = dec_flag == "IC" ? "I" : (dec_flag == "FC" ? 'F' : dec_flag);
 
   var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
 
@@ -199,7 +199,7 @@ ProjectRouter.get("/proj_work", async (req, res) => {
     req.session.user.client_id,
     0,
     flag,
-    dec_flag == 'IC' ? 'C' : req.session.user.platform_mode
+    dec_flag == 'IC' && dec_flag == "FC" ? 'C' : req.session.user.platform_mode
   );
   var data = {
     lang: lang,
