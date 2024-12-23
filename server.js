@@ -57,7 +57,10 @@ app.use(
 app.use((req, res, next) => {
   res.locals.user = req.session.user;
   res.locals.active = req.path.split("/")[1];
+  res.locals.curr_path = req.originalUrl
   res.locals.message = req.session.message;
+  res.locals.query_params = Object.keys(req.query)
+  
   res.locals.videoPopUp = req.session.videoPopUp ? (req.session.user ? (req.session.user.user_type != 'S' ? req.session.videoPopUp : false) : req.session.videoPopUp) : false
   delete req.session.message;
   delete req.session.videoPopUp;
@@ -121,17 +124,65 @@ app.get('/test_lala',async (req, res) => {
   // res.render('test')
 })
 
-app.get('/test_ai', (req, res) => {
-  let user = req.session.user;
-  // console.log(user);
-  if (!user) {
-    res.redirect("/login");
-  } else {
-    var view_data = {
-      header: 'AI Tag'
-    }
-    res.render('test_ai_view', view_data)
+app.get('/test_ai', async (req, res) => {
+  const {db_Select} = require('./modules/MasterModule')
+  var data = {
+    "scope_id": "1",
+    "lang_flag": "E",
+    "sec_id": "2",
+    "header": "Répondez aux questions suivantes: (2 au choix)",
+    "hed_1": "",
+    "q_1": "D'après l’image, nommez des soucis principaux de santé chezles jeunes.",
+    "q_s_1": [
+    "Yes",
+    "No"
+    ],
+    "option_1": "radio",
+    "cards": [
+    "1",
+    "2",
+    "3"
+    ],
+    "s_1": "1",
+    "p_c_1": "",
+    "p_s_c_1": "",
+    "hed_2": "",
+    "q_2": "Que faut-il faire pour mener une vie saine?",
+    "q_s_2": [
+    "Yes",
+    "No"
+    ],
+    "option_2": "radio",
+    "s_2": "1",
+    "p_c_2": "1",
+    "p_s_c_2": "",
+    "hed_3": "",
+    "q_3": "Qu’est-ce qui va nous arriver si on ne mange pas assez ?",
+    "option_3": "short_text",
+    "s_3": "1",
+    "p_c_3": "1",
+    "p_s_c_3": "1"
   }
+
+  var res_dt = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}' AND header_flag="Y" AND input_type IS NULL`, null)
+
+  for(let id of data.cards){
+    var chk_dt = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}' AND header_flag="N" AND is_parent = '${data[`p_c_${id}`] > 0 ? 'N': (data[`p_s_c_${id}`] > 0 ? 'N' : 'Y')}' AND parent_id = '${data[`p_c_${id}`] > 0 ? data[`p_c_${id}`] : 0}' AND is_sub_parent = '${data[`p_s_c_${id}`] > 0 ? 'N': 'Y'}' AND sub_parent_id = '${data[`p_s_c_${id}`] > 0 ? data[`p_s_c_${id}`] : 0}'`, null)
+
+    console.log(chk_dt);
+    
+  }
+  res.send(res_dt)
+  // let user = req.session.user;
+  // // console.log(user);
+  // if (!user) {
+  //   res.redirect("/login");
+  // } else {
+  //   var view_data = {
+  //     header: 'AI Tag'
+  //   }
+  //   res.render('test_ai_view', view_data)
+  // }
 })
 
 app.post('/send_ai_data', (req, res) => {

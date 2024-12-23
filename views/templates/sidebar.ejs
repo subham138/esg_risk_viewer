@@ -423,10 +423,10 @@
                 <li><a href="/cal_sec_type?flag=Rg%3D%3D">Section</a></li>
               </ul>
             </li>
-            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/form_builder">
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink <%= active == 'form_builder' ? (query_params.includes('flag') ? '' : 'cust-active') : '' %>" href="/form_builder?f=Rg%3D%3D">
               <i class="icofont icofont-ui-note m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Form Build</span></a>
             </li>
-            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/form_builder?flag=Rg%3D%3D">
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink <%= active == 'form_builder' ? (query_params.includes('flag') ? 'cust-active' : '') : '' %>" href="/form_builder?flag=Rg%3D%3D">
               <i class="icofont icofont-ui-note m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Form Build-Fr</span></a>
             </li>
             <% } %>
