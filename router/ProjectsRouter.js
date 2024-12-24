@@ -145,7 +145,7 @@ ProjectRouter.post("/my_project_save", async (req, res) => {
     data,
     req.session.user.client_id,
     req.session.user.user_name,
-    data.dec_flag == 'IC' ? 'C' : req.session.user.platform_mode
+    data.dec_flag == 'IC' || data.dec_flag == "FC" ? 'C' : req.session.user.platform_mode
   );
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
@@ -166,7 +166,7 @@ ProjectRouter.post("/my_project_save_ajax", async (req, res) => {
     data,
     req.session.user.client_id,
     req.session.user.user_name,
-    data.dec_flag == 'IC' ? 'C' : req.session.user.platform_mode
+    data.dec_flag == 'IC' || data.dec_flag == "FC" ? 'C' : req.session.user.platform_mode
   );
   // req.session.message = {
   //     type: res_dt.suc > 0 ? "success" : "danger",
