@@ -49,7 +49,7 @@ FBRouter.post('/cal_sec_type_edit', async (req, res) => {
     datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
     console.log(data);
     
-    var res_dt = await db_Insert('md_cal_sec_type', data.id > 0 ? `scope_id = ${data.scope_id}, sec_name = '${data.sec_name}', modified_by = '${user}', modified_dt = '${datetime}'` : '(lang_flag, scope_id, sec_name, created_by, created_dt)', `('${data.flag}', ${data.scope_id}, '${data.sec_name}', '${user}', '${datetime}')`, data.id > 0 ? `id=${data.id}` : null, data.id > 0 ? 1 : 0)
+    var res_dt = await db_Insert('md_cal_sec_type', data.id > 0 ? `scope_id = ${data.scope_id}, sec_name = '${data.sec_name.split("'").join("\\'")}', modified_by = '${user}', modified_dt = '${datetime}'` : '(lang_flag, scope_id, sec_name, created_by, created_dt)', `('${data.flag}', ${data.scope_id}, '${data.sec_name.split("'").join("\\'")}', '${user}', '${datetime}')`, data.id > 0 ? `id=${data.id}` : null, data.id > 0 ? 1 : 0)
     if(res_dt.suc > 0){
         req.session.message = {
             type: "success",
