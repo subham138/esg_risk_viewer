@@ -73,7 +73,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     req.session.user.client_id,
     user_type != "A" && user_type != "C" && user_type != "S" ? user_id : 0,
     flag,
-    dec_flag == "IC" && dec_flag == "FC" ? "C" : req.session.user.platform_mode
+    dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode
   );
   var data = {
     lang: lang,
@@ -106,7 +106,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
       req.session.user.client_id,
       0,
       flag,
-      dec_flag == "IC" && dec_flag == "FC" ? "C" : req.session.user.platform_mode
+      dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode
     );
   }
 
@@ -199,7 +199,7 @@ ProjectRouter.get("/proj_work", async (req, res) => {
     req.session.user.client_id,
     0,
     flag,
-    dec_flag == 'IC' && dec_flag == "FC" ? 'C' : req.session.user.platform_mode
+    dec_flag == 'IC' || dec_flag == "FC" ? 'C' : req.session.user.platform_mode
   );
   var data = {
     lang: lang,
