@@ -185,8 +185,6 @@
 
                                     var qAnsDt = res.proj_q_ans_dt.filter(asDt => asDt.quest_id == qdt.id && asDt.end_flag != 'Y')
                                     var isSubParentHasAns = qAnsDt.length > 0 ? true : false
-
-                                    console.log(res.proj_q_ans_dt, qAnsDt, qdt.id, '-------------------------');
                                     
 
                                     var actTypeQuestId = subSubParentData.filter(fdt => fdt.input_type == 'A' && fdt.sub_parent_id == qdt.sequence),
