@@ -31,7 +31,7 @@
         
 
         if($(e).parent().parent().hasClass('parent-quest')){
-            if($(e).text() == 'Yes' && isBtn){
+            if(['Yes', 'Oui'].includes((e).text()) && isBtn){
                 $(e).parent().parent().parent().find('.sub-parent-container').show()
                 $(e).parent().parent().parent().find('.sub-parent-quest').show()
             }
@@ -42,7 +42,7 @@
         }
 
         if($(e).parent().parent().hasClass('sub-parent-quest')){
-            if($(e).text() == 'Yes' && isBtn){
+            if(['Yes', 'Oui'].includes($(e).text()) && isBtn){
                 $(e).parent().parent().next('.sub-sub-section').children().each(function (i, dt){
                     if($(dt).children().closest('.quest-opt-btn').children('input').length > 0 || $(dt).children().closest('.quest-opt-btn').children().children('select').length > 0){
                         $(dt).show()
@@ -63,7 +63,7 @@
             }
             var divId = $(e).parent().attr('id')
             divId = divId.split('-')[divId.split('-').length - 1]
-            changeProvTable(divId, $(e).text()== 'Yes' ? true : false)
+            changeProvTable(divId, ['Yes', 'Oui'].includes($(e).text()) ? true : false)
         }
 
         if(isBtn){
