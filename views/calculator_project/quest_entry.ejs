@@ -467,7 +467,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
-            data: {type_id, act_id, flag: flag},
+            data: {type_id, act_id, flag: '<%= flag == "IC" ? "E" : "F" %>'},
             beforeSend: function(){
                 $('.loader-wrapper').show()
             },
@@ -513,7 +513,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id, act_id, emi_type_id, year: 0, flag: flag},
+            data: {type_id, act_id, emi_type_id, year: 0, flag: '<%= flag == "IC" ? "E" : "F" %>'},
             beforeSend: function(){
                 $('.loader-wrapper').show()
             },
