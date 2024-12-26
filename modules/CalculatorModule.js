@@ -152,18 +152,18 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getCalQuestUserDt: (scope_id = 1, proj_id, client_id, proj_year) => {
+    getCalQuestUserDt: (scope_id = 1, proj_id, client_id, proj_year, flag = 'E') => {
         return new Promise(async (resolve, reject) => {
             var res_dt = {suc:0, msg:[]}
             var select = 'id, sec_name',
-            whr = `scope_id = ${scope_id}`,
+            whr = `scope_id = ${scope_id} AND lang_flag = '${flag}'`,
             order = null;
             var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
             if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
                 var newData = {}, calNewData = {}, calQuestDt = {};
                 for(let dt of cal_sec_dt.msg){
                     var q_select = `a.id, a.scope_id, a.sec_id pro_sec_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
-                    q_whr = `a.id = b.quest_id AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
+                    q_whr = `a.id = b.quest_id AND a.lang_flag = '${flag}' AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
                     var qstDtlsAndLogic = await db_Select(q_select, 'md_cal_form_builder a, md_cal_form_build_logic b', q_whr, null)
                     if(qstDtlsAndLogic.suc > 0 && qstDtlsAndLogic.msg.length > 0){
                         for(let qdt of qstDtlsAndLogic.msg){

@@ -132,7 +132,7 @@
         $.ajax({
             method:'POST',
             url: '/get_question_list_by_scope_user_ajax',
-            data: {scope_id: scope_id, proj_id, sel_year},
+            data: {scope_id: scope_id, proj_id, sel_year, flag: '<%= flag %>'},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()

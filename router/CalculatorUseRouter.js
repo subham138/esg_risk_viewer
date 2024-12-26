@@ -24,7 +24,7 @@ CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
 
 CalcUserRouter.post('/get_question_list_by_scope_user_ajax', async (req, res) => {
   var data = req.body
-  var res_dt = await getCalQuestUserDt(data.scope_id > 0 ? data.scope_id : 1, data.proj_id, req.session.user.client_id, data.sel_year)
+  var res_dt = await getCalQuestUserDt(data.scope_id > 0 ? data.scope_id : 1, data.proj_id, req.session.user.client_id, data.sel_year, data.flag == 'IC' ? 'E' : 'F')
   res.send(res_dt)
 })
 
@@ -91,7 +91,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_3 - 
   );
 
   var scope_list = SCOPE_LIST,
-  cal_act = await getCalAct(0, 0),
+  cal_act = await getCalAct(0, 0, data.flag == 'IC' ? 'E' : 'F'),
   yearList = YEAR_LIST;
   var currYear = currDate.getFullYear()
   yearList.includes(currYear) ? '' : yearList.push(currYear)
