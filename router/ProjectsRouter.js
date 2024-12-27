@@ -60,7 +60,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
   var enc_dt = req.query.flag,
     dec_flag = new Buffer.from(enc_dt, "base64").toString();
   var flag = dec_flag == "IC" ? "I" : (dec_flag == "FC" ? 'F' : dec_flag);
-    // console.log(flag, "flag");
+  // console.log(flag, dec_flag, "flag");
     
 
   // var req_data = req.query
@@ -75,6 +75,8 @@ ProjectRouter.get("/my_project", async (req, res) => {
     flag,
     dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode
   );
+  // console.log(project_data);
+  
   var data = {
     lang: lang,
     user_type,
