@@ -387,9 +387,9 @@
                 optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="${hasAns ? ansVal : ''}" onchange="saveData('${btnData}', $(this).val())" required="">`
                 break;
             case 'A':
-                console.log('<%= flag == "I" ? "E" : "F" %>', 'Flag---------')
+                console.log('<%= flag %>', 'Flag---------')
                 // setTimeout(() => {
-                    getCalActDtls(option_val, '<%= flag == "I" ? "E" : "F" %>').then(function (actData) {
+                    getCalActDtls(option_val, '<%= flag %>').then(function (actData) {
                         // console.log(actData, 'here');
                         var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="getCalEmiTypeDtls(this, ${hasAns ? ansVal : 0}, ${emiVal > 0 ? emiVal : 0}, ${unitVal > 0 ? unitVal : 0}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Activity</option>`
                         if(actData.length > 0){
@@ -466,7 +466,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_emi_type_ajax',
-            data: {type_id, act_id, flag: '<%= flag == "I" ? "E" : "F" %>'},
+            data: {type_id, act_id, flag: '<%= flag %>'},
             beforeSend: function(){
                 $('.loader-wrapper').show()
             },
@@ -512,7 +512,7 @@
         $.ajax({
             method:'POST',
             url: '/get_cal_unit_list_ajax',
-            data: {type_id, act_id, emi_type_id, year: 0, flag: '<%= flag == "I" ? "E" : "F" %>'},
+            data: {type_id, act_id, emi_type_id, year: 0, flag: '<%= flag %>'},
             beforeSend: function(){
                 $('.loader-wrapper').show()
             },
