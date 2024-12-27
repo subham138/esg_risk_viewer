@@ -387,6 +387,7 @@
                 optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="${hasAns ? ansVal : ''}" onchange="saveData('${btnData}', $(this).val())" required="">`
                 break;
             case 'A':
+                console.log('<%= flag == "I" ? "E" : "F" %>', 'Flag---------')
                 // setTimeout(() => {
                     getCalActDtls(option_val, '<%= flag == "I" ? "E" : "F" %>').then(function (actData) {
                         // console.log(actData, 'here');
