@@ -34,7 +34,7 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
     client_id = req.session.user.client_id;
   var data = Buffer.from(enc_data, "base64");
   data = JSON.parse(data),
-  currDate = new Date();
+  currDate = new Date(), currYear = new Date().getFullYear();
 
   var currYrSel = 'a.repo_period, a.scope, SUM(a.tot_co_val_sc1) tot_co_val_sc1, SUM(a.tot_co_val_sc2) tot_co_val_sc2, SUM(a.tot_co_val_sc3) tot_co_val_sc3',
   currYrWhr = null,
@@ -80,8 +80,8 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_3 - 
 
   var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id}`, 'ORDER BY trans_year ASC')
 
-  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id)
-  // console.log(getAllGhgCalDt, 'GHG DT');
+  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, currYear)
+  console.log(getAllGhgCalDt, 'GHG DT');
   
 
   var project_data = await getProjectList(
