@@ -116,21 +116,26 @@
                                     <%
                                     var filterGhgData = allGhgList.filter(gdt => gdt.scope == dt.id)
                                     if(filterGhgData.length > 0){
-                                        var ghgSlNoList = filterGhgData.map(dt => dt.sl_no)
-                                        ghgSlNoList = ghgSlNoList.length > 0 ? [...new Set(ghgSlNoList)] : [];
-                                        ghgSlNoList.forEach(gdt => {
-                                            var filterCalData = filterGhgData.filter(cdt => cdt.sl_no == gdt)
-                                            var totEmiCalVal = 0
-                                            filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
+                                        var ghgQuestIdList = filterGhgData.map(dt => dt.quest_id);
+
+                                        ghgQuestIdList = ghgQuestIdList.length > 0 ? [...new Set(ghgQuestIdList)] : [];
+
+                                        ghgQuestIdList.forEach(qdt => {
+                                            var ghgSlNoList = filterGhgData.filter(fdt => fdt.quest_id == qdt).map(hdt => hdt.sl_no)
+                                            ghgSlNoList = ghgSlNoList.length > 0 ? [...new Set(ghgSlNoList)] : [];
+                                            ghgSlNoList.forEach(gdt => {
+                                                var filterCalData = filterGhgData.filter(cdt => cdt.sl_no == gdt && cdt.quest_id == qdt)
+                                                var totEmiCalVal = 0
+                                                filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
                                         %>
-                                        <div class="accordion custom-span-card" id="accordionDashGhg-<%= scName %>-<%= dt %>">
+                                        <div class="accordion custom-span-card" id="accordionDashGhg-<%= scName %>-<%= gdt %>-<%= qdt %>">
                                             <div class="accordion-item my-3 caruBackCol1">
-                                                <h2 class="accordion-header" id="GhgDashHeading-<%= scName %>-<%= dt %>">
-                                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-<%= scName %>-<%= dt %>" aria-controls="collapseDashGhg-<%= scName %>-<%= dt %>" aria-expanded="false">
+                                                <h2 class="accordion-header" id="GhgDashHeading-<%= scName %>-<%= gdt %>-<%= qdt %>">
+                                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDashGhg-<%= scName %>-<%= gdt %>-<%= qdt %>" aria-controls="collapseDashGhg-<%= scName %>-<%= gdt %>-<%= qdt %>" aria-expanded="false">
                                                         <span class="infoCalLeb"><%= filterCalData.length > 0 ? filterCalData[0].act_name : '' %> - <%= filterCalData.length > 0 ? filterCalData[0].emi_name : '' %> - </span><span class="infoCalVal"> <%= totEmiCalVal.toFixed(2) %> kg CO2e </span>
                                                     </a>
                                                 </h2>
-                                                <div id="collapseDashGhg-<%= scName %>-<%= dt %>" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-<%= scName %>-<%= dt %>" data-bs-parent="#accordionDashGhg-<%= scName %>-<%= dt %>">
+                                                <div id="collapseDashGhg-<%= scName %>-<%= gdt %>-<%= qdt %>" class="accordion-collapse collapse" aria-labelledby="GhgDashHeading-<%= scName %>-<%= gdt %>-<%= qdt %>" data-bs-parent="#accordionDashGhg-<%= scName %>-<%= gdt %>-<%= qdt %>">
                                                     <div class="accordion-body">
                                                         <div class="col-md-12">
                                                             <div class="table-responsive mt-3">
@@ -168,7 +173,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    <% })}else{ %>
+                                    <% 
+                                            })
+                                        })
+                                    }else{ %>
                                         <span class="text-center text-danger">No Data Found</span>
                                     <% } %>
                                 </div>

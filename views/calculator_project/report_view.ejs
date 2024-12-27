@@ -175,7 +175,7 @@
                 if(!$('#checkbox-scope1').is(':checked'))
                     $('#checkbox-scope1').click()
             }, 200);
-            console.log(hasAnimated, 'sadasdasdasd');
+            // console.log(hasAnimated, 'sadasdasdasd');
             
             if (!hasAnimated) {
                 animateProgress();
@@ -191,7 +191,7 @@
         }
     })
     $('#sel_year_quest').on('change', function(){
-        console.log($(this).val());
+        // console.log($(this).val());
         $('#sope-tab .nav-item .nav-link').each(function(i, dt){
             if($(dt).hasClass('active')){
                 $(dt).click($(dt))

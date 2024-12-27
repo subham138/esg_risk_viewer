@@ -399,7 +399,7 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
-                console.log(result);
+                // console.log(result);
                 if(result.suc > 0){
                     var inserTedId = result.lastId.insertId
                     if(trns_id < 1){
@@ -496,7 +496,7 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
-                console.log(result);
+                // console.log(result);
                 if(result.suc > 0){
                     var inserTedId = id > 0 ? id : result.lastId.insertId,
                     new_sl_no = sl_no > 0 ? sl_no : result.sl_no;
@@ -528,7 +528,7 @@
     }
 
     function transPlanLogEdit(e, id, sl_no, year){
-        console.log($(e));
+        // console.log($(e));
         
         var logHtml = $(e).parent().prev('.log-desc').html()
         editorList[`div_editor_${year}`].insertHTML(logHtml)

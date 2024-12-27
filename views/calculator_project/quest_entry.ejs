@@ -117,7 +117,7 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
-                console.log(result);
+                // console.log(result);
                 
             },
             complete: function(){
@@ -141,7 +141,7 @@
             },
             success: function(result){
                 var res = JSON.parse(result);
-                console.log(res);
+                // console.log(res);
                 if(res.suc > 0){
                     if(Object.keys(res.msg).length > 0){
                         $(`${tabId}`).children('.quest-tab-context').empty()
@@ -419,7 +419,7 @@
                     optEle = optEle + `<option value="${dt.id}" ${_selected}>${dt.name}</option>`
                 })
                 optEle = optEle + '</select></div>'
-                console.log($(optEle), '123')
+                // console.log($(optEle), '123')
                 break;
         
             default:
@@ -856,7 +856,7 @@
             co_val.push($(dt).val())
         })
 
-        console.log(repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, '-----------');
+        // console.log(repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, '-----------');
 
         $.ajax({
             method:'POST',
@@ -867,7 +867,7 @@
             },
             success: function(result){
                 var res = result
-                console.log(res);
+                // console.log(res);
                 if(res.suc > 0) window.location.href = window.location.href
                 
             },
@@ -928,7 +928,7 @@
                     var url = window.location.href
                     url = url.split('?')
                     url = url[1]
-                    console.log(url);
+                    // console.log(url);
                     setTimeout(() => {
                         $('#url').val(url)
                     }, 1000);
