@@ -241,7 +241,10 @@
                                                 <div class="accordion-item my-3 caruBackCol1">
                                                     <h2 class="accordion-header" id="clCalHeading${csl}">
                                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${csl}" aria-expanded="false" aria-controls="collapseColVal${csl}">
-                                                            <span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>
+                                                            <p>${qAnsDtCal.length > 0 ? qAnsDtCal[1].quest_ans : ''}</p>
+                                                            <div>
+                                                                <span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>                                                                
+                                                            </div>
                                                         </button>
                                                     </h2>
                                                     <div id="collapseColVal${csl}" class="accordion-collapse collapse" aria-labelledby="clCalHeading${csl}" data-bs-parent="#accordionForIndCal${csl}">

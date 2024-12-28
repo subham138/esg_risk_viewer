@@ -271,6 +271,9 @@ footer.close_nav {
     background-color: transparent;
     border: 1px solid #fff;
     border-bottom: 1px solid #4f216b;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .accordion-button:not(.collapsed) {
     color: #4f216b;
@@ -280,6 +283,15 @@ footer.close_nav {
     border-bottom-width: 0px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
+}
+.accordion-button::after {
+    position: absolute;
+    right: 20px;
+    top: 35%;
+    bottom: auto;
+}
+.accordion-button p{
+    margin-bottom: 0px;
 }
 
 .progress-container {

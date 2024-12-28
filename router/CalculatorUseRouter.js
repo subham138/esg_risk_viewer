@@ -152,8 +152,8 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND end_flag = 'N'`)
 
   var table_name = 'td_ghg_quest',
-  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
-  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans}', '${user.user_id}', '${dateTime}')`,
+    fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans.split("'").join("\\'")}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
+    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans.split("'").join("\\'")}', '${user.user_id}', '${dateTime}')`,
   whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
