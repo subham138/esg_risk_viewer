@@ -151,7 +151,7 @@
 
                         divContentElemt = divContentElemt + '<div class="col-sm-9 cust-quest-scroll"><div class="tab-content" id="v-pills-tabContent">'
                         $.each(Object.keys(res.msg), function (i, dt) {
-                            var tab_id = dt.split(' ').join('_').split("'").join("")
+                            var tab_id = dt.split(' ').join('_').split("'").join("").split(',').join('')
                             divElement = divElement + `<a class="nav-link ${i == 0 ? 'active' : ''}" id="${tab_id}_tab" data-bs-toggle="pill" href="#${tab_id}" role="tab" aria-controls="${tab_id}" aria-selected="false">${dt}</a>`
                             divContentElemt = divContentElemt + `<div class="tab-pane fade bounceInRight animated ${i == 0 ? 'active show' : ''}" id="${tab_id}" role="tabpanel" aria-labelledby="${tab_id}_tab">`
                             if(res.msg[dt].length > 0){
@@ -209,8 +209,10 @@
                                         $.each(totCalRow, function(ci, csl){
                                             var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0, questPrevData = '';
 
-                                            var qAnsDtCal = res.quest_ans_sec[dt].filter(asDt => asDt.end_flag != 'N' && asDt.pro_sl_no == csl);
+                                            var qAnsDtCal = res.quest_ans_sec[dt].filter(asDt => asDt.end_flag != 'N' && asDt.pro_sl_no == csl && asDt.quest_seq.charAt(2) == subParentSeq.charAt(2));
                                             var totEmiCalVal = 0
+                                            // console.log(qAnsDtCal, 'qAnsDtCal', csl, dt, subParentSeq);
+                                            
                                             filterCalDtNew.forEach(tfDt => totEmiCalVal += tfDt.co_val);
 
                                             var last_quest_ans = qAnsDtCal.filter(ldt => ldt.quest_type == 'Y')
@@ -237,17 +239,17 @@
                                             questPrevData = questPrevData + `</div>`
                                             
                                             accordionEle = accordionEle + `
-                                            <div class="accordion custom-span-card" id="accordionForIndCal${csl}">
+                                            <div class="accordion custom-span-card" id="accordionForIndCal${csl}-${lastTabId}">
                                                 <div class="accordion-item my-3 caruBackCol1">
-                                                    <h2 class="accordion-header" id="clCalHeading${csl}">
-                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${csl}" aria-expanded="false" aria-controls="collapseColVal${csl}">
+                                                    <h2 class="accordion-header" id="clCalHeading${csl}-${lastTabId}">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${csl}-${lastTabId}" aria-expanded="false" aria-controls="collapseColVal${csl}-${lastTabId}">
                                                             <p>${qAnsDtCal.length > 0 ? qAnsDtCal[1].quest_ans : ''}</p>
                                                             <div>
-                                                                <span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>                                                                
+                                                                <span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} tCO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>                                                                
                                                             </div>
                                                         </button>
                                                     </h2>
-                                                    <div id="collapseColVal${csl}" class="accordion-collapse collapse" aria-labelledby="clCalHeading${csl}" data-bs-parent="#accordionForIndCal${csl}">
+                                                    <div id="collapseColVal${csl}-${lastTabId}" class="accordion-collapse collapse" aria-labelledby="clCalHeading${csl}-${lastTabId}" data-bs-parent="#accordionForIndCal${csl}-${lastTabId}">
                                                         <div class="accordion-body row">
                                                             ${questPrevData}
                                                             <div class="col-md-12">
@@ -823,7 +825,7 @@
             var emi_val = $($(dt).children()[1]).find('input').val() > 0 ? $($(dt).children()[1]).find('input').val() : 0
             var emi_fact = $($(dt).children()[2]).find('input').val() > 0 ? $($(dt).children()[2]).find('input').val() : 0
             
-            var co2 = emi_val * emi_fact
+            var co2 = (emi_val * emi_fact) / 1000
             totCo2 = parseFloat(totCo2) + parseFloat(co2)
             $($(dt).children()[3]).find('input').val(co2.toFixed(2))
             $(`#tot_emi_cal_${id}`).text(totCo2.toFixed(2))

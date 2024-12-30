@@ -36,7 +36,7 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
   data = JSON.parse(data),
   currDate = new Date(), currYear = new Date().getFullYear();
 
-  var currYrSel = 'a.repo_period, a.scope, SUM(a.tot_co_val_sc1) tot_co_val_sc1, SUM(a.tot_co_val_sc2) tot_co_val_sc2, SUM(a.tot_co_val_sc3) tot_co_val_sc3',
+  var currYrSel = 'a.repo_period, SUM(a.tot_co_val_sc1) tot_co_val_sc1, SUM(a.tot_co_val_sc2) tot_co_val_sc2, SUM(a.tot_co_val_sc3) tot_co_val_sc3',
   currYrWhr = null,
   currYrFrm = `(
 SELECT repo_period, scope, SUM(co_val) tot_co_val_sc1, 0 tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 1
@@ -45,43 +45,46 @@ SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_c
 UNION
 SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 3
 ) a`,
-  currYrOrder = 'GROUP BY a.repo_period, a.scope HAVING a.repo_period IS NOT null';
+  currYrOrder = 'GROUP BY a.repo_period HAVING a.repo_period IS NOT null';
   var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
+
+  console.log(currYearCalData, 'Curr Year Data');
+  
 
 var dashScopeCalData = await db_Select(`SUM(a.less_yr_sc1) less_yr_sc1, SUM(a.grt_year_sc1) grt_year_sc1, SUM(a.less_year_sc2) less_yr_sc2, SUM(a.grt_year_sc2) grt_year_sc2, SUM(a.less_year_sc3) less_yr_sc3, SUM(a.grt_year_sc3) grt_year_sc3`, `(
 SELECT COUNT(trans_year) less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
 FROM td_trans_plan
-WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_1 - act_sc_1) <= 0
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag = 'Y' AND (path_sc_1 - act_sc_1) <= 0
 UNION
 SELECT 0 less_yr_sc1, COUNT(trans_year) grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
 FROM td_trans_plan
-WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_1 - act_sc_1) > 0
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag = 'Y' AND (path_sc_1 - act_sc_1) > 0
 UNION
 SELECT 0 less_yr_sc1, 0 grt_year_sc1, COUNT(trans_year) less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
 FROM td_trans_plan
-WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_2 - act_sc_2) <= 0
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag = 'Y' AND (path_sc_2 - act_sc_2) <= 0
 UNION
 SELECT 0 less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, COUNT(trans_year) grt_year_sc2, 0 less_year_sc3, 0 grt_year_sc3
 FROM td_trans_plan
-WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_2 - act_sc_2) > 0
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag = 'Y' AND (path_sc_2 - act_sc_2) > 0
 UNION
 SELECT 0 less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, COUNT(trans_year) less_year_sc3, 0 grt_year_sc3
 FROM td_trans_plan
-WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_2 - act_sc_2) <= 0
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag = 'Y' AND (path_sc_2 - act_sc_2) <= 0
 UNION
 SELECT 0 less_yr_sc1, 0 grt_year_sc1, 0 less_year_sc2, 0 grt_year_sc2, 0 less_year_sc3, COUNT(trans_year) grt_year_sc3
 FROM td_trans_plan
-WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND (path_sc_3 - act_sc_3) > 0
+WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag = 'Y' AND (path_sc_3 - act_sc_3) > 0
 )a`, null, null)
   
   // console.log(currYearCalData);
 
   
 
-  var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id}`, 'ORDER BY trans_year ASC')
+  var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id} AND active_flag = 'Y'`, 'ORDER BY trans_year ASC')
 
   var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, currYear)
-  console.log(getAllGhgCalDt, 'GHG DT');
+  // console.log(getAllGhgCalDt, 'GHG DT');
   
 
   var project_data = await getProjectList(
@@ -249,6 +252,15 @@ CalcUserRouter.post('/trans_val_save_ajax', async (req, res) => {
       break;
   }
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
+  res.send(res_dt)
+})
+
+CalcUserRouter.post('/trans_val_del_ajax', async (req, res) => {
+  var data = req.body,
+    user = req.session.user,
+    dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+
+  var res_dt = await db_Insert('td_trans_plan', `active_flag = "N", modified_by = '${user.user_id}', modified_dt = '${dateTime}'`, null, `id = ${data.id}`, 1)
   res.send(res_dt)
 })
 

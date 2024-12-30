@@ -154,6 +154,10 @@
                             <a onclick="ceateNoteModal(this, '<%= dt.trans_year %>')" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                                 <i class="icofont icofont-clip-board"></i>
                             </a>
+                            <a onclick="delTransPlan(this, '<%= dt.id %>')" class="del-note-custom" data-bs-toggle="modal"
+                                data-bs-target="#addNotesModal" data-bs-original-title="" title="Delete Transition Plan">
+                                <i class="icofont icofont-trash text-danger"></i>
+                            </a>
                           </td>
                         </tr>
                         <tr>
@@ -222,6 +226,10 @@
                         <td class="vertical-align-center border-none-tab-custom" rowspan="2">
                             <a onclick="ceateNoteModal(this, $('#act_sc1_1').val())" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                                 <i class="icofont icofont-clip-board"></i>
+                            </a>
+                            <a onclick="delTransPlan(this, $('#trns_id_1').val())" class="del-note-custom" data-bs-toggle="modal"
+                                data-bs-target="#addNotesModal" data-bs-original-title="" title="Delete Transition Plan">
+                                <i class="icofont icofont-trash text-danger"></i>
                             </a>
                         </td>
                     </tr>
@@ -355,6 +363,9 @@
                 <td class="vertical-align-center border-none-tab-custom" rowspan="2">
                     <a onclick="ceateNoteModal(this, $('#act_sc1_${totRow+1}').val())" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                         <i class="icofont icofont-clip-board"></i>
+                    </a>
+                    <a onclick="delTransPlan(this, $('#trns_id_${totRow + 1}').val())" class="del-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Delete Transition Plan">
+                        <i class="icofont icofont-trash text-danger"></i>
                     </a>
                 </td>
             </tr>
@@ -544,4 +555,32 @@
         editorList = {}
         $(this).detach()
     });
+
+    async function delTransPlan(e, id){
+        console.log($(e));
+        
+        var proj_id = $('#proj_id').val();
+        var text = 'Are you sure, you want to delete?',
+            title = "You won't be able to revert this!";
+        if (await inititate_sweet_conf_alert(text, title) > 0) {
+            $.ajax({
+                method:'POST',
+                url: '/trans_val_del_ajax',
+                data: { id },
+                beforeSend: function () {
+                    $('.loader-wrapper').show()
+                },
+                success: function (result) {
+                    // console.log(result);
+                    if (result.suc > 0) {
+                        $(e).parent().parent().next().detach()
+                        $(e).parent().parent().detach()
+                    }
+                },
+                complete: function () {
+                    $('.loader-wrapper').hide()
+                }
+            })
+        }
+    }
 </script>

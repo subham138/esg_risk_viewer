@@ -254,6 +254,11 @@ footer.close_nav {
     color: #bb8a32;
     cursor: pointer;
 }
+.del-note-custom i {
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
 .cust-hr{
     height: 2px !important;
     background-color: #dbc5e7;
