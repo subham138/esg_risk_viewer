@@ -189,7 +189,7 @@ module.exports = {
                     }
                     try{
                         var calQuestList = await db_Select('a.*, b.input_label, b.input_heading, b.input_type', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.proj_year='${proj_year}' AND a.client_id=${client_id} AND a.scope=${scope_id} AND a.project_id=${proj_id} AND b.sec_id = ${dt.id}`, `ORDER BY a.pro_sl_no, a.quest_seq`)
-                        console.log(calQuestList);
+                        // console.log(calQuestList);
                         
                         calQuestDt[dt.sec_name] = calQuestList.suc > 0 ? (calQuestList.msg.length > 0 ? calQuestList.msg : []) : []
                     }catch(err){

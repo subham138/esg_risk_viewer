@@ -10,7 +10,7 @@ CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
   currDate = new Date(),
   yearList = YEAR_LIST;
   var currYear = currDate.getFullYear()
-  yearList.includes(currYear) ? '' : yearList.push(currYear)
+  yearList.includes(currYear) ? '' : yearList.unshift(currYear)
     var data = {
         header: "Manage User",
         scope_list,
@@ -34,16 +34,16 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
     client_id = req.session.user.client_id;
   var data = Buffer.from(enc_data, "base64");
   data = JSON.parse(data),
-  currDate = new Date(), currYear = new Date().getFullYear();
+  currDate = new Date(), selYear = data.sel_year ? data.sel_year : new Date().getFullYear();
 
   var currYrSel = 'a.repo_period, SUM(a.tot_co_val_sc1) tot_co_val_sc1, SUM(a.tot_co_val_sc2) tot_co_val_sc2, SUM(a.tot_co_val_sc3) tot_co_val_sc3',
   currYrWhr = null,
   currYrFrm = `(
-SELECT repo_period, scope, SUM(co_val) tot_co_val_sc1, 0 tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 1
+SELECT repo_period, scope, SUM(co_val) tot_co_val_sc1, 0 tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${selYear}' AND scope = 1
 UNION
-SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 2
+SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${selYear}' AND scope = 2
 UNION
-SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currDate.getFullYear()}' AND scope = 3
+SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${selYear}' AND scope = 3
 ) a`,
   currYrOrder = 'GROUP BY a.repo_period HAVING a.repo_period IS NOT null';
   var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
@@ -83,7 +83,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
 
   var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id} AND active_flag = 'Y'`, 'ORDER BY trans_year ASC')
 
-  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, currYear)
+  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, selYear)
   // console.log(getAllGhgCalDt, 'GHG DT');
   
 
@@ -99,7 +99,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
   cal_act = await getCalAct(0, 0, data.flag == 'IC' ? 'E' : 'F'),
   yearList = YEAR_LIST;
   var currYear = currDate.getFullYear()
-  yearList.includes(currYear) ? '' : yearList.push(currYear)
+  yearList.includes(currYear) ? '' : yearList.unshift(currYear)
 
   // console.log(data.flag, 'Flag');
   
@@ -126,6 +126,8 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
     year_list: yearList,
     curr_yr_cal_dt: currYearCalData.suc > 0 ? currYearCalData.msg : [],
     currYear,
+    selYear,
+    enc_data,
     trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : [],
     allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
     dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : []
@@ -134,15 +136,15 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
 })
 
 CalcUserRouter.post('/cal_quest_save', async (req, res) => {
-  var enc_dt = req.body.enc_dt, quest_ans = req.body.quest_ans, dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), currDate = dateFormat(new Date(), 'yyyy-mm-dd'), user = req.session.user;
+  var enc_dt = req.body.enc_dt, quest_ans = req.body.quest_ans, sel_year = req.body.sel_year, dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), currDate = dateFormat(new Date(), 'yyyy-mm-dd'), user = req.session.user;
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
 
-  var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = 'N' AND a.quest_seq != '1.'`, null)
+  var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND proj_year = ${sel_year} AND a.end_flag = 'N' AND a.quest_seq != '1.'`, null)
 
   // console.log(ansChk, 'Chk DT');
 
-  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
+  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
 
   // console.log(maxQuestSlNo, 'Max CHk');
   
@@ -152,11 +154,11 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   
   
 
-  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND end_flag = 'N'`)
+  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND proj_year = ${sel_year} AND end_flag = 'N'`)
 
   var table_name = 'td_ghg_quest',
-    fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans.split("'").join("\\'")}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
-    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans.split("'").join("\\'")}', '${user.user_id}', '${dateTime}')`,
+    fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans.split("'").join("\\'")}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, proj_year, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
+    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${sel_year}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans.split("'").join("\\'")}', '${user.user_id}', '${dateTime}')`,
   whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -183,17 +185,17 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
 
-  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${mode_quest_id} AND scope = ${data.scope_id}`)
+  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${mode_quest_id} AND proj_year = ${repo_period} AND scope = ${data.scope_id}`)
 
   var table_name = 'td_ghg_quest',
-  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${mode_quest_val}', repo_start_year = '${repo_period}', repo_start_month = '${strt_month}', repo_start_date = 0, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, entry_dt, quest_id, quest_type, quest_seq, quest_ans, repo_start_year, repo_start_month, repo_start_date, created_by, created_dt)',
-  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${mode_quest_val}', '${repo_period}', '${strt_month}', 0, '${user.user_id}', '${dateTime}')`,
+  fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${mode_quest_val}', repo_start_year = '${repo_period}', repo_start_month = '${strt_month}', repo_start_date = 0, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, proj_year, entry_dt, quest_id, quest_type, quest_seq, quest_ans, repo_start_year, repo_start_month, repo_start_date, created_by, created_dt)',
+  values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${repo_period}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${mode_quest_val}', '${repo_period}', '${strt_month}', 0, '${user.user_id}', '${dateTime}')`,
   whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var quest_dt = await db_Insert(table_name, fields, values, whr, flag)
   
   if(cal_val.length > 0){
-    var max_sl_no_dt = await db_Select('IF(MAX(sl_no) > 0, MAX(sl_no), 0)+1 next_sl_no', 'td_ghg_quest_cal', `scope=${data.scope_id} AND client_id = ${user.client_id} AND project_id=${data.proj_id} AND quest_id=${quest_id}`, null)
+    var max_sl_no_dt = await db_Select('IF(MAX(sl_no) > 0, MAX(sl_no), 0)+1 next_sl_no', 'td_ghg_quest_cal', `scope=${data.scope_id} AND client_id = ${user.client_id} AND project_id=${data.proj_id} AND quest_id=${quest_id} AND repo_period = ${repo_period}`, null)
     var i = 0
     for(let dt of cal_val){
       if(co_val[i] > 0){
@@ -209,6 +211,21 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
 
     try{
       await db_Insert('td_ghg_quest a, md_cal_form_builder b', `a.end_flag = 'Y', a.modified_by = '${user.user_id}', a.modified_dt = '${dateTime}'`, null, `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.quest_seq LIKE "${subSeq}%" AND a.end_flag = 'N'`, 1)
+    }catch(err){
+      console.log(err);
+    }
+
+    // TRANS PLAN INSERT/UPDATE VALUE //
+    try{
+      var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.proj_id} AND scope = ${data.sec_id} AND repo_period = ${repo_period}`,
+      trans_input_field = data.sec_id == 1 ? 'act_sc_1' : data.sec_id == 2 ? 'act_sc_2' : 'act_sc_3',
+      chk_trns_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id = ${data.proj_id} AND scope = ${data.sec_id} AND repo_period = ${repo_period}`, null);
+      var trns_table_name = `td_trans_plan`,
+      trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${data.emi_year}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
+      trns_values = `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, (${tot_trans_query}), '${user.user_id}', '${dateTime}')`,
+      trns_whr = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `id = ${chk_trns_dt.msg[0].id}` : null,
+      trns_flag = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? 1 : 0;
+      await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
     }catch(err){
       console.log(err);
     }

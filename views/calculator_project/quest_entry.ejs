@@ -112,7 +112,7 @@
         $.ajax({
             method:'POST',
             url: '/cal_quest_save',
-            data: {enc_dt: quest_enc_dt, quest_ans},
+            data: {enc_dt: quest_enc_dt, quest_ans, sel_year: $('#sel_year_quest').val()},
             beforeSend: function(){
                 $('.loader-wrapper').show()
             },
@@ -578,13 +578,14 @@
             monthOpt += `<option value="${dt}">${dt}</option>`
         });
         var reportingSelect = `
-        <div class="col-md-6 m-t-10">
+        <input type="hidden" id="repo_period_${id}" name="repo_period" value="${$('#sel_year_quest').val()}">
+        <!-- <div class="col-md-6 m-t-10">
             <label class="form-label float-start" for="repo_period_${id}">Reporting Period</label>
             <select class="form-select" id="repo_period_${id}" name="repo_period" required="" onchange="changeRepoPer(this, ${id})">
                 <option selected="" value="">Select Reporting Period</option>
                 ${reportingOpt}
             </select>
-        </div>
+        </div> -->
         `
         var monthSelect = `
         <div class="col-md-6 m-t-10">
@@ -596,11 +597,11 @@
         </div>
         `
         var tableEleData = `
-        <div class="row" id="emiEntryTab-${id}" style="display:none;">
+        <div class="row" id="emiEntryTab-${id}">
             ${reportingSelect}
             ${monthSelect}
             <div class="col-md-12 mt-4 emi-table">
-                <table class="table table-bordered" id="userTable${id}" style="display:none;">
+                <table class="table table-bordered" id="userTable${id}">
                     <thead>
                         <tr>
                             <th>Mode</th>
@@ -663,7 +664,7 @@
                 $(`#userTable${lat_table_id} tbody`).append(`
                 <tr>
                     <td>
-                        <span id="input-mode-span-${lat_table_id}"></span>
+                        <span id="input-mode-span-${lat_table_id}">${$('#sel_year_quest').val()}</span>
                         <input type="hidden" name="mode_quest_id" id="mode_quest_id_${lat_table_id}" value="${id}">
                         <input type="hidden" name="mode_quest_val" id="mode_quest_val_${lat_table_id}" value="${flag}">
                         <input type="hidden" id="act_id_tab_${lat_table_id}" value="${act_id}">
@@ -827,8 +828,8 @@
             
             var co2 = (emi_val * emi_fact) / 1000
             totCo2 = parseFloat(totCo2) + parseFloat(co2)
-            $($(dt).children()[3]).find('input').val(co2.toFixed(2))
-            $(`#tot_emi_cal_${id}`).text(totCo2.toFixed(2))
+            $($(dt).children()[3]).find('input').val(co2.toFixed(4))
+            $(`#tot_emi_cal_${id}`).text(totCo2.toFixed(4))
         })
     }
 
