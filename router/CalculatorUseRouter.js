@@ -35,20 +35,22 @@ CalcUserRouter.get('/cal_proj_report_view', async (req, res) => {
   var data = Buffer.from(enc_data, "base64");
   data = JSON.parse(data),
   currDate = new Date(), selYear = data.sel_year ? data.sel_year : new Date().getFullYear();
+  
+  var currYear = currDate.getFullYear()
 
   var currYrSel = 'a.repo_period, SUM(a.tot_co_val_sc1) tot_co_val_sc1, SUM(a.tot_co_val_sc2) tot_co_val_sc2, SUM(a.tot_co_val_sc3) tot_co_val_sc3',
   currYrWhr = null,
   currYrFrm = `(
-SELECT repo_period, scope, SUM(co_val) tot_co_val_sc1, 0 tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${selYear}' AND scope = 1
+SELECT repo_period, scope, SUM(co_val) tot_co_val_sc1, 0 tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currYear}' AND scope = 1
 UNION
-SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${selYear}' AND scope = 2
+SELECT repo_period, scope, 0 tot_co_val_sc1, SUM(co_val) tot_co_val_sc2, 0 tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currYear}' AND scope = 2
 UNION
-SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${selYear}' AND scope = 3
+SELECT repo_period, scope, 0 tot_co_val_sc1, 0 tot_co_val_sc2, SUM(co_val) tot_co_val_sc3 FROM td_ghg_quest_cal WHERE project_id = '${data.proj_id}' AND repo_period = '${currYear}' AND scope = 3
 ) a`,
   currYrOrder = 'GROUP BY a.repo_period HAVING a.repo_period IS NOT null';
   var currYearCalData = await db_Select(currYrSel, currYrFrm, currYrWhr, currYrOrder)
 
-  console.log(currYearCalData, 'Curr Year Data');
+  // console.log(currYearCalData, 'Curr Year Data');
   
 
 var dashScopeCalData = await db_Select(`SUM(a.less_yr_sc1) less_yr_sc1, SUM(a.grt_year_sc1) grt_year_sc1, SUM(a.less_year_sc2) less_yr_sc2, SUM(a.grt_year_sc2) grt_year_sc2, SUM(a.less_year_sc3) less_yr_sc3, SUM(a.grt_year_sc3) grt_year_sc3`, `(
@@ -83,7 +85,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
 
   var transData = await db_Select('*', 'td_trans_plan', `proj_id=${data.proj_id} AND client_id = ${client_id} AND active_flag = 'Y'`, 'ORDER BY trans_year ASC')
 
-  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, selYear)
+  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, currYear)
   // console.log(getAllGhgCalDt, 'GHG DT');
   
 
@@ -98,7 +100,6 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
   var scope_list = SCOPE_LIST,
   cal_act = await getCalAct(0, 0, data.flag == 'IC' ? 'E' : 'F'),
   yearList = YEAR_LIST;
-  var currYear = currDate.getFullYear()
   yearList.includes(currYear) ? '' : yearList.unshift(currYear)
 
   // console.log(data.flag, 'Flag');
