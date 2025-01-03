@@ -102,7 +102,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
   yearList = YEAR_LIST;
   yearList.includes(currYear) ? '' : yearList.unshift(currYear)
 
-  // console.log(data.flag, 'Flag');
+  console.log(data.dec_flag, 'Flag');
   
 
   var res_data = {
@@ -121,7 +121,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
     )}`,
     flag: data.flag == 'I' ? 'E' : 'F',
     cal_lang_flag: req.session.user.cal_lang_flag,
-    flag_name: PROJECT_LIST[data.flag],
+    flag_name: PROJECT_LIST[data.dec_flag],
     scope_list,
     cal_act: cal_act.suc > 0 ? cal_act.msg : [],
     year_list: yearList,

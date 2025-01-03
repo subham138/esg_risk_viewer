@@ -135,7 +135,7 @@
     <script>
         function redirectToPage(id, sec_id, ind_id, proj_name, route) {
             if (sec_id > 0 && ind_id > 0) {
-                window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>' }))}`
+                window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>', dec_flag: '<%= dec_flag %>' }))}`
                 // window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
             } else {
                 window.location.href = `/proj_work?id=${id}&flag=<%= enc_dt %>`

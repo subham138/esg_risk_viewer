@@ -86,7 +86,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     flag,
     dec_flag,
     dateFormat,
-    flag_name: PROJECT_LIST[flag],
+    flag_name: PROJECT_LIST[dec_flag],
   };
   res.render("projects/view", data);
 });
