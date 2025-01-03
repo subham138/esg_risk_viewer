@@ -95,10 +95,10 @@
                             </td>
                           <td>
                             <div class="drop-item form-group">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_1 %></span>
                                 <% }else{ %>
-                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></span>
+                                    <span class="form-label-edit"><%= isCurrYearData ? (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0) : dt.act_sc_1 %></span>
                                 <% } %>
                                 <input type="text" value="<%= !isCurrYearData ? dt.act_sc_1 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0) %>" name="act_sc1" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc1_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc1')" style="display: none;">
                                 <% if(!isCurrYearData && dt.trans_year > currYear){ %>
@@ -114,10 +114,10 @@
                           </td>
                           <td>
                             <div class="drop-item form-group">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_2 %></span>
                                 <% }else{ %>
-                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></span>
+                                    <span class="form-label-edit"><%= isCurrYearData ? (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0) : dt.act_sc_2 %></span>
                                 <% } %>
                                 <input type="text" value="<%= !isCurrYearData ? dt.act_sc_2 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0) %>" name="act_sc2" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc2_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc2')" style="display: none;">
                                 <% if(!isCurrYearData && dt.trans_year > currYear){ %>
@@ -133,10 +133,10 @@
                           </td>
                           <td>
                             <div class="drop-item form-group">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_3 %></span>
                                 <% }else{ %>
-                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></span>
+                                    <span class="form-label-edit"><%= isCurrYearData ? (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0) : dt.act_sc_3 %></span>
                                 <% } %>
                                 <input type="text" value="<%= !isCurrYearData ? dt.act_sc_3 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0) %>" name="act_sc3" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc3_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc3')" style="display: none;">
                                 <% if(!isCurrYearData && dt.trans_year > currYear){ %>

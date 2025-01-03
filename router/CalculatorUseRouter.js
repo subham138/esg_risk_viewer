@@ -218,15 +218,19 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
 
     // TRANS PLAN INSERT/UPDATE VALUE //
     try{
-      var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.proj_id} AND scope = ${data.sec_id} AND repo_period = ${repo_period}`,
-      trans_input_field = data.sec_id == 1 ? 'act_sc_1' : data.sec_id == 2 ? 'act_sc_2' : 'act_sc_3',
-      chk_trns_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id = ${data.proj_id} AND scope = ${data.sec_id} AND repo_period = ${repo_period}`, null);
+      var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.proj_id} AND scope = ${data.scope_id} AND repo_period = ${repo_period}`,
+      trans_input_field = data.scope_id == 1 ? 'act_sc_1' : data.scope_id == 2 ? 'act_sc_2' : 'act_sc_3',
+      chk_trns_dt = await db_Select('id', 'td_trans_plan', `proj_id = ${data.proj_id} AND trans_year = ${repo_period}`, null);
+      console.log(chk_trns_dt, 'chk_trns_dt');
+      
       var trns_table_name = `td_trans_plan`,
-      trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${data.emi_year}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
-      trns_values = `(${user.client_id}, ${data.proj_id}, ${data.emi_year}, (${tot_trans_query}), '${user.user_id}', '${dateTime}')`,
+      trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${repo_period}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
+      trns_values = `(${user.client_id}, ${data.proj_id}, ${repo_period}, (${tot_trans_query}), '${user.user_id}', '${dateTime}')`,
       trns_whr = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `id = ${chk_trns_dt.msg[0].id}` : null,
       trns_flag = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? 1 : 0;
-      await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
+      var insDt = await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
+      console.log(insDt, 'insDt');
+      
     }catch(err){
       console.log(err);
     }
@@ -338,6 +342,21 @@ CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
         flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
         res_dt = await db_Insert(table_name, fields, values, whr, flag)
         i++
+      }
+
+      // TRANS PLAN INSERT/UPDATE VALUE //
+      try{
+        var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${req_data.project_id} AND scope = ${req_data.sec_id} AND repo_period = ${req_data.repo_period}`,
+        trans_input_field = req_data.sec_id == 1 ? 'act_sc_1' : req_data.sec_id == 2 ? 'act_sc_2' : 'act_sc_3',
+        chk_trns_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id = ${req_data.project_id} AND scope = ${data.sec_id} AND repo_period = ${req_data.repo_period}`, null);
+        var trns_table_name = `td_trans_plan`,
+        trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${req_data.repo_period}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
+        trns_values = `(${user.client_id}, ${req_data.project_id}, ${req_data.repo_period}, (${tot_trans_query}), '${user.user_id}', '${dateTime}')`,
+        trns_whr = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `id = ${chk_trns_dt.msg[0].id}` : null,
+        trns_flag = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? 1 : 0;
+        await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
+      }catch(err){
+        console.log(err);
       }
     }
     // console.log(req_data.url, 'URL');
