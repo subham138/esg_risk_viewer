@@ -1,5 +1,5 @@
 const CalcUserRouter = require('express').Router(),
-{ getCalQuestUserDt, getCalAct, getGhgCalList } = require('../modules/CalculatorModule'),
+{ getCalQuestUserDt, getCalAct, getGhgCalList, getGhgQuestList } = require('../modules/CalculatorModule'),
 { SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select, db_Delete } = require('../modules/MasterModule'),
 { getProjectList } = require('../modules/ProjectModule'),
 dateFormat = require('dateformat');
@@ -87,7 +87,8 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
 
   var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, currYear)
   // console.log(getAllGhgCalDt, 'GHG DT');
-  
+
+  var getGhgQuestData = await getGhgQuestList(data.proj_id, client_id, currYear)
 
   var project_data = await getProjectList(
     data.proj_id,
@@ -131,6 +132,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
     enc_data,
     trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : [],
     allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
+    ghg_quest_list: getGhgQuestData.suc > 0 ? (getGhgQuestData.msg.length > 0 ? getGhgQuestData.msg : []) : [],
     dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : []
   };
   res.render("calculator_project/report_view", res_data)
@@ -143,17 +145,22 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
 
   var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND proj_year = ${sel_year} AND a.end_flag = 'N' AND a.quest_seq != '1.'`, null)
 
-  console.log(ansChk, 'Chk DT');
+  // console.log(ansChk, 'Chk DT');
 
-  var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
+  // var maxQuestSlNo =  await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND b.scope_id = ${data.quest_sec_id} AND a.end_flag = '${ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? 'N' : 'Y') : 'Y'}'`, null)
+
+  // // console.log(maxQuestSlNo, 'Max CHk');
+  
+
+  // maxQuestSlNo = ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no) : 1) : (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1)) : 1
+  // console.log(maxQuestSlNo, 'sl_no');
+  
+  var maxQuestSlNo = await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND b.scope_id = ${data.quest_sec_id} AND a.quest_id = '${data.quest_id}'`, null)
 
   console.log(maxQuestSlNo, 'Max CHk');
   
 
-  maxQuestSlNo = ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no) : 1) : (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1)) : 1
-  // console.log(maxQuestSlNo, 'sl_no');
-  
-  
+  maxQuestSlNo = maxQuestSlNo.suc > 0 && maxQuestSlNo.msg.length > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1
 
   var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND proj_year = ${sel_year} AND end_flag = 'N'`)
 

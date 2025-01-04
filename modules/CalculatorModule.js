@@ -213,5 +213,13 @@ module.exports = {
             var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.scope, a.sl_no`)
             resolve(calVal)
         })
+    },
+    getGhgQuestList: (proj_id, client_id, period) => {
+        return new Promise(async (resolve, reject) => {
+            var calSel = `*`,
+                calWhr = `a.client_id = ${client_id} AND a.project_id = ${proj_id} AND a.proj_year = ${period}`;
+            var calVal = await db_Select(calSel, 'td_ghg_quest a', calWhr, `ORDER BY a.scope, a.pro_sl_no`)
+            resolve(calVal)
+        })
     }
 }

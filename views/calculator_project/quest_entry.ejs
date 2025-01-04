@@ -416,7 +416,7 @@
                 // optEle = optEle + `<input class="form-control" id="${label}" name="${label}" type="text" value="" required="">`
                 break;
             case 'Y':
-                var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quaterly'}, {id: 'M', name: 'Monthly'}]
+                var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quarterly'}, {id: 'M', name: 'Monthly'}]
                 optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id}, ${quest_sec_id})"><option value="">Select Mode</option>`
                 $.each(year_opt, function(i, dt){
                     var _selected = ''
