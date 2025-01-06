@@ -103,7 +103,7 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
   yearList = YEAR_LIST;
   yearList.includes(currYear) ? '' : yearList.unshift(currYear)
 
-  console.log(data.dec_flag, 'Flag');
+  // console.log(data.dec_flag, 'Flag');
   
 
   var res_data = {
@@ -155,7 +155,7 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   // maxQuestSlNo = ansChk.suc > 0 && ansChk.msg.length > 0 ? (ansChk.msg[0].tot_row > 0 ? (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no) : 1) : (maxQuestSlNo.suc > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1)) : 1
   // console.log(maxQuestSlNo, 'sl_no');
   
-  var maxQuestSlNo = await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND b.scope_id = ${data.quest_sec_id} AND a.quest_id = '${data.quest_id}'`, null)
+  var maxQuestSlNo = await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND a.quest_id = '${data.quest_id}'`, null)
 
   console.log(maxQuestSlNo, 'Max CHk');
   
@@ -195,7 +195,7 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
 
   var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${mode_quest_id} AND proj_year = ${repo_period} AND scope = ${data.scope_id}`)
 
-  console.log(chk_dt, 'chk_dt');
+  // console.log(chk_dt, 'chk_dt');
   
 
   var table_name = 'td_ghg_quest',
@@ -205,20 +205,23 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var quest_dt = await db_Insert(table_name, fields, values, whr, flag)
 
-  console.log(quest_dt, 'Quest DT');
+  // console.log(quest_dt, 'Quest DT');
   
   
   if(cal_val.length > 0){
     var max_sl_no_dt = await db_Select('IF(MAX(sl_no) > 0, MAX(sl_no), 0)+1 next_sl_no', 'td_ghg_quest_cal', `scope=${data.scope_id} AND client_id = ${user.client_id} AND project_id=${data.proj_id} AND quest_id=${quest_id} AND repo_period = ${repo_period}`, null)
 
-    console.log(max_sl_no_dt, 'Max SL NO');
+    var questData = await db_Select('sec_id', 'md_cal_form_builder', `id = ${quest_id}`, null)
+    var sec_id = questData.suc > 0 && questData.msg.length > 0 ? questData.msg[0].sec_id : 0
+
+    // console.log(max_sl_no_dt, 'Max SL NO');
     
     var i = 0
     for(let dt of cal_val){
       if(co_val[i] > 0){
         var table_name = 'td_ghg_quest_cal',
         fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
-        values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${data.sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
+        values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
         whr = null,
         flag = 0;
         res_dt = await db_Insert(table_name, fields, values, whr, flag)
@@ -237,7 +240,7 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
       var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.proj_id} AND scope = ${data.scope_id} AND repo_period = ${repo_period}`,
       trans_input_field = data.scope_id == 1 ? 'act_sc_1' : data.scope_id == 2 ? 'act_sc_2' : 'act_sc_3',
       chk_trns_dt = await db_Select('id', 'td_trans_plan', `proj_id = ${data.proj_id} AND trans_year = ${repo_period}`, null);
-      console.log(chk_trns_dt, 'chk_trns_dt');
+      // console.log(chk_trns_dt, 'chk_trns_dt');
       
       var trns_table_name = `td_trans_plan`,
       trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${repo_period}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
@@ -245,7 +248,7 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
       trns_whr = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `id = ${chk_trns_dt.msg[0].id}` : null,
       trns_flag = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? 1 : 0;
       var insDt = await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
-      console.log(insDt, 'insDt');
+      // console.log(insDt, 'insDt');
       
     }catch(err){
       console.log(err);
@@ -330,12 +333,33 @@ CalcUserRouter.post('/save_trans_plan_note_ajax', async (req, res) => {
 
 CalcUserRouter.post('/delete_ghg_ext_cal_mod_ajax', async (req, res) => {
   const {enc_dt} = req.body,
-  client_id = req.session.user.client_id;
+  client_id = req.session.user.client_id,
+  user = req.session.user,
+  dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
   var res_dt = await db_Delete('td_ghg_quest_cal', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND sl_no = ${data.sl_no} AND sec_id = ${data.sec_id} AND act_id = ${data.act_id}`)
   if(res_dt.suc > 0){
-    var cal_quest_del = await db_Delete('td_ghg_quest', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND pro_sl_no = ${data.sl_no} AND end_flag = 'Y'`)
+    var cal_quest_del = await db_Delete('td_ghg_quest', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND pro_sl_no = ${data.sl_no} AND end_flag = 'Y' AND quest_seq LIKE "${data.parent_id}.${data.sub_parent_id}%"`)
+  }
+
+  // TRANS PLAN INSERT/UPDATE VALUE //
+  try{
+    var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.project_id} AND scope = ${data.scope} AND repo_period = ${data.repo_period}`,
+    trans_input_field = data.scope == 1 ? 'act_sc_1' : data.scope == 2 ? 'act_sc_2' : 'act_sc_3',
+    chk_trns_dt = await db_Select('id', 'td_trans_plan', `proj_id = ${data.project_id} AND trans_year = ${data.repo_period}`, null);
+    // console.log(chk_trns_dt, 'chk_trns_dt');
+    
+    var trns_table_name = `td_trans_plan`,
+    trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${data.repo_period}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
+    trns_values = `(${user.client_id}, ${data.proj_id}, ${data.repo_period}, (${tot_trans_query}), '${user.user_id}', '${dateTime}')`,
+    trns_whr = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `id = ${chk_trns_dt.msg[0].id}` : null,
+    trns_flag = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? 1 : 0;
+    var insDt = await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
+    // console.log(insDt, 'insDt');
+    
+  }catch(err){
+    console.log(err);
   }
   res.send(res_dt)
 })
