@@ -46917,3 +46917,13 @@ img.icon-img-tripple {
 .question-box{
   margin-bottom: 20px;
 }
+.cust-floating-btn{
+  position: fixed;
+  bottom: 25px;
+  right: 27px;
+  background: #7639a4;
+  color: #fff;
+}
+.cust-floating-btn:hover{
+  border: 1px solid #7639a4;
+}

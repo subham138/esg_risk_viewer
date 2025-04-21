@@ -234,10 +234,10 @@
                                     <form method="POST" action="/save_proj_work" class="needs-validation">
                                         <div class="row g-3 py-3">
                                             <div class="col-md-6">
-                                                <label for="sec_id">
+                                                <label for="sec_id_1">
                                                     <%= lang.manage.sector %>
                                                 </label>
-                                                <select class="form-select" id="sec_id" name="sec_id" required="">
+                                                <select class="form-select" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
                                                     <option selected="" value="">
                                                         <%= lang.manage.sec_select %>
                                                     </option>
@@ -252,29 +252,29 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <label for="ind_id">
+                                                <label for="ind_id_1">
                                                     <%= lang.manage.indus %>
                                                 </label>
-                                                <select class="form-select" id="ind_id" name="ind_id" required="">
+                                                <select class="form-select" id="ind_id_1" name="ind_id_1" required="">
                                                     <option selected="" value="">
                                                         <%= lang.manage.ind_select %>
                                                     </option>
                                                 </select>
                                             </div>
                                             <div class="col-md-12 select2-drpdwn mb-2">
-                                                <label for="bus_id">
+                                                <label for="bus_id_1">
                                                     <%= lang.manage.bus_act %>
                                                 </label>
-                                                <select id="bus_id" name="bus_id"
+                                                <select id="bus_id_1" name="bus_id_1"
                                                     class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                                     <option value="">Select Business Activity(ies)</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-12 select2-drpdwn mb-2">
-                                                <label for="location_id">
+                                                <label for="location_id_1">
                                                     <%= lang.manage.location %>
                                                 </label>
-                                                <select id="location_id" name="location_id"
+                                                <select id="location_id_1" name="location_id_1"
                                                     class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                                     <option value="">Select Location</option>
                                                     <% if(loc_list.msg.length> 0){
@@ -294,6 +294,7 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="input_seq" value="1">
                                         <input type="hidden" name="id" id="projWorkId" value="<%= id > 0 ? id : 0 %>">
                                         <input type="hidden" name="proj_id" id="projWorkPId"
                                             value="<%= proj_id > 0 ? proj_id : 0 %>">
@@ -307,7 +308,7 @@
                                             <%# } %>
                                     </form>
                                     <% } %>
-                                    <button type="button" class="btn btn-pill btn-custom">
+                                    <button type="button" class="btn btn-pill cust-floating-btn">
                                         <i class="fa fa-user-plus"></i> Add new Project Information
                                     </button>
                         </div>
@@ -454,11 +455,13 @@
     </script>
 
     <script>
-        $('#sec_id').on('change', function () {
+        function changeSector(e) {
+            console.log($(e));
+            
             $.ajax({
                 method: 'GET',
                 url: '/get_ind_list_ajax',
-                data: { sec_id: $(this).val(), flag: $('#flag').val() },
+                data: { sec_id: $(e).val(), flag: $('#flag').val() },
                 dataType: 'html',
                 beforeSend: function () {
                     $('.loader-wrapper').show()
@@ -567,6 +570,73 @@
         });
 
 
+    </script>
+
+    <script>
+        $('.cust-floating-btn').on('click', function () {
+            var element = `<div class="row g-3 py-3">
+                <div class="col-md-6">
+                    <label for="sec_id_1">
+                        <%= lang.manage.sector %>
+                    </label>
+                    <select class="form-select" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
+                        <option selected="" value="">
+                            <%= lang.manage.sec_select %>
+                        </option>
+                        <% if(sec_data.msg.length> 0){
+                            sec_data.msg.forEach(dt => {
+                            var selected = '';
+                            if(project_data.sec_id)
+                            if(project_data.sec_id == dt.id) selected = 'selected'; %>
+                            <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+                            </option>
+                            <% }) } %>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="ind_id_1">
+                        <%= lang.manage.indus %>
+                    </label>
+                    <select class="form-select" id="ind_id_1" name="ind_id_1" required="">
+                        <option selected="" value="">
+                            <%= lang.manage.ind_select %>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-12 select2-drpdwn mb-2">
+                    <label for="bus_id_1">
+                        <%= lang.manage.bus_act %>
+                    </label>
+                    <select id="bus_id_1" name="bus_id_1"
+                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                        <option value="">Select Business Activity(ies)</option>
+                    </select>
+                </div>
+                <div class="col-md-12 select2-drpdwn mb-2">
+                    <label for="location_id_1">
+                        <%= lang.manage.location %>
+                    </label>
+                    <select id="location_id_1" name="location_id_1"
+                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                        <option value="">Select Location</option>
+                        <% if(loc_list.msg.length> 0){
+                            var location_list = project_data.length > 0 ?
+                            (project_data.location_busi_act != '' ?
+                            project_data.location_busi_act : '') : '';
+                            location_list = location_list ? location_list.split(',') : [];
+                            loc_list.msg.forEach(dt => {
+                            var selected = '';
+                            if(location_list.length > 0)
+                            if(location_list.includes(dt.location_name)) selected =
+                            'selected'; %>
+                            <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
+                                    %>
+                            </option>
+                            <% }) } %>
+                    </select>
+                </div>
+            </div>`
+        })
     </script>
 
     <%- include('../templates/footer.ejs') %>
