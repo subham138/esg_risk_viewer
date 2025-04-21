@@ -232,69 +232,71 @@
                                 </div>
                                 <% }else{ %>
                                     <form method="POST" action="/save_proj_work" class="needs-validation">
-                                        <div class="row g-3 py-3">
-                                            <div class="col-md-6">
-                                                <label for="sec_id_1">
-                                                    <%= lang.manage.sector %>
-                                                </label>
-                                                <select class="form-select" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
-                                                    <option selected="" value="">
-                                                        <%= lang.manage.sec_select %>
-                                                    </option>
-                                                    <% if(sec_data.msg.length> 0){
-                                                        sec_data.msg.forEach(dt => {
-                                                        var selected = '';
-                                                        if(project_data.sec_id)
-                                                        if(project_data.sec_id == dt.id) selected = 'selected'; %>
-                                                        <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+                                        <div class="projInfo">
+                                            <div class="row g-3 py-3">
+                                                <div class="col-md-6">
+                                                    <label for="sec_id_1">
+                                                        <%= lang.manage.sector %>
+                                                    </label>
+                                                    <select class="form-select" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
+                                                        <option selected="" value="">
+                                                            <%= lang.manage.sec_select %>
                                                         </option>
-                                                        <% }) } %>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="ind_id_1">
-                                                    <%= lang.manage.indus %>
-                                                </label>
-                                                <select class="form-select" id="ind_id_1" name="ind_id_1" required="">
-                                                    <option selected="" value="">
-                                                        <%= lang.manage.ind_select %>
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-12 select2-drpdwn mb-2">
-                                                <label for="bus_id_1">
-                                                    <%= lang.manage.bus_act %>
-                                                </label>
-                                                <select id="bus_id_1" name="bus_id_1"
-                                                    class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                                                    <option value="">Select Business Activity(ies)</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-12 select2-drpdwn mb-2">
-                                                <label for="location_id_1">
-                                                    <%= lang.manage.location %>
-                                                </label>
-                                                <select id="location_id_1" name="location_id_1"
-                                                    class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                                                    <option value="">Select Location</option>
-                                                    <% if(loc_list.msg.length> 0){
-                                                        var location_list = project_data.length > 0 ?
-                                                        (project_data.location_busi_act != '' ?
-                                                        project_data.location_busi_act : '') : '';
-                                                        location_list = location_list ? location_list.split(',') : [];
-                                                        loc_list.msg.forEach(dt => {
-                                                        var selected = '';
-                                                        if(location_list.length > 0)
-                                                        if(location_list.includes(dt.location_name)) selected =
-                                                        'selected'; %>
-                                                        <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
-                                                                %>
+                                                        <% if(sec_data.msg.length> 0){
+                                                            sec_data.msg.forEach(dt => {
+                                                            var selected = '';
+                                                            if(project_data.sec_id)
+                                                            if(project_data.sec_id == dt.id) selected = 'selected'; %>
+                                                            <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+                                                            </option>
+                                                            <% }) } %>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="ind_id_1">
+                                                        <%= lang.manage.indus %>
+                                                    </label>
+                                                    <select class="js-example-basic-multiple" id="ind_id_1" name="ind_id_1" onchange="chnageInd(this)" required="" multiple="multiple">
+                                                        <option selected="" value="">
+                                                            <%= lang.manage.ind_select %>
                                                         </option>
-                                                        <% }) } %>
-                                                </select>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12 select2-drpdwn mb-2">
+                                                    <label for="bus_id_1">
+                                                        <%= lang.manage.bus_act %>
+                                                    </label>
+                                                    <select id="bus_id_1" name="bus_id_1"
+                                                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                                        <option value="">Select Business Activity(ies)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12 select2-drpdwn mb-2">
+                                                    <label for="location_id_1">
+                                                        <%= lang.manage.location %>
+                                                    </label>
+                                                    <select id="location_id_1" name="location_id_1"
+                                                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                                        <option value="">Select Location</option>
+                                                        <% if(loc_list.msg.length> 0){
+                                                            var location_list = project_data.length > 0 ?
+                                                            (project_data.location_busi_act != '' ?
+                                                            project_data.location_busi_act : '') : '';
+                                                            location_list = location_list ? location_list.split(',') : [];
+                                                            loc_list.msg.forEach(dt => {
+                                                            var selected = '';
+                                                            if(location_list.length > 0)
+                                                            if(location_list.includes(dt.location_name)) selected =
+                                                            'selected'; %>
+                                                            <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
+                                                                    %>
+                                                            </option>
+                                                            <% }) } %>
+                                                    </select>
+                                                </div>
                                             </div>
+                                            <input type="hidden" name="input_seq" value="1">
                                         </div>
-                                        <input type="hidden" name="input_seq" value="1">
                                         <input type="hidden" name="id" id="projWorkId" value="<%= id > 0 ? id : 0 %>">
                                         <input type="hidden" name="proj_id" id="projWorkPId"
                                             value="<%= proj_id > 0 ? proj_id : 0 %>">
@@ -456,8 +458,19 @@
 
     <script>
         function changeSector(e) {
-            console.log($(e));
-            
+            var selected_sec_id = []
+            $('.projInfo .row').each(function () {
+                if($(this).children().eq(0).children('select').attr('id') != $(e).attr('id')) {
+                    var sel_sec_id = $(this).children().eq(0).children('select').val()
+                    if(sel_sec_id != undefined && sel_sec_id != '')
+                        selected_sec_id.push(sel_sec_id)
+                }
+            })
+            if(selected_sec_id.includes($(e).val())) {
+                $(e).val('')
+                initiate_sweet_alert('', 'Sector already selected', 'danger')
+                return false
+            }
             $.ajax({
                 method: 'GET',
                 url: '/get_ind_list_ajax',
@@ -469,8 +482,8 @@
                 success: function (result) {
                     var res = JSON.parse(result);
                     // console.log(res);
-                    $('#ind_id').empty();
-                    $('#ind_id').append($('<option>', { value: '', text: 'Select Industries' }));
+                    $(e).parent().next().children('select').empty();
+                    $(e).parent().next().children('select').append($('<option>', { value: '', text: 'Select Industries' }));
                     if (res.suc > 0 && res.msg.length > 0) {
                         var ind_id = '<%= project_data ? project_data.ind_id : 0 %>';
                         if (ind_id > 0) {
@@ -478,13 +491,13 @@
                                 var selected = false
                                 if (item.id == ind_id)
                                     selected = true
-                                $('#ind_id').append($('<option>', { value: item.id, text: item.ind_name, selected: selected }));
+                                $(e).parent().next().children('select').append($('<option>', { value: item.id, text: item.ind_name, selected: selected }));
                             });
-                            $('#ind_id').change()
+                            $(e).parent().next().children('select').change()
                         }
                         else
                             $.each(res.msg, function (i, item) {
-                                $('#ind_id').append($('<option>', { value: item.id, text: item.ind_name }));
+                                $(e).parent().next().children('select').append($('<option>', { value: item.id, text: item.ind_name }));
                             });
                     }
                 },
@@ -492,15 +505,17 @@
                     $('.loader-wrapper').hide()
                 }
             })
-        })
+        }
     </script>
 
     <script>
-        $("#ind_id").on("change", function () {
+        function chnageInd(e) {
+            console.log($(e).val(), 'INDUSTRY');
+            
             $.ajax({
                 method: "GET",
                 url: "/get_busi_act_ajax",
-                data: { ind_id: $(this).val(), sec_id: $("#sec_id").val(), flag: $('#flag').val() },
+                data: { ind_id: $(e).val().join(','), sec_id: $(e).parent().prev().children('select').val(), flag: $('#flag').val() },
                 dataType: "html",
                 beforeSend: function () {
                     $(".loader-wrapper").show();
@@ -508,8 +523,8 @@
                 success: function (result) {
                     var res = JSON.parse(result);
                     // console.log(res);
-                    $('#bus_id').empty();
-                    $('#bus_id').append($('<option>', { value: '', text: 'Select Business' }));
+                    $(e).parent().next().children('select').empty();
+                    $(e).parent().next().children('select').append($('<option>', { value: '', text: 'Select Business' }));
                     if (res.suc > 0 && res.msg.length > 0) {
                         var bus_act = '<%= project_data ? (project_data.business_act != "" ? project_data.business_act : "") : "" %>'
                         bus_act = bus_act != "" ? bus_act.split(',') : []
@@ -517,13 +532,13 @@
                             $.each(res.msg, function (i, item) {
                                 var selected = false
                                 if (bus_act.includes(item.busi_act_name)) selected = true
-                                $("#bus_id").append(
+                                $(e).parent().next().children('select').append(
                                     $("<option>", { value: item.id, text: item.busi_act_name, selected: selected })
                                 );
                             });
                         } else {
                             $.each(res.msg, function (i, item) {
-                                $("#bus_id").append(
+                                $(e).parent().next().children('select').append(
                                     $("<option>", { value: item.id, text: item.busi_act_name })
                                 );
                             });
@@ -534,7 +549,7 @@
                     $(".loader-wrapper").hide();
                 },
             });
-        });
+        };
     </script>
 
     <script>
@@ -571,72 +586,106 @@
 
 
     </script>
-
+    
     <script>
         $('.cust-floating-btn').on('click', function () {
-            var element = `<div class="row g-3 py-3">
-                <div class="col-md-6">
-                    <label for="sec_id_1">
-                        <%= lang.manage.sector %>
-                    </label>
-                    <select class="form-select" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
-                        <option selected="" value="">
-                            <%= lang.manage.sec_select %>
-                        </option>
-                        <% if(sec_data.msg.length> 0){
-                            sec_data.msg.forEach(dt => {
-                            var selected = '';
-                            if(project_data.sec_id)
-                            if(project_data.sec_id == dt.id) selected = 'selected'; %>
-                            <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+            var prev_sec_id = $('.projInfo .row:first-child').find('select').eq(0).val(),
+            prev_ind_id = $('.projInfo .row:first-child').find('select').eq(1).val(),
+            prev_bus_id = $('.projInfo .row:first-child').find('select').eq(2).val(),
+            prev_loc_id = $('.projInfo .row:first-child').find('select').eq(3).val();
+            if(prev_sec_id != '' && prev_ind_id.length > 0 && prev_bus_id.length > 0 && prev_loc_id.length > 0) {
+                var i = parseInt($('.projInfo .row').length) + 1
+                var element = `<div class="row g-3 py-3">
+                    <div class="col-md-6">
+                        <label for="sec_id_${i}">
+                            <%= lang.manage.sector %>
+                        </label>
+                        <select class="form-select" id="sec_id_${i}" name="sec_id_${i}" onchange="changeSector(this)" required="">
+                            <option selected="" value="">
+                                <%= lang.manage.sec_select %>
                             </option>
-                            <% }) } %>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="ind_id_1">
-                        <%= lang.manage.indus %>
-                    </label>
-                    <select class="form-select" id="ind_id_1" name="ind_id_1" required="">
-                        <option selected="" value="">
-                            <%= lang.manage.ind_select %>
-                        </option>
-                    </select>
-                </div>
-                <div class="col-md-12 select2-drpdwn mb-2">
-                    <label for="bus_id_1">
-                        <%= lang.manage.bus_act %>
-                    </label>
-                    <select id="bus_id_1" name="bus_id_1"
-                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                        <option value="">Select Business Activity(ies)</option>
-                    </select>
-                </div>
-                <div class="col-md-12 select2-drpdwn mb-2">
-                    <label for="location_id_1">
-                        <%= lang.manage.location %>
-                    </label>
-                    <select id="location_id_1" name="location_id_1"
-                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                        <option value="">Select Location</option>
-                        <% if(loc_list.msg.length> 0){
-                            var location_list = project_data.length > 0 ?
-                            (project_data.location_busi_act != '' ?
-                            project_data.location_busi_act : '') : '';
-                            location_list = location_list ? location_list.split(',') : [];
-                            loc_list.msg.forEach(dt => {
-                            var selected = '';
-                            if(location_list.length > 0)
-                            if(location_list.includes(dt.location_name)) selected =
-                            'selected'; %>
-                            <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
-                                    %>
+                            <% if(sec_data.msg.length> 0){
+                                sec_data.msg.forEach(dt => {
+                                var selected = '';
+                                if(project_data.sec_id)
+                                if(project_data.sec_id == dt.id) selected = 'selected'; %>
+                                <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+                                </option>
+                                <% }) } %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ind_id_${i}">
+                            <%= lang.manage.indus %>
+                        </label>
+                        <select class="form-select js-example-basic-multiple" id="ind_id_${i}" name="ind_id_${i}" onchange="chnageInd(this)" required="" multiple="multiple">
+                            <option selected="" value="">
+                                <%= lang.manage.ind_select %>
                             </option>
-                            <% }) } %>
-                    </select>
-                </div>
-            </div>`
+                        </select>
+                    </div>
+                    <div class="col-md-12 select2-drpdwn mb-2">
+                        <label for="bus_id_${i}">
+                            <%= lang.manage.bus_act %>
+                        </label>
+                        <select id="bus_id_${i}" name="bus_id_${i}"
+                            class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                            <option value="">Select Business Activity(ies)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 select2-drpdwn mb-2">
+                        <label for="location_id_${i}">
+                            <%= lang.manage.location %>
+                        </label>
+                        <select id="location_id_${i}" name="location_id_${i}"
+                            class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                            <option value="">Select Location</option>
+                            <% if(loc_list.msg.length> 0){
+                                var location_list = project_data.length > 0 ?
+                                (project_data.location_busi_act != '' ?
+                                project_data.location_busi_act : '') : '';
+                                location_list = location_list ? location_list.split(',') : [];
+                                loc_list.msg.forEach(dt => {
+                                var selected = '';
+                                if(location_list.length > 0)
+                                if(location_list.includes(dt.location_name)) selected =
+                                'selected'; %>
+                                <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
+                                        %>
+                                </option>
+                                <% }) } %>
+                        </select>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <button type="button" class="btn btn-danger float-end" onclick="delNewIndInfo(this)">Delete</button>
+                    </div>
+                    <hr>
+                </div>`
+                $('.projInfo').prepend(element)
+                setTimeout(() => {
+                    $('#ind_id_' + i).select2({
+                        allowClear: true,
+                        width: '100%'
+                    });
+                    $('#bus_id_' + i).select2({
+                        allowClear: true,
+                        width: '100%'
+                    });
+                    $('#location_id_' + i).select2({
+                        allowClear: true,
+                        width: '100%'
+                    });
+                }, 500);
+            }else{
+                initiate_sweet_alert('', 'Please select sector, industry, business activity and location first', 'danger')
+            }
         })
+
+        async function delNewIndInfo(e){
+            if (await inititate_sweet_conf_alert('Warning', 'Are you sure you want to delete?') > 0) {
+                $(e).parent().parent().remove()
+            }
+        }
     </script>
 
     <%- include('../templates/footer.ejs') %>
