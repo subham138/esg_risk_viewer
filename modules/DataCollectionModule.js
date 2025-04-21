@@ -5,10 +5,15 @@ module.exports = {
   getSusDiscList: (sec_id, ind_id, top_id, flag = "I") => {
     return new Promise(async (resolve, reject) => {
       var select =
-          "a.id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.top_id, a.sl_no, a.ind_agn, a.metric, a.catg, a.unit, a.code, e.topic_name, a.words, a.info_title, a.info_desc",
+          "DISTINCT a.id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.top_id, a.sl_no, a.ind_agn, a.metric, a.catg, a.unit, a.code, e.topic_name, a.words, f.point_codes info_title",
         table_name =
-          "td_sus_dis_top_met a, md_sector b, md_industries c, md_industries_topics d, md_topic e",
-        whr = `a.sec_id=b.id AND a.ind_id=c.id AND b.id=c.sec_id AND a.top_id=d.id AND d.topic_id=e.id AND a.repo_flag = '${flag}' ${
+          `td_sus_dis_top_met a
+          JOIN md_sector b ON a.sec_id=b.id
+          JOIN md_industries c ON a.ind_id=c.id AND b.id=c.sec_id
+          JOIN md_industries_topics d ON a.top_id=d.id
+          JOIN md_topic e ON d.topic_id=e.id
+          LEFT JOIN md_data_point_dt f ON a.id=f.sus_dis_top_met_id`,
+        whr = `a.repo_flag = '${flag}' ${
           sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ""
         } ${ind_id > 0 ? `AND a.ind_id = ${ind_id}` : ""} ${
           top_id > 0 ? `AND a.top_id = ${top_id}` : ""
@@ -225,4 +230,36 @@ module.exports = {
       resolve(res_dt);
     });
   },
+  getDataPoint: (flag) => {
+    return new Promise(async (resolve, reject) => {
+      var select = "DISTINCT a.sec_id, a.ind_id, c.ind_name, b.sec_name, COUNT(a.id) tot_ind_point_entry",
+        table_name = `md_data_point_dt a, md_sector b, md_industries c`,
+        whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.repo_flag = '${flag}'`,
+        order = 'GROUP BY a.sec_id, a.ind_id';
+      var res_dt = await db_Select(select, table_name, whr, order);
+      resolve(res_dt)
+    })
+  },
+  getDataPointListAjax: (flag, sec_id, ind_id) => {
+
+  },
+  getDataPointList: (flag, sec_id = 0, ind_id = 0) => {
+    return new Promise(async (resolve, reject) => {
+      var select = "a.id sus_id, a.ind_id, a.code, b.id, b.repo_flag, b.sec_id, b.sus_dis_top_met_id, b.repo_flag_id, b.point_codes, e.topic_name",
+        table_name = `td_sus_dis_top_met a
+        JOIN md_industries_topics d ON a.top_id=d.id AND a.repo_flag=d.repo_flag AND a.ind_id=d.ind_id JOIN md_topic e ON d.topic_id=e.id AND d.repo_flag=e.repo_flag
+        LEFT JOIN md_data_point_dt b ON a.id=b.sus_dis_top_met_id AND a.ind_id=b.ind_id AND a.sec_id=b.sec_id AND a.repo_flag=b.repo_flag ${sec_id > 0 ? `AND b.sec_id = ${sec_id}` : ''}`,
+        whr = `a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = ${sec_id}` : ''} ${sec_id > 0 ? `AND a.ind_id = ${ind_id}` : ''}`,
+        order = `HAVING a.code != '' ORDER BY a.id, b.id`;
+      var res_dt = await db_Select(select, table_name, whr, order);
+      
+      var select = "id, repo_flag, img_path",
+        table_name = "md_data_point",
+        whr = `repo_flag = '${flag}'`,
+        order = null;
+      var res_pic_dt = await db_Select(select, table_name, whr, order);
+      res_dt["flag_img"] = res_pic_dt.suc > 0 ? (res_pic_dt.msg.length > 0 ? res_pic_dt.msg[0].img_path : '') : '';
+      resolve(res_dt);
+    });
+  }
 };

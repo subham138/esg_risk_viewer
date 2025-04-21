@@ -319,6 +319,19 @@ MasterRouter.post("/topic_save", async (req, res) => {
   }
 });
 
+MasterRouter.get("/topic_del", async (req, res) => {
+  var id = req.query.id,
+  data= req.query,
+    res_dt;
+  if (id > 0) {
+    res_dt = await db_Delete('md_topic', `id = ${id}`);
+    req.session.message = { type: "danger", message: "Data deleted successfully" };
+  }else{
+    req.session.message = { type: "danger", message: "Data not deleted" };
+  }
+  res.redirect(`/topic?flag=${encodeURIComponent(data.flag)}`);
+});
+
 MasterRouter.get("/busi_act", async (req, res) => {
   var enc_dt = req.query.flag,
   flag = new Buffer.from(enc_dt, 'base64').toString();

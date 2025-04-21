@@ -28,7 +28,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 my-2">
-                            <a href="/cal_sec_type_edit?id=0" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new Section Type" data-bs-original-title="Edit">Add New Section Type</a>
+                            <a href="/cal_sec_type_edit?id=0&flag=<%= enc_flag %>" class="btn btn-pill btn-outline-primary btn-air-primary float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Add new Section Type" data-bs-original-title="Edit">Add New Section Type</a>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -49,10 +49,10 @@
                                             <td><%= i %></td>
                                             <td>Scope <%= dt.scope_id %></td>
                                             <td><%= dt.sec_name %></td>
-                                            <td><a href="/cal_sec_type_edit?id=<%= dt.id %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                            <td><a href="/cal_sec_type_edit?id=<%= dt.id %>&flag=<%= enc_flag %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
-                                            <a href="/cal_sec_type_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                            <a href="/cal_sec_type_del?id=<%= dt.id %>&flag=<%= enc_flag %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
                                                 <i class="icofont icofont-ui-delete"></i> Delete
                                             </a>
                                             </td>

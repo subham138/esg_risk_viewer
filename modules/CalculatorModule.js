@@ -152,18 +152,18 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getCalQuestUserDt: (scope_id = 1, proj_id, client_id, proj_year) => {
+    getCalQuestUserDt: (scope_id = 1, proj_id, client_id, proj_year, flag = 'E') => {
         return new Promise(async (resolve, reject) => {
             var res_dt = {suc:0, msg:[]}
             var select = 'id, sec_name',
-            whr = `scope_id = ${scope_id}`,
+            whr = `scope_id = ${scope_id} AND lang_flag = '${flag}'`,
             order = null;
             var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
             if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
                 var newData = {}, calNewData = {}, calQuestDt = {};
                 for(let dt of cal_sec_dt.msg){
                     var q_select = `a.id, a.scope_id, a.sec_id pro_sec_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
-                    q_whr = `a.id = b.quest_id AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
+                    q_whr = `a.id = b.quest_id AND a.lang_flag = '${flag}' AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
                     var qstDtlsAndLogic = await db_Select(q_select, 'md_cal_form_builder a, md_cal_form_build_logic b', q_whr, null)
                     if(qstDtlsAndLogic.suc > 0 && qstDtlsAndLogic.msg.length > 0){
                         for(let qdt of qstDtlsAndLogic.msg){
@@ -171,7 +171,7 @@ module.exports = {
                                 var o_select = 'id, option_name',
                                 o_whr = `scope_id= ${scope_id} AND sec_id= ${dt.id} AND builder_id=${qdt.id}`;
                                 var opt_val = await db_Select(o_select, 'md_cal_form_builder_option', o_whr, null)
-                                console.log(opt_val);
+                                // console.log(opt_val);
                                 qdt['qu_option'] = opt_val.suc > 0 && opt_val.msg.length > 0 ? opt_val.msg : []
                             }else{
                                 qdt['qu_option'] = []
@@ -179,7 +179,7 @@ module.exports = {
                         }
                     }
                     try{
-                        var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name`,
+                        var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sequence, b.parent_id, b.sub_parent_id`,
                         calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.scope = ${scope_id} AND a.client_id = ${client_id} AND a.repo_period='${proj_year}' AND b.sec_id = ${dt.id}`;
                         var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.sl_no`)
                         calNewData[dt.sec_name] = calVal.suc > 0 ? (calVal.msg.length > 0 ? calVal.msg : []) : []
@@ -189,7 +189,7 @@ module.exports = {
                     }
                     try{
                         var calQuestList = await db_Select('a.*, b.input_label, b.input_heading, b.input_type', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.proj_year='${proj_year}' AND a.client_id=${client_id} AND a.scope=${scope_id} AND a.project_id=${proj_id} AND b.sec_id = ${dt.id}`, `ORDER BY a.pro_sl_no, a.quest_seq`)
-                        console.log(calQuestList);
+                        // console.log(calQuestList);
                         
                         calQuestDt[dt.sec_name] = calQuestList.suc > 0 ? (calQuestList.msg.length > 0 ? calQuestList.msg : []) : []
                     }catch(err){
@@ -206,11 +206,19 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getGhgCalList: (proj_id, client_id) => {
+    getGhgCalList: (proj_id, client_id, period) => {
         return new Promise(async (resolve, reject) => {
-            var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sec_id cal_sec_id`,
-                calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.client_id = ${client_id}`;
+            var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sec_id cal_sec_id, b.sequence, b.parent_id, b.sub_parent_id`,
+                calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.client_id = ${client_id} AND a.repo_period=${period}`;
             var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.scope, a.sl_no`)
+            resolve(calVal)
+        })
+    },
+    getGhgQuestList: (proj_id, client_id, period) => {
+        return new Promise(async (resolve, reject) => {
+            var calSel = `a.*, b.sec_id`,
+                calWhr = `a.quest_id=b.id AND a.client_id = ${client_id} AND a.project_id = ${proj_id} AND a.proj_year = ${period} AND a.end_flag != 'N'`;
+            var calVal = await db_Select(calSel, 'td_ghg_quest a, md_cal_form_builder b', calWhr, `ORDER BY a.scope, a.pro_sl_no`)
             resolve(calVal)
         })
     }

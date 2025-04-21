@@ -95,58 +95,58 @@
                             </td>
                           <td>
                             <div class="drop-item form-group">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_1 %></span>
                                 <% }else{ %>
-                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0 %></span>
+                                    <span class="form-label-edit"><%= isCurrYearData ? (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0) : dt.act_sc_1 %></span>
                                 <% } %>
                                 <input type="text" value="<%= !isCurrYearData ? dt.act_sc_1 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc1 : 0) %>" name="act_sc1" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc1_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc1')" style="display: none;">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                                 <% }else{ %>
-                                    <script>
+                                    <!-- <script>
                                         $(document).ready(function(){
                                             $('#act_sc1_<%= i %>').change()
                                         })
-                                    </script>
+                                    </script> -->
                                 <% } %>
                             </div>
                           </td>
                           <td>
                             <div class="drop-item form-group">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_2 %></span>
                                 <% }else{ %>
-                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0 %></span>
+                                    <span class="form-label-edit"><%= isCurrYearData ? (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0) : dt.act_sc_2 %></span>
                                 <% } %>
                                 <input type="text" value="<%= !isCurrYearData ? dt.act_sc_2 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc2 : 0) %>" name="act_sc2" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc2_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc2')" style="display: none;">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                                 <% }else{ %>
-                                    <script>
+                                    <!-- <script>
                                         $(document).ready(function(){
                                             $('#act_sc2_<%= i %>').change()
                                         })
-                                    </script>
+                                    </script> -->
                                 <% } %>
                             </div>
                           </td>
                           <td>
                             <div class="drop-item form-group">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <span class="form-label-edit" onclick="editLabel(this)"><%= dt.act_sc_3 %></span>
                                 <% }else{ %>
-                                    <span class="form-label-edit"><%= curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0 %></span>
+                                    <span class="form-label-edit"><%= isCurrYearData ? (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0) : dt.act_sc_3 %></span>
                                 <% } %>
                                 <input type="text" value="<%= !isCurrYearData ? dt.act_sc_3 : (curr_yr_cal_dt.length > 0 ? curr_yr_cal_dt[0].tot_co_val_sc3 : 0) %>" name="act_sc3" class="<%= !isCurrYearData ? 'edit' : '' %> form-control" id="act_sc3_<%= i %>" onchange="saveTransVal('<%= i %>', $(this).val(), 'aSc3')" style="display: none;">
-                                <% if(!isCurrYearData){ %>
+                                <% if(!isCurrYearData && dt.trans_year > currYear){ %>
                                     <button type="button" class="edit-btn" onclick="editLabel($(this).prev().prev())"><i class="icofont icofont-ui-edit"></i></button>
                                 <% }else{ %>
-                                    <script>
+                                    <!-- <script>
                                         $(document).ready(function(){
                                             $('#act_sc3_<%= i %>').change()
                                         })
-                                    </script>
+                                    </script> -->
                                 <% } %>
                             </div>
                           </td>
@@ -154,6 +154,12 @@
                             <a onclick="ceateNoteModal(this, '<%= dt.trans_year %>')" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                                 <i class="icofont icofont-clip-board"></i>
                             </a>
+                            <% if(dt.trans_year > currYear){ %>
+                            <a onclick="delTransPlan(this, '<%= dt.id %>')" class="del-note-custom" data-bs-toggle="modal"
+                                data-bs-target="#addNotesModal" data-bs-original-title="" title="Delete Transition Plan">
+                                <i class="icofont icofont-trash text-danger"></i>
+                            </a>
+                            <% } %>
                           </td>
                         </tr>
                         <tr>
@@ -223,6 +229,10 @@
                             <a onclick="ceateNoteModal(this, $('#act_sc1_1').val())" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                                 <i class="icofont icofont-clip-board"></i>
                             </a>
+                            <!-- <a onclick="delTransPlan(this, $('#trns_id_1').val())" class="del-note-custom" data-bs-toggle="modal"
+                                data-bs-target="#addNotesModal" data-bs-original-title="" title="Delete Transition Plan">
+                                <i class="icofont icofont-trash text-danger"></i>
+                            </a> -->
                         </td>
                     </tr>
                     <tr>
@@ -356,6 +366,9 @@
                     <a onclick="ceateNoteModal(this, $('#act_sc1_${totRow+1}').val())" class="add-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Add Comments">
                         <i class="icofont icofont-clip-board"></i>
                     </a>
+                    <a onclick="delTransPlan(this, $('#trns_id_${totRow + 1}').val())" class="del-note-custom" data-bs-toggle="modal" data-bs-target="#addNotesModal" data-bs-original-title="" title="Delete Transition Plan">
+                        <i class="icofont icofont-trash text-danger"></i>
+                    </a>
                 </td>
             </tr>
             <tr>
@@ -399,7 +412,7 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
-                console.log(result);
+                // console.log(result);
                 if(result.suc > 0){
                     var inserTedId = result.lastId.insertId
                     if(trns_id < 1){
@@ -450,7 +463,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Add Note for the year ${year}</h5>
+                                <h5 class="modal-title">Comments for Financial Year Ending ${year}</h5>
                                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" data-bs-original-title="" title=""></button>
                             </div>
                             <div class="modal-body">
@@ -464,8 +477,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
-                                <button class="btn btn-primary" type="button" data-bs-original-title="" id="trans_note_save_btn" onclick="saveTransPlanNote(${year})" title="">Save changes</button>
+                                <button class="btn btn-secondary btn-custom" type="button" data-bs-dismiss="modal" data-bs-original-title="" title="">Close</button>
+                                <button class="btn btn-primary btn-custom" type="button" data-bs-original-title="" id="trans_note_save_btn" onclick="saveTransPlanNote(${year})" title="">Save changes</button>
                             </div>
                         </div>
                     </div>
@@ -496,7 +509,7 @@
                 $('.loader-wrapper').show()
             },
             success: function(result){
-                console.log(result);
+                // console.log(result);
                 if(result.suc > 0){
                     var inserTedId = id > 0 ? id : result.lastId.insertId,
                     new_sl_no = sl_no > 0 ? sl_no : result.sl_no;
@@ -528,7 +541,7 @@
     }
 
     function transPlanLogEdit(e, id, sl_no, year){
-        console.log($(e));
+        // console.log($(e));
         
         var logHtml = $(e).parent().prev('.log-desc').html()
         editorList[`div_editor_${year}`].insertHTML(logHtml)
@@ -544,4 +557,32 @@
         editorList = {}
         $(this).detach()
     });
+
+    async function delTransPlan(e, id){
+        // console.log($(e));
+        
+        var proj_id = $('#proj_id').val();
+        var text = 'Are you sure, you want to delete?',
+            title = "You won't be able to revert this!";
+        if (await inititate_sweet_conf_alert(text, title) > 0) {
+            $.ajax({
+                method:'POST',
+                url: '/trans_val_del_ajax',
+                data: { id },
+                beforeSend: function () {
+                    $('.loader-wrapper').show()
+                },
+                success: function (result) {
+                    // console.log(result);
+                    if (result.suc > 0) {
+                        $(e).parent().parent().next().detach()
+                        $(e).parent().parent().detach()
+                    }
+                },
+                complete: function () {
+                    $('.loader-wrapper').hide()
+                }
+            })
+        }
+    }
 </script>

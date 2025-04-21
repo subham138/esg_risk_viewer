@@ -121,6 +121,7 @@
                                         <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
                                     <% }) %>
                                 </select>
+                                <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
                             </div>
                             <div class="col-md-6">
                                 <select class="form-select" id="sec_id" name="sec_id" required>
@@ -152,8 +153,8 @@
                               <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group mb-0">
-                                        <h6 class="label-view" onclick="editLabel(this)"><%= dt.input_label != '' ? dt.input_label : 'Entry Test' %></h6>
-                                        <input type="text" value="<%= dt.input_label != '' ? dt.input_label : '' %>" name="hed_<%= i %>" class="edit form-control" id="hed_<%= i %>" style="display: none;">
+                                        <h6 class="label-view" onclick="editLabel(this)"><%= dt.input_heading != '' ? dt.input_heading : 'Entry Heading' %></h6>
+                                        <input type="text" value="<%= dt.input_heading != '' ? dt.input_heading : '' %>" name="hed_<%= i %>" class="edit form-control" id="hed_<%= i %>" style="display: none;">
                                     </div>
                                 </div>
                                 <div class="col-md-8">
@@ -601,7 +602,7 @@
         $.ajax({
             method:'POST',
             url: '/get_calc_sec_type_list_ajax',
-            data: {scope: $(this).val()},
+            data: {scope: $(this).val(), lang_flag: $('#lang_flag').val()},
             dataType: 'html',
             beforeSend: function(){
                 $('.loader-wrapper').show()

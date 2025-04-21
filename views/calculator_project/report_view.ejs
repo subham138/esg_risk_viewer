@@ -82,13 +82,16 @@
                                 </div>
                                 <div class="tab-pane fade show active" id="ghg" role="tabpanel" aria-labelledby="ghg-tab">
                                     <div class="row align-items-center">
-                                        <div class="col-md-10"></div>
-                                        <div class="col-md-2 p-l-0">
+                                        <div class="col-md-7"></div>
+                                        <div class="col-md-5 p-l-0">
                                             <div class="input-group">
                                                 <!-- <input class="form-control" type="text" placeholder="Email"> -->
+                                                <span class="input-group-text cust-inp-grp">Financial Year Ending</span>
                                                 <select class="form-select btn-pill digits text-center" id="sel_year_quest">
-                                                    <% year_list.forEach(dt => { %>
-                                                        <option value="<%= dt %>"><%= dt %></option>
+                                                    <% year_list.forEach(dt => {
+                                                        var _selected = ''
+                                                        if(selYear == dt) _selected = 'selected' %>
+                                                        <option value="<%= dt %>" <%= _selected %>><%= dt %></option>
                                                     <% }) %>
                                                 </select>
                                                 <span class="input-group-text cust-inp-grp"><i class="icofont icofont-ui-calendar"></i></span>
@@ -175,7 +178,7 @@
                 if(!$('#checkbox-scope1').is(':checked'))
                     $('#checkbox-scope1').click()
             }, 200);
-            console.log(hasAnimated, 'sadasdasdasd');
+            // console.log(hasAnimated, 'sadasdasdasd');
             
             if (!hasAnimated) {
                 animateProgress();
@@ -191,12 +194,17 @@
         }
     })
     $('#sel_year_quest').on('change', function(){
-        console.log($(this).val());
-        $('#sope-tab .nav-item .nav-link').each(function(i, dt){
-            if($(dt).hasClass('active')){
-                $(dt).click($(dt))
+        try{
+            if($(this).val() > 0){
+                var enc_dt = '<%= enc_data %>'
+                var dec_dt = JSON.parse(window.atob(enc_dt))
+                dec_dt['sel_year'] = $(this).val()
+                enc_dt = window.btoa(JSON.stringify(dec_dt))
+                window.location.href = `/cal_proj_report_view?enc_data=${enc_dt}`
             }
-        })
+        }catch(e){
+            console.log(e);
+        }
     })
 </script>
 
