@@ -45,9 +45,24 @@ module.exports = {
                     whr = `a.project_id = b.id AND b.repo_flag = '${flag}' AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''} AND b.active_flag = 'Y' AND b.proj_type='${platform_mode}'`,
                     order = 'ORDER BY b.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
+
+                if(res_dt.suc > 0 && res_dt.msg.length > 0){
+                    for(let dt of res_dt.msg){
+                        var select = 'a.id proj_info_id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.bus_act_id, a.business_act, a.location_busi_act',
+                            table_name = 'td_project_info a, md_sector b, md_industries c',
+                            whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.sec_id=c.sec_id AND a.proj_id = ${dt.id}`,
+                            order = `LIMIT 1`;
+                        var proj_info_dt = await db_Select(select, table_name, whr, order)
+                        if(proj_info_dt.suc > 0 && proj_info_dt.msg.length > 0){
+                            dt['ind_id'] = proj_info_dt.msg[0].ind_id
+                            dt['sec_id'] = proj_info_dt.msg[0].sec_id
+                            dt['business_act'] = proj_info_dt.msg[0].business_act
+                            dt['location_busi_act'] = proj_info_dt.msg[0].location_busi_act
+
+                        }
+                    }
+                }
                 resolve(res_dt)
-
-
             } else {
                 var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
                     table_name = 'td_project a',
@@ -74,6 +89,22 @@ module.exports = {
                         resolve(res_dt)
                     }
                 } else {
+                    if (res_dt.suc > 0 && res_dt.msg.length > 0) {
+                        for (let dt of res_dt.msg) {
+                            var select = 'a.id proj_info_id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.bus_act_id, a.business_act, a.location_busi_act',
+                                table_name = 'td_project_info a, md_sector b, md_industries c',
+                                whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.sec_id=c.sec_id AND a.proj_id = ${dt.id}`,
+                                order = `LIMIT 1`;
+                            var proj_info_dt = await db_Select(select, table_name, whr, order)
+                            if (proj_info_dt.suc > 0 && proj_info_dt.msg.length > 0) {
+                                dt['ind_id'] = proj_info_dt.msg[0].ind_id
+                                dt['sec_id'] = proj_info_dt.msg[0].sec_id
+                                dt['business_act'] = proj_info_dt.msg[0].business_act
+                                dt['location_busi_act'] = proj_info_dt.msg[0].location_busi_act
+
+                            }
+                        }
+                    }
                     resolve(res_dt)
                 }
             }

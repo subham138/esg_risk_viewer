@@ -69,7 +69,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     user_id = req.session.user.user_id;
   var lang = eng_flag.includes(flag) ? en_lang : fr_lang;
 
-  var project_data = await getProjectList(
+  var project_data = await getProjectListUpdated(
     0,
     req.session.user.client_id,
     user_type != "A" && user_type != "C" && user_type != "S" ? user_id : 0,
