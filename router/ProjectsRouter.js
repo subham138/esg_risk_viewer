@@ -475,7 +475,7 @@ ProjectRouter.get("/project_report_view", async (req, res) => {
     data.flag,
     data.proj_id
   );
-  var project_data = await getProjectList(
+  var project_data = await getProjectListUpdated(
     data.proj_id,
     req.session.user.client_id,
     0,

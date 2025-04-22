@@ -78,7 +78,7 @@ module.exports = {
                         var user_dt = await db_Select(select, table_name, whr, order)
                         user_dt.suc > 0 && user_dt.msg.length > 0 ? res_dt.msg[0]['user_list'] = user_dt.msg : ''
 
-                        var select = 'a.id proj_info_id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.bus_act_id, a.business_act, a.location_busi_act',
+                        var select = 'a.id proj_info_id, a.proj_id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.bus_act_id, a.business_act, a.location_busi_act',
                             table_name = 'td_project_info a, md_sector b, md_industries c',
                             whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.sec_id=c.sec_id AND a.proj_id = ${res_dt.msg[0].id}`,
                             order = null;

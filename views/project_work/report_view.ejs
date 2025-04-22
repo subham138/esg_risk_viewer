@@ -44,13 +44,102 @@
     padding-top: 23px;
     } */
   </style>
+  <style>
+    .tabs-wrapper {
+        position: relative;
+    }
+
+    .nav-tabs-scroll {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE 10+ */
+    }
+
+    .nav-tabs-scroll::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari */
+    }
+
+    .scroll-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        z-index: 10;
+        display: none;
+    }
+
+    .scroll-left {
+        left: 0;
+    }
+
+    .scroll-right {
+        right: 0;
+    }
+  </style>
 <script>
     google.charts.load('current', {packages: ['corechart', 'bar', 'line']});
     var fun = {}, i = 1, wordList = {}, totCount ={};
     var editorList= {};
 </script>
+<script>
+    $(document).ready(function () {
+        const $tabContainer = $('.nav-tabs-scroll');
+        const $leftArrow = $('.scroll-left');
+        const $rightArrow = $('.scroll-right');
+
+        function updateArrows() {
+            const scrollLeft = $tabContainer.scrollLeft();
+            const maxScrollLeft = $tabContainer[0].scrollWidth - $tabContainer.outerWidth();
+
+            $leftArrow.toggle(scrollLeft > 0);
+            $rightArrow.toggle(scrollLeft < maxScrollLeft);
+        }
+
+        $leftArrow.click(function () {
+            $tabContainer.animate({ scrollLeft: '-=150' }, 300, updateArrows);
+        });
+
+        $rightArrow.click(function () {
+            $tabContainer.animate({ scrollLeft: '+=150' }, 300, updateArrows);
+        });
+
+        $tabContainer.on('scroll', updateArrows);
+
+        $(window).on('resize', updateArrows);
+        updateArrows(); // Initial check
+    });
+</script>
+<script>
+    function redirectToPage(id, sec_id, ind_id, route) {
+        window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: "<%= projName %>", repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>' }))}`
+    }
+</script>
 <div class="container-fluid">
     <div class="page-header">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="tabs-wrapper">
+                    <button class="scroll-arrow scroll-left">&larr;</button>
+                    <ul class="nav nav-tabs nav-tabs-scroll" id="indShowTab" role="tablist">
+                        <% if(project_data[0].proj_info){
+                            project_data[0].proj_info.forEach(dt=> {
+                                var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
+                                <li class="nav-item"><a class="nav-link <%= sec_id == dt.sec_id && ind_id == dt.ind_id ? 'active' : '' %>" id="<%= ind_name %>-tab" data-bs-toggle="pill" role="tab" aria-controls="<%= ind_name %>" aria-selected="true" onclick="redirectToPage('<%= dt.proj_id %>', '<%= dt.sec_id %>', '<%= dt.ind_id %>', 'project_report_view')"><%= dt.ind_name %></a></li>
+                            <% })
+                        } %>
+                    </ul>
+                    <button class="scroll-arrow scroll-right">&rarr;</button>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-12" id="myHeader">
                 <ul class="nav nav-tabs border-tab nav-primary" id="info-tab" role="tablist">
