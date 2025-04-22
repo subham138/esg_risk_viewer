@@ -46923,7 +46923,21 @@ img.icon-img-tripple {
   right: 27px;
   background: #7639a4;
   color: #fff;
+  z-index: 9;
 }
 .cust-floating-btn:hover{
   border: 1px solid #7639a4;
+}
+.cust-floating-submit-btn{
+  display: block;
+  position: fixed;
+  bottom: 25px;
+  right: 235px;
+  background: #008f00;
+  color: #fff;
+  border: #008f00;
+  z-index: 9;
+}
+.cust-floating-submit-btn:hover {
+  border: 1px solid #008f00;
 }

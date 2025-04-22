@@ -37,6 +37,48 @@ module.exports = {
             }
         })
     },
+    getProjectListUpdated: (id = null, client_id, user_id = null, flag = 'I', platform_mode = 'E') => {
+        return new Promise(async (resolve, reject) => {
+            if (user_id > 0) {
+                var select = 'b.id, b.project_name, b.last_access, b.last_accessed_by',
+                    table_name = 'td_user_project a, td_project b',
+                    whr = `a.project_id = b.id AND b.repo_flag = '${flag}' AND a.user_id = ${user_id} AND a.client_id = '${client_id}' ${id > 0 ? `AND b.id = ${id}` : ''} AND b.active_flag = 'Y' AND b.proj_type='${platform_mode}'`,
+                    order = 'ORDER BY b.id DESC';
+                var res_dt = await db_Select(select, table_name, whr, order)
+                resolve(res_dt)
+
+
+            } else {
+                var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
+                    table_name = 'td_project a',
+                    whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''} AND a.active_flag = 'Y' AND a.proj_type='${platform_mode}'`,
+                    order = 'ORDER BY a.id DESC';
+                var res_dt = await db_Select(select, table_name, whr, order)
+                if (id > 0) {
+                    if (res_dt.suc > 0 && res_dt.msg.length > 0) {
+                        var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_type, b.user_name',
+                            table_name = 'td_user_project a, md_user b',
+                            whr = `a.user_id=b.id AND a.client_id = '${client_id}' AND a.project_id = '${res_dt.msg[0].id}'`,
+                            order = null;
+                        var user_dt = await db_Select(select, table_name, whr, order)
+                        user_dt.suc > 0 && user_dt.msg.length > 0 ? res_dt.msg[0]['user_list'] = user_dt.msg : ''
+
+                        var select = 'a.id proj_info_id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.bus_act_id, a.business_act, a.location_busi_act',
+                            table_name = 'td_project_info a, md_sector b, md_industries c',
+                            whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.sec_id=c.sec_id AND a.proj_id = ${res_dt.msg[0].id}`,
+                            order = null;
+                        var proj_info_dt = await db_Select(select, table_name, whr, order)
+                        proj_info_dt.suc > 0 && proj_info_dt.msg.length > 0 ? res_dt.msg[0]['proj_info'] = proj_info_dt.msg : []
+                        resolve(res_dt)
+                    } else {
+                        resolve(res_dt)
+                    }
+                } else {
+                    resolve(res_dt)
+                }
+            }
+        })
+    },
     saveProject: (data, client_id, user, platform_mode) => {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");

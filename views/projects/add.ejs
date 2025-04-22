@@ -194,32 +194,54 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="info-profile" role="tabpanel" aria-labelledby="profile-info-tab">
-                            <% if(project_data.sec_id> 0 && project_data.ind_id > 0){ %>
-                                <div class="row g-3">
-                                    <div class="col-md-12">
-                                        <p>
-                                            <label class="form-label" for="sec_id">Sector: </label>
-                                            <%= project_data.sec_name %>
-                                        </p>
+                            <% var has_proj_info = project_data.proj_info ? (project_data.proj_info.length > 0 ? true : false) : false;
+                            if(has_proj_info){ %>
+                                <div class="row">
+                                    <div class="col-sm-3 tabs-responsive-side">
+                                        <div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                            <% let i = 0
+                                            project_data.proj_info.forEach(dt => {
+                                                var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
+                                                    <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= ind_name %>_tab" data-bs-toggle="pill" href="#<%= ind_name %>" role="tab" aria-controls="<%= ind_name %>" aria-selected="false"><%= dt.ind_name %></a>
+                                            <% i++; }) %>
+                                        </div>
                                     </div>
-                                    <div class="col-md-12">
-                                        <p>
-                                            <label class="form-label" for="ind_id">Industry: </label>
-                                            <%= project_data.ind_name %>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <p>
-                                            <label class="form-label" for="bus_id">Business Activities: </label>
-                                            <%= project_data.business_act %>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <p>
-                                            <label class="form-label" for="location_id">Locations of Business
-                                                Activities: </label>
-                                            <%= project_data.location_busi_act %>
-                                        </p>
+                                    <div class="col-sm-9">
+                                        <div class="tab-content" id="v-pills-tabContent">
+                                            <% let j=0
+                                            project_data.proj_info.forEach(dt=> {
+                                                var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
+                                                <div class="tab-pane fade bounceInRight animated <%= j == 0 ? 'active show' : '' %>" id="<%= ind_name %>" role="tabpanel" aria-labelledby="<%= ind_name %>_tab">
+                                                    <div class="row g-3">
+                                                        <div class="col-md-12">
+                                                            <p>
+                                                                <label class="form-label" for="sec_id">Sector: </label>
+                                                                <%= dt.sec_name %>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <p>
+                                                                <label class="form-label" for="ind_id">Industry: </label>
+                                                                <%= dt.ind_name %>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <p>
+                                                                <label class="form-label" for="bus_id">Business Activities: </label>
+                                                                <%= dt.business_act %>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <p>
+                                                                <label class="form-label" for="location_id">Locations of Business
+                                                                    Activities: </label>
+                                                                <%= dt.location_busi_act %>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% j++; }) %>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -304,14 +326,14 @@
                                         <input type="hidden" name="dec_flag" value="<%= dec_flag ? dec_flag : '' %>">
                                         <input type="hidden" id="bus_id" name="bus_id" value="0">
                                         <%# if(id> 0){ %>
-                                            <button class="btn btn-pill btn-custom float-end" type="submit"
+                                            <button class="btn btn-pill cust-floating-submit-btn" type="submit"
                                                 id="projWorkSubBtn"
                                                 style="display: <%= id > 0 ? 'block' : 'none' %>;">Submit</button>
                                             <%# } %>
                                     </form>
                                     <% } %>
-                                    <button type="button" class="btn btn-pill cust-floating-btn">
-                                        <i class="fa fa-user-plus"></i> Add new Project Information
+                                    <button type="button" class="btn btn-pill cust-floating-btn" style="display: <%= id > 0 && !has_proj_info ? 'block' : 'none' %>;">
+                                        <i class="fa fa-user-plus"></i> Add a New Sector
                                     </button>
                         </div>
                     </div>
@@ -510,7 +532,7 @@
 
     <script>
         function chnageInd(e) {
-            console.log($(e).val(), 'INDUSTRY');
+            // console.log($(e).val(), 'INDUSTRY');
             
             $.ajax({
                 method: "GET",
@@ -556,7 +578,7 @@
         $("#project_name").on("change", function (e) {
             // console.log(e.target.value);
             var prev_val = "<%= id > 0 ? project_data.project_name.replace(' ', '').toLowerCase() : '' %>", id = $('[name="id"]').val();
-            console.log(id, prev_val, 'HEHEHE')
+            // console.log(id, prev_val, 'HEHEHE')
             if ($(this).val() != '' && $(this).val()) {
                 if (prev_val != $(this).val().replace(' ', '').toLowerCase()) {
                     $.ajax({
@@ -656,6 +678,7 @@
                                 <% }) } %>
                         </select>
                     </div>
+                    <input type="hidden" name="input_seq" value="${i}">
                     <div class="col-md-12 mt-3">
                         <button type="button" class="btn btn-danger float-end" onclick="delNewIndInfo(this)">Delete</button>
                     </div>
