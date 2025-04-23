@@ -56,9 +56,9 @@
                                                 <a href="/build_logic?scope=<%= dt.scope_id %>&type_id=<%= dt.sec_id %>&flag=<%= enc_flag %>" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Build Logic">
                                                     <i class="icofont icofont-ui-edit"></i> Build Logic
                                                 </a>
-                                            <!-- <a href="/cal_type_del?id=<%= dt.id %>" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
-                                                <i class="icofont icofont-ui-delete"></i> Delete
-                                            </a> -->
+                                                <a href="/form_builder_del?scope=<%= dt.scope_id %>&type_id=<%= dt.sec_id %>&enc_flag=<%= enc_flag %>&flag=<%= flag %>" class="btn btn-pill btn-danger btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                                    <i class="icofont icofont-ui-delete"></i> Delete
+                                                </a>
                                             </td>
                                         </tr>
                                         <% i++; })}else{ %>
