@@ -171,7 +171,7 @@ module.exports = {
                                 var o_select = 'id, option_name',
                                 o_whr = `scope_id= ${scope_id} AND sec_id= ${dt.id} AND builder_id=${qdt.id}`;
                                 var opt_val = await db_Select(o_select, 'md_cal_form_builder_option', o_whr, null)
-                                console.log(opt_val);
+                                // console.log(opt_val);
                                 qdt['qu_option'] = opt_val.suc > 0 && opt_val.msg.length > 0 ? opt_val.msg : []
                             }else{
                                 qdt['qu_option'] = []
@@ -179,7 +179,7 @@ module.exports = {
                         }
                     }
                     try{
-                        var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name`,
+                        var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sequence, b.parent_id, b.sub_parent_id`,
                         calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.scope = ${scope_id} AND a.client_id = ${client_id} AND a.repo_period='${proj_year}' AND b.sec_id = ${dt.id}`;
                         var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.sl_no`)
                         calNewData[dt.sec_name] = calVal.suc > 0 ? (calVal.msg.length > 0 ? calVal.msg : []) : []
@@ -208,7 +208,7 @@ module.exports = {
     },
     getGhgCalList: (proj_id, client_id, period) => {
         return new Promise(async (resolve, reject) => {
-            var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sec_id cal_sec_id`,
+            var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sec_id cal_sec_id, b.sequence, b.parent_id, b.sub_parent_id`,
                 calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.client_id = ${client_id} AND a.repo_period=${period}`;
             var calVal = await db_Select(calSel, 'td_ghg_quest_cal a, md_cal_form_builder b, md_cal_act c, md_cal_emi_type d', calWhr, `ORDER BY a.scope, a.sl_no`)
             resolve(calVal)
@@ -216,9 +216,9 @@ module.exports = {
     },
     getGhgQuestList: (proj_id, client_id, period) => {
         return new Promise(async (resolve, reject) => {
-            var calSel = `*`,
-                calWhr = `a.client_id = ${client_id} AND a.project_id = ${proj_id} AND a.proj_year = ${period}`;
-            var calVal = await db_Select(calSel, 'td_ghg_quest a', calWhr, `ORDER BY a.scope, a.pro_sl_no`)
+            var calSel = `a.*, b.sec_id`,
+                calWhr = `a.quest_id=b.id AND a.client_id = ${client_id} AND a.project_id = ${proj_id} AND a.proj_year = ${period} AND a.end_flag != 'N'`;
+            var calVal = await db_Select(calSel, 'td_ghg_quest a, md_cal_form_builder b', calWhr, `ORDER BY a.scope, a.pro_sl_no`)
             resolve(calVal)
         })
     }
