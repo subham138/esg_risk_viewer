@@ -230,4 +230,10 @@ FBRouter.post('/build_logic', async (req, res) => {
     res.redirect('/form_builder')
 })
 
+FBRouter.get('/map_builder_question', async (req, res) => {
+    var data = req.query
+    var res_dt = await db_Select('id, scope_id, sec_id, input_label', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag='${data.flag}'`, null)
+    res.send(res_dt)
+})
+
 module.exports = {FBRouter}
