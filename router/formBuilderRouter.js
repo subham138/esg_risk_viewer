@@ -179,23 +179,23 @@ FBRouter.post('/form_builder_post', async (req, res) => {
 FBRouter.get('/form_builder_del', async (req, res) => {
     var data = req.query
     var res_dt = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope} and sec_id = ${data.type_id} and lang_flag = '${data.flag}'`, null)
-    if (res_dt.suc > 0 && res_dt.msg.length > 0) {
+    if(res_dt.suc > 0 && res_dt.msg.length > 0){
         var builder_ids = res_dt.msg.map(dt => dt.id).join(',')
         var frm_builder_del = await db_Delete('md_cal_form_builder', `id IN (${builder_ids})`)
         if (frm_builder_del.suc > 0) {
             await db_Delete('md_cal_form_builder_option', `builder_id IN (${builder_ids})`)
             await db_Delete('md_cal_form_build_logic', `quest_id IN (${builder_ids})`)
             req.session.message = { type: "success", message: "Data deleted successfully" };
-        } else {
+        }else{
             req.session.message = { type: "danger", message: "Error while deleting Form Builder" };
         }
-    } else {
+    }else{
         req.session.message = { type: "warning", message: "No Data Found" };
     }
     var routing = '/form_builder'
-    if (data.flag != 'F') {
+    if(data.flag != 'F'){
         routing = `/form_builder?f=${data.enc_flag}`
-    } else {
+    }else{
         routing = `/form_builder?flag=${data.enc_flag}`
     }
     res.redirect(routing)
@@ -228,6 +228,12 @@ FBRouter.post('/build_logic', async (req, res) => {
         }
     }
     res.redirect('/form_builder')
+})
+
+FBRouter.get('/map_builder_question', async (req, res) => {
+    var data = req.query
+    var res_dt = await db_Select('id, scope_id, sec_id, input_label', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag='${data.flag}'`, null)
+    res.send(res_dt)
 })
 
 module.exports = {FBRouter}

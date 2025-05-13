@@ -59,7 +59,7 @@ const getBusiActList = (id = null, sec_id = null, ind_id = null, flag = 'I') => 
     return new Promise(async (resolve, reject) => {
         var select = 'a.id, a.sec_id, b.sec_name, a.ind_id, c.ind_name, a.busi_act_name',
         table_name = 'md_busi_act a, md_sector b, md_industries c',
-        whr = id > 0 ? `a.sec_id=b.id AND a.ind_id=c.id AND b.id=c.sec_id AND a.repo_flag = '${flag}' AND a.id = ${id}` : `a.sec_id=b.id AND a.ind_id=c.id AND b.id=c.sec_id AND a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = '${sec_id}'` : ''} ${ind_id > 0 ? `AND a.ind_id = '${ind_id}'` : ''}`, 
+        whr = id > 0 ? `a.sec_id=b.id AND a.ind_id=c.id AND b.id=c.sec_id AND a.repo_flag = '${flag}' AND a.id = ${id}` : `a.sec_id=b.id AND a.ind_id=c.id AND b.id=c.sec_id AND a.repo_flag = '${flag}' ${sec_id > 0 ? `AND a.sec_id = '${sec_id}'` : ''} ${ind_id ? `AND a.ind_id IN (${ind_id})` : ''}`, 
         order = null;
         var res_dt = await db_Select(select, table_name, whr, order)
         resolve(res_dt)
