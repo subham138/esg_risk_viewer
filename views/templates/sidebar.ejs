@@ -429,6 +429,11 @@
             <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink <%= active == 'form_builder' ? (query_params.includes('flag') ? 'cust-active' : '') : '' %>" href="/form_builder?flag=Rg%3D%3D">
               <i class="icofont icofont-ui-note m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Form Build-Fr</span></a>
             </li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink <%= active == 'map_ques' ? (query_params.includes('flag') ? '' : 'cust-active') : '' %>" href="/map_ques?f=Rg%3D%3D">
+              <i class="icofont icofont-abc m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Map Questions</span></a>
+            </li>
+            <!-- <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink" href="/map_ques">
+              <i class="icofont icofont-abc m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Map Questions</span></a></li> -->
             <% } %>
             <% if(user.user_type == 'C' || user.user_type == 'A' || user.user_type == 'E' || user.user_type == 'V'){ %>
               <% if(user.user_type == 'C') { %>
