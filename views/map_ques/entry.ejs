@@ -80,6 +80,17 @@
         font-size: 25px;
         cursor: pointer;
     }
+    #quest_list option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.form-select.dynamic-option {
+  width: 100%;
+}
+
 </style>
 
 <!-- Container-fluid starts-->
@@ -119,7 +130,7 @@
                          <div class="row">
                              <div class="col-md-12 mt-2 dyn-opt-div">
                                <div class="form-group">
-                                 <select class="form-select dynamic-option" name="quest_list" onchange="dynamicQuestSelect(this)">
+                                 <select class="form-select dynamic-option select2" name="quest_list" id="quest_list">
                                    <option value="">Select Question</option>   
                                  </select>
                                 </div>
@@ -134,7 +145,7 @@
          <div class="row">
           <div class="col-sm-12">
             <div class="d-flex justify-content-center flex-column" id="add-card">
-                <div class="card w-75">
+                <div class="card w-75 entry-card">
                     <div class="card-body b-l-success border-3">
                         <h4 class="mb-3">Child</h4>
                         <div class="row">
@@ -143,7 +154,7 @@
                                     <option>Select Scope</option>
                                     <% scope.forEach(dt => {
                                         var _selected = ''
-                                        if(dt.id == scope_id) _selected = 'selected'
+                                        if(dt.id == scopes_id) _selected = 'selected'
                                         %>
                                         <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
                                     <% }) %>
@@ -153,16 +164,16 @@
                            <div class="col-md-4">
                                 <select class="form-select" id="secs_id" name="secs_id" required>
                                     <option>Select Calculator Section Type</option>
-                                    <% console.log(sec_list); sec_list.forEach(dt => {
+                                    <% sec_list.forEach(dt => {
                                         var _selected = ''
-                                        if(dt.id == sec_id) _selected = 'selected'
+                                        if(dt.id == secs_id) _selected = 'selected'
                                         %>
                                         <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
                                     <% }) %>
                                 </select>
                             </div>
                              <div class="col-md-4">
-                                  <select class="form-select dynamic-option" name="quest_list" onchange="dynamicQuestSelect(this)">
+                                  <select class="form-select dynamic-option select2" id="quests_list" name="quests_list">
                                     <option value="">Select Question</option>
                                   </select>
                              </div>
@@ -178,8 +189,6 @@
             </div>
          </div>
         </div>
-        <input type="hidden" name="scope_id" value="<%= scope_id %>">
-        <input type="hidden" name="type_id" value="<%= sec_id %>">
     </form>
 </div>
   <!-- Container-fluid Ends-->
@@ -211,362 +220,153 @@
         })
     })
 
-    function dynamicQuestSelect(e){        
-        var filterData = quest_master_data.filter(dt => dt.id == $(e).val())
-        var seqCardId = $(e).attr('card-id')
-        seqCardId = seqCardId.split('-')[seqCardId.split('-').length - 1]
-        console.log(filterData, '--------');
-        var chkSeqQuestData = cal_logic_data.filter(dt => dt.id == seqCardId).length > 0
-        
-        if($(e).parent().parent().next().closest('.q-opt-dyn').length > 0){
-            $(e).parent().parent().next().closest('.q-opt-dyn').detach()
-            $(e).parent().parent().next().closest('.action-div').detach()
-            $(e).parent().parent().next().closest('.quest_action').detach()
+    $('#sec_id').on('change', function(){ 
+    $.ajax({
+        method: 'POST',
+        url: '/get_calc_ques_list_ajax',
+        data: {scope: $('#scope_id').val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
+        dataType: 'html',
+        beforeSend: function(){
+            $('.loader-wrapper').show();
+        },
+        success: function(result){
+             var res = JSON.parse(result);
+                // console.log(res);
+                 $('#quest_list').empty();
+                 $('#quest_list').append($('<option>', {
+                value: '',
+                text: 'Select Question'
+            }));
+            if(res.suc > 0 && res.msg.length > 0){
+                $.each(res.msg, function(i, item){
+                    $('#quest_list').append($('<option>', {
+                        value: item.id,
+                        text: item.input_label
+                    }));
+                });
+            }
+             $('#quest_list').select2({
+        width: '100%',
+        dropdownAutoWidth: true
+    });
+        },
+        complete: function(){
+            $('.loader-wrapper').hide();
         }
-        var op_act_next = '', op_act_end = '', op_act_sel_quest = '', op_act_sel_emi = '', op_chk_val_sel = '', has_logic_dt = false;
-        if(filterData.length > 0){            
-            if(cal_logic_data.length > 0 && chkSeqQuestData){
-                has_logic_dt = true;
-                var logic_filter_dt = cal_logic_data.filter(dt => dt.id == $(e).val())
-                if(logic_filter_dt.length > 0){
-                   op_act_next = logic_filter_dt[0].action_val == 'N' ? 'checked' : ''
-                   op_act_end = logic_filter_dt[0].action_val == 'E' ? 'checked' : ''
-                   op_act_sel_quest = logic_filter_dt[0].next_qst_action_val == 'Q' ? 'checked' : ''
-                   op_act_sel_emi = logic_filter_dt[0].next_qst_action_val == 'E' ? 'checked' : ''
-                   op_chk_val_sel = logic_filter_dt[0].option_val ? logic_filter_dt[0].option_val : ''
-                //    console.log(logic_filter_dt, '=======');
+    });
+});
+
+$('#scopes_id').on('change', function(){
+        $.ajax({
+            method:'POST',
+            url: '/get_calc_sec_type_list_ajax',
+            data: {scope: $(this).val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#secs_id').empty();
+                $('#secs_id').append($('<option>', {value: '', text: 'Select Type'}));
+                if(res.suc > 0 && res.msg.length > 0){
+                    $.each(res.msg, function (i, item) {
+                        $('#secs_id').append($('<option>', {value: item.id, text: item.sec_name}));
+                    });
                 }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
             }
-            
-            // var tot_row = $('.dynamic-option').length;
-            var tot_row = $(e).val();
-            var action_btn =
-                `<div class="col-md-12 action-div" style="display: none;">
-                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="nxt_${tot_row}_${seqCardId}" autocomplete="off" value="N" ${op_act_next} onchange="optActChange(this)">
-                    <label class="btn cust-q-opt" for="nxt_${tot_row}_${seqCardId}">Next</label>
+        })
+    });
 
-                    <input type="radio" class="btn-check option_action" name="option_action_${tot_row}" id="die_${tot_row}_${seqCardId}" autocomplete="off" value="D" ${op_act_end} onchange="optActChange(this)">
-                    <label class="btn cust-q-opt" for="die_${tot_row}_${seqCardId}">End</label>
-                </div>`
-            var quest_btn = 
-                `<div class="col-md-12 quest_action" style="display: none;">
-                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="quest_${tot_row}_${seqCardId}" autocomplete="off" value="Q" ${op_act_sel_quest} onchange="nxtQstActChange(this)">
-                    <label class="btn cust-q-opt" for="quest_${tot_row}_${seqCardId}">Select Question</label>
-
-                    <input type="radio" class="btn-check next_quest_act" name="next_quest_act_${tot_row}" id="inp_${tot_row}_${seqCardId}" autocomplete="off" value="E" ${op_act_sel_emi} onchange="nxtQstActChange(this)">
-                    <label class="btn cust-q-opt" for="inp_${tot_row}_${seqCardId}">Emission User Input</label>
-                </div>`
-            // console.log(filterData[0].input_type, '--------------');
-            
-            switch (filterData[0].input_type) {
-                case "R":
-                    var optionEle = ''
-                    
-                    if(filterData[0].options){
-                        for(let opdt of filterData[0].options){
-                            var _sel = ''
-                            if(has_logic_dt){
-                                if(op_chk_val_sel == opdt.option_name){
-                                    _sel = 'selected'
-                                }
-                            }
-                            optionEle = optionEle + `<option value="${opdt.option_name}" ${_sel}>${opdt.option_name}</option>`
-                        }
-                    }
-
-                    var optEleData = createDynOption(optionEle, tot_row)
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-                    
-                    if(has_logic_dt){
-                        setTimeout(() => {
-                            $(e).parent().parent().after(questOption)
-                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
-                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
-                            
-                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
-                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
-                        }, 100);
-                    }else{
-                        $(e).parent().parent().after(questOption)
-                    }
-                    
-                    break;
-                case "S":
-                    var optionEle = ''
-                    
-                    if(filterData[0].options){
-                        for(let opdt of filterData[0].options){
-                            optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
-                        }
-                    }
-
-                    var optEleData = createDynOption(filterData[0].options, tot_row, true)
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-                    questOption.insertAfter($(e).parent().parent())
-                    $($(questOption)[0])
-                    $($(questOption)[2]).show()
-                    
-                    break;
-                case "C":
-                    var optionEle = ''
-                    
-                    if(filterData[0].options){
-                        for(let opdt of filterData[0].options){
-                            optionEle = optionEle + `<option value="${opdt.option_name}">${opdt.option_name}</option>`
-                        }
-                    }
-
-                    var optEleData = createDynOption(filterData[0].options, tot_row, true)
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-                    questOption.insertAfter($(e).parent().parent())
-                    $($(questOption)[2]).show()
-                    
-                    break;
-                case "I":
-                    var optEleData = createDynInput()
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-                    // questOption.insertAfter($(e).parent().parent())
-                    // $($(questOption)[2]).show()
-                    // console.log();
-                    if(has_logic_dt){
-                        setTimeout(() => {
-                            $(e).parent().parent().after(questOption)
-                            $($(questOption)[2]).show()
-                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
-                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
-                            
-                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
-                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
-                        }, 100);
-                    }else{
-                        $(e).parent().parent().after(questOption)
-                        $($(questOption)[2]).show()
-                    }
-                    break;
-                case "A":
-                    var optEleData = createDynEmiDt(cal_type, tot_row, 'A', has_logic_dt, op_chk_val_sel)
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-                    if(has_logic_dt){
-                        setTimeout(() => {
-                            $(e).parent().parent().after(questOption)
-                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
-                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
-                            
-                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
-                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
-                        }, 100);
-                    }else{
-                        questOption.insertAfter($(e).parent().parent())
-                    }
-                    
-                    break;
-                case "E":
-                    var optEleData = createDynEmiDt(cal_emi_type, tot_row, 'E')
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-
-                    if(has_logic_dt){
-                        setTimeout(() => {
-                            $(e).parent().parent().after(questOption)
-                            $($(questOption)[2]).show()
-                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
-                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
-                            
-                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
-                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
-                        }, 100);
-                    }else{
-                        questOption.insertAfter($(e).parent().parent())
-                        $($(questOption)[2]).show()
-                    }
-                    break;
-                case "U":
-                    var optEleData = createDynEmiDt(cal_unit, tot_row, 'U')
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-
-                    if(has_logic_dt){
-                        setTimeout(() => {
-                            $(e).parent().parent().after(questOption)
-                            $($(questOption)[2]).show()
-                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
-                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
-                            
-                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
-                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
-                        }, 100);
-                    }else{
-                        questOption.insertAfter($(e).parent().parent())
-                        $($(questOption)[2]).show()
-                    }
-                    
-                    break;
-                case "Y":
-                    var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Queterly'}, {id: 'M', name: 'Monthly'}]
-                    var optEleData = createDynEmiDt(year_opt, tot_row, 'Y')
-                    
-                    var questOption = $(`
-                        ${optEleData}
-                        ${action_btn}
-                        ${quest_btn}
-                    `)
-
-                    if(has_logic_dt){
-                        setTimeout(() => {
-                            $(e).parent().parent().after(questOption)
-                            $($(questOption)[2]).show()
-                            $(questOption[0]).children().children('.dynamic-sel-opt').change()
-                            // console.log($(questOption[2]), $(questOption[2]).children(`[name="option_action_${tot_row}"]`));
-                            
-                            $(questOption[2]).children(`[name="option_action_${tot_row}"]:checked`).change()
-                            $(questOption[4]).children(`[name="next_quest_act_${tot_row}"]:checked`).change()
-                        }, 100);
-                    }else{
-                        questOption.insertAfter($(e).parent().parent())
-                        $($(questOption)[2]).show()
-                    }
-                    
-                    break;
-            
-                default:
-                    break;
+    $('#secs_id').on('change', function(){ 
+    $.ajax({
+        method: 'POST',
+        url: '/get_calc_ques_list_ajax',
+        data: {scope: $('#scopes_id').val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
+        dataType: 'html',
+        beforeSend: function(){
+            $('.loader-wrapper').show();
+        },
+        success: function(result){
+             var res = JSON.parse(result);
+                // console.log(res);
+                 $('#quests_list').empty();
+                 $('#quests_list').append($('<option>', {
+                value: '',
+                text: 'Select Question'
+            }));
+            if(res.suc > 0 && res.msg.length > 0){
+                $.each(res.msg, function(i, item){
+                    $('#quests_list').append($('<option>', {
+                        value: item.id,
+                        text: item.input_label
+                    }));
+                });
             }
+        },
+        complete: function(){
+            $('.loader-wrapper').hide();
         }
-        // console.log(filterData);
-    }
+    });
+});
 
-     function addNewCard(){
-        var tot_card = $('.entry-card').length
-        $('#add-card').append(`
-            <div class="card w-75 entry-card" id="card-${tot_card + 1}">
-                <div class="card-body b-l-success border-3">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group mb-0">
-                                <h6 class="label-view" onclick="editLabel(this)">Entry Heading/Sub-heading</h6>
-                                <input type="text" value="" name="hed_${tot_card + 1}" class="edit mb-2 form-control" id="hed_${tot_card + 1}" style="display: none;">
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                        <div class="form-group mb-0">
-                            <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
-                            <input type="text" value="" name="q_${tot_card + 1}" class="edit form-control" id="q_${tot_card + 1}" style="display: none;">
-                        </div>
-                        <div class="dynamic-form-value-entry">
-                            <div class="form-group row">
-                                <div class="col-md-1 op-key"><span>&#9673;</span></div>
-                                <div class="col-md-9">
-                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
-                                    <input type="text" value="" name="q_s_${tot_card + 1}" class="edit form-control" id="q_s_${tot_card + 1}" style="display: none;">
-                                </div>
-                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="col-md-4">
-                        <div class="form-group">
-                            <select class="form-select dynamic-option" name="option_${tot_card + 1}" onchange="dynamicOptionChange(this)" card-id="card-${tot_card + 1}">
-                                <option value="radio">&#9673; | Radio</option>
-                                <option value="check">&#9635; | Checkbox</option>
-                                <option value="drop">&#9661; | Select Dropdown</option>
-                                <option value="short_text">&#9776; | Short Answer</option>
-                                <option value="act">&#128270; | Activity</option>
-                                <option value="emi_type">&#127787; | Emission Type</option>
-                                <option value="emi_unit">&#128207; | Unit</option>
-                                <option value="mode">&#128197; | Mode</option>
-                            </select>
-                            <input type="hidden" name="cards" value="${tot_card + 1}">
-                        </div>
-                        </div>
+
+   function addNewCard() {
+    var tot_card = $('.entry-card').length;
+    $('#add-card').append(`
+        <div class="card w-75 entry-card my-3 position-relative" id="card-${tot_card + 1}">
+            <div class="card-body b-l-success border-3">
+                <h4 class="mb-3">Child</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-select" id="scopes_id_${tot_card + 1}" name="scopes_id" required>
+                            <option>Select Scope</option>
+                            <% scope.forEach(dt => {
+                                var _selected = ''
+                                if(dt.id == scopes_id) _selected = 'selected'
+                            %>
+                                <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
+                            <% }) %>
+                        </select>
+                        <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="secs_id_${tot_card + 1}" name="secs_id" required>
+                            <option>Select Calculator Section Type</option>
+                            <% sec_list.forEach(dt => {
+                                var _selected = ''
+                                if(dt.id == secs_id) _selected = 'selected'
+                            %>
+                                <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select dynamic-option select2" name="quests_list" id="quests_list">
+                            <option value="">Select Question</option>
+                        </select>
                     </div>
                 </div>
-                <div class="card-footer p-2">
-                    <div class="btn-card-footer">
-                        <!-- <div class="vl"></div> -->
-                        <!-- <div class="vl"></div>
-                        <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
-                        <div class="vl"></div>
-                        <div class="m-r-10">
-                            <span onclick="editLabel(this)">Sequence</span>
-                            <input type="text" value="" name="s_${tot_card + 1}" class="edit form-control" id="s_${tot_card + 1}" style="display: none;">
-                        </div>
-                        <div class="vl"></div>
-                        <div class="media m-r-10">
-                            <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
-                            <div class="media-body text-end icon-state switch-outline">
-                                <label class="switch">
-                                    <input type="checkbox" id="gri_flag_${tot_card + 1}" checked onchange="checkChange(this)">
-                                    <span class="switch-state bg-primary"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="is-parent" style="display: none;">
-                            <div class="vl"></div>
-                            <div class="m-r-10">
-                                <span onclick="editLabel(this)">Parent Sequence</span>
-                                <input type="text" value="" name="p_c_${tot_card + 1}" class="edit form-control" id="p_c_${tot_card + 1}" style="display: none;">
-                            </div>
-                            <div class="vl"></div>
-                            <div class="media m-r-10">
-                                <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
-                                <div class="media-body text-end icon-state switch-outline">
-                                    <label class="switch">
-                                        <input type="checkbox" id="gr_sub_flag_${tot_card + 1}" checked onchange="checkSubChange(this)">
-                                        <span class="switch-state bg-primary"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="is-parent" style="display: none;">
-                                <div class="vl"></div>
-                                <div class="m-r-10">
-                                    <span onclick="editLabel(this)">Sub-Parent Sequence</span>
-                                    <input type="text" value="" name="p_s_c_${tot_card + 1}" class="edit form-control" id="p_s_c_${tot_card + 1}" style="display: none;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hover-centainer">
+            </div>
+             <div class="hover-centainer">
                     <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
                     <hr>
                     <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
                 </div>
-            </div>
-        `)
+        </div>
+    `);
+}
+
+
+    function delFrmCard(e){
+        var elm = $(e);
+        $(elm[0]).parent().closest('.card').detach();
     }
+
 
 
 </script>  
