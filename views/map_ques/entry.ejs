@@ -80,7 +80,7 @@
         font-size: 25px;
         cursor: pointer;
     }
-    #quest_list option {
+    /* #quest_list option {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -89,6 +89,10 @@
 
 .form-select.dynamic-option {
   width: 100%;
+} */
+select option:disabled {
+    color: gray;
+    font-style: italic;
 }
 
 </style>
@@ -173,7 +177,7 @@
                                 </select>
                             </div>
                              <div class="col-md-4">
-                                  <select class="form-select dynamic-option select2" id="quests_list" name="quests_list">
+                                  <select class="form-select dynamic-option" id="quests_list" name="quests_list">
                                     <option value="">Select Question</option>
                                   </select>
                              </div>
@@ -245,10 +249,20 @@
                     }));
                 });
             }
-             $('#quest_list').select2({
-        width: '100%',
-        dropdownAutoWidth: true
-    });
+            $('#quest_list').select2({
+                width: '100%',
+                templateResult: function (data) {
+                    if (!data.id) return data.text;
+
+                    return $('<span>', {
+    text: data.text,
+    style: 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;'
+});
+
+                }
+            });
+// $('#quest_list').select2({ width: '100%' });
+
         },
         complete: function(){
             $('.loader-wrapper').hide();
@@ -256,68 +270,74 @@
     });
 });
 
-$('#scopes_id').on('change', function(){
-        $.ajax({
-            method:'POST',
-            url: '/get_calc_sec_type_list_ajax',
-            data: {scope: $(this).val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
-            dataType: 'html',
-            beforeSend: function(){
-                $('.loader-wrapper').show()
-            },
-            success: function(result){
-                var res = JSON.parse(result);
-                // console.log(res);
-                $('#secs_id').empty();
-                $('#secs_id').append($('<option>', {value: '', text: 'Select Type'}));
-                if(res.suc > 0 && res.msg.length > 0){
-                    $.each(res.msg, function (i, item) {
-                        $('#secs_id').append($('<option>', {value: item.id, text: item.sec_name}));
-                    });
-                }
-            },
-            complete: function(){
-                $('.loader-wrapper').hide()
-            }
-        })
-    });
+// For dynamically added scope dropdown (child)
+$(document).on('change', 'select[id^="scopes_id"]', function () {
+    const $this = $(this);
+    const scopeVal = $this.val();
+    const card = $this.closest('.entry-card');
+    const secSelect = card.find('select[id^="secs_id"]');
 
-    $('#secs_id').on('change', function(){ 
     $.ajax({
         method: 'POST',
-        url: '/get_calc_ques_list_ajax',
-        data: {scope: $('#scopes_id').val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
+        url: '/get_calc_sec_type_list_ajax',
+        data: { scope: scopeVal, sec_id: scopeVal, lang_flag: $('#lang_flag').val() },
         dataType: 'html',
-        beforeSend: function(){
+        beforeSend: function () {
             $('.loader-wrapper').show();
         },
-        success: function(result){
-             var res = JSON.parse(result);
-                // console.log(res);
-                 $('#quests_list').empty();
-                 $('#quests_list').append($('<option>', {
-                value: '',
-                text: 'Select Question'
-            }));
-            if(res.suc > 0 && res.msg.length > 0){
-                $.each(res.msg, function(i, item){
-                    $('#quests_list').append($('<option>', {
-                        value: item.id,
-                        text: item.input_label
-                    }));
+        success: function (result) {
+            const res = JSON.parse(result);
+            secSelect.empty().append($('<option>', { value: '', text: 'Select Type' }));
+            if (res.suc > 0 && res.msg.length > 0) {
+                $.each(res.msg, function (i, item) {
+                    secSelect.append($('<option>', { value: item.id, text: item.sec_name }));
                 });
             }
         },
-        complete: function(){
+        complete: function () {
+            $('.loader-wrapper').hide();
+        }
+    });
+});
+
+// For dynamically added section dropdown (child)
+$(document).on('change', 'select[id^="secs_id"]', function () {
+    const $this = $(this);
+    const secVal = $this.val();
+    const card = $this.closest('.entry-card');
+    const scopeVal = card.find('select[id^="scopes_id"]').val();
+    const quesSelect = card.find('select[name="quests_list"]');
+    const parentSelectedQuestion = $('#quest_list').val(); 
+
+    $.ajax({
+        method: 'POST',
+        url: '/get_calc_ques_list_ajax',
+        data: { scope: scopeVal, sec_id: secVal, lang_flag: $('#lang_flag').val() },
+        dataType: 'html',
+        beforeSend: function () {
+            $('.loader-wrapper').show();
+        },
+        success: function (result) {
+            const res = JSON.parse(result);
+            quesSelect.empty().append($('<option>', { value: '', text: 'Select Question' }));
+            if (res.suc > 0 && res.msg.length > 0) {
+                const parentSelectedQuesId = $('#quest_list').val();
+                $.each(res.msg, function (i, item) {
+                    const isDisabled = (item.id == parentSelectedQuesId) ? true : false;
+                        quesSelect.append($('<option>', { value: item.id, text: item.input_label,disabled: isDisabled }));
+                });
+            }
+        },
+        complete: function () {
             $('.loader-wrapper').hide();
         }
     });
 });
 
 
-   function addNewCard() {
+  function addNewCard() {
     var tot_card = $('.entry-card').length;
-    $('#add-card').append(`
+    var newCard = `
         <div class="card w-75 entry-card my-3 position-relative" id="card-${tot_card + 1}">
             <div class="card-body b-l-success border-3">
                 <h4 class="mb-3">Child</h4>
@@ -346,20 +366,27 @@ $('#scopes_id').on('change', function(){
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select class="form-select dynamic-option select2" name="quests_list" id="quests_list">
+                        <select class="form-select dynamic-option" name="quests_list" id="quests_list">
                             <option value="">Select Question</option>
                         </select>
                     </div>
                 </div>
             </div>
-             <div class="hover-centainer">
-                    <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
-                    <hr>
-                    <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
-                </div>
+            <div class="hover-centainer">
+                <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
+                <hr>
+                <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
+            </div>
         </div>
-    `);
+    `;
+
+    if ($('.entry-card').length > 0) {
+        $('.entry-card').last().after(newCard);
+    } else {
+        $('#add-card').append(newCard); // First card case
+    }
 }
+
 
 
     function delFrmCard(e){
