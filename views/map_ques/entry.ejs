@@ -80,16 +80,6 @@
         font-size: 25px;
         cursor: pointer;
     }
-    /* #quest_list option {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.form-select.dynamic-option {
-  width: 100%;
-} */
 select option:disabled {
     color: gray;
     font-style: italic;
@@ -103,7 +93,7 @@ select option:disabled {
 
 <!-- Container-fluid starts-->
 <div class="container-fluid">
-    <form action="/map_ques" method="post">
+    <form  method="POST" action="/map_ques_save">
         <div class="row">
           <div class="col-sm-12">
             <div class="d-flex justify-content-center flex-column" id="add-card">
@@ -167,7 +157,6 @@ select option:disabled {
                                         <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
                                     <% }) %>
                                 </select>
-                                <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
                             </div>
                            <div class="col-md-6">
                                 <select class="form-select" id="secs_id" name="secs_id" required>
@@ -181,7 +170,7 @@ select option:disabled {
                                 </select>
                             </div>
                              <div class="col-md-12 mt-2 dyn-opt-div">
-                                  <select class="form-select dynamic-option" id="quests_list" name="quests_list">
+                                  <select class="form-select dynamic-option select2" id="quests_list" name="quests_list">
                                     <option value="">Select Question</option>
                                   </select>
                              </div>
@@ -266,8 +255,6 @@ select option:disabled {
 
                 }
             });
-// $('#quest_list').select2({ width: '100%' });
-
         },
         complete: function(){
             $('.loader-wrapper').hide();
@@ -298,6 +285,18 @@ $(document).on('change', 'select[id^="scopes_id"]', function () {
                     secSelect.append($('<option>', { value: item.id, text: item.sec_name }));
                 });
             }
+             $('.select2').select2({
+                width: '100%',
+                templateResult: function (data) {
+                    if (!data.id) return data.text;
+
+                    return $('<span>', {
+    text: data.text,
+    style: 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;'
+});
+
+                }
+            });
         },
         complete: function () {
             $('.loader-wrapper').hide();
@@ -311,7 +310,7 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
     const secVal = $this.val();
     const card = $this.closest('.entry-card');
     const scopeVal = card.find('select[id^="scopes_id"]').val();
-    const quesSelect = card.find('select[name="quests_list"]');
+    const quesSelect = card.find('select[id^="quests_list"]');
     const parentSelectedQuestion = $('#quest_list').val(); 
 
     $.ajax({
@@ -357,7 +356,6 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
                                 <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
                             <% }) %>
                         </select>
-                        <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
                     </div>
                     <div class="col-md-6">
                         <select class="form-select" id="secs_id_${tot_card + 1}" name="secs_id" required>
@@ -371,7 +369,7 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
                         </select>
                     </div>
                     <div class="col-md-12 mt-2 dyn-opt-div">
-                        <select class="form-select dynamic-option" name="quests_list" id="quests_list">
+                        <select class="form-select dynamic-option select2" name="quests_list" id="quests_list">
                             <option value="">Select Question</option>
                         </select>
                     </div>

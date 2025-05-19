@@ -1,4 +1,13 @@
 <%- include('../templates/header.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .text-truncate-cell {
+    max-width: 200px; /* Adjust as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
 <div class="container-fluid">
     <div class="page-header">
         <div class="row">
@@ -35,10 +44,19 @@
                                 <table class="display" id="basic-1">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
+                                            <th rowspan="2">#</th>
+                                            <th rowspan="2">Language</th>
+                                            <th colspan="3" class="text-center">Parent</th>
+                                            <th colspan="3" class="text-center">Child</th>
+                                            <th rowspan="2">Action</th>
+                                        </tr>
+                                        <tr>
                                             <th>Scope</th>
-                                            <th>Type Name</th>
-                                            <th>Action</th>
+                                            <th>Type</th>
+                                            <th>Question</th>
+                                            <th>Scope</th>
+                                            <th>Type</th>
+                                            <th>Question</th>
                                         </tr>
                                     </thead>
                                    <tbody>
@@ -47,20 +65,30 @@
                                         scope_dt.forEach(dt => { %>
                                         <tr>
                                             <td><%= i %></td>
-                                            <td>Scope <%= dt.scope_id %></td>
-                                            <td><%= dt.sec_name %></td>
+                                            <td><%= dt.lang_flag == 'E' ? 'English' : dt.lang_flag == 'F' ? 'French' : '' %></td>
+                                            <td>Scope <%= dt.p_scope_id %></td>
                                             <td>
-                                                <a href="" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="center" title="" data-bs-original-title="Edit">
-                                                    <i class="icofont icofont-ui-edit"></i> Edit
-                                                </a>
-                                                <a href="" class="btn btn-pill btn-danger btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="center" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                                <div class="text-truncate-cell"><%= dt.p_sec %></div>
+                                            </td>
+                                            <td>
+                                              <div class="text-truncate-cell"><%= dt.p_f_builder %></div>
+                                            </td>
+                                            <td>Scope <%= dt.c_scope_id %></td>
+                                            <td>
+                                                <div class="text-truncate-cell"><%= dt.c_sec %></div>
+                                            </td>
+                                            <td>
+                                              <div class="text-truncate-cell"><%= dt.c_f_builder %></div>
+                                            </td>
+                                            <td>
+                                                <a href="/map_ques_del?id=<%= dt.id %>" class="btn btn-pill btn-danger btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDelete(this)">
                                                     <i class="icofont icofont-ui-delete"></i> Delete
                                                 </a>
                                             </td>
                                         </tr>
                                         <% i++; })}else{ %>
                                         <tr>
-                                            <td class="text-danger text-center" colspan="4">No Data Found</td>
+                                            <td class="text-danger text-center" colspan="8">No Data Found</td>
                                         </tr>
                                         <% } %>
                                     </tbody>
@@ -74,4 +102,27 @@
         <!-- Zero Configuration  Ends-->
     </div>
 </div>
+
+<script>
+    async function checkDelete(e) {
+        event.preventDefault(); 
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            // Proceed to the href if user confirms
+            window.location.href = e.href;
+        }
+    }
+</script>
+
 <%- include('../templates/footer.ejs') %>

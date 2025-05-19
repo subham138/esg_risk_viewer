@@ -113,7 +113,8 @@ module.exports = {
     saveProject: (data, client_id, user, platform_mode) => {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
-
+            // console.log(data,'lo');
+            
             var table_name = 'td_project',
                 fields = data.id > 0 ? `project_name = '${data.project_name}', modified_by = '${user}', modified_dt = '${datetime}'` : `(repo_flag, proj_type, client_id, project_name, created_by, created_dt)`,
                 values = `('${data.flag}', '${platform_mode}', '${client_id}', '${data.project_name}', '${user}', '${datetime}')`,

@@ -150,6 +150,8 @@ ProjectRouter.post("/my_project_save", async (req, res) => {
     req.session.user.user_name,
     data.dec_flag == 'IC' || data.dec_flag == "FC" ? 'C' : req.session.user.platform_mode
   );
+  console.log(data);
+  
   req.session.message = {
     type: res_dt.suc > 0 ? "success" : "danger",
     message: res_dt.msg,
