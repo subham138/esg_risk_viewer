@@ -24,8 +24,11 @@ mapQuestionRouter.post('/get_calc_ques_list_ajax', async (req, res) => {
     var dt = req.body
     console.log(dt,'data');
     var data = await db_Select('*', 'md_cal_form_builder', `scope_id='${dt.scope}' AND sec_id='${dt.sec_id}' AND lang_flag = '${dt.lang_flag}' AND is_parent = 'Y'`, null)
-    // console.log(data,'hy');
-    
+    res.send(data)
+})
+
+mapQuestionRouter.post('/map_ques', async (req, res) => {
+    var data = req.body
     res.send(data)
 })
 

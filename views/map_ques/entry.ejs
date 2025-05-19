@@ -95,11 +95,15 @@ select option:disabled {
     font-style: italic;
 }
 
+.cust-floating-submit-btn{
+    right: 160px;
+}
+
 </style>
 
 <!-- Container-fluid starts-->
 <div class="container-fluid">
-    <form action="/form_builder_post" method="post">
+    <form action="/map_ques" method="post">
         <div class="row">
           <div class="col-sm-12">
             <div class="d-flex justify-content-center flex-column" id="add-card">
@@ -153,7 +157,7 @@ select option:disabled {
                     <div class="card-body b-l-success border-3">
                         <h4 class="mb-3">Child</h4>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <select class="form-select" id="scopes_id" name="scopes_id" required>
                                     <option>Select Scope</option>
                                     <% scope.forEach(dt => {
@@ -165,7 +169,7 @@ select option:disabled {
                                 </select>
                                 <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
                             </div>
-                           <div class="col-md-4">
+                           <div class="col-md-6">
                                 <select class="form-select" id="secs_id" name="secs_id" required>
                                     <option>Select Calculator Section Type</option>
                                     <% sec_list.forEach(dt => {
@@ -176,7 +180,7 @@ select option:disabled {
                                     <% }) %>
                                 </select>
                             </div>
-                             <div class="col-md-4">
+                             <div class="col-md-12 mt-2 dyn-opt-div">
                                   <select class="form-select dynamic-option" id="quests_list" name="quests_list">
                                     <option value="">Select Question</option>
                                   </select>
@@ -193,6 +197,7 @@ select option:disabled {
             </div>
          </div>
         </div>
+        <button class="btn cust-floating-submit-btn" type="button" onclick="return confSub(this);">Submit</button>
     </form>
 </div>
   <!-- Container-fluid Ends-->
@@ -342,7 +347,7 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
             <div class="card-body b-l-success border-3">
                 <h4 class="mb-3">Child</h4>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <select class="form-select" id="scopes_id_${tot_card + 1}" name="scopes_id" required>
                             <option>Select Scope</option>
                             <% scope.forEach(dt => {
@@ -354,7 +359,7 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
                         </select>
                         <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <select class="form-select" id="secs_id_${tot_card + 1}" name="secs_id" required>
                             <option>Select Calculator Section Type</option>
                             <% sec_list.forEach(dt => {
@@ -365,7 +370,7 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
                             <% }) %>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-12 mt-2 dyn-opt-div">
                         <select class="form-select dynamic-option" name="quests_list" id="quests_list">
                             <option value="">Select Question</option>
                         </select>
@@ -389,13 +394,25 @@ $(document).on('change', 'select[id^="secs_id"]', function () {
 
 
 
-    function delFrmCard(e){
-        var elm = $(e);
-        $(elm[0]).parent().closest('.card').detach();
+    async function delFrmCard(e){
+        if(await inititate_sweet_conf_alert(title = 'Are you sure?', text = 'Do you want to delete?') > 0){
+            var elm = $(e);
+            $(elm[0]).parent().closest('.card').detach();
+        }
     }
 
-
-
+    async function confSub(e){
+        if($(e).attr('type') == 'submit'){
+            return true;
+        }
+        if(await inititate_sweet_conf_alert(title = 'Are you sure?', text = 'Do you want to submit?') > 0){
+            $(e).attr('type', 'submit');
+            $(e).click();
+            return true;
+        }else{
+            return false;
+        }        
+    }
 </script>  
 
 <%- include('../templates/footer.ejs') %>
