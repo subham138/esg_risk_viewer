@@ -47115,3 +47115,15 @@ a.cust-tab-link:hover {
 .cust-floating-submit-btn:hover {
   border: 1px solid #008f00;
 }
+.custTopRightSec{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.custTopRightSecSelect{
+  padding: 5px;
+  border: 1px solid #884caa;
+  font-size: 15px;
+}

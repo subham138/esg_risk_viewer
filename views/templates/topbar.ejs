@@ -8,8 +8,6 @@
         <div class="loader-17"></div>
       </div> -->
     </div>
-    
-
     <!-- Loader ends-->
     <!-- page-wrapper Start       -->
     <div class="page-wrapper compact-wrapper" id="pageWrapper">
@@ -77,7 +75,47 @@
             </ul> -->
           </div>
        
-          <div class="nav-right col pull-right right-menu p-0">
+          <div class="nav-right col pull-right right-menu p-0 custTopRightSec">
+            <ul>
+              <% var projList = {
+                'ifrs_flag': {name: 'IFRS', code: 'SQ%3D%3D'},
+                'ifrs_fr_flag': {name: 'IFRS - French', code: 'SUY%3D'},
+                'esrs_flag': {name: 'ESRS', code: 'RQ%3D%3D'},
+                'esrs_fr_flag': {name: 'ESRS - French', code: 'RUY%3D'},
+                'esrs_vsme_flag': {name: 'ESRS VSME', code: 'RVY%3D'},
+                'esrs_vsme_fr_flag': {name: 'ESRS VSME - French', code: 'RVZG'},
+                'gri_flag': {name: 'GRI', code: 'Rw%3D%3D'},
+                'gri_fr_flag': {name: 'GRI - French', code: 'Rg%3D%3D'}
+              }
+              
+              if(active == 'my_project'){
+                var encFlag = curr_path.split('?flag=')
+                encFlag = encFlag.length > 1 ? encFlag[1] : ''
+              %>
+              <select class="custTopRightSecSelect" id="top-proj-id">
+                <option value="">Select Framework</option>
+                <% Object.keys(projList).forEach(dt => { 
+                  var _selected = ''
+                  if(user[dt] != 'Y'){
+                    return;
+                  }
+                  if(encFlag == projList[dt].code) _selected = 'selected'
+                  %>
+                  <option value="<%= projList[dt].code %>" <%= _selected %>><%= projList[dt].name %></option>
+                <% })
+                  if(user.cal_lang_flag != 'F'){ %>
+                    <option value="SUM%3D" <%= encFlag == 'SUM%3D' ? 'selected' : '' %>>
+                      Carbon - Only
+                    </option>
+                  <% }else{ %>
+                    <option value="RkM%3D" <%= encFlag == 'RkM%3D' ? 'selected' : '' %>>
+                      Carbon - Only - FR
+                    </option>
+                  <% }
+                %>
+              </select>
+              <% } %>
+            </ul>
             <ul class="nav-menus p-b-0 p-t-0">
               <!-- <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i
                     data-feather="maximize"></i></a></li>

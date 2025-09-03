@@ -382,7 +382,19 @@
 
     
   <script>
-    // Enable horizontal scroll with mouse wheel
+    $('#top-proj-id').on('change', async function(){
+      try{
+        if(await inititate_sweet_conf_alert('', 'Are you sure to change the framework?') > 0){
+          if($(this).val() != ''){
+            window.location.href = `/my_project?flag=${$(this).val()}`
+          }
+        }else{
+          $(this).val('')
+        }
+      }catch(e){
+        console.log(e);
+      }
+    })
     
   </script>
 
