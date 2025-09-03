@@ -6,9 +6,9 @@ const express = require("express"),
 const { SendUserEmail, sendOtp } = require("../modules/EmailModule");
 const {
   db_Select,
+  db_Insert,
   USER_TYPE_LIST,
   CALCULATOR_LANG,
-  db_Insert,
   PLAN_LIST,
   PLATFORM_MODE,
 } = require("../modules/MasterModule");
@@ -19,34 +19,113 @@ const {
   saveClientData,
 } = require("../modules/UserModule");
 
+const admin = require('firebase-admin');
+const serviceAccount = require('../firebase-service-account.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 UserRouter.use((req, res, next) => {
-  if (
-    req.url != "/login" &&
-    req.url != "/forgot_pass" &&
-    req.url != "/chk_user_login" &&
-    req.url != "/fast_login"
-  ) {
-    var url = req.url.split("?");
-    var currUrl = url.length > 0 ? url[0] : "";
-    if (currUrl != "/reset_pass") {
-      var user = req.session.user;
-      if (user) {
-        next();
-      } else {
-        res.redirect("/login");
-      }
-    } else {
-      next();
+  // if (
+  //   req.url != "/login" &&
+  //   req.url != "/forgot_pass" &&
+  //   req.url != "/chk_user_login" &&
+  //   req.url != "/fast_login" &&
+  //   req.url != "/register"
+  // ) {
+  //   var url = req.url.split("?");
+  //   var currUrl = url.length > 0 ? url[0] : "";
+  //   if (currUrl != "/reset_pass") {
+  //     var user = req.session.user;
+  //     if (user) {
+  //       next();
+  //     } else {
+  //       res.redirect("/login");
+  //     }
+  //   } else {
+  //     next();
+  //   }
+  // } else {
+  //   next();
+  // }
+
+  next()
+});
+
+
+UserRouter.get("/register", (req, res) => {
+  res.render("pages/register");
+});
+
+//manual registration
+UserRouter.post("/register", async (req, res) => {
+  const { name, email, password, country,policy } = req.body;
+
+  if (!name || !email || !password || !country) {
+    req.session.message = { type: "danger", message: "All fields are required" };
+  }
+
+  try {
+
+    let hashedPassword = await bcrypt.hashSync(password, 10);
+
+    var table_name = "md_user",
+      fields = `(user_name, user_id, password, user_type, country,policy,created_dt)`,
+      values = `('${name}', '${email}', '${hashedPassword}', 'C', '${country}', '${policy}','${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
+      whr = null,
+      flag = 0;
+
+    var whr = `user_id = '${email}' AND active_flag = 'Y'`;
+    var chk_dt = await db_Select("*", table_name, whr, null);
+    if (chk_dt.suc > 0 && chk_dt.msg.length > 0) {
+       req.session.message = { type: "danger", message: "User already exists" };
     }
-  } else {
-    next();
+
+    let dataChk =await db_Insert(table_name, fields, values, whr, flag);
+    if(dataChk.suc > 0){
+     req.session.message = {
+          type: "success",
+          message: "Register successfully. Please login to continue.",
+        };
+    }
+    res.redirect("/register");
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
+//fireabase verification
+UserRouter.post("/verify-token", async (req, res) => {
+  const token = req.body.idToken;
+  if (!token) return res.status(400).send('No token provided');
+
+  try {
+    const userInfo = await admin.auth().verifyIdToken(token);
+    const whr = `user_id = '${userInfo.email}' AND active_flag = 'Y'`;
+    const chk_dt = await db_Select("*", "md_user", whr, null);
+    if (chk_dt.suc > 0 && chk_dt.msg.length > 0) {
+      req.session.user = chk_dt.msg[0];
+      return res.json({ success: true, user: chk_dt.msg[0] });
+    } else {
+      let hashedPassword = await bcrypt.hashSync('123456', 10);
+      var table_name = "md_user",
+        fields = `(user_name, user_id, password, user_type, country,created_dt)`,
+        values = `('${userInfo.name}', '${userInfo.email}', '${hashedPassword}', 'C', '${userInfo.email.split("@")[1]}', '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
+        flag = 0;
+      await db_Insert(table_name, fields, values, null, flag);
+
+      const whr = `user_id = '${userInfo.email}' AND active_flag = 'Y'`;
+      const chk_dt = await db_Select("*", "md_user", whr, null);
+      req.session.user = chk_dt.msg[0];
+      return res.json({ success: true, user: chk_dt.msg[0] });
+    }
+  } catch (error) {
+    res.status(401).json({ success: false, error: 'Invalid token' });
+  }
+});
+
+
 UserRouter.get("/login", (req, res) => {
-  // var dt = new Date();
-  // console.log(dt);
-  // console.log(new Date(dt.setMonth(dt.getMonth()+6)));
   let user = req.session.user;
   if (user) {
     res.redirect("/dashboard");
@@ -57,15 +136,13 @@ UserRouter.get("/login", (req, res) => {
 
 UserRouter.post("/login", async (req, res) => {
   var data = req.body;
-  // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
   var select =
-      "id, client_id, user_name, user_id, password, user_type, active_flag, fast_login, login_dt",
+    "id, client_id, user_name, user_id, password, user_type, active_flag, fast_login, login_dt",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
   var chk_dt = await db_Select(select, table_name, whr, order);
   if (chk_dt.suc > 0) {
-    // console.log(await bcrypt.compare(data.password, chk_dt.msg[0].password));
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         try {
@@ -80,7 +157,7 @@ UserRouter.post("/login", async (req, res) => {
         req.session.user = chk_dt.msg[0];
         if (chk_dt.msg[0].user_type != "S") {
           var select =
-              "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag, platform_mode",
+            "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag, platform_mode",
             table_name = "td_client",
             whr = `id = '${chk_dt.msg[0].client_id}'`,
             order = null;
@@ -181,9 +258,8 @@ const updateLoginStatus = (user_id, user_name, type) => {
   return new Promise(async (resolve, reject) => {
     var curr_dt = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
     var table_name = "md_user",
-      fields = `${
-        type == "I" ? `login_dt = '${curr_dt}'` : `logout_dt = '${curr_dt}'`
-      }, modified_by = '${user_name}', modified_dt = '${curr_dt}'`,
+      fields = `${type == "I" ? `login_dt = '${curr_dt}'` : `logout_dt = '${curr_dt}'`
+        }, modified_by = '${user_name}', modified_dt = '${curr_dt}'`,
       values = null,
       whr = `id = '${user_id}'`,
       flag = 1;
@@ -242,7 +318,6 @@ UserRouter.post("/chk_user_login", async (req, res) => {
 UserRouter.get("/log_out", async (req, res) => {
   var data = req.session.user;
   try {
-    console.log(data);
     if (data) {
       await updateLoginStatus(data.id, data.user_name, "O");
     }
@@ -555,31 +630,31 @@ UserRouter.get('/deactive_user', async (req, res) => {
   var data = req.query
   // console.log(data,'iiii');
   var table_name = "md_user",
-  fields = `active_flag = 'N'`,
-  values = null,
-  whr = `id = ${data.id}`,
-  flag = 1;
+    fields = `active_flag = 'N'`,
+    values = null,
+    whr = `id = ${data.id}`,
+    flag = 1;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
   // console.log(res_dt,'test');
   res.redirect(`/user_list?client_id=${data.client_id}`);
 });
 
-UserRouter.get('/deactive_client', async (req, res) =>{
+UserRouter.get('/deactive_client', async (req, res) => {
   var data = req.query
   // console.log(data,'ooo');
   var table_name = "td_client",
-  fields = `active_flag = 'N'`,
-  values = null,
-  whr = `id = ${data.id}`,
-  flag = 1;
-  var dt = await db_Insert(table_name, fields, values, whr, flag)
-
-  if(dt.suc > 0 && dt.msg.length > 0){
-    var table_name = "md_user",
     fields = `active_flag = 'N'`,
     values = null,
-    whr = `client_id = ${data.id}`,
+    whr = `id = ${data.id}`,
     flag = 1;
+  var dt = await db_Insert(table_name, fields, values, whr, flag)
+
+  if (dt.suc > 0 && dt.msg.length > 0) {
+    var table_name = "md_user",
+      fields = `active_flag = 'N'`,
+      values = null,
+      whr = `client_id = ${data.id}`,
+      flag = 1;
     var client_dt = await db_Insert(table_name, fields, values, whr, flag)
   }
   res.redirect(`/client`);

@@ -5,3 +5,5 @@ assets/videos/ESG_Risk_Viewer_Presentation_4K.mp4
 *.config
 .env
 assets/editor/*
+firebase-service-account.json
+ssl

@@ -1,159 +1,220 @@
 <%- include('../templates/login_header.ejs') %>
-<style>
-  .show-hide span {
-    font-size: 20px !important;
-  }
-</style>
-<div class="row login_back_color">
-    <!-- <div class="col-xl-5"><img class="bg-img-cover bg-center" src="images/logo/ESG_Risk_Viewer.jpeg" alt="looginpage"></div> -->
-    <div class="col-12">
-      
-    </div>
-    <div class="col-12">
-      <div class="login-card">
-        <form class="theme-form login-form" id="loginForm" action="/login" method="POST">
-          <% if(message){ %>
-          <script>
-            setTimeout(() => {
-              console.log('From Session');
-              initiate_sweet_alert('Alert', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
-            }, 1000);
-          </script>
-          <!-- <div class="alert alert-<%# message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
-           
-            <p style=" text-align: center;
-            font-size: 17px;"><i data-feather="clock"></i>&nbsp;&nbsp;<%# message.message %></p>
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close" style="top: 5px;"></button>
-          </div> -->
-          <% } %>
-          <!-- <img width="100%" height="100%" src="images/logo/ESG_logo_trans.png" alt=""> -->
-          <img width="100%" height="100%" src="images/logo_white.png" alt="">
-          <!-- <center class="mt-3">
-            <h4>Login</h4>
-            <h6>Welcome back! Log in to your account.</h6>
-          </center> -->
-          <!-- <div>
-            <button class="btn btn-primary btn-block video-right" onclick="watch_video()">Watch Video</button>
-          </div> -->
-          <!-- <button type="button" class="btn btn-primary btn-block video-right" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Watch Video
-          </button> -->
-          <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" style="max-width: 700px; margin-top: 5%;">
-                  <div class="modal-content">
-                    <!-- <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div> -->
-                    <div class="modal-body" style="position: relative;">
-                      <button type="button" class="btn-close btn_close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      <video id="totVideo" controls width="100%" autoplay loop muted>
-                        <source src="videos/ESG_Risk_Viewer_Presentation_4K.mp4" type="video/mp4">
-                      </video>
-                    </div>
-                    <!-- <div class="modal-footer" style="border: none;">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div> -->
-                  </div>
-                </div>
-              </div>
-              <div class="form-group mt-3">
-                <!-- <label>Email Address</label> -->
-                <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-user"></i></span>
-                  <input class="form-control loginInput" type="email" name="email" id="logEmail" required="" placeholder="Username">
-                </div>
-              </div>
-              <div class="form-group">
-                <!-- <label>Password</label> -->
-                <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
-                  <input class="form-control loginInput" type="password" name="password" id="logPass" required="" placeholder="Password">
-                  <div class="show-hide"><span class="showPass"><i class="icofont icofont-eye"></i></span></div>
-                </div>
-              </div>
-              <div class="form-group">
+    <style>
+        .show-hide span {
+            font-size: 20px !important;
+        }
+    </style>
+    <div class="page-wrapper">
+        <div class="sing-up-section">
+            <div class="container-fluid">
                 <div class="row">
-                  <div class="col-md-12">
-                    <button class="btn btn-pill btn-custom btn-block lginBtn" id="signInBtn" type="button">Sign in</button>
-                  </div>
+                    <div class="col-md-12">
+                        <div class="navbar-brand-logo">
+                            <a href="#"><img src="latest/img/logo.svg" alt=""></a>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="form-group mt-0 pt-0">
-                <!-- <div class="checkbox">
-                  <input id="checkbox1" type="checkbox">
-                  <label class="text-muted" for="checkbox1">Remember password</label>
-                </div> -->
-                <input type="hidden" name="rem_me" id="rem_me_val">
-                <a class="link text-white text-center LoginFpText" href="/forgot_pass">Forgot password?</a>
-              </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="sing-up-form">
+                            <div class="sing-up-form-card">
+                                <div class="sing-up-form-title">
+                                    <h2>Sign in to your account</h2>
+                                </div>
+                                <form class="theme-form login-form" id="loginForm" action="/login" method="POST">
+                                    <% if(message){ %>
+                                        <div class="alert alert-<%= message.type %>">
+                                            <%= message.message %>
+                                        </div>
+                                        <% } %>
+                                            <div class="mb-3">
+                                                <label for="logEmail" class="form-label">Email*</label>
+                                                <input type="email" class="form-control" id="logEmail" name="email"
+                                                    placeholder="Enter your email" required>
+                                            </div>
 
+                                            <div class="mb-3">
+                                                <label for="logPass" class="form-label">Password*</label>
+                                                <input id="logPass" type="password" class="form-control" name="password"
+                                                    placeholder="Enter your password" required>
+                                                <span toggle="#logPass"
+                                                    class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                            </div>
+
+
+                                            <div class="remember-row">
+                                                <!-- <div class="form-check">
+                                                    <input class="form-check-input" name="rem_me" id="rem_me_val"
+                                                        type="checkbox" id="flexCheckDefault">
+                                                    <label class="form-check-label" for="flexCheckDefault">
+                                                        Remember me
+                                                    </label>
+                                                </div> -->
+                                                <a href="/forgot_pass">Forgot password?</a>
+                                            </div>
+
+                                            <button class="btn btn-primary sign-up-button lginBtn" id="signInBtn"
+                                                type="button">Sign in</button>
+                                            <div class="divider">Or</div>
+                                            <div class="social-card">
+                                                <a onclick="signInWithGoogle()"><img src="latest/img/social-icon.svg"
+                                                        alt="">Continue with
+                                                    Google</a>
+                                                <a onclick="signInWithMicrosoft()"><img src="latest/img/microsoft.svg"
+                                                        alt="">Continue with
+                                                    Microsoft</a>
+                                            </div>
+
+                                </form>
+                            </div>
+                            <div class="signup-content">
+                                <h3>Don't have an account? <a href="/register">Sign Up</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="footer">
+                            <ul>
+                                <li>© ESG Risk Viewer</li>
+                                <li class="divider-gray">|</li>
+                                <li><a href="#">Privacy & Terms</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <!-- <div class="login-social-title">                
-            <h5>Sign in with</h5>
-          </div>
-          <div class="form-group">
-            <ul class="login-social">
-              <li><a href="https://www.linkedin.com/login" target="_blank"><i data-feather="linkedin"></i></a></li>
-              <li><a href="https://www.linkedin.com/login" target="_blank"><i data-feather="twitter"></i></a></li>
-              <li><a href="https://www.linkedin.com/login" target="_blank"><i data-feather="facebook"></i></a></li>
-              <li><a href="https://www.instagram.com/login" target="_blank"><i data-feather="instagram">                  </i></a></li>
-            </ul>
-          </div> -->
-          <!-- <p>Don't have account?<a class="ms-2" href="sign-up.html">Create Account</a></p> -->
-         
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
-<!-- PIN MODAL-->
-  <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          <center><label><b>Enter the access code</b></label></center>
-          <div class="row">
-            <div class="col-md-12 text-center"><input type="password" class="form-control-lg" id="pincode-input1"></div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 text-center" id="pinErr"></div>
-          </div>
-          <input type="hidden" id="pin">
-          <div class="row">
-            <div class="col-md-12 text-center mt-3 mb-2">We have sent a 4-digit access code to your email. It may take a few minutes to arrive. <a href="javascript:void(0)" id="resend_otp">Resend</a></div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 text-center">
-              <div class="checkbox checkbox-primary">
-                <input id="rem_me" value="Y" type="checkbox">
-                <label for="rem_me">Remember me for 7 days.</label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 text-center">
-              <button class="btn btn-pill btn-custom" id="modalLoginBtn" type="button" style="display: none;">Sign in</button>
-            </div>
-          </div>
-          <!-- <center class="pt-3">
+
+    <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <center><label><b>Enter the access code</b></label></center>
+                    <div class="row">
+                        <div class="col-md-12 text-center"><input type="password" class="form-control-lg"
+                                id="pincode-input1"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center" id="pinErr"></div>
+                    </div>
+                    <input type="hidden" id="pin">
+                    <div class="row">
+                        <div class="col-md-12 text-center mt-3 mb-2">We have sent a 4-digit access code to your email.
+                            It may take a few minutes to arrive. <a href="javascript:void(0)" id="resend_otp">Resend</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <div class="checkbox checkbox-primary">
+                                <input id="rem_me" value="Y" type="checkbox">
+                                <label for="rem_me">Remember me for 7 days.</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-pill btn-custom" id="modalLoginBtn" type="button"
+                                style="display: none;">Sign in</button>
+                        </div>
+                    </div>
+                    <!-- <center class="pt-3">
             <div class="bg-warning">
               <i class="fa fa-exclamation-circle text-white pr-1" aria-hidden="true"></i> 
               OTP has been send to your registered email Id.
             </div>
           </center> -->
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-<!-- CLOSE PIN MODAL-->
-<script>
-  $(document).on("keypress", function(e){
-      if(e.which == 13){
-        $('#signInBtn').click()
-          // $("body").append("<p>You've pressed the enter key!</p>");
-      }
-  });
-</script>
-<%- include('../templates/login_footer.ejs') %>
+
+    <script src="latest/js/jquery-3.7.1.js"></script>
+    <script src="latest/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(".toggle-password").click(function () {
+
+            $(this).toggleClass("fa-eye fa-eye-slash");
+            var input = $($(this).attr("toggle"));
+            if (input.attr("type") == "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
+
+        $(document).on("keypress", function (e) {
+            if (e.which == 13) {
+                $('#signInBtn').click()
+            }
+        });
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHYpeKnZxFL2tlrNAqM9rV8GjWmQOjoMc",
+            authDomain: "esgriskviewer-4a712.firebaseapp.com",
+            projectId: "esgriskviewer-4a712",
+            storageBucket: "esgriskviewer-4a712.firebasestorage.app",
+            messagingSenderId: "279988740260",
+            appId: "1:279988740260:web:571ba101688cec1a5cc631"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+
+        // Google Registration/Login
+        async function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const idToken = await result.user.getIdToken();
+                const res = await fetch('/verify-token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken })
+                });
+                if (res.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Error signing in');
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Microsoft Registration/Login
+        async function signInWithMicrosoft() {
+            const provider = new firebase.auth.OAuthProvider('microsoft.com');
+            provider.setCustomParameters({ prompt: 'select_account' });
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const idToken = await result.user.getIdToken();
+                const res = await fetch('/verify-token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken })
+                });
+                if (res.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Error signing in');
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+
+
+    <%- include('../templates/login_footer.ejs') %>

@@ -51,8 +51,26 @@
     }
 </style>
 
+<style>
+    .calIndRow{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="page-header">
+        <div class="calIndRow">
+            <% if(proj_ind_list.length > 0){
+                proj_ind_list.forEach(idt => { %>
+                    <span class="badge cust-inp-grp p-2"><%= idt.ind_name %></span>
+                <% })
+            } %>
+        </div>
         <div class="row">
             <div class="col-sm-12" id="myHeader">
                 <ul class="nav nav-tabs border-tab nav-primary" id="info-tab" role="tablist">

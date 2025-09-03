@@ -93,6 +93,41 @@ app.get("/", (req, res) => {
   // var pass = '123'
   // pass = bcrypt.hashSync(pass, 10)
   // res.send(pass)
+  // function encodeString(str) {
+  //   let numeric = '';
+  //   for (let i = 0; i < str.length; i++) {
+  //     numeric += str.charCodeAt(i).toString().padStart(3, '0');
+  //   }
+  //   return numeric;
+  // }
+
+  // function decodeString(numericStr) {
+  //   let result = '';
+  //   for (let i = 0; i < numericStr.length; i += 3) {
+  //     const charCode = parseInt(numericStr.substring(i, i + 3));
+  //     result += String.fromCharCode(charCode);
+  //   }
+  //   return result;
+  // }
+  // // Usage in URL
+  // const language = JSON.stringify({
+  //   sec_id: '1',
+  //   ind_id: '1',
+  //   top_id: 0,
+  //   proj_id: '54',
+  //   proj_name: 'Multiple test',
+  //   repo_type: 'ifrs',
+  //   flag: 'I',
+  //   dec_flag: 'I'
+  // });
+  // const encoded = encodeString(language);
+  // const url = `https://example.com/api?lang=${encoded}`;
+  // console.log('URL:', url);
+
+  // // To decode
+  // const decoded = decodeString(encoded);
+  // console.log('Decoded:', decoded);
+
   let user = req.session.user;
   if (user) {
     res.redirect("/dashboard");

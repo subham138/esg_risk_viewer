@@ -69,6 +69,8 @@ module.exports = {
                     whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''} AND a.active_flag = 'Y' AND a.proj_type='${platform_mode}'`,
                     order = 'ORDER BY a.id DESC';
                 var res_dt = await db_Select(select, table_name, whr, order)
+                console.log(res_dt, 'res_dt');
+                
                 if (id > 0) {
                     if (res_dt.suc > 0 && res_dt.msg.length > 0) {
                         var select = 'a.id, a.client_id, a.project_id, a.user_id, b.user_type, b.user_name',
@@ -84,6 +86,7 @@ module.exports = {
                             order = null;
                         var proj_info_dt = await db_Select(select, table_name, whr, order)
                         proj_info_dt.suc > 0 && proj_info_dt.msg.length > 0 ? res_dt.msg[0]['proj_info'] = proj_info_dt.msg : []
+                                                
                         resolve(res_dt)
                     } else {
                         resolve(res_dt)
@@ -96,6 +99,8 @@ module.exports = {
                                 whr = `a.sec_id=b.id AND a.ind_id=c.id AND a.sec_id=c.sec_id AND a.proj_id = ${dt.id}`,
                                 order = `LIMIT 1`;
                             var proj_info_dt = await db_Select(select, table_name, whr, order)
+                            console.log(proj_info_dt, 'proj_info_dt');
+                            
                             if (proj_info_dt.suc > 0 && proj_info_dt.msg.length > 0) {
                                 dt['ind_id'] = proj_info_dt.msg[0].ind_id
                                 dt['sec_id'] = proj_info_dt.msg[0].sec_id
@@ -105,6 +110,7 @@ module.exports = {
                             }
                         }
                     }
+                    // console.log(res_dt, 'res_dt final');
                     resolve(res_dt)
                 }
             }

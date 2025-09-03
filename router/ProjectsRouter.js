@@ -241,6 +241,9 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
 
   // UPDATE THE CODE ON 22.04.2025 FOR MULTIPLE SECTOR AND INDUSTRY INSERT INTO td_project_info
 
+  console.log(data, 'data');
+  
+
   if (Array.isArray(data.input_seq)){
     for(let dt of data.input_seq){
       let sec_id = data[`sec_id_${dt}`],
@@ -311,7 +314,76 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
         proj_sec_insert = await db_Insert(proj_table_name, proj_fields, proj_values, proj_whr, proj_flag);
       }
     }
-  }  
+  }else{
+    let dt = data.input_seq
+    let sec_id = data[`sec_id_${dt}`],
+      ind_id = data[`ind_id_${dt}`],
+      bus_id = data[`bus_id_${dt}`],
+      location_id = data[`location_id_${dt}`];
+    let busi_name = [],
+      location_name = [];
+
+    if (Array.isArray(bus_id)) {
+      for (let dt of bus_id) {
+        var indx =
+          busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex((idt) => idt.id == dt) : -1;
+        if (indx >= 0) {
+          busi_name.push(busi_data.msg[indx]);
+        }
+      }
+      busi_name = [...busi_name.map((dt) => dt.busi_act_name)];
+      busi_name = busi_name.join(",");
+      bus_id_list = bus_id.join(",");
+      // console.log(busi_name);
+    } else {
+      var indx = busi_data.suc > 0 && busi_data.msg.length > 0 ? busi_data.msg.findIndex((idt) => idt.id == bus_id) : -1;
+      if (indx >= 0) {
+        busi_name.push(busi_data.msg[indx]);
+      }
+      busi_name = Array.isArray(busi_name) ? (busi_name.length > 0 ? busi_name[0].busi_act_name : "") : (busi_name.busi_act_name ? busi_name.busi_act_name : "");
+      bus_id_list = bus_id;
+    }
+
+    if (Array.isArray(location_id)) {
+      for (let dt of location_id) {
+        var indx = location_data.suc > 0 && location_data.msg.length > 0 ? location_data.msg.findIndex((idt) => idt.id == dt) : -1;
+        if (indx >= 0) {
+          location_name.push(location_data.msg[indx]);
+        }
+      }
+      location_name = [...location_name.map((dt) => dt.location_name)];
+      location_name = location_name.join(",");
+    } else {
+      var indx =
+        location_data.suc > 0 && location_data.msg.length > 0 ? location_data.msg.findIndex((idt) => idt.id == location_id) : -1;
+      if (indx >= 0) {
+        location_name.push(location_data.msg[indx]);
+      }
+      location_name = Array.isArray(location_name) ? (location_name.length > 0 ? location_name[0].location_name : "") : (location_name.location_name ? location_name.location_name : "");
+    }
+
+    if (Array.isArray(ind_id)) {
+      for (let iid of ind_id) {
+        var chk_proj_dt = await db_Select('id', 'td_project_info', `proj_id = ${data.proj_id} AND sec_id = ${sec_id} AND ind_id = ${iid}`, null);
+        var proj_info_id = chk_proj_dt.suc > 0 ? (chk_proj_dt.msg.length > 0 ? chk_proj_dt.msg[0].id : 0) : 0;
+        var proj_table_name = 'td_project_info',
+          proj_fields = proj_info_id > 0 ? `bus_act_id = '${bus_id_list}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"` : `(proj_id, sec_id, ind_id, bus_act_id, business_act, location_busi_act, created_by, created_dt)`,
+          proj_values = proj_info_id > 0 ? null : `(${data.proj_id}, ${sec_id}, ${iid}, '${bus_id_list}', "${busi_name}", "${location_name}", "${user_name}", "${datetime}")`,
+          proj_whr = proj_info_id > 0 ? `id = ${proj_info_id}` : null,
+          proj_flag = proj_info_id > 0 ? 1 : 0;
+        proj_sec_insert = await db_Insert(proj_table_name, proj_fields, proj_values, proj_whr, proj_flag);
+      }
+    } else {
+      var chk_proj_dt = await db_Select('id', 'td_project_info', `proj_id = ${data.proj_id} AND sec_id = ${sec_id} AND ind_id = ${ind_id}`, null);
+      var proj_info_id = chk_proj_dt.suc > 0 ? (chk_proj_dt.msg.length > 0 ? chk_proj_dt.msg[0].id : 0) : 0;
+      var proj_table_name = 'td_project_info',
+        proj_fields = proj_info_id > 0 ? `sec_id = ${sec_id}, ind_id = ${ind_id}, bus_act_id = '${bus_id_list}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"` : `(proj_id, sec_id, ind_id, bus_act_id, business_act, location_busi_act, created_by, created_dt)`,
+        proj_values = proj_info_id > 0 ? null : `(${data.proj_id}, ${sec_id}, ${ind_id}, '${bus_id_list}', "${busi_name}", "${location_name}", "${user_name}", "${datetime}")`,
+        proj_whr = proj_info_id > 0 ? `id = ${proj_info_id}` : null,
+        proj_flag = proj_info_id > 0 ? 1 : 0;
+      proj_sec_insert = await db_Insert(proj_table_name, proj_fields, proj_values, proj_whr, proj_flag);
+    }
+  }
 
   // var table_name = "td_project",
   //   fields = `last_access = '${datetime}', last_accessed_by = '${user_name}', sec_id = '${data.sec_id}', ind_id = '${data.ind_id}', bus_act_id = '${bus_id_list}', business_act = "${busi_name}", location_busi_act = "${location_name}", modified_by = "${user_name}", modified_dt = "${datetime}"`,
@@ -410,6 +482,8 @@ ProjectRouter.get("/project_report_view", async (req, res) => {
     data_set = {};
   var data = Buffer.from(enc_data, "base64");
   data = JSON.parse(data);
+  console.log(data);
+  
 
   var lang = eng_flag.includes(data.flag) ? en_lang : fr_lang;
 

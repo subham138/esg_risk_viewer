@@ -90,6 +90,8 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
 
   var getGhgQuestData = await getGhgQuestList(data.proj_id, client_id, currYear)
 
+  var getProjIndList = await db_Select('a.proj_id, b.ind_name, b.id', `td_project_info a, md_industries b`, `a.ind_id=b.id AND a.proj_id = ${data.proj_id}`, `ORDER BY b.ind_name`)
+
   var project_data = await getProjectList(
     data.proj_id,
     req.session.user.client_id,
@@ -133,7 +135,8 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
     trans_data: transData.suc > 0 ? transData.msg.length > 0 ? transData.msg : [] : [],
     allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
     ghg_quest_list: getGhgQuestData.suc > 0 ? (getGhgQuestData.msg.length > 0 ? getGhgQuestData.msg : []) : [],
-    dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : []
+    dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : [],
+    proj_ind_list: getProjIndList.suc > 0 ? (getProjIndList.msg.length > 0 ? getProjIndList.msg : []) : []
   };
   res.render("calculator_project/report_view", res_data)
 })
