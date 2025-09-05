@@ -333,7 +333,7 @@
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
-    var chart, act_chart, emiChart, emiActChart, emiActChartDt, emiActChartOpt, pathway_chart, subTrnsDt, subTrnsRawDt, options, actOptions, pathOptions, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
+    var chart, act_chart, emiChart, emiOvtOpt, emiActChart, emiActChartDt, emiActChartOpt, pathway_chart, subTrnsDt, subTrnsRawDt, options, actOptions, pathOptions, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
 
     // Define custom colors for each scope
     const seriesColors = ['#202a44', '#186671', '#7030a0']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
@@ -343,6 +343,7 @@
         drawStackedPathChart()
         drawSubTrnsDtChart()
         drawEmisActChart()
+        drawEmiOvtChart()
     }
 
     function drawSubTrnsDtChart(){
@@ -439,8 +440,37 @@
 
         act_chart = new google.visualization.ColumnChart(document.getElementById('act-chart'));
         act_chart.draw(actData, actOptions);
+    }
+
+    function drawEmiOvtChart(){
+        emiOvtOpt = {
+          title: 'Emissions over time',
+          chartArea: {width: '75%', height: '75%'},
+          isStacked: true,
+          tooltip: { isHtml: true },
+          colors: seriesColors,
+          vAxis: {
+            title: 'Total Emissions',
+            },
+        //   vAxis: {
+        //     title: 'Total Emissions',
+        //     // minValue: 0
+        //   },
+        //   hAxis: {
+        //     title: 'Year',
+        //     slantedText: true, // Makes year labels angled for better readability if there are many
+        //     slantedTextAngle: 45 // Sets the angle for slanted text
+        //   },
+          legend: {
+            position: 'right',
+            alignment: 'left',  // Center align the legend
+            maxLines: 2,          // Allow up to 2 lines if needed
+            textStyle: {fontSize: 8, color: '#555'}
+          }
+        };
+
         emiChart = new google.visualization.ColumnChart(document.getElementById('emi-chart'));
-        emiChart.draw(actData, actOptions);
+        emiChart.draw(actData, emiOvtOpt);
     }
 
     function drawStackedPathChart(){
@@ -607,7 +637,7 @@
     window.onload = updateChart;
     window.onresize = () => {
         act_chart.draw(actData, actOptions);
-        emiChart.draw(actData, actOptions);
+        emiChart.draw(actData, emiOvtOpt);
         console.log(emiActChart, emiActChartDt, emiActChartOpt, 'emiActChart')
         emiActChart.draw(emiActChartDt, emiActChartOpt);
         pathway_chart.draw(pathData, pathOptions);
@@ -617,7 +647,7 @@
     $('.toggleSidebarTogle').on('click', function(){
         setTimeout(() => {
             act_chart.draw(actData, actOptions);
-            emiChart.draw(actData, actOptions);
+            emiChart.draw(actData, emiOvtOpt);
             console.log(emiActChart, emiActChartDt, emiActChartOpt, 'emiActChart')
             emiActChart.draw(emiActChartDt, emiActChartOpt);
             pathway_chart.draw(pathData, pathOptions);
