@@ -1,3 +1,55 @@
+<!-- NEW SECTION ADDED ON 05.09.2025 -->
+<div class="emiss-top-section-dash">
+    <div class="emiss-card-sec">
+        <span class="emiss-card-sec-title">Total</span>
+        <span class="emiss-card-sec-sub-title">Scope 1, 2, 3</span>
+        <label class="emiss-card-sec-cal"><span class="emiss-card-val" id="tot_emi"><%= emi_dash_dt.tot_emi ? (emi_dash_dt.tot_emi > 0 ? emi_dash_dt.tot_emi : 0) : 0 %></span> tCO2e</label>
+    </div>
+    <div class="emiss-card-sec">
+        <span class="emiss-card-sec-title">Direct Emissions</span>
+        <span class="emiss-card-sec-sub-title">Scope 1</span>
+        <label class="emiss-card-sec-cal"><span class="emiss-card-val" id="tot_emi_sc1"><%= emi_dash_dt.tot_emi_sc1 ? (emi_dash_dt.tot_emi_sc1 > 0 ? emi_dash_dt.tot_emi_sc1 : 0) : 0 %></span> tCO2e</label>
+    </div>
+    <div class="emiss-card-sec">
+        <span class="emiss-card-sec-title">Indirect Emissions</span>
+        <span class="emiss-card-sec-sub-title">Scope 2</span>
+        <label class="emiss-card-sec-cal"><span class="emiss-card-val" id="tot_emi_sc2"><%= emi_dash_dt.tot_emi_sc2 ? (emi_dash_dt.tot_emi_sc2 > 0 ? emi_dash_dt.tot_emi_sc2 : 0) : 0 %></span> tCO2e</label>
+    </div>
+    <div class="emiss-card-sec">
+        <span class="emiss-card-sec-title">Indirect Emissions</span>
+        <span class="emiss-card-sec-sub-title">Scope 3 - Upstream</span>
+        <label class="emiss-card-sec-cal"><span class="emiss-card-val" id="tot_emi_sc3_u"><%= emi_dash_dt.tot_emi_sc3_u ? (emi_dash_dt.tot_emi_sc3_u > 0 ? emi_dash_dt.tot_emi_sc3_u : 0) : 0 %></span> tCO2e</label>
+    </div>
+    <div class="emiss-card-sec">
+        <span class="emiss-card-sec-title">Indirect Emissions</span>
+        <span class="emiss-card-sec-sub-title">Scope 3 - Downstream</span>
+        <label class="emiss-card-sec-cal"><span class="emiss-card-val" id="tot_emi_sc3_d"><%= emi_dash_dt.tot_emi_sc3_d ? (emi_dash_dt.tot_emi_sc3_d > 0 ? emi_dash_dt.tot_emi_sc3_d : 0) : 0 %></span> tCO2e</label>
+    </div>
+</div>
+
+<div class="row align-items-center">
+    <div class="col-4"><hr class="cust-hr"></div>
+    <div class="col-4 text-center px-0"><span class="div-hr-cust-text">Progress</span></div>
+    <div class="col-4"><hr class="cust-hr"></div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 p-l-0 chart-cust-container">
+        <div id="emi-chart" class="cust-chart"></div>
+        <div class="text-center">
+            <button class="btn btn-pill btn-outline-success btn-air-success btn-xs" type="button" onclick="showModal(this, 'A')">
+                <i class="icofont icofont-eye-alt"></i>
+                <span class="ml-3">View Calculation</span>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-6 p-l-0 chart-cust-container">
+        <div id="emi-act-chart" class="cust-chart"></div>
+    </div>
+</div>
+
+<!-- END -->
+
 <div class="row align-items-center">
     <div class="col-4"><hr class="cust-hr"></div>
     <div class="col-4 text-center px-0"><span class="div-hr-cust-text">In-Year Progress Monitor</span></div>
@@ -281,7 +333,7 @@
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
-    var chart, act_chart, pathway_chart, subTrnsDt, subTrnsRawDt, options, actOptions, pathOptions, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
+    var chart, act_chart, emiChart, emiActChart, emiActChartDt, emiActChartOpt, pathway_chart, subTrnsDt, subTrnsRawDt, options, actOptions, pathOptions, actData, actRawData, pathData, pathRawData, trnsFullData = <%- JSON.stringify(trans_data) %>;
 
     // Define custom colors for each scope
     const seriesColors = ['#202a44', '#186671', '#7030a0']; // Scope 1: Blue, Scope 2: Red, Scope 3: Green
@@ -290,6 +342,7 @@
         drawStackedActChart()
         drawStackedPathChart()
         drawSubTrnsDtChart()
+        drawEmisActChart()
     }
 
     function drawSubTrnsDtChart(){
@@ -386,6 +439,8 @@
 
         act_chart = new google.visualization.ColumnChart(document.getElementById('act-chart'));
         act_chart.draw(actData, actOptions);
+        emiChart = new google.visualization.ColumnChart(document.getElementById('emi-chart'));
+        emiChart.draw(actData, actOptions);
     }
 
     function drawStackedPathChart(){
@@ -427,6 +482,26 @@
 
         pathway_chart = new google.visualization.ColumnChart(document.getElementById('pathway-chart'));
         pathway_chart.draw(pathData, pathOptions);
+    }
+
+    function drawEmisActChart(){
+
+        emiActChartDt = google.visualization.arrayToDataTable([
+            ['Activity', 'tCO2e'],
+            ['Direct Emissions (Scope 1)', +$('#tot_emi_sc1').text()],
+            ['Indirect Emissions (Scope 2)', +$('#tot_emi_sc2').text()],
+            ['Indirect Emissions (Scope 3-Upstream)', +$('#tot_emi_sc3_u').text()],
+            ['Indirect Emissions (Scope 3-Downstream)', +$('#tot_emi_sc3_d').text()]
+        ]);
+        emiActChartOpt = {
+            title: 'Emissions by activity (tCO2e)-Current Year',
+            pieHole: 0.4,
+            width: '100%',
+            height: 300,
+            colors: ["#24695c", "#ff9104", "#c03b39", "#4631b1"]
+        };
+        emiActChart = new google.visualization.PieChart(document.getElementById('emi-act-chart'));
+        emiActChart.draw(emiActChartDt, emiActChartOpt);
     }
 
     function updateChart() {
@@ -532,6 +607,9 @@
     window.onload = updateChart;
     window.onresize = () => {
         act_chart.draw(actData, actOptions);
+        emiChart.draw(actData, actOptions);
+        console.log(emiActChart, emiActChartDt, emiActChartOpt, 'emiActChart')
+        emiActChart.draw(emiActChartDt, emiActChartOpt);
         pathway_chart.draw(pathData, pathOptions);
         chart.draw(subTrnsDt, options)
     };
@@ -539,6 +617,9 @@
     $('.toggleSidebarTogle').on('click', function(){
         setTimeout(() => {
             act_chart.draw(actData, actOptions);
+            emiChart.draw(actData, actOptions);
+            console.log(emiActChart, emiActChartDt, emiActChartOpt, 'emiActChart')
+            emiActChart.draw(emiActChartDt, emiActChartOpt);
             pathway_chart.draw(pathData, pathOptions);
             chart.draw(subTrnsDt, options)
         }, 800);

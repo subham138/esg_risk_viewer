@@ -106,6 +106,45 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
   yearList.includes(currYear) ? '' : yearList.unshift(currYear)
 
   // console.log(data.dec_flag, 'Flag');
+
+  // UPDATE ON 05.09.2025 //
+  var emiDashDt = await db_Select(`sum(tot_emi) tot_emi, sum(tot_emi_sc1) tot_emi_sc1, sum(tot_emi_sc2) tot_emi_sc2, sum(tot_emi_sc3_u) tot_emi_sc3_u, sum(tot_emi_sc3_d) tot_emi_sc3_d`, `(
+SELECT SUM(co_val) tot_emi, 0 tot_emi_sc1, 0 tot_emi_sc2, 0 tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear}
+)
+UNION
+SELECT 0 tot_emi, SUM(co_val) tot_emi_sc1, 0 tot_emi_sc2, 0 tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=1
+)
+UNION
+SELECT 0 tot_emi, 0 tot_emi_sc1, SUM(co_val) tot_emi_sc2, 0 tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=2
+)
+UNION
+SELECT 0 tot_emi, 0 tot_emi_sc1, 0 tot_emi_sc2, SUM(co_val) tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c.stream_type='U'
+)
+UNION
+SELECT 0 tot_emi, 0 tot_emi_sc1, 0 tot_emi_sc2, 0 tot_emi_sc3_u, SUM(co_val) tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c.stream_type='D'
+)
+)a`, null, null)
+  // END //
   
 
   var res_data = {
@@ -136,7 +175,8 @@ WHERE client_id = ${client_id} AND proj_id = '${data.proj_id}' AND active_flag =
     allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
     ghg_quest_list: getGhgQuestData.suc > 0 ? (getGhgQuestData.msg.length > 0 ? getGhgQuestData.msg : []) : [],
     dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : [],
-    proj_ind_list: getProjIndList.suc > 0 ? (getProjIndList.msg.length > 0 ? getProjIndList.msg : []) : []
+    proj_ind_list: getProjIndList.suc > 0 ? (getProjIndList.msg.length > 0 ? getProjIndList.msg : []) : [],
+    emi_dash_dt: emiDashDt.suc > 0 ? (emiDashDt.msg.length > 0 ? emiDashDt.msg[0] : {}) : {}
   };
   res.render("calculator_project/report_view", res_data)
 })
@@ -192,6 +232,9 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
   var dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), 
   currDate = dateFormat(new Date(), 'yyyy-mm-dd'), 
   user = req.session.user, res_dt= {};
+
+  console.log(req.body, 'Body Data');
+  
 
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
