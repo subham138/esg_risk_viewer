@@ -283,7 +283,7 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
 
     // TRANS PLAN INSERT/UPDATE VALUE //
     try{
-      var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.proj_id} AND scope = ${data.scope_id} AND repo_period = ${repo_period}`,
+      var tot_trans_query = `SELECT SUM(co_val) FROM td_ghg_quest_cal WHERE project_id = ${data.proj_id} AND scope = ${data.scope_id} AND repo_period = ${repo_period}`,
       trans_input_field = data.scope_id == 1 ? 'act_sc_1' : data.scope_id == 2 ? 'act_sc_2' : 'act_sc_3',
       chk_trns_dt = await db_Select('id', 'td_trans_plan', `proj_id = ${data.proj_id} AND trans_year = ${repo_period}`, null);
       // console.log(chk_trns_dt, 'chk_trns_dt');
@@ -391,7 +391,7 @@ CalcUserRouter.post('/delete_ghg_ext_cal_mod_ajax', async (req, res) => {
 
   // TRANS PLAN INSERT/UPDATE VALUE //
   try{
-    var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${data.project_id} AND scope = ${data.scope} AND repo_period = ${data.repo_period}`,
+    var tot_trans_query = `SELECT SUM(co_val) FROM td_ghg_quest_cal WHERE project_id = ${data.project_id} AND scope = ${data.scope} AND repo_period = ${data.repo_period}`,
     trans_input_field = data.scope == 1 ? 'act_sc_1' : data.scope == 2 ? 'act_sc_2' : 'act_sc_3',
     chk_trns_dt = await db_Select('id', 'td_trans_plan', `proj_id = ${data.project_id} AND trans_year = ${data.repo_period}`, null);
     // console.log(chk_trns_dt, 'chk_trns_dt');
@@ -432,7 +432,7 @@ CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
 
       // TRANS PLAN INSERT/UPDATE VALUE //
       try{
-        var tot_trans_query = `SELECT SUM(cal_val) FROM td_ghg_quest_cal WHERE project_id = ${req_data.project_id} AND scope = ${req_data.sec_id} AND repo_period = ${req_data.repo_period}`,
+        var tot_trans_query = `SELECT SUM(co_val) FROM td_ghg_quest_cal WHERE project_id = ${req_data.project_id} AND scope = ${req_data.sec_id} AND repo_period = ${req_data.repo_period}`,
         trans_input_field = req_data.sec_id == 1 ? 'act_sc_1' : req_data.sec_id == 2 ? 'act_sc_2' : 'act_sc_3',
         chk_trns_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id = ${req_data.project_id} AND scope = ${data.sec_id} AND repo_period = ${req_data.repo_period}`, null);
         var trns_table_name = `td_trans_plan`,
