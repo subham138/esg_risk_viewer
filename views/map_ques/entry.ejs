@@ -1,0 +1,416 @@
+<%- include('../templates/header.ejs') %>
+
+<style>
+    .label-view{
+        border: 1px solid rgb(0, 0, 0);
+        padding: 8px;
+    }
+    .op-key {
+        font-size: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+    }
+    .op-btn-p {
+        font-size: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+    }
+    .op-btn-m {
+        font-size: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+    }
+    .btn-card-footer{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: end;
+    }
+    .media {
+        align-items: center !important;
+    }
+    .vl {
+        border-left: 2px solid green;
+        height: 20px;
+        margin: 0px 10px 0 10px;
+    }
+    .is-parent{
+        display: flex;
+        justify-content: center;
+        flex-direction: row;    
+        align-items: center;
+    }
+    .delete-btn-form{
+        font-size: 20px;
+    }
+    .btn-pill {
+        background: #fff;
+    }
+    .hover-centainer {
+        position: absolute;
+        display: none;
+        right: -61px;
+        height: auto;
+        top: 20%;
+        background: #ffffff;
+        border: #dfdfdfb0 1px solid;
+        box-shadow: 0px 0px 0px 0 rgba(0, 0, 0, 0.2), 0px 0px 4px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 10px;
+        padding: 10px;
+        width: 60px;
+    }
+    .entry-card {
+        position: relative;
+    }
+    hr{
+        width: 100%;
+    }
+    .entry-card:hover .hover-centainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .hover-centainer i{
+        font-size: 25px;
+        cursor: pointer;
+    }
+select option:disabled {
+    color: gray;
+    font-style: italic;
+}
+
+.cust-floating-submit-btn{
+    right: 160px;
+}
+
+</style>
+
+<!-- Container-fluid starts-->
+<div class="container-fluid">
+    <form  method="POST" action="/map_ques_save">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="d-flex justify-content-center flex-column" id="add-card">
+                <div class="card w-75">
+                    <div class="card-body b-l-success border-3">
+                         <h4 class="mb-3">Parent</h4> 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select" id="scope_id" name="scope_id" required>
+                                    <option>Select Scope</option>
+                                    <% scope.forEach(dt => {
+                                        var _selected = ''
+                                        if(dt.id == scope_id) _selected = 'selected'
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
+                                    <% }) %>
+                                </select>
+                                <input type="hidden" name="lang_flag" id="lang_flag" value="<%= flag %>">
+                            </div>
+                           <div class="col-md-6">
+                                <select class="form-select" id="sec_id" name="sec_id" required>
+                                    <option>Select Calculator Section Type</option>
+                                    <% sec_list.forEach(dt => {
+                                        var _selected = ''
+                                        if(dt.id == sec_id) _selected = 'selected'
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="row">
+                             <div class="col-md-12 mt-2 dyn-opt-div">
+                               <div class="form-group">
+                                 <select class="form-select dynamic-option select2" name="quest_list" id="quest_list">
+                                   <option value="">Select Question</option>   
+                                 </select>
+                                </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+        </div>
+
+         <div class="row">
+          <div class="col-sm-12">
+            <div class="d-flex justify-content-center flex-column" id="add-card">
+                <div class="card w-75 entry-card">
+                    <div class="card-body b-l-success border-3">
+                        <h4 class="mb-3">Child</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select" id="scopes_id" name="scopes_id" required>
+                                    <option>Select Scope</option>
+                                    <% scope.forEach(dt => {
+                                        var _selected = ''
+                                        if(dt.id == scopes_id) _selected = 'selected'
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                           <div class="col-md-6">
+                                <select class="form-select" id="secs_id" name="secs_id" required>
+                                    <option>Select Calculator Section Type</option>
+                                    <% sec_list.forEach(dt => {
+                                        var _selected = ''
+                                        if(dt.id == secs_id) _selected = 'selected'
+                                        %>
+                                        <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                             <div class="col-md-12 mt-2 dyn-opt-div">
+                                  <select class="form-select dynamic-option select2" id="quests_list" name="quests_list">
+                                    <option value="">Select Question</option>
+                                  </select>
+                             </div>
+                        </div> 
+                 
+                    </div>
+                       <div class="hover-centainer">
+                        <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
+                        <hr>
+                        <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
+                    </div>
+                </div>
+            </div>
+         </div>
+        </div>
+        <button class="btn cust-floating-submit-btn" type="button" onclick="return confSub(this);">Submit</button>
+    </form>
+</div>
+  <!-- Container-fluid Ends-->
+
+<script>
+    $('#scope_id').on('change', function(){
+        $.ajax({
+            method:'POST',
+            url: '/get_calc_sec_type_list_ajax',
+            data: {scope: $(this).val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
+            dataType: 'html',
+            beforeSend: function(){
+                $('.loader-wrapper').show()
+            },
+            success: function(result){
+                var res = JSON.parse(result);
+                // console.log(res);
+                $('#sec_id').empty();
+                $('#sec_id').append($('<option>', {value: '', text: 'Select Type'}));
+                if(res.suc > 0 && res.msg.length > 0){
+                    $.each(res.msg, function (i, item) {
+                        $('#sec_id').append($('<option>', {value: item.id, text: item.sec_name}));
+                    });
+                }
+            },
+            complete: function(){
+                $('.loader-wrapper').hide()
+            }
+        })
+    })
+
+    $('#sec_id').on('change', function(){ 
+    $.ajax({
+        method: 'POST',
+        url: '/get_calc_ques_list_ajax',
+        data: {scope: $('#scope_id').val(), sec_id:  $(this).val(), lang_flag: $('#lang_flag').val()},
+        dataType: 'html',
+        beforeSend: function(){
+            $('.loader-wrapper').show();
+        },
+        success: function(result){
+             var res = JSON.parse(result);
+                // console.log(res);
+                 $('#quest_list').empty();
+                 $('#quest_list').append($('<option>', {
+                value: '',
+                text: 'Select Question'
+            }));
+            if(res.suc > 0 && res.msg.length > 0){
+                $.each(res.msg, function(i, item){
+                    $('#quest_list').append($('<option>', {
+                        value: item.id,
+                        text: item.input_label
+                    }));
+                });
+            }
+            $('#quest_list').select2({
+                width: '100%',
+                templateResult: function (data) {
+                    if (!data.id) return data.text;
+
+                    return $('<span>', {
+    text: data.text,
+    style: 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;'
+});
+
+                }
+            });
+        },
+        complete: function(){
+            $('.loader-wrapper').hide();
+        }
+    });
+});
+
+// For dynamically added scope dropdown (child)
+$(document).on('change', 'select[id^="scopes_id"]', function () {
+    const $this = $(this);
+    const scopeVal = $this.val();
+    const card = $this.closest('.entry-card');
+    const secSelect = card.find('select[id^="secs_id"]');
+
+    $.ajax({
+        method: 'POST',
+        url: '/get_calc_sec_type_list_ajax',
+        data: { scope: scopeVal, sec_id: scopeVal, lang_flag: $('#lang_flag').val() },
+        dataType: 'html',
+        beforeSend: function () {
+            $('.loader-wrapper').show();
+        },
+        success: function (result) {
+            const res = JSON.parse(result);
+            secSelect.empty().append($('<option>', { value: '', text: 'Select Type' }));
+            if (res.suc > 0 && res.msg.length > 0) {
+                $.each(res.msg, function (i, item) {
+                    secSelect.append($('<option>', { value: item.id, text: item.sec_name }));
+                });
+            }
+             $('.select2').select2({
+                width: '100%',
+                templateResult: function (data) {
+                    if (!data.id) return data.text;
+
+                    return $('<span>', {
+    text: data.text,
+    style: 'white-space: normal; word-wrap: break-word; overflow-wrap: break-word;'
+});
+
+                }
+            });
+        },
+        complete: function () {
+            $('.loader-wrapper').hide();
+        }
+    });
+});
+
+// For dynamically added section dropdown (child)
+$(document).on('change', 'select[id^="secs_id"]', function () {
+    const $this = $(this);
+    const secVal = $this.val();
+    const card = $this.closest('.entry-card');
+    const scopeVal = card.find('select[id^="scopes_id"]').val();
+    const quesSelect = card.find('select[id^="quests_list"]');
+    const parentSelectedQuestion = $('#quest_list').val(); 
+
+    $.ajax({
+        method: 'POST',
+        url: '/get_calc_ques_list_ajax',
+        data: { scope: scopeVal, sec_id: secVal, lang_flag: $('#lang_flag').val() },
+        dataType: 'html',
+        beforeSend: function () {
+            $('.loader-wrapper').show();
+        },
+        success: function (result) {
+            const res = JSON.parse(result);
+            quesSelect.empty().append($('<option>', { value: '', text: 'Select Question' }));
+            if (res.suc > 0 && res.msg.length > 0) {
+                const parentSelectedQuesId = $('#quest_list').val();
+                $.each(res.msg, function (i, item) {
+                    const isDisabled = (item.id == parentSelectedQuesId) ? true : false;
+                        quesSelect.append($('<option>', { value: item.id, text: item.input_label,disabled: isDisabled }));
+                });
+            }
+        },
+        complete: function () {
+            $('.loader-wrapper').hide();
+        }
+    });
+});
+
+
+  function addNewCard() {
+    var tot_card = $('.entry-card').length;
+    var newCard = `
+        <div class="card w-75 entry-card my-3 position-relative" id="card-${tot_card + 1}">
+            <div class="card-body b-l-success border-3">
+                <h4 class="mb-3">Child</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <select class="form-select" id="scopes_id_${tot_card + 1}" name="scopes_id" required>
+                            <option>Select Scope</option>
+                            <% scope.forEach(dt => {
+                                var _selected = ''
+                                if(dt.id == scopes_id) _selected = 'selected'
+                            %>
+                                <option value="<%= dt.id %>" <%= _selected %>><%= dt.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="secs_id_${tot_card + 1}" name="secs_id" required>
+                            <option>Select Calculator Section Type</option>
+                            <% sec_list.forEach(dt => {
+                                var _selected = ''
+                                if(dt.id == secs_id) _selected = 'selected'
+                            %>
+                                <option value="<%= dt.id %>" <%= _selected %>><%= dt.sec_name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-md-12 mt-2 dyn-opt-div">
+                        <select class="form-select dynamic-option select2" name="quests_list" id="quests_list">
+                            <option value="">Select Question</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="hover-centainer">
+                <a onclick="addNewCard()" title="Add new row"><i class="fa fa-plus-square-o text-success"></i></a>
+                <hr>
+                <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
+            </div>
+        </div>
+    `;
+
+    if ($('.entry-card').length > 0) {
+        $('.entry-card').last().after(newCard);
+    } else {
+        $('#add-card').append(newCard); // First card case
+    }
+}
+
+
+
+    async function delFrmCard(e){
+        if(await inititate_sweet_conf_alert(title = 'Are you sure?', text = 'Do you want to delete?') > 0){
+            var elm = $(e);
+            $(elm[0]).parent().closest('.card').detach();
+        }
+    }
+
+    async function confSub(e){
+        if($(e).attr('type') == 'submit'){
+            return true;
+        }
+        if(await inititate_sweet_conf_alert(title = 'Are you sure?', text = 'Do you want to submit?') > 0){
+            $(e).attr('type', 'submit');
+            $(e).click();
+            return true;
+        }else{
+            return false;
+        }        
+    }
+</script>  
+
+<%- include('../templates/footer.ejs') %>

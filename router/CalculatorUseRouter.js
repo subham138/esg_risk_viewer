@@ -186,7 +186,9 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   var data = new Buffer.from(enc_dt, 'base64').toString()
   data = JSON.parse(data)
 
-  var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND proj_year = ${sel_year} AND a.end_flag = 'N' AND a.quest_seq != '1.'`, null)
+  // return res.send({data, body: req.body})
+
+  // var ansChk = await db_Select('count(a.id) tot_row', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND b.scope_id = ${data.quest_sec_id} AND proj_year = ${sel_year} AND a.end_flag = 'N' AND a.quest_seq != '1.'`, null)
 
   // console.log(ansChk, 'Chk DT');
 
@@ -201,6 +203,16 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   var maxQuestSlNo = await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND a.quest_id = '${data.quest_id}'`, null)
 
   console.log(maxQuestSlNo, 'Max CHk');
+
+//   let chkHasChild = await db_Select('a.id, b.c_scope_id, b.c_sec_id, b.c_f_builder_id', 'md_cal_form_builder a, md_cal_form_build_map_quest b', `a.lang_flag COLLATE utf8mb4_general_ci =b.lang_flag AND a.scope_id=b.p_scope_id AND a.sec_id=b.p_sec_id AND a.id=p_f_builder_id
+// AND a.sequence=(SELECT b.parent_id FROM md_cal_form_builder b WHERE a.lang_flag=b.lang_flag AND a.scope_id=b.scope_id AND a.sec_id=b.sec_id AND b.id = ${data.quest_id})
+// AND a.is_parent='Y' AND a.parent_id = 0 AND a.is_sub_parent = 'Y'`, 'LIMIT 1')
+
+//   if(chkHasChild.suc > 0 && chkHasChild.msg.length > 0){
+//     for (let dt of chkHasChild.msg){
+//       let questSeq = await db_Select('id', 'md_cal_form_builder', ``)
+//     }
+//   }
   
 
   maxQuestSlNo = maxQuestSlNo.suc > 0 && maxQuestSlNo.msg.length > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1
@@ -209,7 +221,7 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
 
   var table_name = 'td_ghg_quest',
     fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans.split("'").join("\\'")}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, proj_year, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
-    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${sel_year}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans.split("'").join("\\'")}', '${user.user_id}', '${dateTime}')`,
+    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${sel_year}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}' COLLATE utf8mb4_general_ci, '${quest_ans.split("'").join("\\'")}' COLLATE utf8mb4_general_ci, '${user.user_id}' COLLATE utf8mb4_general_ci, '${dateTime}')`,
   whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
