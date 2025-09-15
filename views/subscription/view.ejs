@@ -1,147 +1,60 @@
 <%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>
-                    <%= header %>
-                </h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3>
                         <%= header %>
-                    </li>
-                </ol>
+                    </h3>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Billing</a></li>
+                        <li class="breadcrumb-item">
+                            <%= header %>
+                        </li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Zero Configuration  Starts-->
-        <div class="col-sm-12">
-            <% if(message){ %>
-                <div class="alert alert-<%= message.type %> dark alert-dismissible fade show" role="alert">
-                    <i data-feather="clock"></i>
-                    <p>
-                        <%= message.message %>
-                    </p>
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <% } %>
-            <div class="card">
-                <div class="card-header pb-0">
-                    <h5>Pricing</h5>
-                </div>
-                <div class="card-body row pricing-content">
-                    <div class="col-md-12">
-                        <label>
-                            <%= subs == 'N' ? 'You have no active plans' : 'Your Subscription expires in '+ subs_dt + ' days' %>
-                        </label>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Zero Configuration  Starts-->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h5>Your Subscription</h5>
                     </div>
-                    <div class="col-md-4">
-                        <div class="pricing-block card text-center">
-                            <div class="pricing-header">
-                                <h2>Basic</h2>
-                                <div class="price-box">
-                                    <div>
-                                        <h3>$5</h3>
-                                        <p>per month</p>
-                                    </div>
-                                </div>
+                    <div class="card-body row pricing-content">
+
+                        <div class="col-md-12">
+                            <div class="pricing-content-box">
+                                <% if(subs?.status=='active' ){ %>
+                                    <a href="/subscription/cancel/<%= subs?.id	 %>/<%= subs?.stripe_subscription_id	 %>"
+                                        class="btn btn-danger">Cancel Subscription</a>
+                                    <% } %>
+
+                                        <h3>
+                                            <%= subs?.product_name ?? 0 %>
+                                        </h3>
+                                        <div class="pricing-plan-price">
+                                            <h4 style="text-transform: uppercase;">
+                                                <%= subs?.amount ?? 0 %>
+                                                    <%= subs?.currency %>
+                                            </h4>
+                                            <h5>Per <%= subs?.month_yearly ?? 0 %>
+                                            </h5>
+                                        </div>
+                                        <button type="button" class="btn btn-link">Selected</button>
                             </div>
-                            <div class="pricing-list">
-                                <ul class="pricing-inner">
-                                    <li>
-                                        <h6><span>Full Access</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Documentation</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Customes Support</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Free Updates</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Unlimited Domains</span></h6>
-                                    </li>
-                                </ul>
-                                <button class="btn btn-primary btn-lg" type="button"
-                                    data-original-title="btn btn-primary btn-lg"
-                                    title="" onclick="updatePackage('B')">Subscribe</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="pricing-block card text-center">
-                            <div class="pricing-header">
-                                <h2>Standard</h2>
-                                <div class="price-box">
-                                    <div>
-                                        <h3>$10</h3>
-                                        <p>per month</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="pricing-list">
-                                <ul class="pricing-inner">
-                                    <li>
-                                        <h6><span>Full Access</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Documentation</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Customes Support</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Free Updates</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Unlimited Domains</span></h6>
-                                    </li>
-                                </ul>
-                                <button class="btn btn-primary btn-lg" type="button"
-                                    data-original-title="btn btn-primary btn-lg"
-                                    title="" onclick="updatePackage('S')">Subscribe</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="pricing-block card text-center">
-                            <div class="pricing-header">
-                                <h2>Premium</h2>
-                                <div class="price-box">
-                                    <div>
-                                        <h3>$20</h3>
-                                        <p>per month</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="pricing-list">
-                                <ul class="pricing-inner">
-                                    <li>
-                                        <h6><span>Full Access</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Documentation</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Customes Support</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Free Updates</span></h6>
-                                    </li>
-                                    <li>
-                                        <h6><span>Unlimited Domains</span></h6>
-                                    </li>
-                                </ul>
-                                <button class="btn btn-primary btn-lg" type="button"
-                                    data-original-title="btn btn-primary btn-lg"
-                                    title="" onclick="updatePackage('P')">Subscribe</button>
+                            <div class="update-button-row">
+                                <h2>Subtotal <span style="text-transform: uppercase;">
+                                        <%= subs?.amount ?? 0 %>
+                                            <%= subs?.currency %>
+                                    </span></h2>
+                                <% if(subs){ %>
+                                    <a href="/subscription/main" class="btn btn-success">Change Subscription</a>
+                                    <% } %>
                             </div>
                         </div>
                     </div>
@@ -149,14 +62,6 @@
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    function updatePackage(plan_id){
-        if(confirm(`Do you want to subscribe our ${plan_id == 'P' ? 'Premium' : (plan_id == 'S' ? 'Standard' : 'Basic')} package?`)){
-            window.location.href = `/subs_plan?id=${plan_id}`
-        }
-    }
-</script>
-    
-<%- include('../templates/footer.ejs') %>
+
+    <%- include('../templates/footer.ejs') %>

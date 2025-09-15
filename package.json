@@ -26,6 +26,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.9.8",
     "nodemailer": "^6.9.13",
-    "puppeteer": "^21.3.4"
+    "puppeteer": "^21.3.4",
+    "stripe": "^18.5.0"
   }
 }

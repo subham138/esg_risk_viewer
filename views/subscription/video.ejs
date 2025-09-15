@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Subscription Video</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div>
+      <iframe 
+      width="600" 
+      height="400"
+      src="https://www.youtube.com/embed/15gntqnVv28?autoplay=1&"
+      frameborder="0"
+      allowfullscreen
+      >
+      </iframe>
+
+      <div class="video-button" style="text-align: center;margin-top: 30px;">
+        <a href="/subscription/main" class="btn btn btn-danger" onclick="window.opener.location.href='/subscription/main';window.close();return false;">Upgrade your plan</a>
+      </div>
+    </div>
+  </body>
+</html>

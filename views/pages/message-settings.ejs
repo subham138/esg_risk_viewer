@@ -1,0 +1,48 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6 row">
+                <!-- <div class="col-md-4">
+                    <h5 class="text-muted mt-2"><%= header %></h5>
+                </div> -->
+                <div class="col-md-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                        <li class="breadcrumb-item"><%= header %></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="card card-form">
+           <h5>If you would like change your subscription to receive (or to stop receiving) emails
+            from ESG Risk Viewer about products updates, industry news and events, you can
+            change your preferences below</h5> 
+
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Y" id="productUpdate" <%= policy == 'Y' ? 'checked' : '' %>> 
+                    <label class="form-check-label" for="productUpdate">
+                       Products updates
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Y" id="industryNews" <%= policy == 'Y' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="industryNews">
+                        Industry news and events
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<%- include('../templates/footer.ejs') %>

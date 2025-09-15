@@ -1,0 +1,90 @@
+<%- include('../templates/header.ejs') %>
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6 row">
+                <!-- <div class="col-md-4">
+                    <h5 class="text-muted mt-2"><%= header %></h5>
+                </div> -->
+                <div class="col-md-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                        <li class="breadcrumb-item"><%= header %></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+       <div class="card card-form">
+        <form method="post" action="/profile-security">
+            <div class="col-md-12">
+            <h5 class="text-title">Let us know about any changes to your details</h5>
+            </div>
+            <% if(message){ %>
+                <div class="alert alert-<%= message.type %> col-md-6">
+                    <%= message.message %>
+                </div>
+                <% } %>
+        <div class="mb-3">
+            <div class="col-md-6">
+                <label for="exampleInputName" class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" id="exampleInputName" value="<%= name %>" placeholder="Enter user name">
+            </div>
+        </div>
+        <div class="mb-3">
+           <div class="col-md-6">
+             <label for="exampleInputEmail" class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" id="exampleInputEmail" readonly value="<%= email %>">
+           </div>
+        </div>
+       <div class="mb-3">
+            <label class="form-label">To change your password, enter your current password</label>
+            <div class="col-md-6 position-relative">
+                <input id="password1" type="password" class="form-control" name="current_password">
+                <span toggle="#password1" class="fa fa-fw fa-eye field-icon toggle-password" 
+                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+        <label class="form-label">New password</label>
+        <div class="col-md-6 position-relative">
+            <input id="password2" type="password" class="form-control" name="password">
+            <span toggle="#password2" class="fa fa-fw fa-eye field-icon toggle-password" 
+                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></span>
+        </div>
+        </div>
+         <div class="mb-3">
+        <label class="form-label">Re-enter new password</label>
+        <div class="col-md-6 position-relative">
+            <input id="password3" type="password" class="form-control" name="confirm_password">
+            <span toggle="#password3" class="fa fa-fw fa-eye field-icon toggle-password" 
+                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></span>
+        </div>
+        </div>
+       
+        <div class="button-row">
+            <button type="submit" class="btn btn-primary dark-line-button">Cancel</button>
+            <button type="submit" class="btn btn-primary blue-button">Save</button>
+        </div>
+        </form>
+       </div>
+    </div>
+</div>
+<script>
+   $(".toggle-password").click(function () {
+  $(this).toggleClass("fa-eye fa-eye-slash");
+  var input = $($(this).attr("toggle"));
+  if (input.attr("type") === "password") {
+    input.attr("type", "text");
+  } else {
+    input.attr("type", "password");
+  }
+});
+</script>
+
+<%- include('../templates/footer.ejs') %>

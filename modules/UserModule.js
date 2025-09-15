@@ -1,4 +1,4 @@
-const { db_Select, db_Insert } = require("./MasterModule");
+const { db_Select, db_Insert, db_Routine } = require("./MasterModule");
 const bcrypt = require("bcrypt"),
   dateFormat = require("dateformat");
 const { SaveSubsData } = require("./SubscModule");
@@ -21,6 +21,32 @@ module.exports = {
       resolve(res_dt);
     });
   },
+  // MODIFIED BY VIKASH //
+  getMonthlyUser: (client_id) => {
+    return new Promise(async (resolve, reject) => {
+      var select = "SELECT u2.id, u2.user_name,u2.user_id FROM md_user u1 JOIN md_user u2 ON u1.client_id = u2.client_id AND u1.id <> u2.id JOIN stripe_subscriptions stripe ON u1.id = stripe.user_id WHERE u2.client_id=" + client_id + " AND stripe.month_yearly = 'Month' AND stripe.status = 'active' ORDER BY u2.created_dt ASC LIMIT 2";
+      var res_dt = await db_Routine(select);
+      resolve(res_dt);
+    });
+  },
+  updateUser: (data, user, client_id) => {
+    return new Promise(async (resolve, reject) => {
+      var pass = bcrypt.hashSync(data.password, 10),
+        datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+
+      var table_name = "md_user",
+        fields =
+          data.id > 0
+            ? `user_name = '${data.user_name}', password = '${pass}'`
+            : `(user_name,password)`,
+        values = `('${client_id}', '${data.user_name}', '${data.user_type}', '${data.user_id}', '${pass}', '${data.active_flag}', '${user}', '${datetime}')`,
+        whr = data.id > 0 ? `id = ${data.id}` : null,
+        flag = 1;
+      var res_dt = await db_Insert(table_name, fields, values, whr, flag);
+      resolve(res_dt);
+    });
+  },
+  // END //
   saveUser: (data, user, client_id) => {
     return new Promise(async (resolve, reject) => {
       var pass = bcrypt.hashSync(data.password, 10),
@@ -97,11 +123,13 @@ module.exports = {
       var chk_dt = await db_Select(select, table_name, whr, order);
 
       var table_name = "md_user",
+      // MODIFIED BY VIKASH //
         fields =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
-            ? `user_name = '${data.user_name}', user_type = 'C', user_id = '${data.user_id}', active_flag = 'Y', modified_by = '${user}', modified_dt = '${datetime}'`
-            : `(client_id, user_name, user_type, user_id, password, active_flag, created_by, created_dt)`,
-        values = `('${client_id}', '${data.user_name}', 'C', '${data.user_id}', '${pass}', 'Y', '${user}', '${datetime}')`,
+            ? `user_name = '${data.user_name}', user_type = 'C', country = '${data.country}',policy = '${data.policy}', user_id = '${data.user_id}', active_flag = 'Y', modified_by = '${user}', modified_dt = '${datetime}'`
+            : `(client_id, user_name, user_type,country,policy, user_id, password, active_flag, created_by, created_dt)`,
+        values = `('${client_id}', '${data.user_name}', 'C', '${data.country}', '${data.policy}', '${data.user_id}', '${pass}', 'Y', '${user}', '${datetime}')`,
+        // END //
         whr =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
             ? `id = ${chk_dt.msg[0].id}`

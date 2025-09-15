@@ -17,13 +17,27 @@ const {
   saveUser,
   getClientList,
   saveClientData,
+  getMonthlyUser // MODIFIED BY VIKASH //
 } = require("../modules/UserModule");
 
 const admin = require('firebase-admin');
 const serviceAccount = require('../firebase-service-account.json');
+// MODIFIED BY VIKASH //
+const { TextQueryHandler } = require("puppeteer");
+// END //
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
+// MODIFIED BY VIKASH //
+async function isMonthUser(email, client_id) {
+  var isUser = await getMonthlyUser(client_id);
+  isUser = isUser.msg.map(item => item.user_id)
+  if (isUser.includes(email)) {
+    return true;
+  }
+}
+// END //
 
 UserRouter.use((req, res, next) => {
   // if (
@@ -81,13 +95,41 @@ UserRouter.post("/register", async (req, res) => {
        req.session.message = { type: "danger", message: "User already exists" };
     }
 
-    let dataChk =await db_Insert(table_name, fields, values, whr, flag);
-    if(dataChk.suc > 0){
-     req.session.message = {
-          type: "success",
-          message: "Register successfully. Please login to continue.",
-        };
-    }
+    // MODIFIED BY VIKASH //
+    var res_dt = await saveClientData({
+      client_name: name,
+      password: password,
+      user_name: name,
+      country: country,
+      policy: policy,
+      user_id: email,
+      platform_mode: 'E',
+      plan_type: 'B',
+      ai_tag_tool_flag: 'N',
+      ghg_emi_flag: 'N',
+      ifrs_flag: 'N',
+      ifrs_fr_flag: 'N',
+      esrs_flag: 'N',
+      esrs_fr_flag: 'N',
+      esrs_vsme_flag: 'N',
+      esrs_vsme_fr_flag: 'N',
+      gri_flag: 'N',
+      gri_fr_flag: 'N',
+      cal_lang_flag: 'N',
+    }, name);
+
+    req.session.message = {
+      type: "success",
+      message: "Register successfully. Please login to continue.",
+    };
+
+    // let dataChk =await db_Insert(table_name, fields, values, whr, flag);
+    // if(dataChk.suc > 0){
+    //  req.session.message = {
+    //       type: "success",
+    //       message: "Register successfully. Please login to continue.",
+    //     };
+    // }
     res.redirect("/register");
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -107,12 +149,37 @@ UserRouter.post("/verify-token", async (req, res) => {
       req.session.user = chk_dt.msg[0];
       return res.json({ success: true, user: chk_dt.msg[0] });
     } else {
+      // MODIFIED BY VIKASH //
+      let country = '';
+      let policy = 'Y';
       let hashedPassword = await bcrypt.hashSync('123456', 10);
-      var table_name = "md_user",
-        fields = `(user_name, user_id, password, user_type, country,created_dt)`,
-        values = `('${userInfo.name}', '${userInfo.email}', '${hashedPassword}', 'C', '${userInfo.email.split("@")[1]}', '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
-        flag = 0;
-      await db_Insert(table_name, fields, values, null, flag);
+      // var table_name = "md_user",
+      //   fields = `(user_name, user_id, password, user_type, country,created_dt)`,
+      //   values = `('${userInfo.name}', '${userInfo.email}', '${hashedPassword}', 'C', '${userInfo.email.split("@")[1]}', '${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
+      //   flag = 0;
+      // await db_Insert(table_name, fields, values, null, flag);
+
+      var res_dt = await saveClientData({
+        client_name: userInfo.name,
+        password: hashedPassword,
+        user_name: userInfo.name,
+        country: country,
+        policy: policy,
+        user_id: userInfo.email,
+        platform_mode: 'E',
+        plan_type: 'B',
+        ai_tag_tool_flag: 'N',
+        ghg_emi_flag: 'N',
+        ifrs_flag: 'N',
+        ifrs_fr_flag: 'N',
+        esrs_flag: 'N',
+        esrs_fr_flag: 'N',
+        esrs_vsme_flag: 'N',
+        esrs_vsme_fr_flag: 'N',
+        gri_flag: 'N',
+        gri_fr_flag: 'N',
+        cal_lang_flag: 'N',
+      }, userInfo.name);
 
       const whr = `user_id = '${userInfo.email}' AND active_flag = 'Y'`;
       const chk_dt = await db_Select("*", "md_user", whr, null);
@@ -136,8 +203,9 @@ UserRouter.get("/login", (req, res) => {
 
 UserRouter.post("/login", async (req, res) => {
   var data = req.body;
+  // MODIFIED BY VIKASH //
   var select =
-    "id, client_id, user_name, user_id, password, user_type, active_flag, fast_login, login_dt",
+    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy, active_flag, fast_login, login_dt",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -155,6 +223,16 @@ UserRouter.post("/login", async (req, res) => {
           console.log(err);
         }
         req.session.user = chk_dt.msg[0];
+        // MODIFIED BY VIKASH //
+        if (req.session.user.client_id && !await isMonthUser(data.email, req.session.user.client_id) && chk_dt.msg[0].user_type != "C" && chk_dt.msg[0].user_type != "S") {
+          req.session.message = {
+            type: "danger",
+            message: "Subscription plan expired or contact with admin.",
+          };
+          delete req.session.user;
+          return res.redirect("/login");
+        }
+        // END //
         if (chk_dt.msg[0].user_type != "S") {
           var select =
             "id, ai_tag_tool_flag, ghg_emi_flag, ifrs_flag, ifrs_fr_flag, esrs_flag, esrs_fr_flag, esrs_vsme_flag, esrs_vsme_fr_flag, gri_flag, gri_fr_flag, cal_lang_flag, platform_mode",
@@ -281,7 +359,7 @@ UserRouter.post("/chk_user_login", async (req, res) => {
     res_dt = "";
   // dynamicNotify('fa fa-bell-o', 'Success', 'Test notification', 'success')
   var select =
-      "id, client_id, user_name, user_id, password, user_type, active_flag",
+      "id,stripe_customer_id, client_id, user_name, user_id, password, user_type, active_flag",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -292,7 +370,7 @@ UserRouter.post("/chk_user_login", async (req, res) => {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         if (chk_dt.msg[0].user_type != "S") {
           var otp = Math.floor(1000 + Math.random() * 9000);
-          console.log(otp);
+          // console.log(otp);
           // req.session.message = {otp: otp}
           var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
           if(send_email.suc > 0){
@@ -470,13 +548,65 @@ UserRouter.post("/client_save", async (req, res) => {
   res.redirect("/client");
 });
 
+// MODOFIED BY VIKASH //
+function canAddNewUser(subs, count) {
+  if (subs != null) {
+    const now = new Date();
+    const purchaseDate = new Date(subs.purchase_date);
+    const expireDate = new Date(subs.expires_date);
+    if (!(now >= purchaseDate && now <= expireDate)) return false;
+
+    // plan rules
+    if (subs.product_name === 'Lite' && count <= 2) return true;
+    if (subs.product_name === 'Premium') return true;
+    if (!subs || subs.status === 'cancelled') return false;
+  }
+  return false;
+}
+// END //
+
 UserRouter.get("/manage_user", async (req, res) => {
+  // MODOFIED BY VIKASH //
+  var chk_dt = await db_Select(
+    "*",
+    "stripe_subscriptions",
+    `user_id = ${req.session.user?.id}`,
+    `order by created_at desc limit 1`,
+  );
+
+
+  var user_count = await db_Select(
+    "COUNT(*) AS cnt",
+    "md_user",
+    `client_id = ${req.session?.user.client_id}`,
+    null
+  );
+  // END //
   var user_data = await getUserList(0, req.session.user.client_id);
+
+  // MODOFIED BY VIKASH //
+  var isMonthlyUser = await getMonthlyUser(req.session?.user.client_id);
+  isMonthlyUser = isMonthlyUser.msg.map((item) => item.id);
+
+  user_data = user_data.msg.map((row) => ({
+    ...row,
+    checked: isMonthlyUser.includes(row.id),
+  }));
+
+  if (isMonthlyUser.length > 0) {
+    user_data.sort((a, b) => (a.user_type > b.user_type ? 1 : -1));
+  }
+  // END //
   // console.log(user_data);
   var data = {
     user_data,
     user_type_list: USER_TYPE_LIST,
     header: "Manage User",
+    // MODOFIED BY VIKASH //
+    subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
+    count: user_count.suc > 0 ? user_count.msg[0].cnt : 0,
+    canAddNewUser: canAddNewUser,
+    // END //
   };
   res.render("manage_user/view", data);
 });
@@ -659,5 +789,98 @@ UserRouter.get('/deactive_client', async (req, res) => {
   }
   res.redirect(`/client`);
 })
+
+// MODOFIED BY VIKASH //
+UserRouter.get('/profile-security', async (req, res) => {
+  var data = {
+    header: "Profile & Security",
+    name: req.session.user.user_name,
+    email: req.session.user.user_id,
+  };
+  res.render("pages/profile_security", data);
+});
+
+UserRouter.post('/profile-security', async (req, res) => {
+  const { name, email, current_password, password, confirm_password } = req.body;
+
+  if (!name || !email || !current_password || !confirm_password) {
+    req.session.message = { type: "danger", message: "All fields are required" };
+    return res.redirect(`/profile-security`);
+  }
+
+  try {
+    // Fetch current user data
+    var table_name = "md_user";
+    var whr = `id = ${req.session.user.id}`;
+    var chk_dt = await db_Select("*", table_name, whr, null);
+
+    if (chk_dt.suc > 0 && chk_dt.msg.length > 0) {
+      const user = chk_dt.msg[0];
+      // Check current password
+      const match = await bcrypt.compare(current_password, user.password);
+      if (!match) {
+        req.session.message = {
+          type: "danger",
+          message: "Current password is incorrect.",
+        };
+        return res.redirect(`/profile-security`);
+      }
+      // Check new password and confirm password match
+      if (password !== confirm_password) {
+        req.session.message = {
+          type: "danger",
+          message: "New password and confirm password do not match.",
+        };
+        return res.redirect(`/profile-security`);
+      }
+      // Update password and name
+      let hashedPassword = await bcrypt.hash(password, 10);
+      var fields = `user_name = '${name}', password = '${hashedPassword}'`;
+      var flag = 1;
+      await db_Insert(table_name, fields, null, whr, flag);
+      req.session.message = {
+        type: "success",
+        message: "Profile updated successfully.",
+      };
+      return res.redirect(`/profile-security`);
+    } else {
+      req.session.message = {
+        type: "danger",
+        message: "User not found.",
+      };
+      return res.redirect(`/profile-security`);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+UserRouter.get('/message-settings', async (req, res) => {
+  var data = {
+    header: "Message Settings",
+    policy: req.session.user.policy
+  };
+  return res.render("pages/message-settings", data);
+});
+
+
+UserRouter.get('/faq', async (req, res) => {
+  var data = {
+    header: "FAQs",
+    policy: req.session.user.user_id
+  };
+  return res.render("pages/faq", data);
+});
+
+
+UserRouter.get('/knowledgebase', async (req, res) => {
+  var data = {
+    header: "Knowledgebase",
+    policy: req.session.user.user_id
+  };
+  return res.render("pages/knowledgebase", data);
+});
+// END //
 
 module.exports = { UserRouter };

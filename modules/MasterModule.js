@@ -1,6 +1,24 @@
 const db = require("../db/db");
 // const dateFormat = require("dateformat");
 
+// CHANGED BY VIKASH //
+const db_Routine = (select) => {
+  let sql = `${select}`;
+
+  return new Promise((resolve, reject) => {
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log(err);
+        data = { suc: 0, msg: JSON.stringify(err) };
+      } else {
+        data = { suc: 1, msg: result, sql };
+      }
+      resolve(data);
+    });
+  });
+};
+// END //
+
 const db_Select = (select, table_name, whr, order) => {
   var tb_whr = whr ? `WHERE ${whr}` : "";
   var tb_order = order ? order : "";
@@ -134,4 +152,4 @@ FRAMEWORK_LIST = [
   { id: "F", name: "GRI - French", key: "Rg%3D%3D", icon_name: "icon_GF.png" },
 ];
 
-module.exports = { db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST, FRAMEWORK_LIST };
+module.exports = { db_Routine, db_Select, db_Insert, db_Delete, db_Check, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST, FRAMEWORK_LIST };

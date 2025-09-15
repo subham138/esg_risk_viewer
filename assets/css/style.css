@@ -47164,3 +47164,98 @@ span.emiss-card-val {
   color: #7530a9;
   font-weight: 500;
 }
+
+/*******bilal******************/
+.account-list h3 {
+  font-size: 18px;
+}
+
+.account-list ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.page-main-header .main-header-right .nav-right.right-menu .account-list ul li {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.account-list {
+  margin-bottom: 20px;
+}
+
+.page-main-header .main-header-right .nav-right.right-menu ul li:hover {
+  background-color: transparent !important;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.card.card-form {
+  padding: 20px;
+}
+
+.text-title {
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/********/
+.pricing-content-box {
+  border: 3px solid #316379;
+  border-radius: 30px;
+  padding: 20px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.pricing-content-box h3 {
+  font-size: 20px;
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.pricing-plan-price {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.pricing-content-box button.btn.btn-link {
+  border: 1px solid #eee;
+  color: #316379;
+}
+
+.pricing-plan-price h5 {
+  font-weight: 600;
+}
+
+.pricing-plan-price h4 {
+  font-weight: 500;
+  font-size: 50px;
+}
+
+.pricing-content-box button.btn.btn-danger {
+  background-color: #316379 !important;
+  border-color: #316379 !important;
+}
+
+.update-button-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.update-button-row h2 {
+  font-weight: 400;
+}
+
+.update-button-row h2 span {
+  font-weight: 700;
+}

@@ -197,17 +197,38 @@
                   <li>
                     <div class="ProfCard">
                       <div class="card-profile mb-2">
-                        <div class="circle">
+                        <!-- MODIFIED BY VIKASH -->
+                        <!-- <div class="circle">
                           <span class="initials">
-                            <% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
+                            <%# var userNameArr = user.user_name ? user.user_name.split(' ') : [];
                               var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? Array.from(userNameArr[1])[0] : ''}` : 'U' %>
-                            <%= userNameAvt.toUpperCase() %>
+                            <%# userNameAvt.toUpperCase() %>
                           </span>
-                        </div>
+                        </div> -->
+                        <!-- END -->
                       </div>
                       <div class="text-center profile-details">
-                        <h4><p class="proNameFld" data-bs-original-title="" title="<%= user.user_name %>"><%= user.user_name %></p></h4>
+                        <!-- MODIFIED BY VIKASH -->
+                        <h4><p class="proNameFld" data-bs-original-title="" title="<%= user.user_name %>">Hi, <%= user.user_name %></p></h4>
                       </div>
+                      <!-- MODIFIED BY VIKASH -->
+                      <div class="account-list">
+                        <h3>Account settings</h3>
+                        <ul>
+                          <li><a href="/subscription">My subscriptions</a></li>
+                          <li><a href="/profile-security">Profile and security</a></li>
+                          <li><a href="/message-settings">Message settings</a></li>
+                        </ul>
+                      </div>
+                      <div class="account-list">
+                        <h3>Help and support</h3>
+                        <ul>
+                          <li><a href="/faq">FAQs</a></li>
+                          <li><a href="/knowledgebase">Knowledgebase</a></li>
+                          <li><a href="/support">Support</a></li>
+                        </ul>
+                      </div>
+                      <!-- END -->
                     </div>
                   </li>
                   <li class="text-center"> <a class="f-w-700" href="/log_out"><i data-feather="log-out"></i><label class="m-l-5">Log out</label></a></li>
