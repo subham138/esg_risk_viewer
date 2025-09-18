@@ -123,14 +123,7 @@ UserRouter.post("/register", async (req, res) => {
       message: "Register successfully. Please login to continue.",
     };
 
-    // let dataChk =await db_Insert(table_name, fields, values, whr, flag);
-    // if(dataChk.suc > 0){
-    //  req.session.message = {
-    //       type: "success",
-    //       message: "Register successfully. Please login to continue.",
-    //     };
-    // }
-    res.redirect("/register");
+    res.redirect("/login");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -205,7 +198,7 @@ UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // MODIFIED BY VIKASH //
   var select =
-    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy, active_flag, fast_login, login_dt",
+    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy,industry_news,product_update, active_flag, fast_login, login_dt",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -370,14 +363,15 @@ UserRouter.post("/chk_user_login", async (req, res) => {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         if (chk_dt.msg[0].user_type != "S") {
           var otp = Math.floor(1000 + Math.random() * 9000);
-          // console.log(otp);
+           console.log(otp);
           // req.session.message = {otp: otp}
-          var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
-          if(send_email.suc > 0){
+          // var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
+          // if(send_email.suc > 0){
+          // res_dt = { suc: 1, msg: chk_dt.msg[0], pin: otp };
+          // }else{
+          //   res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
+          // }
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: otp };
-          }else{
-            res_dt = {suc: 0, msg: 'Email not send please try again after some time.'}
-          }
         } else {
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: 0 };
         }
@@ -857,11 +851,28 @@ UserRouter.post('/profile-security', async (req, res) => {
 
 
 UserRouter.get('/message-settings', async (req, res) => {
-  var data = {
-    header: "Message Settings",
-    policy: req.session.user.policy
-  };
-  return res.render("pages/message-settings", data);
+  var table_name = "md_user";
+  var whr = `id = ${req.session.user.id}`;
+  var chk_dt = await db_Select("*", table_name, whr, null);
+
+  if (chk_dt.suc > 0 && chk_dt.msg.length > 0) {
+    var data = {
+      header: "Message Settings",
+      policy: chk_dt.msg[0].policy,
+      industry_news: chk_dt.msg[0].industry_news,
+      product_update: chk_dt.msg[0].product_update
+    };
+    return res.render("pages/message-settings", data);
+  } 
+});
+
+UserRouter.post('/message-settings', async (req, res) => {
+  let {industryNews,productUpdate} = req.body;
+  var fields = `industry_news = '${industryNews}', product_update = '${productUpdate}'`;
+  var whr = `id = ${req.session.user.id}`;
+  var flag = 1;
+  await db_Insert('md_user', fields, null, whr, flag);
+  return true;
 });
 
 
