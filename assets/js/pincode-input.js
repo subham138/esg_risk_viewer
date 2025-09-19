@@ -26,7 +26,7 @@
     let pluginName = "pincodeInput";
     let defaults = {
         placeholders: undefined,						// seperate with a " "(space) to set an placeholder for each input box
-        inputs: 4,									    // 4 input boxes = code of 4 digits long
+        inputs: 6,									    // 4 input boxes = code of 4 digits long
         hidedigits: true,								// hide digits
         pattern: '[0-9]*',
         inputtype: 'number',
