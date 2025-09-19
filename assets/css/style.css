@@ -47259,3 +47259,12 @@ span.emiss-card-val {
 .update-button-row h2 span {
   font-weight: 700;
 }
+
+.dashboard-left-text{
+  font-size: 22px;
+}
+.dashbaord-list{
+  font-size: 18px;
+  list-style-type: square !important;
+  margin-left: 45px;
+}
