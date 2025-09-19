@@ -92,8 +92,13 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <center><label><b>Enter the access code</b></label></center>
-                    <div class="row">
+                    <!-- <center><label><b>Enter the access code</b></label></center> -->
+                    <div class="row text-center">
+                        <div class="col-md-12 text-center mt-3 mb-2" style="font-size: 20px; font-weight: 400;">We have sent a 6-digit
+                            access code to your email. Enter the code in the fields. It may take a few minutes to arrive.
+                        </div>
+                    </div>
+                    <div class="row mt-2">
                         <div class="col-md-12 text-center"><input type="password" class="form-control-lg"
                                 id="pincode-input1"></div>
                     </div>
@@ -101,17 +106,13 @@
                         <div class="col-md-12 text-center" id="pinErr"></div>
                     </div>
                     <input type="hidden" id="pin">
-                    <div class="row">
-                        <div class="col-md-12 text-center mt-3 mb-2">We have sent a 6-digit access code to your email.
-                            It may take a few minutes to arrive. <a href="javascript:void(0)" id="resend_otp">Resend</a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <div class="checkbox checkbox-primary">
+                    <div class="row mt-3">
+                        <div class="col-md-12 text-center h6">
+                            Didn’t receive one? <a href="javascript:void(0)" id="resend_otp">Resend</a>
+                            <!-- <div class="checkbox checkbox-primary">
                                 <input id="rem_me" value="Y" type="checkbox">
                                 <label for="rem_me">Remember me for 7 days.</label>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="row">
