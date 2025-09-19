@@ -47268,3 +47268,10 @@ span.emiss-card-val {
   list-style-type: square !important;
   margin-left: 45px;
 }
+.card{
+  border-radius: 15px;
+  box-shadow: #c1c1c1 -3px 4px 16px 0px;
+}
+.card_body_Cus{
+  border: none !important;
+}
