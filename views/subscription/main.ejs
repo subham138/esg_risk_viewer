@@ -22,9 +22,16 @@
             <div class="card card-form">
                 <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
                 <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-                <stripe-pricing-table 
+                <!-- <stripe-pricing-table 
                    pricing-table-id="prctbl_1S19J82LsczgMB2Pmr1qLxiC"
                    publishable-key="pk_test_51RtWjc2LsczgMB2PX9xAH6pWM2GhceR2WWUol6FlZjIVYX4i4WDrvZOnP0ncdrc9HB4gUTZdJzKElMBSnffpiTgG00vDajHX9E"
+                   customer-email="<%= email %>"
+                   customer-id="<%= typeof customer_id !== 'undefined' ? customer_id : '' %>"
+                   >
+                </stripe-pricing-table> -->
+                 <stripe-pricing-table 
+                   id="prctbl_1S1C4gRspuMIhoQ5CfdymMWP"
+                   publishable-key="pk_live_51RtWjORspuMIhoQ5OXPtuS3Uoh9ZQ2I573lBFSNETumBIF8w8HvJEoKHkqnnvQ1FnCK9GKbQCnxKAStFhxjVlGqF00Pr5pouj7"
                    customer-email="<%= email %>"
                    customer-id="<%= typeof customer_id !== 'undefined' ? customer_id : '' %>"
                    >

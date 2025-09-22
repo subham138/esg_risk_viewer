@@ -1,4 +1,5 @@
 <%- include('../templates/header.ejs', {header: "Home", header_url: "/dashboard", sub_header: header, show_br: true}) %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- <div class="container-fluid">
     <div class="page-header">
         <div class="row">
@@ -116,6 +117,43 @@
         <!-- Zero Configuration  Ends-->
     </div>
 </div>
+
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Upgrade your subscription to add users</h4>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+       <div>
+      <div class="text-left p-4">
+        <span class="mt-2">
+          As the organisation’s Client User, you have the highest level of access. You can add other Authorised Users and assign
+          roles.
+        </span>
+        <br><br>
+        <span class="h5">Authorised Users’ Roles</span>
+        <ul class="mt-3">
+          <li><strong>“Admin Users”</strong> can create new, and manage all existing projects. They can also assign Authorised Users to these projects.</li>
+          <li><strong>“Editors”</strong> can create new projects and manage existing projects they are assigned to.</li>
+          <li><strong>“Viewers”</strong> can view existing projects they are assigned to.</li>
+        </ul>
+          
+      </div>
+      <div class="video-button" style="text-align: center;margin-top: 30px;">
+        <a href="/subscription/main" class="btn btn btn-danger" onclick="window.opener.location.href='/subscription/main';window.close();return false;">Upgrade your plan</a>
+      </div>
+    </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
     var table;
     $(document).ready(function(){
@@ -191,20 +229,24 @@
 </script>
 <!-- MODIFIED BY VIKASH -->
 <script>
-    function openNewWindow() {
-        var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : window.screenX;
-        var dualScreenTop = window.screenTop != undefined ? window.screenTop : window.screenY;
+    // function openNewWindow() {
+    //     var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : window.screenX;
+    //     var dualScreenTop = window.screenTop != undefined ? window.screenTop : window.screenY;
 
-        width = 600;
-        height = 280;
+    //     width = 600;
+    //     height = 280;
 
-        var left = ((screen.availWidth / 2) - (width / 2)) + dualScreenLeft;
-        var top = ((screen.availHeight / 2) - (height / 2)) + dualScreenTop;
-        window.open(
-            "/subscription/video",
-            "_blank",
-            `width=${width},height=${height},left=${left},top=${top},location=no,menubar=no,toolbar=no`
-        );
+    //     var left = ((screen.availWidth / 2) - (width / 2)) + dualScreenLeft;
+    //     var top = ((screen.availHeight / 2) - (height / 2)) + dualScreenTop;
+    //     window.open(
+    //         "/subscription/video",
+    //         "_blank",
+    //         `width=${width},height=${height},left=${left},top=${top},location=no,menubar=no,toolbar=no`
+    //     );
+    // }
+    async function openNewWindow() {
+        var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        myModal.show();
     }
 </script>
 <%- include('../templates/footer.ejs') %>
