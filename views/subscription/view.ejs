@@ -1,4 +1,4 @@
-<%- include('../templates/header.ejs') %>
+<%- include('../templates/header.ejs', {header: "Home", header_url: "/dashboard", sub_header: header, show_br: true}) %>
     <div class="container-fluid">
         <div class="page-header">
             <div class="row">
@@ -30,7 +30,7 @@
                         <div class="col-md-12">
                             <div class="pricing-content-box">
                                 <% if(subs?.status=='active' ){ %>
-                                    <a href="/subscription/cancel/<%= subs?.id	 %>/<%= subs?.stripe_subscription_id	 %>"
+                                    <a href="/subscription/cancel/<%= subs?.id	%>/<%= subs?.stripe_subscription_id %>"
                                         class="btn btn-danger">Cancel Subscription</a>
                                     <% } %>
 

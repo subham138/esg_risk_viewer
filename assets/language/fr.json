@@ -1,6 +1,6 @@
 {
   "dashboard": {
-    "title": "Tableau de Bord",
+    "title": "Accueil",
     "greet": "Bienvenue",
     "header_info": "Cette plateforme vous fournit les outils nécessaires pour comprendre et gérer les risques et opportunités liés à la durabilitée auxquels votre organisation est confrontée.",
     "video_title": "Commencez par un court tutoriel",
@@ -28,7 +28,7 @@
   },
   "my_project": {
     "header": "Liste des projets",
-    "sub_header": "Tableau de Bord",
+    "sub_header": "Accueil",
     "title": "Mes projets",
     "framework": {
       "IF": "International Sustainability Accounting Standards",

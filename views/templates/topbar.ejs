@@ -76,7 +76,7 @@
           </div>
        
           <div class="nav-right col pull-right right-menu p-0 custTopRightSec">
-            <ul>
+            <ul class="proj-type-dropdown">
               <% var projList = {
                 'ifrs_flag': {name: 'IFRS', code: 'SQ%3D%3D'},
                 'ifrs_fr_flag': {name: 'IFRS - French', code: 'SUY%3D'},
@@ -92,7 +92,7 @@
                 var encFlag = curr_path.split('?flag=')
                 encFlag = encFlag.length > 1 ? encFlag[1] : ''
               %>
-              <select class="custTopRightSecSelect" id="top-proj-id">
+              <select class="custTopRightSecSelect form-select" id="top-proj-id">
                 <option value="">Select Framework</option>
                 <% Object.keys(projList).forEach(dt => { 
                   var _selected = ''

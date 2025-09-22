@@ -31,7 +31,7 @@ mapQuestionRouter.get('/map_ques_edit', async (req, res) => {
 mapQuestionRouter.post('/get_calc_ques_list_ajax', async (req, res) => {
     var dt = req.body
     // console.log(dt,'data');
-    var data = await db_Select('*', 'md_cal_form_builder', `scope_id='${dt.scope}' AND sec_id='${dt.sec_id}' AND lang_flag = '${dt.lang_flag}' AND is_parent = 'Y'`, null)
+    var data = await db_Select('*', 'md_cal_form_builder', `scope_id='${dt.scope}' AND sec_id='${dt.sec_id}' AND lang_flag = '${dt.lang_flag}' AND is_parent = 'N' AND is_sub_parent='Y'`, null)
     res.send(data)
 })
 

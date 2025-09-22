@@ -1,17 +1,14 @@
-<%- include('../templates/header.ejs') %>
-    <div class="container-fluid">
+<%- include('../templates/header.ejs', {header: lang.sub_header, header_url: "/dashboard", sub_header: `${header} (${flag_name})`, show_br: true}) %>
+    <!-- <div class="container-fluid">
         <div class="page-header">
             <div class="row">
-                <!-- <div class="col-sm-2">
-                <h3>You are in</h3>
-            </div> -->
                 <div class="col-md-8">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/dashboard">
-                                <%= lang.sub_header %>
+                                <%- lang.sub_header %>
                             </a></li>
                         <li class="breadcrumb-item">
-                            <%= `${header} (${flag_name})` %>
+                            <%- `${header} (${flag_name})` %>
                         </li>
                     </ol>
                 </div>
@@ -20,7 +17,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="container-fluid">
         <div class="row">

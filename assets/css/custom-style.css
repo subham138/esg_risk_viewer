@@ -26,7 +26,27 @@ textarea {
 }
 
 .select2-container {
-    border: 1px solid #186671;
+    border: 2px solid #7030a0;
+    border-radius: 10px;
+}
+
+.select2-selection{
+    display: flex !important;
+    align-items: center;
+}
+
+.select2-search__field{
+    border: #7030a0 1px solid;
+    border-radius: 10px;
+}
+
+.select2-results__option:hover {
+    background: #7030a0;
+    color: #fff;
+}
+
+.select2-selection__rendered{
+    padding-right: 8px;
 }
 
 .select2-drpdwn label {
@@ -441,4 +461,7 @@ a.nav-link.menu-title.link-nav.cusANavLink.cust-active{
 }
 tr.scope-curr-cal th, tr.scope-curr-cal td {
     background: #1b6478db;
+}
+.proj-type-dropdown{
+    width: -webkit-fill-available;
 }

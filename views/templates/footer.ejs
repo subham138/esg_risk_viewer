@@ -218,7 +218,7 @@
         // swal(title, message, type != 'danger' ? type : 'error');
         swal(message, '', type != 'danger' ? type : 'error');
       }
-      function inititate_sweet_conf_alert(title, text){
+      function inititate_sweet_conf_alert(title, text) {
         return new Promise((resolve, reject) => {
           swal({
             title: title,
@@ -229,7 +229,7 @@
           }).then((willDelete) => {
             if (willDelete) {
               resolve(1);
-            }else{
+            } else {
               resolve(0);
             }
           });
@@ -238,87 +238,87 @@
     </script>
 
     <script>
-      function arrangeModalArrow(){
+      function arrangeModalArrow() {
         var hidWidth;
         var scrollBarWidths = 40;
-  
-        var widthOfList = function(){
+
+        var widthOfList = function () {
           var itemsWidth = 0;
-          $('.list .nav-item').each(function(){
+          $('.list .nav-item').each(function () {
             var itemWidth = $(this).outerWidth();
-            itemsWidth+=itemWidth;
+            itemsWidth += itemWidth;
           });
           return itemsWidth;
         };
-  
-        var widthOfHidden = function(){
+
+        var widthOfHidden = function () {
           var ww = 0 - $('.wrapper').outerWidth();
-          var hw = (($('.wrapper').outerWidth())-widthOfList()-getLeftPosi())-scrollBarWidths;
+          var hw = (($('.wrapper').outerWidth()) - widthOfList() - getLeftPosi()) - scrollBarWidths;
           var rp = $(document).width() - ($('.nav-item .nav-link').last().offset().left + $('.nav-item .nav-link').last().outerWidth());
-          
-          if (ww>hw) {
+
+          if (ww > hw) {
             //return ww;
-            return (rp>ww?rp:ww);
+            return (rp > ww ? rp : ww);
           }
           else {
             //return hw;
-            return (rp>hw?rp:hw);
+            return (rp > hw ? rp : hw);
           }
         };
-  
-        var getLeftPosi = function(){
+
+        var getLeftPosi = function () {
           var ww = 0 - $('.wrapper').outerWidth();
           var lp = $('.list').position().left;
-          
-          if (ww>lp) {
+
+          if (ww > lp) {
             return ww;
-          }else {
+          } else {
             return lp;
           }
         };
-  
-        var reAdjust = function(){
+
+        var reAdjust = function () {
           // check right pos of last nav item
           var rp = $(document).width() - ($('.nav-item .nav-link').last().offset().left + $('.nav-item .nav-link').last().outerWidth());
-          if (($('.wrapper').outerWidth()) < widthOfList() && (rp<0)) {
+          if (($('.wrapper').outerWidth()) < widthOfList() && (rp < 0)) {
             $('.scroller-right').show().css('display', 'flex');
           }
           else {
             $('.scroller-right').hide();
           }
-          
-          if (getLeftPosi()<0) {
+
+          if (getLeftPosi() < 0) {
             $('.scroller-left').show().css('display', 'flex');
           }
           else {
-            $('.item').animate({left:"-="+getLeftPosi()+"px"},'slow');
+            $('.item').animate({ left: "-=" + getLeftPosi() + "px" }, 'slow');
             $('.scroller-left').hide();
           }
         }
-        if($('.nav-item .nav-link').length > 0){
+        if ($('.nav-item .nav-link').length > 0) {
           console.log($('.nav-item .nav-link').length, '++++++++++++++++++++');
-          
+
           reAdjust();
         }
-  
-        $(window).on('resize',function(e){  
+
+        $(window).on('resize', function (e) {
           reAdjust();
         });
-  
-        $('.scroller-right').click(function() {
+
+        $('.scroller-right').click(function () {
           $('.scroller-left').fadeIn('slow');
           $('.scroller-right').fadeOut('slow');
-          
-          $('.list').animate({left:"+="+widthOfHidden()+"px"},'slow',function(){
+
+          $('.list').animate({ left: "+=" + widthOfHidden() + "px" }, 'slow', function () {
             reAdjust();
           });
         });
-  
-        $('.scroller-left').click(function() {
+
+        $('.scroller-left').click(function () {
           $('.scroller-right').fadeIn('slow');
           $('.scroller-left').fadeOut('slow');
-          
-          $('.list').animate({left:"-="+getLeftPosi()+"px"},'slow',function(){
+
+          $('.list').animate({ left: "-=" + getLeftPosi() + "px" }, 'slow', function () {
             reAdjust();
           });
         });
@@ -344,7 +344,7 @@
       //   })
       // })
 
-      $('.cust-tab-item a').on('click', function(){
+      $('.cust-tab-item a').on('click', function () {
         console.log($(this).attr('href'))
         var act_id = $(this).attr('href').split('#').join('')
         $('.cust-tab-item').each((i, dt) => {
@@ -353,15 +353,15 @@
         $(this).parent().addClass('active')
         $('#myTabContent .cust-first-tab').each((i, dt) => {
           console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
-          if($(dt).attr('id') == act_id){
-            if(!$(dt).hasClass('active'))
+          if ($(dt).attr('id') == act_id) {
+            if (!$(dt).hasClass('active'))
               $(dt).addClass('active').addClass('show')
-          }else{
+          } else {
             $(dt).removeClass('active').removeClass('show')
           }
         })
       })
-      function clickTabPoint(e){
+      function clickTabPoint(e) {
         console.log($(e).attr('href'))
         var act_id = $(e).attr('href').split('#').join('')
         $('#infoTab a').each((i, dt) => {
@@ -370,33 +370,50 @@
         $(e).addClass('active')
         $('#infoTabContent .tab-pane').each((i, dt) => {
           console.log($(dt).attr('class'), $(dt).attr('id'), act_id);
-          if($(dt).attr('id') == act_id){
-            if(!$(dt).hasClass('active'))
+          if ($(dt).attr('id') == act_id) {
+            if (!$(dt).hasClass('active'))
               $(dt).addClass('active').addClass('show')
-          }else{
+          } else {
             $(dt).removeClass('active').removeClass('show')
           }
         })
       }
     </script>
 
-    
-  <script>
-    $('#top-proj-id').on('change', async function(){
-      try{
-        if(await inititate_sweet_conf_alert('', 'Are you sure to change the framework?') > 0){
-          if($(this).val() != ''){
-            window.location.href = `/my_project?flag=${$(this).val()}`
+
+    <script>
+      // Initialize select2
+      $(document).ready(function() {
+        $('#top-proj-id').select2({
+          placeholder: "-- Select an option --",
+          allowClear: true,
+          theme: "bootstrap-5"
+        });
+      });
+
+      // Handle framework change
+      $('#top-proj-id').on('change', async function () {
+        try {
+          if (await inititate_sweet_conf_alert('', 'Are you sure to change the framework?') > 0) {
+            if ($(this).val() != '') {
+              window.location.href = `/my_project?flag=${$(this).val()}`
+            }
+          } else {
+            $(this).val('').trigger('change.select2'); // Reset select2 selection
           }
-        }else{
-          $(this).val('')
+        } catch (e) {
+          console.log(e);
         }
-      }catch(e){
-        console.log(e);
-      }
-    })
-    
-  </script>
+      });
+    </script>
+
+    <script>
+      $(document).ready(function () {
+        if ($('#custActMenuProject').length > 0) {
+          $('#custActMenuProject').addClass('active').click()
+        }
+      })
+    </script>
 
     </body>
 

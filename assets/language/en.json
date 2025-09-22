@@ -1,6 +1,6 @@
 {
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Home",
     "greet": "Welcome",
     "header_info": "This platform provides you with the tools to effectively understand, manage and report on the ESG risks and opportunities faced by your organisation.",
     "video_title": "Start with a short tutorial",
@@ -28,7 +28,7 @@
   },
   "my_project": {
     "header": "Project List",
-    "sub_header": "Dashboard",
+    "sub_header": "Home",
     "title": "My Projects",
     "framework": {
       "I": "International Sustainability Accounting Standards",
