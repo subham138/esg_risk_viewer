@@ -221,7 +221,7 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
 
   var table_name = 'td_ghg_quest',
     fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans.split("'").join("\\'")}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, proj_year, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
-    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${sel_year}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}' COLLATE utf8mb4_general_ci, '${quest_ans.split("'").join("\\'")}' COLLATE utf8mb4_general_ci, '${user.user_id}' COLLATE utf8mb4_general_ci, '${dateTime}')`,
+    values = `(${user.client_id}, '${data.scope_id}', ${data.proj_id}, ${sel_year}, ${maxQuestSlNo}, '${currDate}', ${data.quest_id}, '${data.quest_type}', '${data.quest_seq}', '${quest_ans.split("'").join("\\'")}', '${user.user_id}', '${dateTime}')`,
   whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id = ${chk_dt.msg[0].id}` : null,
   flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag)
