@@ -115,14 +115,15 @@ UserRouter.post("/register", async (req, res) => {
       esrs_vsme_fr_flag: 'N',
       gri_flag: 'N',
       gri_fr_flag: 'N',
-      cal_lang_flag: 'N',
+      cal_lang_flag: 'E',
     }, name);
 
+    if(res_dt.suc > 0){
     req.session.message = {
       type: "success",
       message: "Register successfully. Please login to continue.",
     };
-
+    }
     res.redirect("/login");
   } catch (error) {
     res.status(500).json({ error: error.message });
