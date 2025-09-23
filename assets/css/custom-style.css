@@ -480,3 +480,19 @@ tr.scope-curr-cal th, tr.scope-curr-cal td {
 .proj-type-dropdown{
     width: -webkit-fill-available;
 }
+
+.sub-info-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.sub-info-img{
+    max-width: 7%;
+    max-height: 7%;
+}
+
+.sub-info-txt {
+    font-size: 12px;
+}
