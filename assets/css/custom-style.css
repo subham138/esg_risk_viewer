@@ -496,3 +496,12 @@ tr.scope-curr-cal th, tr.scope-curr-cal td {
 .sub-info-txt {
     font-size: 12px;
 }
+
+.web-construction{
+    background-image: url(/images/web_construction.svg);
+    background-repeat: no-repeat;
+    width: 78vw;
+    height: 82vh;
+    background-size: 56%;
+    background-position: center;
+}
