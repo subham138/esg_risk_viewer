@@ -500,8 +500,8 @@ tr.scope-curr-cal th, tr.scope-curr-cal td {
 .web-construction{
     background-image: url(/images/web_construction.svg);
     background-repeat: no-repeat;
-    width: 78vw;
-    height: 82vh;
-    background-size: 56%;
+    width: 75vw;
+    height: 65vh;
+    background-size: 45%;
     background-position: center;
 }
