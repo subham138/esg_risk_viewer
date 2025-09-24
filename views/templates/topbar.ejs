@@ -96,9 +96,9 @@
                 <option value="">Select Framework</option>
                 <% Object.keys(projList).forEach(dt => { 
                   var _selected = ''
-                  if(user[dt] != 'Y'){
-                    return;
-                  }
+                  //if(user[dt] != 'Y'){
+                  //  return;
+                  //}
                   if(encFlag == projList[dt].code) _selected = 'selected'
                   %>
                   <option value="<%= projList[dt].code %>" <%= _selected %>><%= projList[dt].name %></option>
