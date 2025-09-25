@@ -505,3 +505,12 @@ tr.scope-curr-cal th, tr.scope-curr-cal td {
     background-size: 45%;
     background-position: center;
 }
+
+.cust-input-group{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+    justify-content: flex-end;
+}

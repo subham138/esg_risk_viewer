@@ -1,6 +1,10 @@
 <%- include('../templates/header.ejs', {header: "Home", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: `"${projName}"`, show_br: true}) %>
 
 <script src="js/chart/google/google-chart-loader.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <style>
     .chart-container {
         display: flex;
@@ -100,18 +104,22 @@
                                 </div>
                                 <div class="tab-pane fade show active" id="ghg" role="tabpanel" aria-labelledby="ghg-tab">
                                     <div class="row align-items-center">
-                                        <div class="col-md-7"></div>
-                                        <div class="col-md-5 p-l-0">
-                                            <div class="input-group">
+                                        <div class="col-md-6">
+                                            
+                                        </div>
+                                        <div class="col-md-6 p-l-0">
+                                            <div class="input-group cust-input-group">
                                                 <!-- <input class="form-control" type="text" placeholder="Email"> -->
-                                                <span class="input-group-text cust-inp-grp">Financial Year Ending</span>
-                                                <select class="form-select btn-pill digits text-center" id="sel_year_quest">
+                                                <span class="input-group-text cust-inp-grp">Select Finantial Date Range</span>
+                                                <input type="text" name="daterange" value="<%= sel_dt %>" placeholder="Select Date" />
+                                                <input type="hidden" id="sel_year_quest">
+                                                <!-- <select class="form-select btn-pill digits text-center" id="sel_year_quest">
                                                     <% year_list.forEach(dt => {
                                                         var _selected = ''
                                                         if(selYear == dt) _selected = 'selected' %>
                                                         <option value="<%= dt %>" <%= _selected %>><%= dt %></option>
                                                     <% }) %>
-                                                </select>
+                                                </select> -->
                                                 <span class="input-group-text cust-inp-grp"><i class="icofont icofont-ui-calendar"></i></span>
                                             </div>
                                         </div>
@@ -134,6 +142,26 @@
 <input type="hidden" name="top_id" id="top_id" value="<%= top_id %>">
 <input type="hidden" name="sec_id" id="sec_id" value="<%= sec_id %>">
 <input type="hidden" name="ind_id" id="ind_id" value="<%= ind_id %>">
+
+<script>
+    $(document).ready(function(){
+        $('input[name="daterange"]').daterangepicker({
+            opens: 'center',
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+        $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            $('#sel_year_quest').val(picker.endDate.format('YYYY')).change()
+        });
+
+        $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+    })
+</script>
 
 <!-- <script>
     window.onscroll = function() {myFunction()};
@@ -217,6 +245,7 @@
                 var enc_dt = '<%= enc_data %>'
                 var dec_dt = JSON.parse(window.atob(enc_dt))
                 dec_dt['sel_year'] = $(this).val()
+                dec_dt['sel_dt'] = $('input[name="daterange"]').val()
                 enc_dt = window.btoa(JSON.stringify(dec_dt))
                 window.location.href = `/cal_proj_report_view?enc_data=${enc_dt}`
             }
