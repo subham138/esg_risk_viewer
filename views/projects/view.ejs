@@ -51,12 +51,18 @@
                                         <div class="top_radio_sec">
                                             <% if(user_type=='A' || user_type=='C' || user_type=='S' ){ %>
                                                 <div class="col-md-12">
-                                                    <a href="/my_project_add?flag=<%= enc_dt %>"
-                                                        class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
-                                                        data-bs-placement="left" title="" data-bs-original-title="Edit"
-                                                        id="my_project_add" data-step="1">
-                                                        <%= lang.view.add_btn_name %>
-                                                    </a>
+                                                    <% if(canAddNewProject(subs, count)){ %>
+                                                        <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
+                                                            data-bs-placement="left" title="" data-bs-original-title="Edit" id="my_project_add" data-step="1">
+                                                            <%= lang.view.add_btn_name %>
+                                                        </a>
+                                                    <% }else{ %>
+                                                        <button onclick="openNewWindow()" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
+                                                            data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                                            <%= lang.view.add_btn_name %>
+                                                        </button>
+                                                    <% } %>
+                                                    
                                                 </div>
                                             <% } %>
                                         </div>

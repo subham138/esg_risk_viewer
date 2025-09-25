@@ -49,6 +49,56 @@
     </div>
   </div>
 </div>
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Upgrade your subscription to add users</h4>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div>
+          <div class="text-left p-4">
+            <span class="mt-2">
+              As the organisation’s Client User, you have the highest level of access. You can add other Authorised
+              Users and assign
+              roles.
+            </span>
+            <br><br>
+            <span class="h5">Authorised Users’ Roles</span>
+            <ul class="mt-3">
+              <li><strong>“Admin Users”</strong> can create new, and manage all existing projects. They can also assign
+                Authorised Users to these projects.</li>
+              <li><strong>“Editors”</strong> can create new projects and manage existing projects they are assigned to.
+              </li>
+              <li><strong>“Viewers”</strong> can view existing projects they are assigned to.</li>
+            </ul>
+
+          </div>
+          <div class="video-button" style="text-align: center;margin-top: 30px;">
+            <div class="sub-info-container mb-3">
+              <div class="sub-info-img">
+                <img src="/images/leaf_esg.webp" alt="LEAF" width="100%" height="100%" srcset="">
+              </div>
+              <span class="sub-info-txt text-muted">
+                Through our partner Stripe, ESG Risk Viewer will contribute a percentage of your subscription towards
+                efforts to
+                removing CO2 from the atmosphere
+              </span>
+            </div>
+            <a href="/subscription/main" class="btn btn btn-danger"
+              onclick="window.opener.location.href='/subscription/main';window.close();return false;">Upgrade your
+              plan</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 <%# if(videoPopUp){ %>
   <!-- <div class="modal fade bd-example-modal-lg" id="videoPopupModal" tabindex="-1" role="dialog" aria-labelledby="videoPopupModal" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -418,6 +468,12 @@
           $('#custActMenuProject').addClass('active').click()
         }
       })
+    </script>
+    <script>
+      async function openNewWindow() {
+        var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        myModal.show();
+      }
     </script>
 
     </body>

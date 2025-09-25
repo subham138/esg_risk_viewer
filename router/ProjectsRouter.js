@@ -77,6 +77,20 @@ ProjectRouter.get("/my_project", async (req, res) => {
     dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode
   );
   // console.log(project_data);
+
+  var chk_dt = await db_Select(
+    "*",
+    "stripe_subscriptions",
+    `user_id = ${req.session.user?.id}`,
+    `order by created_at desc limit 1`,
+  );
+
+  var proj_count = await db_Select(
+    "COUNT(*) AS cnt",
+    "td_project",
+    `client_id = ${req.session?.user.client_id} AND repo_flag = '${dec_flag}' AND proj_type='${dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode}'`,
+    null
+  );
   
   var data = {
     lang: lang,
@@ -88,9 +102,27 @@ ProjectRouter.get("/my_project", async (req, res) => {
     dec_flag,
     dateFormat,
     flag_name: PROJECT_LIST[dec_flag],
+    subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
+    count: proj_count.suc > 0 ? proj_count.msg[0].cnt : 0,
+    canAddNewProject: canAddNewProject
   };
   res.render("projects/view", data);
 });
+
+function canAddNewProject(subs, count) {
+  if (subs != null) {
+    const now = new Date();
+    const purchaseDate = new Date(subs.purchase_date);
+    const expireDate = new Date(subs.expires_date);
+    if (!(now >= purchaseDate && now <= expireDate)) return false;
+
+    // plan rules
+    if (subs.product_name === 'Lite' && count <= 1) return true;
+    if (subs.product_name === 'Premium' && count <= 5) return true;
+    if (!subs || subs.status === 'cancelled') return false;
+  }
+  return false;
+}
 
 ProjectRouter.get("/my_project_add", async (req, res) => {
   var enc_dt = req.query.flag,
