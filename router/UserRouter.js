@@ -363,10 +363,10 @@ UserRouter.post("/chk_user_login", async (req, res) => {
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         if (chk_dt.msg[0].user_type != "S") {
-          var otp = 123456 //Math.floor(100000 + Math.random() * 900000);
+          var otp = Math.floor(100000 + Math.random() * 900000);
           //  console.log(otp);
           req.session.message = {otp: otp}
-         var send_email = {suc:1} //await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
+         var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
           if(send_email.suc > 0){
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: otp };
           }else{

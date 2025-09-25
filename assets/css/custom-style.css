@@ -55,6 +55,16 @@ textarea {
     color: #fff;
 }
 
+.select2-container--default .select2-results__option--highlighted[aria-selected]{
+    background: #7030a0 !important;
+    color: #fff !important;
+}
+
+.select2-container--default .select2-results__options .select2-results__option[aria-selected=true]{
+    background: #7030a0 !important;
+    color: #fff !important;
+}
+
 .select2-results__option[aria-selected="true"] {
     cursor: pointer;
     background: #7030a0;
@@ -525,4 +535,9 @@ tr.scope-curr-cal th, tr.scope-curr-cal td {
     align-items: stretch;
     width: 100%;
     justify-content: flex-end;
+}
+.text-label{
+    color: #000;
+    font-weight: 900;
+    font-size: 16px;
 }
