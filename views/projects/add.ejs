@@ -284,21 +284,21 @@
                                                         </option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-12 select2-drpdwn mb-2">
-                                                    <label for="bus_id_1">
+                                                <div class="col-md-12 mb-2">
+                                                    <label for="bus_id_1" class="text-label">
                                                         <%= lang.manage.bus_act %>
                                                     </label>
                                                     <select id="bus_id_1" name="bus_id_1"
-                                                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                                        class="js-example-basic-multiple" multiple="multiple">
                                                         <option value="">Select Business Activity(ies)</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-md-12 select2-drpdwn mb-2">
-                                                    <label for="location_id_1">
+                                                <div class="col-md-12 mb-2">
+                                                    <label for="location_id_1" class="text-label">
                                                         <%= lang.manage.location %>
                                                     </label>
                                                     <select id="location_id_1" name="location_id_1"
-                                                        class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                                        class="js-example-basic-multiple" multiple="multiple">
                                                         <option value="">Select Location</option>
                                                         <% if(loc_list.msg.length> 0){
                                                             var location_list = project_data.length > 0 ?
@@ -647,7 +647,7 @@
                         <label for="sec_id_${i}">
                             <%= lang.manage.sector %>
                         </label>
-                        <select class="form-select" id="sec_id_${i}" name="sec_id_${i}" onchange="changeSector(this)" required="">
+                        <select class="form-select custSelect2" id="sec_id_${i}" name="sec_id_${i}" onchange="changeSector(this)" required="">
                             <option selected="" value="">
                                 <%= lang.manage.sec_select %>
                             </option>
@@ -671,8 +671,8 @@
                             </option>
                         </select>
                     </div>
-                    <div class="col-md-12 select2-drpdwn mb-2">
-                        <label for="bus_id_${i}">
+                    <div class="col-md-12 mb-2">
+                        <label for="bus_id_${i}" class="text-label">
                             <%= lang.manage.bus_act %>
                         </label>
                         <select id="bus_id_${i}" name="bus_id_${i}"
@@ -680,8 +680,8 @@
                             <option value="">Select Business Activity(ies)</option>
                         </select>
                     </div>
-                    <div class="col-md-12 select2-drpdwn mb-2">
-                        <label for="location_id_${i}">
+                    <div class="col-md-12 mb-2">
+                        <label for="location_id_${i}" class="text-label">
                             <%= lang.manage.location %>
                         </label>
                         <select id="location_id_${i}" name="location_id_${i}"
