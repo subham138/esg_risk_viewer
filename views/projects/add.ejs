@@ -69,7 +69,7 @@
                                                             <td class="tableTd_add_main">
                                                                 <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
                                                                     <select class="form-select custSelect2" id="user_id_<% i %>"
-                                                                        name="user_id" required="">
+                                                                        name="user_id" onchange="projSelUser(this)" required="">
                                                                         <option selected="" value="">Select User
                                                                         </option>
                                                                         <% if(user_list.msg.length> 0){
@@ -108,7 +108,7 @@
                                                                 <td class="tableTd_add_main">
                                                                     <div class="tableTd_add m-r-40">
                                                                         <select class="form-select custSelect2" id="user_id_1"
-                                                                            name="user_id" required="">
+                                                                            name="user_id" onchange="projSelUser(this)" required="">
                                                                             <option selected="" value="">Select User
                                                                             </option>
                                                                             <% if(user_list.msg.length> 0){
@@ -138,7 +138,7 @@
                                             <tr id="tr_1">
                                                 <td class="tableTd_add_main">
                                                     <div class="tableTd_add m-r-40">
-                                                        <select class="form-select custSelect2" id="user_id_1" name="user_id"
+                                                        <select class="form-select custSelect2" id="user_id_1" onchange="projSelUser(this)" name="user_id"
                                                             required="">
                                                             <option selected="" value="">Select User</option>
                                                             <% if(user_list.msg.length> 0){
@@ -356,6 +356,9 @@
             const userSelects = document.querySelectorAll('select[name="user_id"]');
             const nextButton = document.getElementById('projSub');
 
+            console.log(userSelects);
+            
+
             function validateForm() {
                 let isValid = projectInput.value.trim() !== '';
                 userSelects.forEach(select => {
@@ -363,6 +366,8 @@
                         isValid = false;
                     }
                 });
+                console.log(isValid, '----------------');
+                
                 nextButton.disabled = !isValid;
             }
 
@@ -371,6 +376,18 @@
                 select.addEventListener('change', validateForm);
             });
         });
+
+        function projSelUser(e) {
+            let isValid = $('#project_name').val().trim() !== '';
+            $('select[name="user_id"]').each(select => {
+                if ($(select).val() === '') {
+                    isValid = false;
+                }
+            });
+            console.log(isValid, '----------------');
+
+            $('#projSub').attr('disabled', !isValid);
+        }
     </script>
 
     <script>
