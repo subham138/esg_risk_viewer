@@ -449,9 +449,9 @@
                   <% }else{ %>
                     <li><a href="/my_project?flag=RkM%3D">Carbon - Only - FR</a></li>
                   <% } %>
-                  <% if([user.ifrs_flag, user.ifrs_fr_flag, user.esrs_flag, user.esrs_fr_flag, user.esrs_vsme_flag, user.esrs_vsme_fr_flag, user.gri_flag, user.gri_fr_flag].includes('Y')){ %>
+                  <%# if([user.ifrs_flag, user.ifrs_fr_flag, user.esrs_flag, user.esrs_fr_flag, user.esrs_vsme_flag, user.esrs_vsme_fr_flag, user.gri_flag, user.gri_fr_flag].includes('Y')){ %>
                     <li><a href="/my_project?flag=SQ%3D%3D">Sustainability Frameworks</a></li>
-                  <% } %>
+                  <%# } %>
                 </ul>
               </li>
               <% } if(user.platform_mode == 'C'){ %>
