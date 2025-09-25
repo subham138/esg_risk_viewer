@@ -420,7 +420,7 @@
         <tr id="tr_${next_id}">
             <td class="tableTd_add_main">
                 <div class="tableTd_add">
-                <select class="form-select" id="user_id_${next_id}" name="user_id" required="">
+                <select class="form-select custSelect2" id="user_id_${next_id}" name="user_id" required="">
                     <option selected="" value="">Select User</option>
                     <% if(user_list.msg.length > 0){
                         user_list.msg.forEach(dt => { 
@@ -441,6 +441,13 @@
             
         </tr>
         `);
+        setTimeout(function () {
+            $('.custSelect2').select2({
+                placeholder: "-- Select an option --",
+                allowClear: false,
+                theme: "bootstrap-5"
+            });
+        }, 100)
         }
         function del_row(id) {
             if (confirm('Are you sure you want to delete?')) {
