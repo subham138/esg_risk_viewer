@@ -384,11 +384,16 @@
     <script>
       // Initialize select2
       $(document).ready(function() {
-        $('#top-proj-id').select2({
+        $('#top-proj-id, .custSelect2').select2({
           placeholder: "-- Select an option --",
-          allowClear: true,
+          allowClear: false,
           theme: "bootstrap-5"
         });
+        // $('.custSelect2').select2({
+        //   placeholder: "-- Select an option --",
+        //   allowClear: false,
+        //   theme: "bootstrap-5"
+        // });
       });
 
       // Handle framework change

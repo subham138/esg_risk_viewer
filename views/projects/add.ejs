@@ -68,7 +68,7 @@
                                                         <tr id="tr_<%= i %>">
                                                             <td class="tableTd_add_main">
                                                                 <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
-                                                                    <select class="form-select" id="user_id_<% i %>"
+                                                                    <select class="form-select custSelect2" id="user_id_<% i %>"
                                                                         name="user_id" required="">
                                                                         <option selected="" value="">Select User
                                                                         </option>
@@ -107,7 +107,7 @@
                                                             <tr id="tr_1">
                                                                 <td class="tableTd_add_main">
                                                                     <div class="tableTd_add m-r-40">
-                                                                        <select class="form-select" id="user_id_1"
+                                                                        <select class="form-select custSelect2" id="user_id_1"
                                                                             name="user_id" required="">
                                                                             <option selected="" value="">Select User
                                                                             </option>
@@ -138,7 +138,7 @@
                                             <tr id="tr_1">
                                                 <td class="tableTd_add_main">
                                                     <div class="tableTd_add m-r-40">
-                                                        <select class="form-select" id="user_id_1" name="user_id"
+                                                        <select class="form-select custSelect2" id="user_id_1" name="user_id"
                                                             required="">
                                                             <option selected="" value="">Select User</option>
                                                             <% if(user_list.msg.length> 0){
@@ -260,7 +260,7 @@
                                                     <label for="sec_id_1">
                                                         <%= lang.manage.sector %>
                                                     </label>
-                                                    <select class="form-select" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
+                                                    <select class="form-select custSelect2" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
                                                         <option selected="" value="">
                                                             <%= lang.manage.sec_select %>
                                                         </option>

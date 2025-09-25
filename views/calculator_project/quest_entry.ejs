@@ -361,6 +361,13 @@
                         divElement = divElement + '</div></div>'
                         divContentElemt = divContentElemt + '</div></div>'
                         $(`${tabId}`).children('.quest-tab-context').append(divElement + divContentElemt)
+                        setTimeout(function () {
+                            $('.custSelect2').select2({
+                                placeholder: "-- Select an option --",
+                                allowClear: false,
+                                theme: "bootstrap-5"
+                            });
+                        }, 100)
                     }
                 }
             },
@@ -402,7 +409,7 @@
                 // setTimeout(() => {
                     getCalActDtls(option_val, '<%= flag %>').then(function (actData) {
                         // console.log(actData, 'here');
-                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="getCalEmiTypeDtls(this, ${hasAns ? ansVal : 0}, ${emiVal > 0 ? emiVal : 0}, ${unitVal > 0 ? unitVal : 0}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Activity</option>`
+                        var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" name="act_id" id="act_id_${id}" data-type-id="${option_val}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="getCalEmiTypeDtls(this, ${hasAns ? ansVal : 0}, ${emiVal > 0 ? emiVal : 0}, ${unitVal > 0 ? unitVal : 0}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Activity</option>`
                         if(actData.length > 0){
                             $.each(actData, function(i, dt){
                                 var _selected = ''
@@ -412,6 +419,13 @@
                         }
                         optEle = optEle + '</select></div>'
                         $(`#inputActionDiv-${id}`).append(optEle)
+                        setTimeout(function(){
+                            $('.custSelect2').select2({
+                                placeholder: "-- Select an option --",
+                                allowClear: false,
+                                theme: "bootstrap-5"
+                            });
+                        }, 100)
                         if(hasAns){
                             // console.log('123123123123123');
                             $(`#inputActionDiv-${id}`).children().children('select').change()
@@ -424,7 +438,7 @@
                 break;
             case 'Y':
                 var year_opt = [{id: 'Y', name: 'Yearly'}, {id: 'Q', name: 'Quarterly'}, {id: 'M', name: 'Monthly'}]
-                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id}, ${quest_sec_id})"><option value="">Select Mode</option>`
+                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" name="mode_type" id="mode_type_${id}" quest-dt="${btnData}" onchange="createModeTableTr(this, ${id}, ${lat_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id}, ${quest_sec_id})"><option value="">Select Mode</option>`
                 $.each(year_opt, function(i, dt){
                     var _selected = ''
                     if(hasAns && ansVal == dt.id) _selected = 'selected'
@@ -486,7 +500,7 @@
                 if(res.suc > 0){
                     $(`#inputActionDiv-${next_id}`).parent().show()
                     $(`#inputActionDiv-${next_id}`).empty()
-                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="emi_type" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" quest-dt="${btnData}" onchange = "getCalUnitDtls(this, ${emiVal}, ${unitVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Emission Source</option>`
+                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" name="emi_type" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" quest-dt="${btnData}" onchange = "getCalUnitDtls(this, ${emiVal}, ${unitVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Emission Source</option>`
                     if(res.msg.length > 0){
                         $.each(res.msg, function(i, dt){
                             var _selected = ''
@@ -496,6 +510,13 @@
                     }
                     optEle = optEle + '</select></div>'
                     $(`#inputActionDiv-${next_id}`).append(optEle)
+                    setTimeout(function () {
+                        $('.custSelect2').select2({
+                            placeholder: "-- Select an option --",
+                            allowClear: false,
+                            theme: "bootstrap-5"
+                        });
+                    }, 100)
                     if(selVal == act_id && act_id > 0){                        
                         $(`#inputActionDiv-${next_id}`).children().children('select').change()
                     }
@@ -532,7 +553,7 @@
                 if(res.suc > 0){
                     $(`#inputActionDiv-${next_id}`).parent().show()
                     $(`#inputActionDiv-${next_id}`).empty()
-                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt" name="unit_id" id="unit_id_${next_id}" quest-dt="${btnData}" onchange="unitEmiChange(this, ${unitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Unit</option>`
+                    var optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" name="unit_id" id="unit_id_${next_id}" quest-dt="${btnData}" onchange="unitEmiChange(this, ${unitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Unit</option>`
                     if(res.msg.length > 0){
                         $.each(res.msg, function(i, dt){
                             var _selected = ''
@@ -543,6 +564,13 @@
                     }
                     optEle = optEle + '</select></div>'
                     $(`#inputActionDiv-${next_id}`).append(optEle)
+                    setTimeout(function () {
+                        $('.custSelect2').select2({
+                            placeholder: "-- Select an option --",
+                            allowClear: false,
+                            theme: "bootstrap-5"
+                        });
+                    }, 100)
                     if(emi_type_id == emiVal && emiVal > 0){
                         $(`#inputActionDiv-${next_id}`).children().children('select').change()
                     }
@@ -588,7 +616,7 @@
         <input type="hidden" id="repo_period_${id}" name="repo_period" value="${$('#sel_year_quest').val()}">
         <!-- <div class="col-md-6 m-t-10">
             <label class="form-label float-start" for="repo_period_${id}">Reporting Period</label>
-            <select class="form-select" id="repo_period_${id}" name="repo_period" required="" onchange="changeRepoPer(this, ${id})">
+            <select class="form-select custSelect2" id="repo_period_${id}" name="repo_period" required="" onchange="changeRepoPer(this, ${id})">
                 <option selected="" value="">Select Reporting Period</option>
                 ${reportingOpt}
             </select>
@@ -597,7 +625,7 @@
         var monthSelect = `
         <div class="col-md-6 m-t-10">
             <label class="form-label float-start" for="strt_month_${id}">Start Month</label>
-            <select class="form-select" id="strt_month_${id}" name="strt_month" required="" onchange="changeStMon(this, ${id})">
+            <select class="form-select custSelect2" id="strt_month_${id}" name="strt_month" required="" onchange="changeStMon(this, ${id})">
                 <option selected="" value="">Select Start Month</option>
                 ${monthOpt}
             </select>
