@@ -177,7 +177,8 @@ AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c
     dash_sc_cal: dashScopeCalData.suc > 0 ? (dashScopeCalData.msg.length > 0 ? dashScopeCalData.msg : []) : [],
     proj_ind_list: getProjIndList.suc > 0 ? (getProjIndList.msg.length > 0 ? getProjIndList.msg : []) : [],
     emi_dash_dt: emiDashDt.suc > 0 ? (emiDashDt.msg.length > 0 ? emiDashDt.msg[0] : {}) : {},
-    sel_dt: data.sel_dt ? data.sel_dt : ''
+    sel_dt: data.sel_dt ? data.sel_dt : '',
+    dateFormat
   };
   res.render("calculator_project/report_view", res_data)
 })

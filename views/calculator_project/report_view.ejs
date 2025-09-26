@@ -112,7 +112,7 @@
                                                 <!-- <input class="form-control" type="text" placeholder="Email"> -->
                                                 <span class="input-group-text cust-inp-grp">FY Ending</span>
                                                 <input class="text-center" type="text" name="daterange" value="<%= sel_dt %>" placeholder="Select Date" />
-                                                <input type="hidden" id="sel_year_quest">
+                                                <input type="hidden" id="sel_year_quest" value="<%= sel_dt && sel_dt != '' ? new Date(sel_dt).getFullYear() : new Date().getFullYear() %>">
                                                 <!-- <select class="form-select btn-pill digits text-center" id="sel_year_quest">
                                                     <% year_list.forEach(dt => {
                                                         var _selected = ''

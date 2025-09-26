@@ -88,9 +88,12 @@ ProjectRouter.get("/my_project", async (req, res) => {
   var proj_count = await db_Select(
     "COUNT(*) AS cnt",
     "td_project",
-    `client_id = ${req.session?.user.client_id} AND repo_flag = '${dec_flag}' AND proj_type='${dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode}'`,
+    `client_id = ${req.session?.user.client_id} AND repo_flag = '${flag}' AND proj_type='${dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode}'`,
     null
   );
+
+  console.log(proj_count, '---------+++++++++++++');
+  
   
   var data = {
     lang: lang,
@@ -110,6 +113,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
 });
 
 function canAddNewProject(subs, count) {
+  console.log(count, subs, '----------', ((count >= 0 && count < 1)))
   if (subs != null) {
     const now = new Date();
     const purchaseDate = new Date(subs.purchase_date);
@@ -908,7 +912,8 @@ ProjectRouter.get("/report_full_view", async (req, res) => {
     user_type_master: USER_TYPE_LIST,
     flag_name: PROJECT_LIST[data.flag],
   };
-  res.render("project_work/report_view_template", res_data);
+  // res.render("project_work/report_view_template", res_data);
+  res.render("pages/under_construction", res_data);
 });
 
 ProjectRouter.get("/get_cal_emi_source_ajax", async (req, res) => {
