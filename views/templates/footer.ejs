@@ -51,7 +51,7 @@
 </div>
 <div class="modal" id="myModal">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content modal-dialog-centered">
 
       <!-- Modal Header -->
       <div class="modal-header">
@@ -61,7 +61,7 @@
       <!-- Modal body -->
       <div class="modal-body">
         <div>
-          <div class="text-left p-4">
+          <div class="text-left p-4 sub-modal-content">
             <span class="mt-2">
               As the organisation’s Client User, you have the highest level of access. You can add other Authorised
               Users and assign
@@ -470,8 +470,13 @@
       })
     </script>
     <script>
-      async function openNewWindow() {
+      async function openNewWindow(pageType = 'U') {
         var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        if(pageType != 'U'){
+          $('#myModal .modal-title').text('Upgrade your subscription to add projects')
+          $('#myModal .sub-modal-content').hide()
+          $('#myModal .video-button').css('margin-top', 0)
+        }
         myModal.show();
       }
     </script>

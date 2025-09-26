@@ -541,3 +541,56 @@ tr.scope-curr-cal th, tr.scope-curr-cal td {
     font-weight: 900;
     font-size: 16px;
 }
+
+.prev.available, .next.available {
+    background: #884caa !important;
+}
+
+.daterangepicker .calendar-table .next span,
+.daterangepicker .calendar-table .prev span {
+    border: solid #fff !important;
+    border-width: 0 2px 2px 0 !important;
+    border-radius: 0;
+}
+
+.drp-buttons button.applyBtn {
+    background: none !important;
+    color: #000;
+    border: 2px solid #7030A0 !important;
+}
+
+.drp-buttons button.applyBtn:hover {
+    background: #7030A0 !important;
+    color: #fff;
+}
+
+.drp-buttons button.cancelBtn {
+    background: none !important;
+    color: #000;
+    border: 2px solid #ff8787 !important;
+}
+
+.drp-buttons button.cancelBtn:hover {
+    background: #ff8787 !important;
+    color: #fff;
+}
+td.today.active.start-date.active.end-date.available, .daterangepicker.ltr tr td.active {
+    background: #7030a0 !important;
+}
+
+.not-avail-page{
+    background-image: url(/images/notAvail.svg);
+    background-repeat: no-repeat;
+    width: 75vw;
+    height: 65vh;
+    background-size: 45%;
+    background-position: center;
+}
+.not-avail-text{
+    max-width: fit-content;
+    display: flex;
+    flex-direction: column;
+}
+.not-avail-text span{
+    font-size: 15px;
+}

@@ -20,22 +20,37 @@
     </div> -->
 <div class="container-fluid">
   <div class="row">
-    <div class="card card-form">
-      <!-- <stripe-pricing-table 
-                   pricing-table-id="prctbl_1S19J82LsczgMB2Pmr1qLxiC"
-                   publishable-key="pk_test_51RtWjc2LsczgMB2PX9xAH6pWM2GhceR2WWUol6FlZjIVYX4i4WDrvZOnP0ncdrc9HB4gUTZdJzKElMBSnffpiTgG00vDajHX9E"
-                   customer-email="<%= email %>"
-                   customer-id="<%= typeof customer_id !== 'undefined' ? customer_id : '' %>"
-                   >
-                </stripe-pricing-table> -->
-      <stripe-pricing-table
-        pricing-table-id="prctbl_1S1C4gRspuMIhoQ5CfdymMWP"
-        publishable-key="pk_live_51RtWjORspuMIhoQ5OXPtuS3Uoh9ZQ2I573lBFSNETumBIF8w8HvJEoKHkqnnvQ1FnCK9GKbQCnxKAStFhxjVlGqF00Pr5pouj7"
-        customer-email="<%= email %>"
-        customer-id="<%= typeof customer_id !== 'undefined' ? customer_id : '' %>"
-      >
-      </stripe-pricing-table>
-    </div>
+    <% if(user.user_type != 'C'){ %>
+      <div class="col-md-12">
+        <div class="not-avail-page"></div>
+      </div>
+      <div class="col-md-12 not-avail-text mx-5 mt-0">
+        <span class="text-muted text-center">
+          This account has been added to ESG Risk Viewer by a paid subscriber (Our Client). As a result, it is not possible for you to subscribe to any services. You can only use services for which you were granted access to by Our Client.
+        </span>
+        <span class="text-muted text-center">
+          If you want to remove your records from our database because you are no longer linked to Our Client or for any other reason, you should speak to Our Client directly or contact us at support@esgriskviewer.com
+        </span>
+      </div>
+      
+    <% }else{ %>
+      <div class="card card-form">
+        <!-- <stripe-pricing-table 
+                     pricing-table-id="prctbl_1S19J82LsczgMB2Pmr1qLxiC"
+                     publishable-key="pk_test_51RtWjc2LsczgMB2PX9xAH6pWM2GhceR2WWUol6FlZjIVYX4i4WDrvZOnP0ncdrc9HB4gUTZdJzKElMBSnffpiTgG00vDajHX9E"
+                     customer-email="<%= email %>"
+                     customer-id="<%= typeof customer_id !== 'undefined' ? customer_id : '' %>"
+                     >
+                  </stripe-pricing-table> -->
+        <stripe-pricing-table
+          pricing-table-id="prctbl_1S1C4gRspuMIhoQ5CfdymMWP"
+          publishable-key="pk_live_51RtWjORspuMIhoQ5OXPtuS3Uoh9ZQ2I573lBFSNETumBIF8w8HvJEoKHkqnnvQ1FnCK9GKbQCnxKAStFhxjVlGqF00Pr5pouj7"
+          customer-email="<%= email %>"
+          customer-id="<%= typeof customer_id !== 'undefined' ? customer_id : '' %>"
+        >
+        </stripe-pricing-table>
+      </div>
+    <% } %>
   </div>
 </div>
 
