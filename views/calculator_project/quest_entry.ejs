@@ -113,16 +113,16 @@
             method:'POST',
             url: '/cal_quest_save',
             data: {enc_dt: quest_enc_dt, quest_ans, sel_year: $('#sel_year_quest').val()},
-            beforeSend: function(){
-                $('.loader-wrapper').show()
-            },
+            // beforeSend: function(){
+            //     $('.loader-wrapper').show()
+            // },
             success: function(result){
                 // console.log(result);
                 
             },
-            complete: function(){
-                $('.loader-wrapper').hide()
-            }
+            // complete: function(){
+            //     $('.loader-wrapper').hide()
+            // }
         })
     }
 
@@ -460,13 +460,13 @@
                 url: '/get_cal_act_ajax',
                 data: {type_id: type_id, flag: flag},
                 beforeSend: function(){
-                    $('.loader-wrapper').show()
+                    // $('.loader-wrapper').show()
                 }
             }).done(function(result){
                 $('.loader-wrapper').hide()
                 resolve(result.suc > 0 ? result.msg : []);
             }).fail(function(err){
-                $('.loader-wrapper').hide()
+                // $('.loader-wrapper').hide()
                 reject(err)
             })
         })
@@ -493,7 +493,7 @@
             url: '/get_cal_emi_type_ajax',
             data: {type_id, act_id, flag: '<%= flag %>'},
             beforeSend: function(){
-                $('.loader-wrapper').show()
+                // $('.loader-wrapper').show()
             },
             success: function(result){
                 var res = result
@@ -523,7 +523,7 @@
                 }
             },
             complete: function(){
-                $('.loader-wrapper').hide()
+                // $('.loader-wrapper').hide()
             }
         })
     }
@@ -546,7 +546,7 @@
             url: '/get_cal_unit_list_ajax',
             data: {type_id, act_id, emi_type_id, year: 0, flag: '<%= flag %>'},
             beforeSend: function(){
-                $('.loader-wrapper').show()
+                // $('.loader-wrapper').show()
             },
             success: function(result){
                 var res = result
@@ -577,7 +577,7 @@
                 }
             },
             complete: function(){
-                $('.loader-wrapper').hide()
+                // $('.loader-wrapper').hide()
             }
         })
     }
@@ -904,7 +904,7 @@
             url: '/save_co_cal_ajax',
             data: {enc_dt: quest_dt, repo_period, strt_month, cal_val: JSON.stringify(cal_val), emi_fact_val: JSON.stringify(emi_fact_val), co_val: JSON.stringify(co_val), mode_quest_id, mode_quest_val, quest_id: id, act_id, emi_id, unit_id, repo_mode_label: JSON.stringify(repo_mode_label), subSeq},
             beforeSend: function(){
-                $('.loader-wrapper').show()
+                // $('.loader-wrapper').show()
             },
             success: function(result){
                 var res = result
@@ -913,7 +913,7 @@
                 
             },
             complete: function(){
-                $('.loader-wrapper').hide()
+                // $('.loader-wrapper').hide()
             }
         })
         
@@ -931,7 +931,7 @@
                 url: '/delete_ghg_ext_cal_mod_ajax',
                 data: {enc_dt: encDt},
                 beforeSend: function(){
-                    $('.loader-wrapper').show()
+                    // $('.loader-wrapper').show()
                 },
                 success: function(result){
                     var res = result
@@ -940,7 +940,7 @@
                     
                 },
                 complete: function(){
-                    $('.loader-wrapper').hide()
+                    // $('.loader-wrapper').hide()
                 }
             })
         }
@@ -958,7 +958,7 @@
                 url: '/ghg_edit_cal_data_ajax',
                 data: {enc_dt: encDt, flag},
                 beforeSend: function(){
-                    $('.loader-wrapper').show()
+                    // $('.loader-wrapper').show()
                 },
                 success: function(result){
                     var res = result
@@ -975,7 +975,7 @@
                     }, 1000);
                 },
                 complete: function(){
-                    $('.loader-wrapper').hide()
+                    // $('.loader-wrapper').hide()
                 }
             })            
         }

@@ -669,7 +669,7 @@ ProjectRouter.get("/project_report_view", async (req, res) => {
     flag: data.flag,
     cal_lang_flag: req.session.user.cal_lang_flag,
     risk_info_dt: risk_info_dt.suc > 0 ? risk_info_dt.msg : [],
-    flag_name: PROJECT_LIST[data.flag],
+    flag_name: PROJECT_LIST[data.dec_flag],
   };
   res.render("project_work/report_view", res_data);
   // res.send(res_data)
@@ -910,7 +910,7 @@ ProjectRouter.get("/report_full_view", async (req, res) => {
     )}`,
     flag: data.flag,
     user_type_master: USER_TYPE_LIST,
-    flag_name: PROJECT_LIST[data.flag],
+    flag_name: PROJECT_LIST[data.dec_flag],
   };
   // res.render("project_work/report_view_template", res_data);
   res.render("pages/under_construction", res_data);
