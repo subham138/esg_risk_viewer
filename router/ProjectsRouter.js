@@ -173,7 +173,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
     header_url: `/my_project?flag=${enc_dt}`,
     flag,
     dec_flag,
-    flag_name: PROJECT_LIST[flag],
+    flag_name: PROJECT_LIST[dec_flag],
     enc_flag: enc_dt,
   };
   res.render("projects/add", data);
