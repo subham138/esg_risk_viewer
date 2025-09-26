@@ -189,7 +189,7 @@
                 <div class="circle">
                   <span class="initials">
                     <% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
-                      var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? Array.from(userNameArr[1])[0] : ''}` : 'U' %>
+                      var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? (Array.from(userNameArr[1])[0] ? Array.from(userNameArr[1])[0] : '')  : ''}` : 'U' %>
                     <%= userNameAvt.toUpperCase() %>
                   </span>
                 </div>

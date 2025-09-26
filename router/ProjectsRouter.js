@@ -121,9 +121,7 @@ function canAddNewProject(subs, count) {
     if (subs.product_name === 'Lite' && count <= 2) return true;
     if (subs.product_name === 'Premium' && count <= 5) return true;
     if (!subs || subs.status === 'cancelled') return false;
-  }
-
-  if(count >=0) return true;
+  } else if (!subs && (count >= 0 && count < 1)) return true;
   return false;
 }
 
