@@ -28,7 +28,7 @@
     <% if(message){ %>
       <script>
         setTimeout(() => {
-          initiate_sweet_alert('<%= message.header ? message.header : "Dashboard" %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
+          initiate_sweet_alert('<%= message.header ? message.header : "Home" %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
         }, 1000);
       </script>
       <% } %>
