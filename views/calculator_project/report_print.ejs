@@ -1,0 +1,412 @@
+<%- include('../templates/header.ejs') %>
+<% if(flag == "E"){ %>
+    <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
+<% } %>
+<style>
+    .logo-report{
+        height: 30%;
+        width: 30%;
+    }
+    .logo-report img{
+        height: 100%;
+        width: 100%;
+    }
+    .report-head{
+        font-weight: 600;
+        font-size: 29px;
+        color: #7030a0;
+    }
+    .highlight-context{
+        color: #7030a0;
+        font-size: 20px;
+        font-weight: 600;
+    }
+    .report-head_1{
+        font-weight: 600;
+        font-size: 29px;
+        color: #03244e;
+    }
+    .report-sub-head{
+        font-weight: 600;
+        font-size: 25px;
+        /* color: #319795; */
+        color: black;
+    }
+    .report-sub-head_1{
+        font-weight: 600;
+        font-size: 22px;
+        /* color: #319795; */
+        color: black;
+    }
+    .report-sub-head_2{
+        font-weight: 600;
+        font-size: 18px;
+        /* color: #319795; */
+        color: black;
+    }
+    .sub_head {
+        font-weight: 600;
+        font-size: 15px;
+        color: black;
+    }
+    .topic-sub-head{
+        font-weight: 500;
+        font-size: 20px;
+        color: #4472c4;
+    }
+    .info_head{
+        font-weight: 600;
+        font-size: 15px;
+    }
+    .text-muted {
+        color: #C9C9C9 !important;
+    }
+    .text-spacing {
+        letter-spacing: 0px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <!-- <h3><%= header %></h3> -->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %> (<%= flag_name %>)</a></li>
+                    <li class="breadcrumb-item"><%= projName %></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<% var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'};
+    const proj_info = project_data.length > 0 ? project_data[0].proj_info : []
+    var proj_sector = [], proj_inds = [], proj_bus_act = [], proj_loc_act = [];
+    proj_info.length > 0 ? proj_info.map(dt => {
+        proj_sector.push(dt.sec_name)
+        proj_inds.push(dt.ind_name)
+        proj_bus_act.push(dt.business_act)
+        proj_loc_act.push(dt.location_busi_act)
+    }) : ''
+    const totEmi = emi_dash_dt.tot_emi ? (emi_dash_dt.tot_emi> 0 ? emi_dash_dt.tot_emi : 0) : 0
+%>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card_body_Cus">
+                <div class="card-body">
+                    <div class="row" id="printDiv">
+                        <!-- <div class="logo-report">
+                            <img class="img-fluid" src="/images/logo_col.png" alt="">
+                        </div> -->
+                        <div>
+                            <div class="row">
+                                <p class="report-head">Sustainability Report</p>
+                            </div>
+                            <div class="row">
+                                <p class="report-head_1">Details</p>
+                                <div class="col-md-8">
+                                    <table width="100%" class="text-spacing">
+                                        <tr>
+                                            <th>Framework</th>
+                                            <th>:</th>
+                                            <td><%= flag_name %></b> Framework</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Project Name</th>
+                                            <th>:</th>
+                                            <td><%= projName %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>:</th>
+                                            <td><%= project_data.length > 0 ? dateFormat(new Date(project_data[0].created_dt), 'dd/mm/yyyy') : '' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Sector</th>
+                                            <th>:</th>
+                                            <td><%= proj_sector.length > 0 ? proj_sector.join(', ') : '' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Industry</th>
+                                            <th>:</th>
+                                            <td><%= proj_inds.length > 0 ? proj_inds.join(', ') : '' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Business Activities</th>
+                                            <th>:</th>
+                                            <td><%= proj_bus_act.length > 0 ? proj_bus_act.join(', ') : '' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Locations of Business Activities</th>
+                                            <th>:</th>
+                                            <td><%= proj_loc_act.length > 0 ? proj_loc_act.join(', ') : '' %></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Project Team</th>
+                                            <th>:</th>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <table width="100%" class="table-bordered">
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>User Type</th>
+                                                    </tr>
+                                                    <% if(project_data.length > 0){
+                                                        if(project_data[0].user_list && project_data[0].user_list.length > 0){
+                                                        project_data[0].user_list.forEach(dt => { %>
+                                                            <tr>
+                                                                <td><%= dt.user_name %></td>
+                                                                <td><%= user_type_master[dt.user_type] %></td>
+                                                            </tr>
+                                                        <% })}else{ %>
+                                                            <tr>
+                                                                <td>Self</td>
+                                                                <td><%= user_type_master[user.user_type] %></td>
+                                                            </tr>
+                                                    <% }
+                                                    } %>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <p class="report-head_1">Summary</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 d-flex flex-column justify-content-center">
+                                    <div>
+                                        <span class="report-sub-head_2">Total GHG emissions: </span>
+                                        <span class="highlight-context"><%= totEmi %></span> tCO2e
+                                    </div>
+                                    <div>
+                                        <span class="report-sub-head_2">Key facts: </span>
+                                        <p>
+                                            <span class="highlight-context"><%= totEmi %></span> tCO2e is the same as <span class="highlight-context"><%= totEmi > 0 ? Math.round(totEmi/0.326) : 0 %></span> one-way trips from London to Mumbai using aircrafts such as Airbus A350-1000 and Boeing 787-9 Dreamliner.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <img width="100%" height="100%" src="/images/co_calculator_distance.gif" alt="Distance" srcset="">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 mt-4">
+                                    <table class="table-bordered">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th>Direct Emissions (Scope 1)</th>
+                                                <th>Indirect Emissions (Scope 2)</th>
+                                                <th>Indirect Emissions (Scope 3 - Upstream)</th>
+                                                <th>Indirect Emissions (Scope 3 - Downstream)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="text-center">
+                                                <td>
+                                                    <span class="emiss-card-val" id="tot_emi_sc1">
+                                                        <%= emi_dash_dt.tot_emi_sc1 ? (emi_dash_dt.tot_emi_sc1> 0 ? emi_dash_dt.tot_emi_sc1 : 0) : 0 %>
+                                                    </span> tCO2e
+                                                </td>
+                                                <td>
+                                                    <span class="emiss-card-val" id="tot_emi_sc2">
+                                                        <%= emi_dash_dt.tot_emi_sc2 ? (emi_dash_dt.tot_emi_sc2> 0 ? emi_dash_dt.tot_emi_sc2 : 0) : 0 %>
+                                                    </span> tCO2e
+                                                </td>
+                                                <td>
+                                                    <span class="emiss-card-val" id="tot_emi_sc3_u">
+                                                        <%= emi_dash_dt.tot_emi_sc3_u ? (emi_dash_dt.tot_emi_sc3_u> 0 ? emi_dash_dt.tot_emi_sc3_u : 0) : 0 %>
+                                                    </span> tCO2e
+                                                </td>
+                                                <td>
+                                                    <span class="emiss-card-val" id="tot_emi_sc3_d">
+                                                        <%= emi_dash_dt.tot_emi_sc3_d ? (emi_dash_dt.tot_emi_sc3_d> 0 ? emi_dash_dt.tot_emi_sc3_d : 0) : 0 %>
+                                                    </span> tCO2e
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-4 chart-cust-container">
+                                    <div id="emi-act-chart" class="cust-chart"></div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <p class="report-head_1">GHG Emissions Overview</p>
+                            </div>
+                            <% if(scope_list.length > 0){
+                                scope_list.forEach(dt => {
+                                    const secTypeDt = cal_sec_type_list.length > 0 ? cal_sec_type_list.filter(sdt => sdt.scope_id == dt.id) : []
+                                    %>
+                                    <div class="row">
+                                        <div class="col-md-12 mt-3">
+                                            <p class="report-sub-head"><%= dt.name %></p>
+                                        </div>
+                                        <% if(secTypeDt.length > 0){
+                                            secTypeDt.forEach(sdt => {
+                                                var filterGhgData = allGhgList.filter(gdt => gdt.scope == dt.id && gdt.cal_sec_id == sdt.id)
+                                                %>
+                                                <div class="col-md-12 mt-2">
+                                                    <p class="report-sub-head_2">
+                                                        <%= sdt.sec_name %>
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-12 mt-2">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Description</th>
+                                                                <th>Source</th>
+                                                                <th>t CO2e</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>                                                        
+                                                <%
+                                                if(filterGhgData.length > 0){
+                                                    var ghgQuestIdList = filterGhgData.map(dt => dt.quest_id);
+                                                    
+                                                    ghgQuestIdList = ghgQuestIdList.length > 0 ? [...new Set(ghgQuestIdList)] : [];
+                                                    ghgQuestIdList.forEach(qdt => {
+                                                        var seqData = filterGhgData.filter(seDt => seDt.quest_id == qdt)
+                                                        var sequence = seqData.length > 0 ? `${seqData[0].parent_id}.${seqData[0].sub_parent_id}` : 0
+                                                        var sec_id = seqData.length > 0 ? seqData[0].sec_id : 0
+                                                        var ghg_quest_data = ghg_quest_list.filter(qAnsDt => qAnsDt.scope == dt.id && qAnsDt.quest_seq == `${sequence}.1` &&
+                                                        qAnsDt.quest_type == 'I' && qAnsDt.sec_id == sec_id)
+                                                        var ghgSlNoList = filterGhgData.filter(fdt => fdt.quest_id == qdt).map(hdt => hdt.sl_no)
+                                                        ghgSlNoList = ghgSlNoList.length > 0 ? [...new Set(ghgSlNoList)] : [];
+                                                        ghgSlNoList.forEach(gdt => {
+                                                            var filterCalData = filterGhgData.filter(cdt => cdt.sl_no == gdt && cdt.quest_id == qdt)
+                                                            var currGhgData = ghg_quest_data.filter(qAnsDt => qAnsDt.pro_sl_no == gdt)
+                                                            var totEmiCalVal = 0
+                                                            filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
+                                                        %>
+                                                        <tr>
+                                                            <td><%= filterCalData.length> 0 ? filterCalData[0].act_name : '' %></td>
+                                                            <td><%= filterCalData.length> 0 ? filterCalData[0].emi_name : '' %></td>
+                                                            <td><%= totEmiCalVal.toFixed(2) %></td>
+                                                        </tr>
+
+                                                        <% })
+                                                    })
+
+                                                }else{ %>
+                                                    <tr>
+                                                        <td class="text-danger text-center" colspan="3">No Data Found</td>
+                                                    </tr>
+                                                <% }
+                                                %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            <% })
+                                        } %>
+                                    </div>
+                                <% })
+                            } %>
+                            <div class="row">
+                                <!-- <p class="report-head">Methodology Notes</p> -->
+                                <p class="report-head_1">Notes</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p><%- met_note.length > 0 ? met_note[0].met_note : '' %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-pill btn-sm btn-custom text-center" onclick="print()">Print</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function print(){
+        var divToPrint = document.getElementById('printDiv');
+        var WindowObject = window.open('', 'Print-Window');
+        WindowObject.document.open();
+        WindowObject.document.writeln('<!DOCTYPE html>');
+        WindowObject.document.writeln('<html><head>');
+        WindowObject.document.write('<link rel="preconnect" href="https://fonts.googleapis.com">')
+        WindowObject.document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>')
+        WindowObject.document.write('<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/fontawesome.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/icofont.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/themify.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/flag-icon.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/feather-icon.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/animate.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/style.css">')
+        WindowObject.document.write('<link id="color" rel="stylesheet" href="/css/color-1.css" media="screen">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/responsive.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/datatables.css">')
+        WindowObject.document.write('<link rel="stylesheet" type="text/css" href="/css/custom-style.css">')
+        WindowObject.document.writeln('<style type="text/css">')
+        WindowObject.document.writeln('@media print { footer{ margin-left: 0px !important; position: fixed; bottom: 10px; height: 20px; width: 100%; } footer small{ display: flex; justify-content: space-between; } .logo-report{ height: 30%; width: 30%; } .logo-report img{ height: 100%; width: 100%; } .report-head{ font-weight: 500; font-size: 29px; color: #7030a0; } .report-sub-head{ font-weight: 500; font-size: 27px; color: #319795; } .topic-sub-head{ font-weight: 500; font-size: 22px; color: #4472c4; } .info_head{ font-weight: 600; font-size: 17px; }}')
+        WindowObject.document.writeln('</style>')
+        WindowObject.document.write('<script src="/js/jquery-3.5.1.min.js"></scr' + 'ipt>')
+        // WindowObject.document.write('<script src="/js/downloadPdf.js"></scr' + 'ipt>')
+        WindowObject.document.writeln('<title>ESG Risk Viewer</title>');
+        WindowObject.document.writeln('</head><body onload="window.print()">');
+        // WindowObject.document.writeln('<header>ESG Risk Viewer</header>')
+        WindowObject.document.writeln(divToPrint.innerHTML);
+        // WindowObject.document.writeln('<footer><small><span>'+ new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "medium"}) +'</span><span>ESG Riskviewer</span></small></footer>');
+        WindowObject.document.writeln('</body></html>');
+
+        // console.log(WindowObject.document.documentElement.innerHTML, 'WindowObject');
+        // console.log(WindowObject.document.documentElement, 'WindowObject');
+        // downloadPrf(WindowObject.document)
+        
+        
+        WindowObject.document.close();
+        setTimeout(function() {
+            WindowObject.close();
+        }, 1000);
+    }
+</script>
+
+<script src="js/chart/google/google-chart-loader.js"></script>
+
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    var emiActChart, emiActChartDt, emiActChartOpt;
+
+    function drawChart() {
+        drawEmisActChart()
+    }
+    function drawEmisActChart(){
+        emiActChartDt = google.visualization.arrayToDataTable([
+            ['Activity', 'tCO2e'],
+            ['Direct Emissions (Scope 1)', +$('#tot_emi_sc1').text()],
+            ['Indirect Emissions (Scope 2)', +$('#tot_emi_sc2').text()],
+            ['Indirect Emissions (Scope 3-Upstream)', +$('#tot_emi_sc3_u').text()],
+            ['Indirect Emissions (Scope 3-Downstream)', +$('#tot_emi_sc3_d').text()]
+        ]);
+        emiActChartOpt = {
+            title: 'Emissions by activity (tCO2e)-Current Year',
+            pieHole: 0.4,
+            width: '100%',
+            height: 150,
+            colors: ["#24695c", "#ff9104", "#c03b39", "#4631b1"]
+        };
+        emiActChart = new google.visualization.PieChart(document.getElementById('emi-act-chart'));
+        emiActChart.draw(emiActChartDt, emiActChartOpt);
+    }
+</script>
+
+
+<%- include('../templates/footer.ejs') %>

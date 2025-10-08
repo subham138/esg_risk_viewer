@@ -64,7 +64,7 @@ module.exports = {
                 }
                 resolve(res_dt)
             } else {
-                var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by',
+                var select = 'a.id, a.project_name, a.last_access, a.last_accessed_by, a.created_dt',
                     table_name = 'td_project a',
                     whr = `a.repo_flag = '${flag}' AND a.client_id = '${client_id}' ${id > 0 ? `AND a.id = ${id}` : ''} AND a.active_flag = 'Y' AND a.proj_type='${platform_mode}'`,
                     order = 'ORDER BY a.id DESC';

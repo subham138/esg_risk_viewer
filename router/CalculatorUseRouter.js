@@ -1,7 +1,10 @@
+const { getMetNote } = require('../modules/AdminModule');
+const { getSusDiscList, getDynamicData, getActMetrialDtls } = require('../modules/DataCollectionModule');
+
 const CalcUserRouter = require('express').Router(),
-{ getCalQuestUserDt, getCalAct, getGhgCalList, getGhgQuestList } = require('../modules/CalculatorModule'),
-{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select, db_Delete } = require('../modules/MasterModule'),
-{ getProjectList } = require('../modules/ProjectModule'),
+{ getCalQuestUserDt, getCalAct, getGhgCalList, getGhgQuestList, getCalTypeList } = require('../modules/CalculatorModule'),
+{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select, db_Delete, USER_TYPE_LIST } = require('../modules/MasterModule'),
+{ getProjectList, getGhgEmiList, getSavedProjectWork, getActiveTopicList, getCheckedProjectTopList, getProjectListUpdated } = require('../modules/ProjectModule'),
 dateFormat = require('dateformat');
 
 CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
@@ -467,6 +470,104 @@ CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
     data = JSON.parse(data)
     res.render("calculator_project/calTabModal", {cal_data: data})
   }
+})
+
+CalcUserRouter.get('/cal_report_full_view', async (req, res) => {
+  var enc_data = req.query.enc_data,
+    data_set = {};
+  var data = Buffer.from(enc_data, "base64");
+    data = JSON.parse(data),
+    currDate = new Date();
+
+  var currYear = currDate.getFullYear()
+
+  var flag = data.dec_flag == "IC" ? "I" : (data.dec_flag == "FC" ? 'F' : data.dec_flag);
+  var user_type = req.session.user.user_type,
+    user_id = req.session.user.user_id,
+    client_id = req.session.user.client_id;
+
+  var project_data = await await getProjectListUpdated(
+    data.proj_id,
+    req.session.user.client_id,
+    user_type != "A" && user_type != "C" && user_type != "S" ? user_id : 0,
+    flag,
+    data.dec_flag == "IC" || data.dec_flag == "FC" ? "C" : req.session.user.platform_mode
+  );
+  
+  var emiDashDt = await db_Select(`sum(tot_emi) tot_emi, sum(tot_emi_sc1) tot_emi_sc1, sum(tot_emi_sc2) tot_emi_sc2, sum(tot_emi_sc3_u) tot_emi_sc3_u, sum(tot_emi_sc3_d) tot_emi_sc3_d`, `(
+SELECT SUM(co_val) tot_emi, 0 tot_emi_sc1, 0 tot_emi_sc2, 0 tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear}
+)
+UNION
+SELECT 0 tot_emi, SUM(co_val) tot_emi_sc1, 0 tot_emi_sc2, 0 tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=1
+)
+UNION
+SELECT 0 tot_emi, 0 tot_emi_sc1, SUM(co_val) tot_emi_sc2, 0 tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=2
+)
+UNION
+SELECT 0 tot_emi, 0 tot_emi_sc1, 0 tot_emi_sc2, SUM(co_val) tot_emi_sc3_u, 0 tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c.stream_type='U'
+)
+UNION
+SELECT 0 tot_emi, 0 tot_emi_sc1, 0 tot_emi_sc2, 0 tot_emi_sc3_u, SUM(co_val) tot_emi_sc3_d FROM td_ghg_quest_cal WHERE id IN(
+SELECT DISTINCT a.id
+FROM td_ghg_quest_cal a, md_cal_form_builder b, md_cal_sec_type c, td_ghg_quest d
+WHERE a.quest_id=b.id AND a.scope=b.scope_id AND b.sec_id=c.id AND a.project_id=d.project_id
+AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c.stream_type='D'
+)
+)a`, null, null)
+
+  var met_note_dtls = await getMetNote(0, data.flag);
+
+  var getAllGhgCalDt = await getGhgCalList(data.proj_id, client_id, currYear)
+
+  var getGhgQuestData = await getGhgQuestList(data.proj_id, client_id, currYear)
+
+  var cal_sec_type_list = await db_Select('id,scope_id,sec_name', 'md_cal_sec_type', `lang_flag="${data.flag == 'I' ? 'E' : 'F'}"`, null)
+
+  var scope_list = SCOPE_LIST
+
+  // console.log(req.session.user.ai_tag_tool_flag, 'ai_tag_flag');
+  var res_data = {
+    top_id: data.top_id,
+    sec_id: data.sec_id,
+    ind_id: data.ind_id,
+    project_id: data.proj_id,
+    projName: data.proj_name,
+    repo_type: data.repo_type,
+    project_data: project_data.suc > 0 ? project_data.msg : [],
+    met_note: met_note_dtls.suc > 0 ? met_note_dtls.msg : [],
+    header: "Project Work",
+    sub_header: "Project View",
+    header_url: `/my_project?flag=${encodeURIComponent(
+      new Buffer.from(data.flag).toString("base64")
+    )}`,
+    flag: data.flag,
+    user_type_master: USER_TYPE_LIST,
+    flag_name: PROJECT_LIST[data.dec_flag],
+    dateFormat,
+    emi_dash_dt: emiDashDt.suc > 0 ? (emiDashDt.msg.length > 0 ? emiDashDt.msg[0] : {}) : {},
+    allGhgList: getAllGhgCalDt.suc > 0 ? getAllGhgCalDt.msg.length > 0 ? getAllGhgCalDt.msg : [] : [],
+    ghg_quest_list: getGhgQuestData.suc > 0 ? (getGhgQuestData.msg.length > 0 ? getGhgQuestData.msg : []) : [],
+    cal_sec_type_list: cal_sec_type_list.suc > 0 ? cal_sec_type_list.msg : [],
+    scope_list,
+  };
+  // res.render("project_work/report_view_template", res_data);
+  res.render("calculator_project/report_print", res_data);
 })
 
 module.exports = {CalcUserRouter}

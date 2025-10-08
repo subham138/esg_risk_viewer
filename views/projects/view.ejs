@@ -120,7 +120,7 @@
                                                                                         <% } %>
                                                                     </a>
                                                                     <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', 'report_full_view')">
+                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_report_full_view' : 'report_full_view' %>`)">
                                                                         <i class="icofont icofont-eye-alt"></i>
                                                                         <%= lang.view.view_btn %>
                                                                     </a>
