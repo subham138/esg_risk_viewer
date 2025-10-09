@@ -18,7 +18,7 @@
     }
     .highlight-context{
         color: #7030a0;
-        font-size: 20px;
+        font-size: 24px;
         font-weight: 600;
     }
     .report-head_1{
@@ -40,7 +40,7 @@
     }
     .report-sub-head_2{
         font-weight: 600;
-        font-size: 18px;
+        font-size: 24px;
         /* color: #319795; */
         color: black;
     }
@@ -102,7 +102,7 @@
                         </div> -->
                         <div>
                             <div class="row">
-                                <p class="report-head">Sustainability Report</p>
+                                <p class="report-head">GHG Report</p>
                             </div>
                             <div class="row">
                                 <p class="report-head_1">Details</p>
@@ -179,7 +179,7 @@
                                 <p class="report-head_1">Summary</p>
                             </div>
                             <div class="row">
-                                <div class="col-md-8 d-flex flex-column justify-content-center">
+                                <div class="col-md-6 d-flex flex-column justify-content-center">
                                     <div>
                                         <span class="report-sub-head_2">Total GHG emissions: </span>
                                         <span class="highlight-context"><%= totEmi %></span> tCO2e
@@ -191,13 +191,13 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <img id="distance-gif" width="100%" height="100%" src="/images/co_calculator_distance.gif" alt="Distance" srcset="">
                                     <img id="distance-png" width="100%" height="100%" src="/images/co_calculator_distance-static.png" alt="Distance" srcset="" style="display: none;">
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-8 mt-4">
+                                <div class="col-md-6 mt-4">
                                     <table class="table-bordered">
                                         <thead>
                                             <tr class="text-center">
@@ -233,7 +233,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="col-md-4 chart-cust-container">
+                                <div class="col-md-6 chart-cust-container">
                                     <div id="emi-act-chart" class="cust-chart"></div>
                                 </div>
                             </div>
