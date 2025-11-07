@@ -46,18 +46,34 @@ SubsRouter.get("/subscription", async (req, res) => {
         res.render("subscription/main", data);
     }
     else {
-        var data = {
-            header: "Subscription",
-            subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
-        };
-        res.render("subscription/view", data);
+        // The URL where the user will be redirected when they click "Return to site" in the Portal
+        const returnUrl = `${process.env.BASE_URL}/dashboard`;
+        const customerId = req.session.user.stripe_customer_id;
+        try {
+            // 1. Create the Portal Session
+            const session = await stripe.billingPortal.sessions.create({
+                customer: customerId, // Use the Customer ID you stored after payment
+                return_url: returnUrl,
+            });
+
+            // 2. Redirect the user's browser to the Stripe-hosted portal URL
+            return res.redirect(303, session.url);
+
+        } catch (error) {
+            console.error('Error creating portal session:', error);
+            return res.status(500).send('Unable to access customer portal.');
+        }
+        // var data = {
+        //     header: "Subscription",
+        //     subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
+        // };
+        // res.render("subscription/view", data);
     }
 });
 
 
 
-SubsRouter.get('/subscription/main', async (req, res) => {
-
+SubsRouter.get('/subscription/main', async (req, res) => {    
     var user_dt = await db_Select("stripe_customer_id", "md_user", `id=${req.session.user.id}`);
     var customer = null;
     if (user_dt.msg.length > 0 && user_dt.msg[0].stripe_customer_id) {
