@@ -48,7 +48,7 @@ SubsRouter.get("/subscription", async (req, res) => {
     else {
         // The URL where the user will be redirected when they click "Return to site" in the Portal
         const returnUrl = `${process.env.BASE_URL}/dashboard`;
-        const customerId = req.session.user.stripe_customer_id;
+        const customerId = chk_dt.msg[0].stripe_customer_id;
         try {
             // 1. Create the Portal Session
             const session = await stripe.billingPortal.sessions.create({
