@@ -3,8 +3,24 @@ const express = require("express"),
   session = require("express-session"),
   app = express(),
   port = process.env.PORT || 3001;
+  require("dotenv").config();
   // https = require('https'),
   // fs = require('fs');
+
+// CONFIGURE SESSION //
+app.use(
+  session({
+    secret: "ESG RISK VIEWER",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 3600000,
+    },
+  })
+);
+// END //
+
+app.use('/webhook', express.raw({ type: 'application/json' }), require("./router/StripeWebhookRouter").StripeWebhookRouter);
 
 // SET VIEW ENGINE AND PATH //
 app.set("view engine", "ejs");
@@ -25,19 +41,6 @@ app.use(
     limit: "50mb",
     extended: false,
     parameterLimit: 1000000,
-  })
-);
-// END //
-
-// CONFIGURE SESSION //
-app.use(
-  session({
-    secret: "ESG RISK VIEWER",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 3600000,
-    },
   })
 );
 // END //
