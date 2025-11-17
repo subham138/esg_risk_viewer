@@ -5,6 +5,7 @@ const { db_Select, db_Insert, db_Routine } = require("../modules/MasterModule");
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIP);
 // END //
+const dateFormat = require("dateformat");
 
 const express = require('express'),
     SubsRouter = express.Router();
@@ -32,6 +33,8 @@ SubsRouter.use((req, res, next) => {
 
 // MODIFIED BY VIKASH //
 SubsRouter.get("/subscription", async (req, res) => {
+    const stripe_table_id = process.env.STRIPE_TABLE_ID,
+        publishable_key = process.env.STRIPE_PUBLISHABLE_KEY;
     var chk_dt = await db_Select(
         "*",
         "stripe_subscriptions",
@@ -42,6 +45,8 @@ SubsRouter.get("/subscription", async (req, res) => {
         var data = {
             header: "Subscription",
             email: req.session.user.user_id,
+            stripe_table_id,
+            publishable_key,
         };
         res.render("subscription/main", data);
     }
@@ -60,14 +65,14 @@ SubsRouter.get("/subscription", async (req, res) => {
             return res.redirect(303, session.url);
 
         } catch (error) {
-            console.error('Error creating portal session:', error);
-            return res.status(500).send('Unable to access customer portal.');
+            var data = {
+                header: "Subscription",
+                email: req.session.user.user_id,
+                stripe_table_id,
+                publishable_key,
+            };
+            res.render("subscription/main", data);
         }
-        // var data = {
-        //     header: "Subscription",
-        //     subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
-        // };
-        // res.render("subscription/view", data);
     }
 });
 
@@ -132,7 +137,11 @@ SubsRouter.get("/subscription/success", async (req, res) => {
         );
 
         if (chk_dt?.msg.length > 0) {
-            await stripe.subscriptions.update(chk_dt?.msg[0]?.stripe_subscription_id, { cancel_at_period_end: false });
+            try{
+                await stripe.subscriptions.update(chk_dt?.msg[0]?.stripe_subscription_id, { cancel_at_period_end: false });
+            }catch(err){
+                console.log('Error reactivating previous subscription:', err);
+            }
             await db_Insert('stripe_subscriptions', 'status="cancelled"', null, `user_id=${req.session.user.id}`, 1);
         }
         const purchaseDate = new Date(subscription?.start_date * 1000);
@@ -151,7 +160,7 @@ SubsRouter.get("/subscription/success", async (req, res) => {
             fields = `(
         user_id,
         product_name,	
-        month_yearly,
+        month_yearly, stripe_product_id, stripe_plan_id,
         purchase_date,
         expires_date,
         stripe_subscription_id, 
@@ -161,10 +170,9 @@ SubsRouter.get("/subscription/success", async (req, res) => {
         status, 
         full_json
         )`,
-            values = `('
-         ${user_id}', 
+            values = `('${user_id}', 
         '${product}', 
-        '${month_yearly}', 
+        '${month_yearly}', '${subscription.plan.product}', '${subscription.plan.id}',
         '${purchased}', 
         '${expired}', 
         '${subscription.id}', 
@@ -177,6 +185,14 @@ SubsRouter.get("/subscription/success", async (req, res) => {
             whr = null,
             flag = 0;
         await db_Insert(table_name, fields, values, whr, flag);
+        try{
+            const currDt = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+            const planDtls = await db_Select('id', 'md_product', `stripe_pan_id='${subscription.plan.product}'`);
+            const plan_id = planDtls.suc > 0 && planDtls.msg.length > 0 ? planDtls.msg[0].id : 0;
+            await db_Insert('md_user', `stripe_customer_id='${session.customer.id}', plan_is_active='Y', active_pan_id='${plan_id}', plan_start_dt='${purchased}', plan_end_dt='${expired}', modified_by='stripe-success-redirection', modified_dt='${currDt}'`, null, `id=${req.session.user.id}`, 1);
+        }catch(err){
+            console.log('Error updating user plan after subscription success:', err);
+        }
 
         if (chk_dt?.msg.length > 0) {
             await db_Routine(
