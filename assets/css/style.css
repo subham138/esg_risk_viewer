@@ -47292,3 +47292,61 @@ span.emiss-card-val {
 .select2.select2-container{
   border-radius: 10px;
 }
+
+.profile-ring {
+  /* width: 50px;
+  height: 50px;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: conic-gradient(#186671 0deg 120deg, #7030a0 120deg 240deg, #202a44 240deg 360deg);
+  animation: spin 3s linear infinite; */
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.profile-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 4px;
+  border-radius: 50%;
+
+  background: conic-gradient(
+    #4285f4 0deg 120deg,
+    #ea4335 120deg 240deg,
+    #fbbc05 240deg 360deg
+  );
+
+  animation: spin 15s linear infinite;
+  z-index: 0;     /* behind initials */
+}
+.profile-initials {
+  position: relative;
+  z-index: 1;
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: calc(var(--avatar-size) / 3);
+  font-weight: 400;
+  color: #333;
+}
+
+/* Keyframes for rotating the ring */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

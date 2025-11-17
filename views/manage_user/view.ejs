@@ -62,7 +62,7 @@
                         <div class="col-md-5">
                             <!-- MODIFIED BY VIKASH -->
                             <!-- <a href="/manage_user_edit" class="btn btn-pill btn-custom float-end"  data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit" id="manage_user_edit">Add New User</a> -->
-                            <% if (canAddNewUser(subs, count)) { %>
+                            <% if (canAddNewUser) { %>
                                 <a href="/manage_user_edit" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
                                     data-bs-placement="left" title="Edit" id="manage_user_edit">Add New User</a>
                             <% } else { %>

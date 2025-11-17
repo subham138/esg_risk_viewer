@@ -20,6 +20,7 @@ const {
   USER_TYPE_LIST,
   PROJECT_LIST,
   db_Select,
+  checkUserSubscriptionUsage,
 } = require("../modules/MasterModule");
 const {
   getProjectList,
@@ -61,7 +62,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
   var enc_dt = req.query.flag,
     dec_flag = new Buffer.from(enc_dt, "base64").toString();
   var flag = dec_flag == "IC" ? "I" : (dec_flag == "FC" ? 'F' : dec_flag);
-  // console.log(flag, dec_flag, "flag");
+  console.log(flag, dec_flag, "flag");
     
 
   // var req_data = req.query
@@ -91,8 +92,11 @@ ProjectRouter.get("/my_project", async (req, res) => {
     `client_id = ${req.session?.user.client_id} AND repo_flag = '${flag}' AND proj_type='${dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode}'`,
     null
   );
+  let projCount = proj_count.suc > 0 ? proj_count.msg[0].cnt : 0
 
-  console.log(proj_count, '---------+++++++++++++');
+  var chkUserCapacity = await checkUserSubscriptionUsage(req.session.user.id, dec_flag)
+  
+  console.log(projCount, chkUserCapacity, '---------+++++++++++++');
   
   
   var data = {
@@ -107,7 +111,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     flag_name: PROJECT_LIST[dec_flag],
     subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
     count: proj_count.suc > 0 ? proj_count.msg[0].cnt : 0,
-    canAddNewProject: canAddNewProject
+    canAddNewProject: !(projCount >= chkUserCapacity.max_allow)
   };
   res.render("projects/view", data);
 });

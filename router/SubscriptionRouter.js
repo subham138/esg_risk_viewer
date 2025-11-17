@@ -190,6 +190,7 @@ SubsRouter.get("/subscription/success", async (req, res) => {
             const planDtls = await db_Select('id', 'md_product', `stripe_pan_id='${subscription.plan.product}'`);
             const plan_id = planDtls.suc > 0 && planDtls.msg.length > 0 ? planDtls.msg[0].id : 0;
             await db_Insert('md_user', `stripe_customer_id='${session.customer.id}', plan_is_active='Y', active_pan_id='${plan_id}', plan_start_dt='${purchased}', plan_end_dt='${expired}', modified_by='stripe-success-redirection', modified_dt='${currDt}'`, null, `id=${req.session.user.id}`, 1);
+            req.session.user.plan_is_active = 'Y'
         }catch(err){
             console.log('Error updating user plan after subscription success:', err);
         }

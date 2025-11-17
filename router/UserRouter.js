@@ -11,6 +11,7 @@ const {
   CALCULATOR_LANG,
   PLAN_LIST,
   PLATFORM_MODE,
+  checkUserSubscriptionUsage,
 } = require("../modules/MasterModule");
 const {
   getUserList,
@@ -40,30 +41,30 @@ async function isMonthUser(email, client_id) {
 // END //
 
 UserRouter.use((req, res, next) => {
-  // if (
-  //   req.url != "/login" &&
-  //   req.url != "/forgot_pass" &&
-  //   req.url != "/chk_user_login" &&
-  //   req.url != "/fast_login" &&
-  //   req.url != "/register"
-  // ) {
-  //   var url = req.url.split("?");
-  //   var currUrl = url.length > 0 ? url[0] : "";
-  //   if (currUrl != "/reset_pass") {
-  //     var user = req.session.user;
-  //     if (user) {
-  //       next();
-  //     } else {
-  //       res.redirect("/login");
-  //     }
-  //   } else {
-  //     next();
-  //   }
-  // } else {
-  //   next();
-  // }
+  if (
+    req.url != "/login" &&
+    req.url != "/forgot_pass" &&
+    req.url != "/chk_user_login" &&
+    req.url != "/fast_login" &&
+    req.url != "/register"
+  ) {
+    var url = req.url.split("?");
+    var currUrl = url.length > 0 ? url[0] : "";
+    if (currUrl != "/reset_pass") {
+      var user = req.session.user;
+      if (user) {
+        next();
+      } else {
+        res.redirect("/login");
+      }
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 
-  next()
+  // next()
 });
 
 
@@ -199,7 +200,7 @@ UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // MODIFIED BY VIKASH //
   var select =
-    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy,industry_news,product_update, active_flag, fast_login, login_dt",
+    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy,industry_news,product_update, active_flag, fast_login, login_dt, plan_is_active, active_pan_id",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -573,11 +574,11 @@ UserRouter.get("/manage_user", async (req, res) => {
   var user_count = await db_Select(
     "COUNT(*) AS cnt",
     "md_user",
-    `client_id = ${req.session?.user.client_id}`,
+    `client_id = ${req.session.user ? req.session.user.client_id : ''}`,
     null
   );
   // END //
-  var user_data = await getUserList(0, req.session.user.client_id);
+  var user_data = await getUserList(0, req.session.user.client_id ? req.session.user.client_id : '');
 
   // MODOFIED BY VIKASH //
   var isMonthlyUser = await getMonthlyUser(req.session?.user.client_id);
@@ -591,6 +592,10 @@ UserRouter.get("/manage_user", async (req, res) => {
   if (isMonthlyUser.length > 0) {
     user_data.sort((a, b) => (a.user_type > b.user_type ? 1 : -1));
   }
+
+  var chkUserCapacity = await checkUserSubscriptionUsage(req.session.user?.id, 'user-create')
+  // console.log(chkUserCapacity, (!(user_data.length >= chkUserCapacity.max_allow)), user_data, user_data);
+  
   // END //
   // console.log(user_data);
   var data = {
@@ -600,7 +605,8 @@ UserRouter.get("/manage_user", async (req, res) => {
     // MODOFIED BY VIKASH //
     subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
     count: user_count.suc > 0 ? user_count.msg[0].cnt : 0,
-    canAddNewUser: canAddNewUser,
+    // canAddNewUser: canAddNewUser,
+    canAddNewUser: !(user_data.length >= chkUserCapacity.max_allow),
     // END //
   };
   res.render("manage_user/view", data);

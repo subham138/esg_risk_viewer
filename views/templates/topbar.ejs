@@ -186,8 +186,8 @@
                 <div class="mode"><i class="fa fa-moon-o"></i></div>
               </li> -->
               <li class="onhover-dropdown">
-                <div class="circle">
-                  <span class="initials">
+                <div class="<%= user.plan_is_active != 'N' ? 'profile-ring' : 'circle' %>">
+                  <span class="<%= user.plan_is_active != 'N' ? 'profile-initials' : 'initials' %>">
                     <% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
                       var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? (Array.from(userNameArr[1])[0] ? Array.from(userNameArr[1])[0] : '')  : ''}` : 'U' %>
                     <%= userNameAvt.toUpperCase() %>
