@@ -87,7 +87,9 @@
                                         <tbody>
                                             <% if(project_data.msg.length> 0){
                                                 let i = 1;
-                                                project_data.msg.forEach(dt => { %>
+                                                project_data.msg.forEach(dt => {
+                                                    var isDisable = false
+                                                    if(i>capacity) isDisable=true %>
                                                 <tr>
                                                     <td>
                                                         <%= i %>
@@ -100,17 +102,25 @@
                                                             dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss' ) : '' %>
                                                     </td>
                                                     <td <% if(i==1){ %> id="my_project_td" <% } %>>
-                                                            <% if(user_type=='A' || user_type=='C' || user_type=='S' ){ %>
-                                                                <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>"
-                                                                    class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="left"
-                                                                    title="" data-bs-original-title="Edit">
-                                                                    <i class="icofont icofont-ui-edit"></i>
-                                                                    <%= lang.view.edit_btn %>
-                                                                </a>
+                                                            <% if(user_type=='A' || user_type=='C' || user_type=='S' ){
+                                                                if(!isDisable){ %>
+                                                                    <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>"
+                                                                        class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                        title="" data-bs-original-title="Edit">
+                                                                        <i class="icofont icofont-ui-edit"></i>
+                                                                        <%= lang.view.edit_btn %>
+                                                                    </a>
+                                                                <% }else{ %>
+                                                                    <a
+                                                                        class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                        title="" data-bs-original-title="Edit" onclick="openNewWindow('P')">
+                                                                        <i class="icofont icofont-ui-edit"></i>
+                                                                        <%= lang.view.edit_btn %>
+                                                                    </a>
+                                                                <% } %>
                                                                 <% } %>
                                                                     <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_proj_report_view' : 'project_report_view' %>`)">
+                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_proj_report_view' : 'project_report_view' %>`, '<%= isDisable %>')">
                                                                         <% if(user_type !='V' ){ %>
                                                                             <i class="icofont icofont-ui-settings"></i>
                                                                             <%= lang.view.manage_btn %>
@@ -120,14 +130,23 @@
                                                                                         <% } %>
                                                                     </a>
                                                                     <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_report_full_view' : 'report_full_view' %>`)">
+                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_report_full_view' : 'report_full_view' %>`, '<%= isDisable %>')">
                                                                         <i class="icofont icofont-eye-alt"></i>
                                                                         <%= lang.view.view_btn %>
                                                                     </a>
-                                                                    <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
-                                            <i class="icofont icofont-ui-delete"></i> 
-                                            <%= lang.view.delete_btn %>
-                                        </a>
+                                                                    <% if(!isDisable){ %>
+                                                                        <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                                                            <i class="icofont icofont-ui-delete"></i> 
+                                                                            <%= lang.view.delete_btn %>
+                                                                        </a>
+                                                                    <% }else { %>
+                                                                        <a class="btn btn_UR btn-outline-primary btn-air-primary"
+                                                                            data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete"
+                                                                            onclick="openNewWindow('P')">
+                                                                            <i class="icofont icofont-ui-delete"></i>
+                                                                            <%= lang.view.delete_btn %>
+                                                                        </a>
+                                                                    <% } %>
                                                     </td>
                                                 </tr>
                                                 <% i++; })}else{ %>
@@ -147,12 +166,16 @@
         </div>
     </div>
     <script>
-        function redirectToPage(id, sec_id, ind_id, proj_name, route) {
-            if (sec_id > 0 && ind_id > 0) {
-                window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>', dec_flag: '<%= dec_flag %>' }))}`
-                // window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
-            } else {
-                window.location.href = `/my_project_add?id=${id}&flag=<%= enc_dt %>`
+        function redirectToPage(id, sec_id, ind_id, proj_name, route, isDisabled='false') {
+            if(isDisabled != 'true'){
+                if (sec_id > 0 && ind_id > 0) {
+                    window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>', dec_flag: '<%= dec_flag %>' }))}`
+                    // window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
+                } else {
+                    window.location.href = `/my_project_add?id=${id}&flag=<%= enc_dt %>`
+                }
+            }else{
+                openNewWindow('P')
             }
         }
         $(document).ready(function () {

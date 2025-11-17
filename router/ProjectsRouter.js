@@ -111,6 +111,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     flag_name: PROJECT_LIST[dec_flag],
     subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
     count: proj_count.suc > 0 ? proj_count.msg[0].cnt : 0,
+    capacity: chkUserCapacity.max_allow,
     canAddNewProject: !(projCount >= chkUserCapacity.max_allow)
   };
   res.render("projects/view", data);
