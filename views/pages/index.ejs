@@ -59,29 +59,29 @@
                       <div class="tab-pane fade show overview_sec_cus active" id="overview" role="tabpanel"
                         aria-labelledby="overview-tab">
 
-                        <p class="lastLog"><b>Last Login:</b>
-                          <%= last_login %>
-                        </p>
-                        <div class="row">
-                          <div class="col-xl-6 col-xs-6 col-md-6 col-sm-6">
-                            <span class="dashboard-left-text">
-                              Welcome to ESG Risk Viewer, Your Trusted Sustainability Partner </span>
-                              <ul class="dashbaord-list my-2">
-                                <li>Verifiable Reporting</li>
-                                <li>Actionable Insights</li>
-                                <li>Novice and Expert Users</li>
-                              </ul>
-                            </span>
-                            <span class="dashboard-left-text">We offer 2 modules:</span>
-                              <ul class="dashbaord-list my-2">
-                                <li>GHG Emissions Module</li>
-                                <li>Full Sustainability Module</li>
-                              </ul>
+                        <div class="d-flex justify-content-end">
+                          <p class="lastLog m-0"><b>Last Login:</b> <%= last_login %></p>
+                        </div>
+
+                        <div class="row mt-3 align-items-center">
+                          <div class="col-xl-6">
+                            <h4 class="f-w-600">Welcome to ESG Risk Viewer</h4>
+                            <p>Your Trusted Sustainability Partner.</p>
+                            <ul class="list-unstyled intro-list">
+                              <li class="mb-2"><i data-feather="check-circle" class="text-success me-2"></i>Verifiable Reporting</li>
+                              <li class="mb-2"><i data-feather="check-circle" class="text-success me-2"></i>Actionable Insights</li>
+                              <li class="mb-2"><i data-feather="check-circle" class="text-success me-2"></i>Novice and Expert Users</li>
+                            </ul>
+                            <hr>
+                            <p class="f-w-500">We offer 2 modules:</p>
+                            <ul class="list-unstyled intro-list">
+                              <li class="mb-2"><i data-feather="package" class="text-primary me-2"></i>GHG Emissions Module</li>
+                              <li><i data-feather="package" class="text-primary me-2"></i>Full Sustainability Module</li>
+                            </ul>
                           </div>
-                          <div class="col-xl-6 col-xs-6 col-md-6 col-sm-6">
-                            <!-- <p class="videoConText_Cus_UR">Start with a short tutorial</p> -->
-                            <div class="videoContainer_Cus_UR">
-                              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/54Clkhly8dY?si=u3kg-MMR8qm--9IM"
+                          <div class="col-xl-6">
+                            <div class="ratio ratio-16x9">
+                              <iframe src="https://www.youtube.com/embed/54Clkhly8dY?si=u3kg-MMR8qm--9IM"
                                 title="YouTube video player" frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -89,14 +89,34 @@
                           </div>
                         </div>
 
-                        <div class="tutorial_sec mt-5">
-                          <h3>Tutorials:</h3>
-                          <ul class="list_ul">
-                            <li>Adding Users <a href="#">Watch Tutorial</a> </li>
-                            <li>Managing material topics <a href="#">Watch Tutorial</a></li>
-                          </ul>
+                        <div class="row mt-5">
+                          <div class="col-md-6">
+                            <h5 class="f-w-600 mb-3"><i data-feather="film" class="me-2"></i>Tutorials</h5>
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Adding Users
+                                <a href="#" class="btn btn-sm btn-outline-primary cust-link-btn"><i data-feather="arrow-right-circle" class="me-1"></i>Watch</a>
+                              </li>
+                              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Managing material topics
+                                <a href="#" class="btn btn-sm btn-outline-primary cust-link-btn"><i data-feather="arrow-right-circle" class="me-1"></i>Watch</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="col-md-6">
+                            <h5 class="f-w-600 mb-3"><i data-feather="book-open" class="me-2"></i>Insights</h5>
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Sustainability Reporting for SMEs
+                                <a href="https://is.gd/n1KTVa" target="_blank" class="btn btn-sm btn-outline-info cust-link-btn"><i data-feather="external-link" class="me-1"></i>Read</a>
+                              </li>
+                              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Getting Started with GHG Emissions
+                                <a href="https://is.gd/Oueg7D" target="_blank" class="btn btn-sm btn-outline-info cust-link-btn"><i data-feather="external-link" class="me-1"></i>Read</a>
+                              </li>
+                            </ul>
+                          </div>
                         </div>
-
                       </div>
 
                       <div class="tab-pane knowledgebase_sec_cus fade" id="knowledgebase" role="tabpanel"
@@ -111,9 +131,6 @@
                         </ul>
                       </div>
                     </div>
-
-                  </div>
-
 
                 </div>
               </div>

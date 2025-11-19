@@ -46383,8 +46383,9 @@ span.twitter-typeahead .tt-suggestion:active {
 .ProfCard{
   /* padding: 0px !important; */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-direction: column;
+  padding: 0 8px 0 8px;
 }
 .proDropDown{
   background: #fbfbfb;
@@ -47339,6 +47340,17 @@ span.emiss-card-val {
   font-size: calc(var(--avatar-size) / 3);
   font-weight: 400;
   color: #333;
+}
+ul.intro-list li{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+a.cust-link-btn{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Keyframes for rotating the ring */
