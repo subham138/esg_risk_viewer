@@ -100,49 +100,49 @@ const checkUserSubscriptionUsage = (user_id, type) => {
   return new Promise(async (resolve, reject) => {
     var isActiveUserDtls = await db_Select('id,active_pan_id', 'md_user', `id=${user_id} AND plan_is_active = 'Y' AND active_pan_id > 0`, null)
     const isSubscribed = isActiveUserDtls.suc > 0 && isActiveUserDtls.msg.length > 0
+    var select_fields = '', prod_id = 0;
     if (isSubscribed){
-      var select_fields = '',
-        prod_id = isActiveUserDtls.msg[0].active_pan_id;
-      switch (type) {
-        case 'user-create':
-          select_fields = 'max_user_create'
-          break;
-        case 'IC':
-          select_fields = 'max_carbon_only_proj_create'
-          break;
-        case 'EV':
-          select_fields = 'max_vsme_proj_create'
-          break;
-        case 'EVF':
-          select_fields = 'max_vsme_fr_proj_create'
-          break;
-        case 'E':
-          select_fields = 'max_esrs_proj_create'
-          break;
-        case 'EF':
-          select_fields = 'max_esrs_fr_proj_create'
-          break;
-        case 'G':
-          select_fields = 'max_gri_proj_create'
-          break;
-        case 'F':
-          select_fields = 'max_gri_fr_proj_create'
-          break;
-        case 'I':
-          select_fields = 'max_ifrs_proj_create'
-          break;
-        case 'IF':
-          select_fields = 'max_ifrs_fr_proj_create'
-          break;
-      
-        default:
-          break;
-      }
-      var maxAllowDt = await db_Select(select_fields, 'md_plan_user_privilege', `prod_id=${prod_id}`, null)
-      resolve({ user_id, max_allow: maxAllowDt.suc > 0 && maxAllowDt.msg.length > 0 ? maxAllowDt.msg[0][select_fields] : 0 })
-    }else{
-      resolve({ user_id, max_allow: 0 })
+      prod_id = isActiveUserDtls.msg[0].active_pan_id;
+    } else {
+      prod_id = 4
     }
+    switch (type) {
+      case 'user-create':
+        select_fields = 'max_user_create'
+        break;
+      case 'IC':
+        select_fields = 'max_carbon_only_proj_create'
+        break;
+      case 'EV':
+        select_fields = 'max_vsme_proj_create'
+        break;
+      case 'EVF':
+        select_fields = 'max_vsme_fr_proj_create'
+        break;
+      case 'E':
+        select_fields = 'max_esrs_proj_create'
+        break;
+      case 'EF':
+        select_fields = 'max_esrs_fr_proj_create'
+        break;
+      case 'G':
+        select_fields = 'max_gri_proj_create'
+        break;
+      case 'F':
+        select_fields = 'max_gri_fr_proj_create'
+        break;
+      case 'I':
+        select_fields = 'max_ifrs_proj_create'
+        break;
+      case 'IF':
+        select_fields = 'max_ifrs_fr_proj_create'
+        break;
+    
+      default:
+        break;
+    }
+    var maxAllowDt = await db_Select(select_fields, 'md_plan_user_privilege', `prod_id=${prod_id}`, null)
+    resolve({ user_id, max_allow: maxAllowDt.suc > 0 && maxAllowDt.msg.length > 0 ? maxAllowDt.msg[0][select_fields] : 0 })
   })
 }
 
