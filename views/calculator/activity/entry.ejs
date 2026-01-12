@@ -39,6 +39,12 @@
                         <input class="form-control" id="act_name" name="act_name" type="text" value="<%= id > 0 ? data[0].act_name : '' %>" required="">
                         <div class="valid-feedback">No Error</div>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="map_act_name">Map Activity</label>
+                        <input class="form-control" id="map_act_name" name="map_act_name" type="text" value="<%= id > 0 ? data[0].map_act_name : '' %>"
+                            required="">
+                        <div class="valid-feedback">No Error</div>
+                    </div>
                 </div>
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                 <input type="hidden" name="flag" value="<%= flag %>">

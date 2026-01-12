@@ -49,7 +49,7 @@ module.exports = {
     },
     getCalAct: (id = 0, type_id = 0, flag='E') => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.id, a.type_id, a.act_name, b.type_name',
+            var select = 'a.id, a.type_id, a.act_name, a.map_act_name, b.type_name',
             table_name = 'md_cal_act a, md_cal_type b',
             whr = `a.type_id=b.id AND a.flag = '${flag}' ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''}`,
             order = 'ORDER BY a.act_name';
@@ -61,9 +61,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_cal_act',
-            fields = data.id > 0 ? `type_id = '${data.type_id}', act_name = "${data.act_name}", modified_by = '${user}', modified_dt = '${datetime}'` : 
-            '(flag, type_id, act_name, created_by, created_dt)',
-            values = `('${data.flag}', '${data.type_id}', "${data.act_name}", '${user}', '${datetime}')`,
+                fields = data.id > 0 ? `type_id = '${data.type_id}', act_name = "${data.act_name}", map_act_name = "${data.map_act_name}", modified_by = '${user}', modified_dt = '${datetime}'` : 
+            '(flag, type_id, act_name, map_act_name, created_by, created_dt)',
+                values = `('${data.flag}', '${data.type_id}', "${data.act_name}", "${data.map_act_name}", '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)

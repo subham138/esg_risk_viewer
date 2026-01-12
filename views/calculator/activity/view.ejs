@@ -43,6 +43,7 @@
                                             <th>#</th>
                                             <th>Type</th>
                                             <th>Activity</th>
+                                            <th>Map Activity</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -54,6 +55,7 @@
                                             <td><%= i %></td>
                                             <td><%= dt.type_name %></td>
                                             <td><%= dt.act_name %></td>
+                                            <td><%= dt.map_act_name %></td>
                                             <td><a onclick="routToNextPage('/cal_act_edit', JSON.stringify({id: '<%= dt.id %>', flag: '<%= flag %>'}), true)" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
