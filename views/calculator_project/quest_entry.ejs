@@ -215,6 +215,8 @@
                                                 var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0, questPrevData = '';
     
                                                 var qAnsDtCal = res.quest_ans_sec[dt].filter(asDt => asDt.end_flag != 'N' && asDt.pro_sl_no == csl && asDt.quest_seq.charAt(2) == subParentSeq.charAt(2));
+                                                console.log(qAnsDtCal, 'qAnsDtCal=========');
+
                                                 var totEmiCalVal = 0
                                                 // console.log(qAnsDtCal, 'qAnsDtCal', csl, dt, subParentSeq);
                                                 
@@ -224,7 +226,10 @@
                                                 
                                                 questPrevData = questPrevData + `<div class="col-md-12">`
                                                 if(qAnsDtCal.length > 0){
-                                                    $.each(qAnsDtCal, function(qai, qaDt){                                                    
+                                                    $.each(qAnsDtCal, function(qai, qaDt){  
+                                                        if(qaDt.is_copy == 'Y'){
+                                                            return false;
+                                                        }
                                                         if(qaDt.input_type == 'A'){
                                                             return false;
                                                         }
