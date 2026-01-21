@@ -212,7 +212,7 @@
                                             totCalRow = totCalRow.length > 0 ? [...new Set(totCalRow)] : [];
                                             var prevCalSlNo = 1
                                             $.each(totCalRow, function(ci, csl){
-                                                var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0, questPrevData = '';
+                                                var filterCalDtNew = filterCalDt.filter(ncdt => ncdt.sl_no == csl), totalCoVal = 0, questPrevData = '', isCopied = false;
     
                                                 var qAnsDtCal = res.quest_ans_sec[dt].filter(asDt => asDt.end_flag != 'N' && asDt.pro_sl_no == csl && asDt.quest_seq.charAt(2) == subParentSeq.charAt(2));
                                                 console.log(qAnsDtCal, 'qAnsDtCal=========');
@@ -228,6 +228,7 @@
                                                 if(qAnsDtCal.length > 0){
                                                     $.each(qAnsDtCal, function(qai, qaDt){  
                                                         if(qaDt.is_copy == 'Y'){
+                                                            isCopied = true;
                                                             return false;
                                                         }
                                                         if(qaDt.input_type == 'A'){
@@ -288,12 +289,14 @@
                                                     `
                                                 })
                                                 accordionEle = accordionEle + `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCoVal.toFixed(2)}</td></tr></tfoot></table></div></div>`
-                                                accordionEle = accordionEle + `<div class="col-md-12 mt-3">
-                                                    <div class="float-end">
-                                                        <button type="button" class="btn btn-pill btn-custom" onclick="delCalExt('${window.btoa(JSON.stringify(filterCalDtNew[0]))}')"><i class="icofont icofont-trash text-danger"></i></button>
-                                                        <button type="button" class="btn btn-pill btn-custom" onclick="editCalExt('${window.btoa(JSON.stringify({cal_dt: filterCalDtNew, repo_mode: last_quest_ans.length > 0 ? last_quest_ans[0].quest_ans : 'Y', hd1: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt1.split("'").join("\\'") : '', hd2: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt2.split("'").join("\\'") : '', hd3: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt3.split("'").join("\\'") : '', title: `<span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>`}))}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
-                                                    </div>
-                                                </div>`
+                                                if(!isCopied){
+                                                    accordionEle = accordionEle + `<div class="col-md-12 mt-3">
+                                                        <div class="float-end">
+                                                            <button type="button" class="btn btn-pill btn-custom" onclick="delCalExt('${window.btoa(JSON.stringify(filterCalDtNew[0]))}')"><i class="icofont icofont-trash text-danger"></i></button>
+                                                            <button type="button" class="btn btn-pill btn-custom" onclick="editCalExt('${window.btoa(JSON.stringify({cal_dt: filterCalDtNew, repo_mode: last_quest_ans.length > 0 ? last_quest_ans[0].quest_ans : 'Y', hd1: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt1.split("'").join("\\'") : '', hd2: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt2.split("'").join("\\'") : '', hd3: lastQuestData.length > 0 ? lastQuestData[0].emi_head_opt3.split("'").join("\\'") : '', title: `<span class="infoCalLeb">${filterCalDtNew.length > 0 ? filterCalDtNew[0].act_name : ''} - ${filterCalDtNew.length > 0 ? filterCalDtNew[0].emi_name : ''} - </span>&nbsp;<span class="infoCalVal">${totEmiCalVal.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${filterCalDtNew.length > 0 ? filterCalDtNew[0].repo_period : ''} ${filterCalDtNew.length > 0 ? (filterCalDtNew[0].repo_month != '' ? ', ' + filterCalDtNew[0].repo_month : '') : ''}</span>`}))}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
+                                                        </div>
+                                                    </div>`
+                                                }
                                                 accordionEle = accordionEle + `</div></div></div></div>`
                                             })
                                         }

@@ -432,35 +432,55 @@ CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
   client_id = req.session.user.client_id,
   user_name = req.session.user.user_name,
   dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt;
+  console.log(req_data, 'req_data =============');
+  
   if(req_data.flag > 0){
-    if(req_data.cal_val.length > 0){
+    if (Array.isArray(req_data.cal_val)) {
       var i = 0
-      for(let dt of req_data.cal_val){
+      for (let dt of req_data.cal_val) {
         var chk_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id=${req_data.project_id} AND sl_no=${req_data.sl_no} AND quest_id=${req_data.quest_id} AND repo_period='${req_data.repo_period}' AND repo_month = '${req_data.repo_month}' AND repo_mode_label='${req_data.repo_mode_label[i]}'`)
 
+        let is_update = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? true : false;
+
         var table_name = 'td_ghg_quest_cal',
-        fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `cal_val = ${dt}, emi_fact_val = ${req_data.emi_fact_val[i]}, co_val = ${req_data.co_val[i]}, modified_by = '${user_name}', modified_ct = '${dateTime}'` : `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
-        values = `(${client_id}, ${req_data.scope}, ${req_data.project_id}, ${req_data.quest_id}, ${req_data.sl_no}, ${req_data.sec_id}, ${req_data.act_id}, ${req_data.emi_type_id}, ${req_data.repo_period}, '${req_data.repo_month}', '${req_data.repo_mode_label[i]}', ${req_data.emi_type_unit_id}, ${dt}, ${req_data.emi_fact_val[i]}, ${req_data.co_val[i]}, '${user_name}', '${dateTime}')`,
-        whr = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `id=${chk_dt.msg[0].id}` : null,
-        flag = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? 1 : 0;
+          fields = is_update ?
+            `cal_val = ${dt}, emi_fact_val = ${req_data.emi_fact_val[i]}, co_val = ${req_data.co_val[i]}, modified_by = '${user_name}', modified_ct = '${dateTime}'` :
+            `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+          values = `(${client_id}, ${req_data.scope}, ${req_data.project_id}, ${req_data.quest_id}, ${req_data.sl_no}, ${req_data.sec_id}, ${req_data.act_id}, ${req_data.emi_type_id}, ${req_data.repo_period}, '${req_data.repo_month}', '${req_data.repo_mode_label[i]}', ${req_data.emi_type_unit_id}, ${dt}, ${req_data.emi_fact_val[i]}, ${req_data.co_val[i]}, '${user_name}', '${dateTime}')`,
+          whr = is_update ? `id=${chk_dt.msg[0].id}` : null,
+          flag = is_update ? 1 : 0;
         res_dt = await db_Insert(table_name, fields, values, whr, flag)
         i++
       }
+    } else {
+      let dt = req_data.cal_val;
+      var chk_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id=${req_data.project_id} AND sl_no=${req_data.sl_no} AND quest_id=${req_data.quest_id} AND repo_period='${req_data.repo_period}' AND repo_month = '${req_data.repo_month}' AND repo_mode_label='${req_data.repo_mode_label}'`)
 
-      // TRANS PLAN INSERT/UPDATE VALUE //
-      try{
-        var tot_trans_query = `SELECT SUM(co_val) FROM td_ghg_quest_cal WHERE project_id = ${req_data.project_id} AND scope = ${req_data.sec_id} AND repo_period = ${req_data.repo_period}`,
+      let is_update = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? true : false;
+
+      var table_name = 'td_ghg_quest_cal',
+        fields = is_update ?
+          `cal_val = ${dt}, emi_fact_val = ${req_data.emi_fact_val}, co_val = ${req_data.co_val}, modified_by = '${user_name}', modified_ct = '${dateTime}'` :
+          `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+        values = `(${client_id}, ${req_data.scope}, ${req_data.project_id}, ${req_data.quest_id}, ${req_data.sl_no}, ${req_data.sec_id}, ${req_data.act_id}, ${req_data.emi_type_id}, ${req_data.repo_period}, '${req_data.repo_month}', '${req_data.repo_mode_label}', ${req_data.emi_type_unit_id}, ${dt}, ${req_data.emi_fact_val}, ${req_data.co_val}, '${user_name}', '${dateTime}')`,
+        whr = is_update ? `id=${chk_dt.msg[0].id}` : null,
+        flag = is_update ? 1 : 0;
+      res_dt = await db_Insert(table_name, fields, values, whr, flag)
+    }
+
+    // TRANS PLAN INSERT/UPDATE VALUE //
+    try {
+      var tot_trans_query = `SELECT SUM(co_val) FROM td_ghg_quest_cal WHERE project_id = ${req_data.project_id} AND scope = ${req_data.sec_id} AND repo_period = ${req_data.repo_period}`,
         trans_input_field = req_data.sec_id == 1 ? 'act_sc_1' : req_data.sec_id == 2 ? 'act_sc_2' : 'act_sc_3',
         chk_trns_dt = await db_Select('id', 'td_ghg_quest_cal', `project_id = ${req_data.project_id} AND scope = ${data.sec_id} AND repo_period = ${req_data.repo_period}`, null);
-        var trns_table_name = `td_trans_plan`,
+      var trns_table_name = `td_trans_plan`,
         trns_fields = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `trans_year = ${req_data.repo_period}, ${trans_input_field} = (${tot_trans_query}), modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : `(client_id, proj_id, trans_year, ${trans_input_field}, created_by, created_dt)`,
         trns_values = `(${user.client_id}, ${req_data.project_id}, ${req_data.repo_period}, (${tot_trans_query}), '${user.user_id}', '${dateTime}')`,
         trns_whr = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? `id = ${chk_trns_dt.msg[0].id}` : null,
         trns_flag = chk_trns_dt.suc > 0 && chk_trns_dt.msg.length > 0 ? 1 : 0;
-        await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
-      }catch(err){
-        console.log(err);
-      }
+      await db_Insert(trns_table_name, trns_fields, trns_values, trns_whr, trns_flag)
+    } catch (err) {
+      console.log(err);
     }
     // console.log(req_data.url, 'URL');
     
