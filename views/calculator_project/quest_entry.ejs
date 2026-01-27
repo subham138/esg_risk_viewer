@@ -876,54 +876,62 @@
         })
     }
 
-    function saveCalValue(e, id, subSeq){
-        var repo_period = $(`#repo_period_${id}`).val(),
-        strt_month = $(`#strt_month_${id}`).val(),
-        mode_quest_id = $(`#mode_quest_id_${id}`).val(),
-        mode_quest_val = $(`#mode_quest_val_${id}`).val(),
-        act_id_tab = $(`#act_id_tab_${id}`).val(),
-        emi_id_tab = $(`#emi_id_tab_${id}`).val(),
-        unit_id_tab = $(`#unit_id_tab_${id}`).val(),
-        quest_dt = $(`#mode_type_${mode_quest_id}`).attr('quest-dt'),
-        cal_val = [],
-        emi_fact_val = [],
-        co_val = [],
-        repo_mode_label = [];
-
-        var act_id = $(`#act_id_${act_id_tab}`).val(),
-        emi_id = $(`#emi_type_${emi_id_tab}`).val(),
-        unit_id = $(`#unit_id_${unit_id_tab}`).val();
-
-        $(`input[name="cal_val_${id}"]`).each(function (i, dt){
-            cal_val.push($(dt).val())
-            repo_mode_label.push($(dt).parent().prev().children('span').text())
-        })
-        $(`input[name="emi_fact_val_${id}"]`).each(function (i, dt){
-            emi_fact_val.push($(dt).val())
-        })
-        $(`input[name="co_val_${id}"]`).each(function (i, dt){
-            co_val.push($(dt).val())
-        })
-
-        // console.log(repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, '-----------');
-
-        $.ajax({
-            method:'POST',
-            url: '/save_co_cal_ajax',
-            data: {enc_dt: quest_dt, repo_period, strt_month, cal_val: JSON.stringify(cal_val), emi_fact_val: JSON.stringify(emi_fact_val), co_val: JSON.stringify(co_val), mode_quest_id, mode_quest_val, quest_id: id, act_id, emi_id, unit_id, repo_mode_label: JSON.stringify(repo_mode_label), subSeq},
-            beforeSend: function(){
-                // $('.loader-wrapper').show()
-            },
-            success: function(result){
-                var res = result
-                // console.log(res);
-                if(res.suc > 0) window.location.href = window.location.href
-                
-            },
-            complete: function(){
-                // $('.loader-wrapper').hide()
-            }
-        })
+    async function saveCalValue(e, id, subSeq){
+        $(e).prop('disabled', true);
+        
+        var text = 'You are about to save this entry.',
+            title = "Once saved, you will only be able to edit the values used to calculate GHG emissions";
+        if (await inititate_sweet_conf_alert(text, title) > 0) {
+            var repo_period = $(`#repo_period_${id}`).val(),
+            strt_month = $(`#strt_month_${id}`).val(),
+            mode_quest_id = $(`#mode_quest_id_${id}`).val(),
+            mode_quest_val = $(`#mode_quest_val_${id}`).val(),
+            act_id_tab = $(`#act_id_tab_${id}`).val(),
+            emi_id_tab = $(`#emi_id_tab_${id}`).val(),
+            unit_id_tab = $(`#unit_id_tab_${id}`).val(),
+            quest_dt = $(`#mode_type_${mode_quest_id}`).attr('quest-dt'),
+            cal_val = [],
+            emi_fact_val = [],
+            co_val = [],
+            repo_mode_label = [];
+    
+            var act_id = $(`#act_id_${act_id_tab}`).val(),
+            emi_id = $(`#emi_type_${emi_id_tab}`).val(),
+            unit_id = $(`#unit_id_${unit_id_tab}`).val();
+    
+            $(`input[name="cal_val_${id}"]`).each(function (i, dt){
+                cal_val.push($(dt).val())
+                repo_mode_label.push($(dt).parent().prev().children('span').text())
+            })
+            $(`input[name="emi_fact_val_${id}"]`).each(function (i, dt){
+                emi_fact_val.push($(dt).val())
+            })
+            $(`input[name="co_val_${id}"]`).each(function (i, dt){
+                co_val.push($(dt).val())
+            })
+    
+            // console.log(repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, '-----------');
+    
+            $.ajax({
+                method:'POST',
+                url: '/save_co_cal_ajax',
+                data: {enc_dt: quest_dt, repo_period, strt_month, cal_val: JSON.stringify(cal_val), emi_fact_val: JSON.stringify(emi_fact_val), co_val: JSON.stringify(co_val), mode_quest_id, mode_quest_val, quest_id: id, act_id, emi_id, unit_id, repo_mode_label: JSON.stringify(repo_mode_label), subSeq},
+                beforeSend: function(){
+                    // $('.loader-wrapper').show()
+                },
+                success: function(result){
+                    var res = result
+                    // console.log(res);
+                    if(res.suc > 0) window.location.href = window.location.href
+                    
+                },
+                complete: function(){
+                    // $('.loader-wrapper').hide()
+                }
+            })
+        }else{
+            $(e).prop('disabled', false);
+        }
         
     }
 
@@ -944,7 +952,7 @@
                 success: function(result){
                     var res = result
                     // console.log(res);
-                    if(res.suc > 0) $(`#accordionForIndCal${data.sl_no}`).detach()
+                    if(res.suc > 0) window.location.href = window.location.href //$(`#accordionForIndCal${data.sl_no}`).detach()
                     
                 },
                 complete: function(){
