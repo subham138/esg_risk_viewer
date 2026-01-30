@@ -1,108 +1,673 @@
 <%- include('../templates/header.ejs') %>
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-sm-9 row">
-                    <!-- <div class="col-md-4">
-                    <h5 class="text-muted mt-2"><%= sub_header %></h5>
-                </div> -->
-                    <div class="col-md-8">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                            <li class="breadcrumb-item"><a href="<%= header_url %>">
-                                    <%= header %>
-                                </a></li>
-                            <li class="breadcrumb-item">
-                                <%= sub_header %>
-                            </li>
-                        </ol>
+
+    <style>
+        /* PowerPoint Style Interface */
+        body {
+            overflow: hidden;
+            /* Prevent scrolling during slides */
+            background-color: #f0f2f5;
+        }
+
+        .ppt-wrapper {
+            /* position: fixed;
+            top: 60px; */
+            /* Adjust based on header height */
+            /* left: 0; */
+            width: 100%;
+            height: calc(100vh - 60px);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .ppt-container {
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .ppt-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            text-align: center;
+        }
+
+        .ppt-slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 10;
+            position: relative;
+            /* Take up space when active */
+        }
+
+        .ppt-slide.exit-left {
+            opacity: 0;
+            transform: translateX(-100px) scale(0.9);
+            pointer-events: none;
+        }
+
+        .ppt-slide.exit-right {
+            opacity: 0;
+            transform: translateX(100px) scale(0.9);
+            pointer-events: none;
+        }
+
+        .ppt-question {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #000;
+            margin-bottom: 2rem;
+            line-height: 1.3;
+        }
+
+        .ppt-input-group {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .ppt-input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 2rem;
+            padding: 0.5rem 0;
+            color: #000;
+            outline: none;
+            transition: border-color 0.3s;
+            text-align: center;
+        }
+
+        .ppt-input:focus {
+            border-bottom-color: #186671;
+            /* Brand color */
+        }
+
+        .ppt-input::placeholder {
+            color: #aaa;
+            opacity: 0.5;
+        }
+
+        .ppt-select {
+            width: 100%;
+            max-width: 500px;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            color: #000;
+            outline: none;
+            text-align-last: center;
+            /* Center text in select */
+        }
+
+        .ppt-nav {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-ppt {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-next {
+            background-color: #186671;
+            color: white;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+        }
+
+        .btn-prev {
+            background-color: transparent;
+            color: #6c757d;
+            border: 1px solid #ced4da;
+        }
+
+        .btn-prev:hover {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        .ppt-progress {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #999;
+            letter-spacing: 1px;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            font-size: 1rem;
+            margin-top: 1rem;
+            min-height: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .error-msg.visible {
+            opacity: 1;
+        }
+
+        /* Radio styling for the last slide */
+        .radio-group {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .custom-radio {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .custom-radio input {
+            width: 1.5rem;
+            height: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Custom Dropdown Styling */
+        .custom-dropdown-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            /* Center it */
+        }
+
+        .custom-dropdown-trigger {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            color: #000;
+            outline: none;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .custom-dropdown-trigger:focus {
+            border-bottom-color: #186671;
+        }
+
+        .custom-dropdown-trigger::after {
+            content: '▼';
+            font-size: 0.8rem;
+            margin-left: 10px;
+            color: #666;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .custom-dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            /* Optional rounded corners */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            text-align: left;
+            /* Options usually read better left aligned, or keep center? Let's stick to center for consistency with input */
+            text-align: center;
+        }
+
+        .custom-dropdown-options.show {
+            display: block;
+        }
+
+        .custom-option {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .custom-option:hover {
+            background-color: #e2e6ea;
+        }
+
+        .custom-option.selected {
+            background-color: #7030a0;
+            color: white;
+        }
+
+        /* Tick icon for selected option */
+        .custom-option.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+        }
+    </style>
+
+    <div class="card card_body_Cus ppt-wrapper">
+        <form method="POST" action="/manage_user_save" class="needs-validation" id="pptForm"
+            onsubmit="return validateForm()">
+            <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+
+            <div class="ppt-container">
+
+                <!-- Slide 1: User Name -->
+                <div class="ppt-slide active" data-step="1">
+                    <div class="ppt-question">What is the User's Name?</div>
+                    <div class="ppt-input-group">
+                        <input class="ppt-input" id="user_name" name="user_name" type="text"
+                            placeholder="Type user name here..." value="<%= id > 0 ? user_data.msg[0].user_name : '' %>"
+                            autocomplete="off">
+                    </div>
+                    <div class="error-msg" id="error-1">Please enter a valid name</div>
+                    <div class="ppt-nav">
+                        <button type="button" class="btn-ppt btn-next" onclick="nextSlide(1)">Next <i
+                                class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter
+                                ↵</strong>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body card_body_Cus" id="manage_user_save">
-                        <form method="POST" action="/manage_user_save" class="needs-validation">
-                            <div class="row g-3 py-3">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="user_name">User Name</label>
-                                    <input class="form-control" id="user_name" name="user_name" type="text"
-                                        value="<%= id > 0 ? user_data.msg[0].user_name : '' %>" required="">
-                                    <div class="valid-feedback">No Error</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="user_type">User Type</label>
-                                    <select class="form-select" id="user_type" name="user_type" required="">
-                                        <option selected="" value="">Select User Type</option>
-                                        <% if(Object.keys(user_type_list).length> 0){
-                                            Object.keys(user_type_list).forEach(dt => {
-                                            var selected = '';
-                                            if(id > 0){
-                                            if(dt == user_data.msg[0].user_type) selected = 'selected';
-                                            }
-                                            if(dt != 'S' && dt != 'C'){ %>
-                                            <option value="<%= dt %>" <%=selected %>><%= user_type_list[dt] %>
-                                            </option>
-                                            <% }}) } %>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="user_id">User Email</label>
-                                    <input class="form-control" id="user_id" name="user_id" type="text"
-                                        value="<%= id > 0 ? user_data.msg[0].user_id : '' %>" required="">
-                                    <div class="valid-feedback">No Error</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="password">Password</label>
-                                    <select class="form-select" id="password" name="password" required="">
-                                        <option selected="" value="Esg@2023">Default</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row my-4">
-                                <div class="col-md-6">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="active_flag"
-                                            id="active_flag_y" value="Y" <%=id> 0 ? (user_data.msg[0].active_flag == 'Y'
-                                        ? 'checked' : '') : 'checked' %>>
-                                        <label class="form-check-label" for="active_flag_y">
-                                            Activate user
-                                        </label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="active_flag"
-                                            id="active_flag_n" value="N" <%=id> 0 ? (user_data.msg[0].active_flag == 'N'
-                                        ? 'checked' : '') : '' %>>
-                                        <label class="form-check-label" for="active_flag_n">
-                                            Deactivate user
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 text-end">
-                                    <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
-                                    <button class="btn btn-pill btn-custom" type="submit">Submit</button>
-                                </div>
-                            </div>
 
-                        </form>
+                <!-- Slide 2: User Type -->
+                <div class="ppt-slide" data-step="2">
+                    <div class="ppt-question">Select User Type</div>
+                    <div class="ppt-input-group">
+                        <select class="ppt-select" id="user_type" name="user_type">
+                            <option value="" disabled selected>Select from list...</option>
+                            <% if(Object.keys(user_type_list).length> 0){
+                                Object.keys(user_type_list).forEach(dt => {
+                                var selected = '';
+                                if(id > 0){
+                                if(dt == user_data.msg[0].user_type) selected = 'selected';
+                                }
+                                if(dt != 'S' && dt != 'C'){ %>
+                                <option value="<%= dt %>" <%=selected %>><%= user_type_list[dt] %>
+                                </option>
+                                <% }}) } %>
+                        </select>
+                    </div>
+                    <div class="error-msg" id="error-2">Please select a user type</div>
+                    <div class="ppt-nav">
+                        <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(2)">Back</button>
+                        <button type="button" class="btn-ppt btn-next" onclick="nextSlide(2)">Next <i
+                                class="icofont icofont-arrow-right list_icon ms-2"></i></button>
                     </div>
                 </div>
+
+                <!-- Slide 3: Email -->
+                <div class="ppt-slide" data-step="3">
+                    <div class="ppt-question">What is their Email Address?</div>
+                    <div class="ppt-input-group">
+                        <input class="ppt-input" id="user_id" name="user_id" type="email" placeholder="user@example.com"
+                            value="<%= id > 0 ? user_data.msg[0].user_id : '' %>" autocomplete="off">
+                    </div>
+                    <div class="error-msg" id="error-3">Please enter a valid email</div>
+                    <div class="ppt-nav">
+                        <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(3)">Back</button>
+                        <button type="button" class="btn-ppt btn-next" onclick="nextSlide(3)">Next <i
+                                class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter
+                                ↵</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Password -->
+                <div class="ppt-slide" data-step="4">
+                    <div class="ppt-question">Set a Password</div>
+                    <div class="ppt-input-group">
+                        <select class="ppt-select" id="password" name="password">
+                            <option selected="" value="Esg@2023">Default Password</option>
+                        </select>
+                        <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                            Current policy: <strong style="font-size: 15px !important">
+                                <span id="vPass" style="display: none;">Esg@2023</span>
+                                <span id="hPass">********</span>
+                            </strong> <i class="fa fa-eye-slash" onclick="togglePassword(this)" style="font-size: 20px; cursor: pointer;"></i> is the default
+                            password. This can be changed on first login.
+                        </div>
+                    </div>
+                    <div class="error-msg" id="error-4"></div>
+                    <div class="ppt-nav">
+                        <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(4)">Back</button>
+                        <button type="button" class="btn-ppt btn-next" onclick="nextSlide(4)">Next <i
+                                class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Status & Submit -->
+                <div class="ppt-slide" data-step="5">
+                    <div class="ppt-question">Activate this user immediately?</div>
+                    <div class="ppt-input-group">
+                        <div class="radio-group">
+                            <label class="custom-radio">
+                                <input type="radio" name="active_flag" id="active_flag_y" value="Y" <%=id> 0 ?
+                                (user_data.msg[0].active_flag == 'Y' ? 'checked' : '') : 'checked' %>>
+                                <span>Yes, Activate</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="active_flag" id="active_flag_n" value="N" <%=id> 0 ?
+                                (user_data.msg[0].active_flag == 'N' ? 'checked' : '') : '' %>>
+                                <span>No, Deactivate</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="error-msg" id="error-5"></div>
+                    <div class="ppt-nav">
+                        <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(5)">Back</button>
+                        <button type="submit" class="btn-ppt btn-next"
+                            style="background-color: #198754; box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);">
+                            <%= id> 0 ? 'Update User' : 'Create User' %> <i class="icofont icofont-check-alt ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ppt-progress" id="slide-progress">Slide 1 of 5</div>
+
             </div>
-        </div>
+        </form>
     </div>
 
-    <!-- <script>
-    $(document).ready(function(){
-        setTimeout(() => {
-            triggerTour(document.querySelector('#manage_user_save'), `Here you can create users and assign roles. “Admin Users” have the same rights as you (including to add/remove users). “Editors” can create new, and manage existing projects they are assigned to. “Viewers” can view and download existing projects.`)
-        }, 400);
-    })
-</script> -->
+    <script>
+        const totalSlides = 5;
+        let currentSlide = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCustomDropdowns();
+            updateProgress();
+            // Delay initial focus slightly to let custom dropdowns init
+            setTimeout(() => focusInput(1), 100);
+        });
+
+        function initCustomDropdowns() {
+            const selects = document.querySelectorAll('.ppt-select');
+            selects.forEach(select => {
+                // Hide native select
+                select.style.display = 'none';
+
+                // Create custom wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'custom-dropdown-wrapper';
+
+                // Create trigger
+                const trigger = document.createElement('div');
+                trigger.className = 'custom-dropdown-trigger';
+                trigger.tabIndex = 0; // Make focusable
+                trigger.textContent = select.options[select.selectedIndex].text;
+
+                // Create options container
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'custom-dropdown-options';
+
+                // Populate options
+                Array.from(select.options).forEach((opt, index) => {
+                    if (opt.disabled) return; // Skip disabled placeholders if desired, or style them
+
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'custom-option';
+                    if (opt.selected) optionDiv.classList.add('selected');
+                    optionDiv.textContent = opt.text;
+                    optionDiv.dataset.value = opt.value;
+
+                    optionDiv.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Update native select
+                        select.value = opt.value;
+                        // Trigger change event on native select if needed
+                        select.dispatchEvent(new Event('change'));
+
+                        // Update UI
+                        trigger.textContent = opt.text;
+                        wrapper.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                        optionDiv.classList.add('selected');
+
+                        optionsContainer.classList.remove('show');
+
+                        // Auto advance? Maybe not, mimicking native behavior usually requires manual confirm, 
+                        // but specifically for "User Type" usually you select and go. 
+                        // Let's stick to just selecting. User hits Next or Enter.
+                        // Actually, focusing back on trigger is good practice.
+                        trigger.focus();
+                    });
+
+                    optionsContainer.appendChild(optionDiv);
+                });
+
+                // Toggle visibility
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllDropdowns(); // Close others
+                    optionsContainer.classList.toggle('show');
+                });
+
+                // Handle keyboard navigation on trigger
+                trigger.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        // If dropdown is open, select focused? Or just toggle?
+                        // Standard behavior: Enter toggles or submits. 
+                        // In this form, Enter is Next. 
+                        // Implementation: If closed, propel "Enter" event up to document listener (Next Slide).
+                        // If open, maybe select first option? 
+                        // Let's keep it simple: Enter on trigger just bubbles up to next slide 
+                        // UNLESS we want Enter to open it? 
+                        // Let's make Space open it, Enter moves next.
+                    }
+                    if (e.key === ' ' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        optionsContainer.classList.add('show');
+                    }
+                });
+
+                // Append to DOM
+                select.parentNode.insertBefore(wrapper, select);
+                wrapper.appendChild(trigger);
+                wrapper.appendChild(optionsContainer);
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', () => {
+                closeAllDropdowns();
+            });
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('.custom-dropdown-options').forEach(el => el.classList.remove('show'));
+        }
+
+        // Handle Enter key navigation
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Enter") {
+                // If a dropdown is open, maybe we want to select the current one? 
+                // For now, let's assume if they hit Enter they are done choosing.
+
+                event.preventDefault();
+                if (currentSlide < totalSlides) {
+                    nextSlide(currentSlide);
+                } else {
+                    document.getElementById('pptForm').submit();
+                }
+            }
+        });
+
+        function nextSlide(step) {
+            if (!validateStep(step)) {
+                showError(step);
+                shakeInput(step);
+                return;
+            }
+
+            hideError(step);
+
+            if (step < totalSlides) {
+                const current = document.querySelector(`.ppt-slide[data-step="${step}"]`);
+                const next = document.querySelector(`.ppt-slide[data-step="${step + 1}"]`);
+
+                // Animation transition
+                current.classList.remove('active');
+                current.classList.add('exit-left');
+
+                setTimeout(() => {
+                    next.classList.add('active');
+                    next.classList.remove('exit-right'); // Ensure it's clean
+
+                    // Cleanup old slide classes after transition for infinite back/forth
+                    setTimeout(() => {
+                        current.classList.remove('exit-left'); // Reset for if we come back
+                        current.style.display = 'none'; // Force hide
+                        next.style.display = 'flex'; // Ensure flex
+                    }, 500);
+                }, 50); // Small delay to allow CSS processing
+
+                currentSlide++;
+                updateProgress();
+
+                // Focus next input after transition
+                setTimeout(() => focusInput(currentSlide), 600);
+            }
+        }
+
+        function prevSlide(step) {
+            if (step > 1) {
+                const current = document.querySelector(`.ppt-slide[data-step="${step}"]`);
+                const prev = document.querySelector(`.ppt-slide[data-step="${step - 1}"]`);
+
+                current.classList.remove('active');
+                current.classList.add('exit-right'); // Animate out to right
+
+                setTimeout(() => {
+                    prev.classList.add('active');
+                    prev.classList.remove('exit-left');
+
+                    // Cleanup
+                    setTimeout(() => {
+                        current.classList.remove('exit-right');
+                        current.style.display = 'none';
+                        prev.style.display = 'flex';
+                    }, 500);
+
+                }, 50);
+
+                currentSlide--;
+                updateProgress();
+                setTimeout(() => focusInput(currentSlide), 600);
+            }
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            if (step === 1) {
+                const val = document.getElementById('user_name').value.trim();
+                isValid = val.length > 0;
+            } else if (step === 2) {
+                const val = document.getElementById('user_type').value;
+                isValid = val !== "";
+            } else if (step === 3) {
+                const val = document.getElementById('user_id').value.trim();
+                // Simple email regex
+                isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            }
+            return isValid;
+        }
+
+        function showError(step) {
+            const err = document.getElementById(`error-${step}`);
+            if (err) err.classList.add('visible');
+        }
+
+        function hideError(step) {
+            const err = document.getElementById(`error-${step}`);
+            if (err) err.classList.remove('visible');
+        }
+
+        function shakeInput(step) {
+            const input = document.querySelector(`.ppt-slide[data-step="${step}"] .ppt-input-group`);
+            input.animate([
+                { transform: 'translateX(0)' },
+                { transform: 'translateX(-10px)' },
+                { transform: 'translateX(10px)' },
+                { transform: 'translateX(-10px)' },
+                { transform: 'translateX(0)' }
+            ], {
+                duration: 400
+            });
+        }
+
+        function focusInput(step) {
+            const slide = document.querySelector(`.ppt-slide[data-step="${step}"]`);
+            if (slide) {
+                // Check for custom dropdown trigger first
+                const customTrigger = slide.querySelector('.custom-dropdown-trigger');
+                if (customTrigger) {
+                    customTrigger.focus();
+                    return;
+                }
+
+                // Fallback to standard input
+                const input = slide.querySelector('input, select');
+                if (input) input.focus();
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('slide-progress').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+        }
+
+        function validateForm() {
+            // Final validation if needed
+            return true;
+        }
+
+        function togglePassword(e) {
+            $('#vPass').toggle();
+            $('#hPass').toggle();
+            $(e).toggleClass('fa-eye-slash fa-eye');
+        }
+    </script>
 
     <%- include('../templates/footer.ejs') %>

@@ -1,6 +1,696 @@
 <%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: `${header}
     (${flag_name})`, sub_header_url: header_url, sub_sub_header: sub_header, show_br: true}) %>
-    <div class="container-fluid">
+    <style>
+        /* PowerPoint Style Interface */
+        body {
+            overflow: hidden;
+            /* Prevent scrolling during slides */
+            background-color: #f0f2f5;
+        }
+    
+        .ppt-wrapper {
+            width: 100%;
+            height: calc(100vh - 60px);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+    
+        .ppt-container {
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            perspective: 1000px;
+        }
+    
+        .ppt-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            text-align: center;
+        }
+    
+        .ppt-slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 10;
+            position: relative;
+            /* Take up space when active */
+        }
+    
+        .ppt-slide.exit-left {
+            opacity: 0;
+            transform: translateX(-100px) scale(0.9);
+            pointer-events: none;
+        }
+    
+        .ppt-slide.exit-right {
+            opacity: 0;
+            transform: translateX(100px) scale(0.9);
+            pointer-events: none;
+        }
+    
+        .ppt-question {
+            font-size: 2.2rem;
+            font-weight: 300;
+            color: #000;
+            margin-bottom: 2rem;
+            line-height: 1.3;
+        }
+    
+        .ppt-input-group {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+    
+        .ppt-input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 2rem;
+            padding: 0.5rem 0;
+            color: #000;
+            outline: none;
+            transition: border-color 0.3s;
+            text-align: center;
+        }
+    
+        .ppt-input:focus {
+            border-bottom-color: #186671;
+        }
+    
+        .ppt-input::placeholder {
+            color: #aaa;
+            opacity: 0.5;
+        }
+    
+        .ppt-select {
+            width: 100%;
+            max-width: 600px;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            color: #000;
+            outline: none;
+            text-align-last: center;
+        }
+    
+        .ppt-nav {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+    
+        .btn-ppt {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+    
+        .btn-next {
+            background-color: #186671;
+            color: white;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+    
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+        }
+    
+        .btn-prev {
+            background-color: transparent;
+            color: #6c757d;
+            border: 1px solid #ced4da;
+        }
+    
+        .btn-prev:hover {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+    
+        .ppt-progress {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #999;
+            letter-spacing: 1px;
+        }
+    
+        .error-msg {
+            color: #dc3545;
+            font-size: 1rem;
+            margin-top: 1rem;
+            min-height: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+    
+        .error-msg.visible {
+            opacity: 1;
+        }
+    
+        /* Adjustments for project table */
+        .ppt-table-container {
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+    
+        .custom-dropdown-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    
+        .custom-dropdown-trigger {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            color: #000;
+            outline: none;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+    
+        .custom-dropdown-trigger:focus {
+            border-bottom-color: #186671;
+        }
+    
+        .custom-dropdown-trigger::after {
+            content: '▼';
+            font-size: 0.8rem;
+            margin-left: 10px;
+            color: #666;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    
+        .custom-dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            text-align: center;
+        }
+    
+        .custom-dropdown-options.show {
+            display: block;
+        }
+    
+        .custom-option {
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+    
+        .custom-option:hover {
+            background-color: #f0f0f0;
+        }
+    
+        .custom-option.selected {
+            background-color: #7030a0;
+            color: white;
+            padding-left: 40px;
+        }
+    
+        .custom-option.selected::before {
+            content: '✓';
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+        }
+    
+        /* Select2 Customization */
+        .select2-container--default .select2-selection--single,
+        .select2-container--default .select2-selection--multiple {
+            border: none !important;
+            border-bottom: 2px solid #ccc !important;
+            border-radius: 0 !important;
+            background-color: transparent !important;
+            min-height: 40px !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-bottom-color: #186671 !important;
+            outline: none !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered,
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            color: #000 !important;
+            font-size: 1.2rem !important;
+            width: 100%;
+            text-align: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            display: none !important;
+        }
+
+        .select2-dropdown {
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+            z-index: 9999 !important;
+        }
+
+        .select2-results__option {
+            padding: 10px 15px !important;
+            font-size: 1.1rem !important;
+            text-align: center;
+            position: relative;
+        }
+
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: #e2e6ea !important;
+            color: #000 !important;
+        }
+
+        .select2-results__option[aria-selected=true] {
+            background-color: #7030a0 !important;
+            color: white !important;
+        }
+
+        .select2-results__option[aria-selected=true]::after {
+            content: '✓';
+            position: absolute;
+            right: 15px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            /* background-color: #7030a0 !important; */
+            border: 1px solid #7030a0 !important;
+            color: #000 !important;
+            border-radius: 20px !important;
+            padding: 2px 10px !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #000 !important;
+            margin-right: 5px !important;
+            border: none !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background-color: transparent !important;
+            color: #7030a0 !important;
+        }
+
+        .select2-container{
+            border: none !important;
+        }
+
+        .custom-table-user {
+            width: 75%;
+        }
+
+        /* Hide tabs used for navigation logic if we want, but let's keep them functional in background */
+        .cust_nav {
+            display: none !important;
+        }
+    </style>
+
+    <div class="card card_body_Cus ppt-wrapper">
+        <div class="ppt-container">
+            <!-- Slide 1: Project Name -->
+            <div class="ppt-slide active" data-step="1">
+                <div class="ppt-question">What is the Project Name?</div>
+                <div class="ppt-input-group">
+                    <input class="ppt-input" id="project_name" name="project_name" type="text"
+                        value="<%= id > 0 ? project_data.project_name : '' %>" placeholder="Type project name here..."
+                        autocomplete="off">
+                </div>
+                <div class="error-msg" id="error-1">Please enter a project name</div>
+                <div class="ppt-nav">
+                    <button type="button" class="btn-ppt btn-next" onclick="nextSlide(1)">Next <i
+                            class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                    <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter ↵</strong>
+                    </div>
+                </div>
+            </div>
+            <form id="projForm" method="POST" action="/my_project_save" class="needs-validation">
+                <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
+                <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                <input type="hidden" name="dec_flag" value="<%= dec_flag ? dec_flag : '' %>">
+                <!-- Project Name hidden field for Slide 2+ -->
+                <input type="hidden" id="hidden_project_name" name="project_name"
+                    value="<%= id > 0 ? project_data.project_name : '' %>">
+            
+                <!-- Slide 2: Project Users -->
+                <div class="ppt-slide" data-step="2">
+                    <div class="ppt-question">Assign Users to this Project</div>
+                    <div class="ppt-input-group ppt-table-container">
+                        <table class="table custom-table-user" id="table" width="100%">
+                            <thead>
+                                <tr>
+                                    <th> <label class="form-label user_add">
+                                            <%= lang.add.user %>
+                                                <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary"
+                                                    onclick="add_tb_row()">
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                </button>
+                                        </label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if(id> 0){
+                                    if(project_data.user_list){
+                                    let i = 1
+                                    project_data.user_list.forEach(udt => { %>
+                                    <tr id="tr_<%= i %>">
+                                        <td class="tableTd_add_main">
+                                            <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
+                                                <select class="form-select custSelect2" id="user_id_<%= i %>" name="user_id"
+                                                    onchange="projSelUser(this)" required="">
+                                                    <option selected="" value="">Select User
+                                                    </option>
+                                                    <% if(user_list.msg.length> 0){
+                                                        user_list.msg.forEach(dt => {
+                                                        var selected = '';
+                                                        if(id > 0){
+                                                        if(dt.id == udt.user_id) selected =
+                                                        'selected';
+                                                        } %>
+                                                        <option value="<%= dt.id %>" <%=selected %>>
+                                                            <%= dt.user_name %>
+                                                        </option>
+                                                        <% }) }else{ %>
+                                                            <option value="<%= user.id %>" <%=id> 0
+                                                                ? (user.id == udt.user_id ?
+                                                                'selected' : '') : '' %>>Assign
+                                                                Yourself</option>
+                                                            <% } %>
+                                                </select>
+                                            </div>
+                                            <% if(i> 1){ %>
+                                                <div class="tableTd_add_btn">
+                                                    <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary"
+                                                        onclick="del_row(<%= i %>)"><i class="icofont icofont-trash"></i></button>
+                                                </div>
+                                                <% } %>
+                                        </td>
+                                    </tr>
+                                    <% i++; })}else{ %>
+                                        <tr id="tr_1">
+                                            <td class="tableTd_add_main">
+                                                <div class="tableTd_add m-r-40">
+                                                    <select class="form-select custSelect2" id="user_id_1" name="user_id"
+                                                        onchange="projSelUser(this)" required="">
+                                                        <option selected="" value="">Select User
+                                                        </option>
+                                                        <% if(user_list.msg.length> 0){
+                                                            user_list.msg.forEach(dt => {
+                                                            var selected = '';
+                                                            if(id > 0){
+                                                            if(dt == project_data.user_id) selected = 'selected';
+                                                            } %>
+                                                            <option value="<%= dt.id %>" <%=selected %>><%= dt.user_name %>
+                                                            </option>
+                                                            <% }) }else{ %>
+                                                                <option value="<%= user.id %>" <%=id> 0 ? (user.id ==
+                                                                    project_data.user_id ? 'selected' : '') : '' %>>Assign
+                                                                    Yourself</option>
+                                                                <% } %>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }}else{ %>
+                                            <tr id="tr_1">
+                                                <td class="tableTd_add_main">
+                                                    <div class="tableTd_add m-r-40">
+                                                        <select class="form-select custSelect2" id="user_id_1"
+                                                            onchange="projSelUser(this)" name="user_id" required="">
+                                                            <option selected="" value="">Select User</option>
+                                                            <% if(user_list.msg.length> 0){
+                                                                user_list.msg.forEach(dt => {
+                                                                var selected = '';
+                                                                if(id > 0){
+                                                                if(dt == project_data.user_id) selected = 'selected';
+                                                                } %>
+                                                                <option value="<%= dt.id %>" <%=selected %>><%= dt.user_name %>
+                                                                </option>
+                                                                <% }) }else{ %>
+                                                                    <option value="<%= user.id %>" <%=id> 0 ? (user.id ==
+                                                                        project_data.user_id ? 'selected' : '') : '' %>>Assign
+                                                                        Yourself</option>
+                                                                    <% } %>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="error-msg" id="error-2">Please select at least one user</div>
+                    <div class="ppt-nav">
+                        <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(2)">Back</button>
+                        <button type="button" class="btn-ppt btn-next" id="projSub">Next <i
+                                class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                    </div>
+                </div>
+            </form>
+            <% var has_proj_info=project_data.proj_info ? (project_data.proj_info.length> 0 ? true : false) : false; %>
+            <form method="POST" action="/save_proj_work" id="projWorkForm" class="needs-validation">
+                <input type="hidden" name="id" id="projWorkId" value="<%= id > 0 ? id : 0 %>">
+                <input type="hidden" name="proj_id" id="projWorkPId" value="<%= proj_id > 0 ? proj_id : 0 %>">
+                <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
+                <input type="hidden" name="dec_flag" value="<%= dec_flag ? dec_flag : '' %>">
+                <input type="hidden" id="bus_id" name="bus_id" value="0">
+                
+                <% if(has_proj_info){ %>
+                    <!-- Slide 3: Project Information Summary (View Mode) -->
+                    <div class="ppt-slide" data-step="3">
+                        <div class="ppt-question">Project Information Overview</div>
+                        <div class="ppt-input-group text-start">
+                            <div class="row">
+                                <div class="col-sm-4 tabs-responsive-side">
+                                    <div class="nav flex-column nav-pills border-tab nav-left" id="v-pills-tab" role="tablist">
+                                        <% let i=0;
+                                        project_data.proj_info.forEach(dt=> {
+                                            var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
+                                            <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= ind_name %>_tab" data-bs-toggle="pill"
+                                                href="#<%= ind_name %>" role="tab" aria-controls="<%= ind_name %>"
+                                                aria-selected="<%= i == 0 ? 'true' : 'false' %>">
+                                                <%= dt.ind_name %>
+                                            </a>
+                                            <% i++; }) %>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="tab-content" id="v-pills-tabContent">
+                                        <% let j=0; 
+                                        project_data.proj_info.forEach(dt=> {
+                                            var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
+                                            <div class="tab-pane fade <%= j == 0 ? 'active show' : '' %>" id="<%= ind_name %>" role="tabpanel"
+                                                aria-labelledby="<%= ind_name %>_tab">
+                                                <div class="row g-3">
+                                                    <div class="col-md-12">
+                                                        <p><strong>Sector:</strong>
+                                                            <%= dt.sec_name %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <p><strong>Industry:</strong>
+                                                            <%= dt.ind_name %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <p><strong>Business Activities:</strong>
+                                                            <%= dt.business_act %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <p><strong>Locations:</strong>
+                                                            <%= dt.location_busi_act %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% j++; }) %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ppt-nav">
+                            <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(3)">Back</button>
+                            <a href="/my_project?flag=<%= enc_flag %>" class="btn-ppt btn-next"
+                                style="background-color: #198754; text-decoration: none; display: inline-block;">
+                                Back to List <i class="icofont icofont-list ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <!-- Slide 3: Sector & Industry -->
+                    <div class="ppt-slide" data-step="3">
+                        <div class="ppt-question">What's the Sector and Industry?</div>
+                        <div class="ppt-input-group">
+                            <div class="projInfo">
+                                <div class="row g-3 py-3">
+                                    <div class="col-md-12 mb-3 text-start">
+                                        <label for="sec_id_1" class="form-label">
+                                            <%= lang.manage.sector %>
+                                        </label>
+                                        <div class="custom-dropdown-wrapper" id="custom-sec-dropdown">
+                                            <div class="custom-dropdown-trigger" id="sec-trigger">
+                                                <%= (project_data.sec_id && sec_data.msg.find(s=> s.id == project_data.sec_id)) ? sec_data.msg.find(s=> s.id == project_data.sec_id).sec_name : lang.manage.sec_select %>
+                                            </div>
+                                            <div class="custom-dropdown-options" id="sec-options">
+                                                <div class="custom-option <%= !project_data.sec_id ? 'selected' : '' %>" data-value="">
+                                                    <%= lang.manage.sec_select %>
+                                                </div>
+                                                <% if(sec_data.msg.length> 0){
+                                                    sec_data.msg.forEach(dt => {
+                                                    var selected = '';
+                                                    if(project_data.sec_id && project_data.sec_id == dt.id) selected = 'selected'; %>
+                                                    <div class="custom-option <%= selected %>" data-value="<%= dt.id %>">
+                                                        <%= dt.sec_name %>
+                                                    </div>
+                                                    <% }) } %>
+                                            </div>
+                                            <select class="ppt-select d-none" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)"
+                                                required="">
+                                                <option value="">
+                                                    <%= lang.manage.sec_select %>
+                                                </option>
+                                                <% if(sec_data.msg.length> 0){
+                                                    sec_data.msg.forEach(dt => {
+                                                    var selected = '';
+                                                    if(project_data.sec_id && project_data.sec_id == dt.id) selected = 'selected'; %>
+                                                    <option value="<%= dt.id %>" <%= selected %>><%= dt.sec_name %>
+                                                    </option>
+                                                    <% }) } %>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 text-start">
+                                        <label for="ind_id_1" class="form-label">
+                                            <%= lang.manage.indus %>
+                                        </label>
+                                        <select class="js-example-basic-multiple" id="ind_id_1" name="ind_id_1" onchange="chnageInd(this)"
+                                            required="" multiple="multiple">
+                                            <option value="">
+                                                <%= lang.manage.ind_select %>
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="input_seq" value="1">
+                            </div>
+                        </div>
+                        <div class="error-msg" id="error-3">Please select sector and industry</div>
+                        <div class="ppt-nav">
+                            <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(3)">Back</button>
+                            <button type="button" class="btn-ppt btn-next" onclick="nextSlide(3)">Next <i
+                                    class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 4: Business Activities & Locations -->
+                    <div class="ppt-slide" data-step="4">
+                        <div class="ppt-question">Business Activities & Locations</div>
+                        <div class="ppt-input-group">
+                            <div class="projInfoBus">
+                                <div class="row g-3 py-3">
+                                    <div class="col-md-12 mb-3 text-start">
+                                        <label for="bus_id_1" class="form-label">
+                                            <%= lang.manage.bus_act %>
+                                        </label>
+                                        <select id="bus_id_1" name="bus_id_1" class="js-example-basic-multiple" multiple="multiple">
+                                            <option value="">Select Business Activity(ies)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-3 text-start">
+                                        <label for="location_id_1" class="form-label">
+                                            <%= lang.manage.location %>
+                                        </label>
+                                        <select id="location_id_1" name="location_id_1" class="js-example-basic-multiple" multiple="multiple">
+                                            <option value="">Select Location</option>
+                                            <% if(loc_list.msg.length> 0){
+                                                var location_list = project_data.length > 0 ? (project_data.location_busi_act != '' ? project_data.location_busi_act : '') : '';
+                                                location_list = location_list ? location_list.split(',') : [];
+                                                loc_list.msg.forEach(dt => {
+                                                    var selected = '';
+                                                    if(location_list.length > 0)
+                                                        if(location_list.includes(dt.location_name)) selected = 'selected';
+                                                %>
+                                                <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name %>
+                                                </option>
+                                                <% }) } %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="error-msg" id="error-4">Please select business activities and locations</div>
+                        <div class="ppt-nav">
+                            <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(4)">Back</button>
+                            <button type="submit" class="btn-ppt btn-next"
+                                style="background-color: #198754; box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);">
+                                Submit <i class="icofont icofont-check-alt ms-2"></i>
+                            </button>
+                        </div>
+                    
+                        <!-- <button type="button" class="btn btn-pill cust-floating-btn mt-4"
+                            style="display: <%# id > 0 ? 'block' : 'none' %>;">
+                            <i class="fa fa-user-plus"></i> Add a New Sector
+                        </button> -->
+                    </div>
+                <% } %>
+            </form>
+            <div class="ppt-progress" id="slide-progress">Slide 1 of 4</div>
+        </div>
         <div class="page-header">
             <ul class="nav nav-tabs border-tab nav-primary cust_nav" id="info-tab" role="tablist">
                 <li class="nav-item"><a class="nav-link active" id="info-home-tab" data-bs-toggle="tab"
@@ -22,376 +712,145 @@
         </div> -->
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body card_body_Cus"
-                        data-intro="Add a project name - We recommend including the reporting year in the project name. Assign users to projects - Users should first be added in the “Manage Users” tab.">
-                        <div class="tab-content" id="info-tabContent">
-                            <div class="tab-pane fade show active" id="info-home" role="tabpanel"
-                                aria-labelledby="info-home-tab">
-                                <form id="projForm" method="POST" action="/my_project_save" class="needs-validation">
-                                    <div class="row mb-2">
-                                        <div class="col-md-4">
-                                            <label class="form-label" for="project_name">
-                                                <%= lang.add.title %>
-                                            </label>
-                                            <input class="form-control" id="project_name" name="project_name"
-                                                type="text" value="<%= id > 0 ? project_data.project_name : '' %>"
-                                                required="">
-                                            <div class="valid-feedback">No Error</div>
-                                        </div>
-                                    </div>
-                                    <div class="row my-4">
-                                        <div class="p-0">
-                                            <table class="table custom-table-user" id="table" width="50%">
-                                                <thead>
-                                                    <tr>
-                                                        <th> <label class="form-label user_add">
-                                                                <%= lang.add.user %>
-                                                                    <button type="button"
-                                                                        class="btn btn_UR btn-outline-primary btn-air-primary"
-                                                                        onclick="add_tb_row()">
-                                                                        <i class="fa fa-user-plus"
-                                                                            aria-hidden="true"></i>
-                                                                    </button>
-                                                            </label>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% if(id> 0){
-                                                        if(project_data.user_list){
-                                                        let i = 1
-                                                        project_data.user_list.forEach(udt => { %>
-                                                        <tr id="tr_<%= i %>">
-                                                            <td class="tableTd_add_main">
-                                                                <div class="tableTd_add <%= i > 1 ? '' : 'm-r-40' %>">
-                                                                    <select class="form-select custSelect2" id="user_id_<% i %>"
-                                                                        name="user_id" onchange="projSelUser(this)" required="">
-                                                                        <option selected="" value="">Select User
-                                                                        </option>
-                                                                        <% if(user_list.msg.length> 0){
-                                                                            user_list.msg.forEach(dt => {
-                                                                            var selected = '';
-                                                                            if(id > 0){
-                                                                            if(dt.id == udt.user_id) selected =
-                                                                            'selected';
-                                                                            } %>
-                                                                            <option value="<%= dt.id %>" <%=selected %>>
-                                                                                <%= dt.user_name %>
-                                                                            </option>
-                                                                            <% }) }else{ %>
-                                                                                <option value="<%= user.id %>" <%=id> 0
-                                                                                    ? (user.id == udt.user_id ?
-                                                                                    'selected' : '') : '' %>>Assign
-                                                                                    Yourself</option>
-                                                                                <% } %>
-                                                                    </select>
-                                                                </div>
-                                                                <% if(i> 1){ %>
-                                                                    <div class="tableTd_add_btn">
-                                                                        <button type="button"
-                                                                            class="btn btn_UR btn-outline-primary btn-air-primary"
-                                                                            onclick="del_row(<%= i %>)"><i
-                                                                                class="icofont icofont-trash"></i></button>
-                                                                    </div>
-                                                                    <% } %>
-                                                            </td>
-                                                            <!-- <td>
-                                                            
-                                                        </td> -->
-                                                        </tr>
-                                                        <% i++; })}else{ %>
-                                                            <tr id="tr_1">
-                                                                <td class="tableTd_add_main">
-                                                                    <div class="tableTd_add m-r-40">
-                                                                        <select class="form-select custSelect2" id="user_id_1"
-                                                                            name="user_id" onchange="projSelUser(this)" required="">
-                                                                            <option selected="" value="">Select User
-                                                                            </option>
-                                                                            <% if(user_list.msg.length> 0){
-                                                                                user_list.msg.forEach(dt => {
-                                                                                var selected = '';
-                                                                                if(id > 0){
-                                                                                if(dt == project_data.user_id) selected
-                                                                                = 'selected';
-                                                                                } %>
-                                                                                <option value="<%= dt.id %>" <%=selected
-                                                                                    %>><%= dt.user_name %>
-                                                                                </option>
-                                                                                <% }) }else{ %>
-                                                                                    <option value="<%= user.id %>"
-                                                                                        <%=id> 0 ? (user.id ==
-                                                                                        project_data.user_id ?
-                                                                                        'selected' : '') : '' %>>Assign
-                                                                                        Yourself</option>
-                                                                                    <% } %>
-                                                                        </select>
-
-                                                                </td>
-                                        </div>
-                                        <!-- <td></td> -->
-                                        </tr>
-                                        <% }}else{ %>
-                                            <tr id="tr_1">
-                                                <td class="tableTd_add_main">
-                                                    <div class="tableTd_add m-r-40">
-                                                        <select class="form-select custSelect2" id="user_id_1" onchange="projSelUser(this)" name="user_id"
-                                                            required="">
-                                                            <option selected="" value="">Select User</option>
-                                                            <% if(user_list.msg.length> 0){
-                                                                user_list.msg.forEach(dt => {
-                                                                var selected = '';
-                                                                if(id > 0){
-                                                                if(dt == project_data.user_id) selected = 'selected';
-                                                                } %>
-                                                                <option value="<%= dt.id %>" <%=selected %>><%=
-                                                                        dt.user_name %>
-                                                                </option>
-                                                                <% }) }else{ %>
-                                                                    <option value="<%= user.id %>" <%=id> 0 ? (user.id
-                                                                        == project_data.user_id ? 'selected' : '') : ''
-                                                                        %>>Assign Yourself</option>
-                                                                    <% } %>
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                                <!-- <td></td> -->
-                                            </tr>
-                                            <% } %>
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <td>
-                                                            <input type="hidden" name="id"
-                                                                value="<%= id > 0 ? id : 0 %>">
-                                                            <input type="hidden" id="flag" name="flag"
-                                                                value="<%= flag ? flag : '' %>">
-                                                            <% if(id> 0){ %>
-                                                                <button class="btn btn-pill btn-custom float-end m-r-40"
-                                                                    id="projSub" type="button">
-                                                                    <%= project_data.sec_id> 0 && project_data.ind_id >
-                                                                        0 ?
-                                                                        lang.add.submit_btn : lang.add.btn_next %>
-                                                                </button>
-                                                                <% } else { %>
-                                                                    <button
-                                                                        class="btn btn-pill btn-custom float-end m-r-40"
-                                                                        id="projSub" type="button" disabled>
-                                                                        <%= project_data.sec_id> 0 &&
-                                                                            project_data.ind_id > 0 ?
-                                                                            lang.add.submit_btn : lang.add.btn_next %>
-                                                                    </button>
-                                                                    <% } %>
-                                                        </td>
-                                                    </tr>
-                                                </tfoot>
-                                                </table>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="info-profile" role="tabpanel" aria-labelledby="profile-info-tab">
-                            <% var has_proj_info = project_data.proj_info ? (project_data.proj_info.length > 0 ? true : false) : false;
-                            if(has_proj_info){ %>
-                                <div class="row">
-                                    <div class="col-sm-3 tabs-responsive-side">
-                                        <div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                                            <% let i = 0
-                                            project_data.proj_info.forEach(dt => {
-                                                var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
-                                                    <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= ind_name %>_tab" data-bs-toggle="pill" href="#<%= ind_name %>" role="tab" aria-controls="<%= ind_name %>" aria-selected="false"><%= dt.ind_name %></a>
-                                            <% i++; }) %>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <div class="tab-content" id="v-pills-tabContent">
-                                            <% let j=0
-                                            project_data.proj_info.forEach(dt=> {
-                                                var ind_name = dt.ind_name.split(' ').join('').split(/[.\-_&,]/).join('') %>
-                                                <div class="tab-pane fade bounceInRight animated <%= j == 0 ? 'active show' : '' %>" id="<%= ind_name %>" role="tabpanel" aria-labelledby="<%= ind_name %>_tab">
-                                                    <div class="row g-3">
-                                                        <div class="col-md-12">
-                                                            <p>
-                                                                <label class="form-label" for="sec_id">Sector: </label>
-                                                                <%= dt.sec_name %>
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <p>
-                                                                <label class="form-label" for="ind_id">Industry: </label>
-                                                                <%= dt.ind_name %>
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <p>
-                                                                <label class="form-label" for="bus_id">Business Activities: </label>
-                                                                <%= dt.business_act %>
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <p>
-                                                                <label class="form-label" for="location_id">Locations of Business
-                                                                    Activities: </label>
-                                                                <%= dt.location_busi_act %>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <% j++; }) %>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <a href="/my_project?flag=<%= enc_flag %>"
-                                            class="btn btn-pill btn-custom float-end">
-                                            <%= lang.add.btn_back_proj_list %>
-                                        </a>
-                                    </div>
-                                </div>
-                                <% }else{ %>
-                                    <form method="POST" action="/save_proj_work" class="needs-validation">
-                                        <div class="projInfo">
-                                            <div class="row g-3 py-3">
-                                                <div class="col-md-6">
-                                                    <label for="sec_id_1">
-                                                        <%= lang.manage.sector %>
-                                                    </label>
-                                                    <select class="form-select custSelect2" id="sec_id_1" name="sec_id_1" onchange="changeSector(this)" required="">
-                                                        <option selected="" value="">
-                                                            <%= lang.manage.sec_select %>
-                                                        </option>
-                                                        <% if(sec_data.msg.length> 0){
-                                                            sec_data.msg.forEach(dt => {
-                                                            var selected = '';
-                                                            if(project_data.sec_id)
-                                                            if(project_data.sec_id == dt.id) selected = 'selected'; %>
-                                                            <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
-                                                            </option>
-                                                            <% }) } %>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="ind_id_1">
-                                                        <%= lang.manage.indus %>
-                                                    </label>
-                                                    <select class="js-example-basic-multiple" id="ind_id_1" name="ind_id_1" onchange="chnageInd(this)" required="" multiple="multiple">
-                                                        <option selected="" value="">
-                                                            <%= lang.manage.ind_select %>
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-12 mb-2">
-                                                    <label for="bus_id_1" class="text-label">
-                                                        <%= lang.manage.bus_act %>
-                                                    </label>
-                                                    <select id="bus_id_1" name="bus_id_1"
-                                                        class="js-example-basic-multiple" multiple="multiple">
-                                                        <option value="">Select Business Activity(ies)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-12 mb-2">
-                                                    <label for="location_id_1" class="text-label">
-                                                        <%= lang.manage.location %>
-                                                    </label>
-                                                    <select id="location_id_1" name="location_id_1"
-                                                        class="js-example-basic-multiple" multiple="multiple">
-                                                        <option value="">Select Location</option>
-                                                        <% if(loc_list.msg.length> 0){
-                                                            var location_list = project_data.length > 0 ?
-                                                            (project_data.location_busi_act != '' ?
-                                                            project_data.location_busi_act : '') : '';
-                                                            location_list = location_list ? location_list.split(',') : [];
-                                                            loc_list.msg.forEach(dt => {
-                                                            var selected = '';
-                                                            if(location_list.length > 0)
-                                                            if(location_list.includes(dt.location_name)) selected =
-                                                            'selected'; %>
-                                                            <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
-                                                                    %>
-                                                            </option>
-                                                            <% }) } %>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" name="input_seq" value="1">
-                                        </div>
-                                        <input type="hidden" name="id" id="projWorkId" value="<%= id > 0 ? id : 0 %>">
-                                        <input type="hidden" name="proj_id" id="projWorkPId"
-                                            value="<%= proj_id > 0 ? proj_id : 0 %>">
-                                        <input type="hidden" id="flag" name="flag" value="<%= flag ? flag : '' %>">
-                                        <input type="hidden" name="dec_flag" value="<%= dec_flag ? dec_flag : '' %>">
-                                        <input type="hidden" id="bus_id" name="bus_id" value="0">
-                                        <%# if(id> 0){ %>
-                                            <button class="btn btn-pill cust-floating-submit-btn" type="submit"
-                                                id="projWorkSubBtn"
-                                                style="display: <%= id > 0 ? 'block' : 'none' %>;">Submit</button>
-                                            <%# } %>
-                                    </form>
-                                    <% } %>
-                                    <button type="button" class="btn btn-pill cust-floating-btn" style="display: <%= id > 0 && !has_proj_info ? 'block' : 'none' %>;">
-                                        <i class="fa fa-user-plus"></i> Add a New Sector
-                                    </button>
-                        </div>
-                    </div>
-
-                    <!-- <div class="row">
-                    <div class="col-md-7">
-                        <button class="btn btn-pill btn-custom float-end" type="submit">Submit</button>
-                    </div>
-                </div> -->
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
 
     <script>
+        let currentSlide = 1;
+
         document.addEventListener('DOMContentLoaded', function () {
-            const projectInput = document.getElementById('project_name');
-            const userSelects = document.querySelectorAll('select[name="user_id"]');
-            const nextButton = document.getElementById('projSub');
+            showSlide(currentSlide);
 
-            console.log(userSelects);
-            
-
-            function validateForm() {
-                let isValid = projectInput.value.trim() !== '';
-                userSelects.forEach(select => {
-                    if (select.value === '') {
-                        isValid = false;
+            // Handle Enter key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    const activeSlide = document.querySelector('.ppt-slide.active');
+                    if (activeSlide) {
+                        const step = parseInt(activeSlide.dataset.step);
+                        // Avoid submitting the form if we are not on the last slide
+                        if (step < 4) {
+                            e.preventDefault();
+                            if (step === 2) {
+                                $('#projSub').click();
+                            } else {
+                                nextSlide(step);
+                            }
+                        }
                     }
-                });
-                console.log(isValid, '----------------');
-                
-                nextButton.disabled = !isValid;
-            }
-
-            projectInput.addEventListener('input', validateForm);
-            userSelects.forEach(select => {
-                select.addEventListener('change', validateForm);
-            });
-        });
-
-        function projSelUser(e) {
-            let isValid = $('#project_name').val().trim() !== '';
-            $('select[name="user_id"]').each(select => {
-                if ($(select).val() === '') {
-                    isValid = false;
                 }
             });
-            console.log(isValid, '----------------');
 
-            $('#projSub').attr('disabled', !isValid);
+            // Focus project name on load
+            setTimeout(() => {
+                const projNameInput = document.getElementById('project_name');
+                if (projNameInput) projNameInput.focus();
+            }, 500);
+        });
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.ppt-slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none';
+            });
+
+            const targetSlide = document.querySelector(`.ppt-slide[data-step="${n}"]`);
+            if (targetSlide) {
+                targetSlide.style.display = 'flex';
+                setTimeout(() => {
+                    targetSlide.classList.add('active');
+                    focusInput(n);
+                }, 50);
+            }
+
+            currentSlide = n;
+            updateProgress();
         }
-    </script>
 
-    <script>
-        $('#projSub').on('click', function () {
+        function nextSlide(n) {
+            if (validateStep(n)) {
+                const currentSlideEl = document.querySelector(`.ppt-slide[data-step="${n}"]`);
+                if (currentSlideEl) {
+                    currentSlideEl.classList.remove('active');
+                    setTimeout(() => {
+                        currentSlideEl.style.display = 'none';
+                        showSlide(n + 1);
+                    }, 500);
+                }
+            }
+        }
+
+        function prevSlide(n) {
+            const currentSlideEl = document.querySelector(`.ppt-slide[data-step="${n}"]`);
+            if (currentSlideEl) {
+                currentSlideEl.classList.remove('active');
+                setTimeout(() => {
+                    currentSlideEl.style.display = 'none';
+                    showSlide(n - 1);
+                }, 500);
+            }
+        }
+
+        function updateProgress() {
+            const progress = document.getElementById('slide-progress');
+            if (progress) {
+                progress.textContent = `Slide ${currentSlide} of 4`;
+            }
+        }
+
+        function focusInput(n) {
+            let input;
+            if (n === 1) input = document.getElementById('project_name');
+            else if (n === 2) input = document.querySelector('select[name="user_id"]');
+            else if (n === 3) input = document.getElementById('sec_id_1');
+            else if (n === 4) input = document.getElementById('bus_id_1');
+
+            if (input) {
+                setTimeout(() => input.focus(), 600);
+                if (input.classList.contains('select2-hidden-accessible')) {
+                    $(input).select2('focus');
+                }
+            }
+        }
+
+        function validateStep(n) {
+            const errorMsg = document.getElementById(`error-${n}`);
+            if (errorMsg) errorMsg.classList.remove('visible');
+
+            if (n === 1) {
+                const projName = document.getElementById('project_name').value.trim();
+                if (!projName) {
+                    if (errorMsg) errorMsg.classList.add('visible');
+                    return false;
+                }
+            } else if (n === 2) {
+                let userSelected = false;
+                document.querySelectorAll('select[name="user_id"]').forEach(select => {
+                    if (select.value) userSelected = true;
+                });
+                if (!userSelected) {
+                    if (errorMsg) errorMsg.classList.add('visible');
+                    return false;
+                }
+            } else if (n === 3) {
+                const secId = document.getElementById('sec_id_1').value;
+                const indId = $('#ind_id_1').val();
+                if (!secId || !indId || indId.length === 0) {
+                    if (errorMsg) errorMsg.classList.add('visible');
+                    return false;
+                }
+            } else if (n === 4) {
+                const busId = $('#bus_id_1').val();
+                const locId = $('#location_id_1').val();
+                if (!busId || busId.length === 0 || !locId || locId.length === 0) {
+                    if (errorMsg) errorMsg.classList.add('visible');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        $(document).on('click', '#projSub', function () {
+            if (!validateStep(2)) return;
+
             var userId = []
             if ($('[name="user_id"]').length > 0) {
                 $('[name="user_id"]').each((i, e) => {
@@ -399,11 +858,17 @@
                         userId.push(e.value)
                 })
             }
-            // console.log(userId, 'sdasdas');
+
             $.ajax({
                 method: 'POST',
                 url: '/my_project_save_ajax',
-                data: { id: $('[name="id"]').val(), dec_flag: $('[name="dec_flag"]').val(), flag: $('[name="flag"]').val(), project_name: $('[name="project_name"]').val(), user_id: userId },
+                data: {
+                    id: $('[name="id"]').val(),
+                    dec_flag: $('[name="dec_flag"]').val(),
+                    flag: $('[name="flag"]').val(),
+                    project_name: $('#project_name').val(),
+                    user_id: userId
+                },
                 dataType: 'html',
                 beforeSend: function () {
                     $('.loader-wrapper').show()
@@ -414,57 +879,109 @@
                         $('[name="id"]').val(res.project_id)
                         $('#projWorkId').val(res.project_id)
                         $('#projWorkPId').val(res.project_id)
-                        $('#profile-info-tab').tab('show')
+                        nextSlide(2);
                         $('#projWorkSubBtn').show()
                         $('.cust-floating-btn').show()
                     } else {
                         initiate_sweet_alert('', 'Data Not Saved. Please try again later.', 'danger')
                     }
-                    console.log(res);
                 },
                 complete: function () {
                     $('.loader-wrapper').hide()
                 }
-            })
-            // console.table($('input[name="project_name"]').val(), $('select[name="user_id"]').val());
-        })
-    </script>
+            });
+        });
 
+        $(document).on('input change', '#project_name, select[name="user_id"], #sec_id_1, #ind_id_1, #bus_id_1, #location_id_1', function () {
+            const activeSlide = document.querySelector('.ppt-slide.active');
+            if (activeSlide) {
+                const step = parseInt(activeSlide.dataset.step);
+                const errorMsg = document.getElementById(`error-${step}`);
+                if (errorMsg) errorMsg.classList.remove('visible');
+            }
+        });
+
+        function projSelUser(e) { }
+
+        // Custom Dropdown Logic for Sector
+        document.addEventListener('DOMContentLoaded', function() {
+            const trigger = document.getElementById('sec-trigger');
+            const options = document.getElementById('sec-options');
+            const hiddenSelect = document.getElementById('sec_id_1');
+
+            if (trigger && options) {
+                trigger.addEventListener('click', function() {
+                    options.classList.toggle('show');
+                });
+
+                options.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('custom-option')) {
+                        const value = e.target.getAttribute('data-value');
+                        const text = e.target.textContent.trim();
+
+                        // Update trigger text
+                        trigger.textContent = text;
+
+                        // Update hidden select
+                        hiddenSelect.value = value;
+                        
+                        // Trigger the onchange logic
+                        $(hiddenSelect).trigger('change');
+
+                        // Update selected class
+                        options.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                        e.target.classList.add('selected');
+
+                        options.classList.remove('show');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!trigger.contains(e.target) && !options.contains(e.target)) {
+                        options.classList.remove('show');
+                    }
+                });
+            }
+        });
+    </script>
+    
+    
     <script>
         function add_tb_row() {
             var next_id = $(`#table tbody tr`).length + 1
             $(`#table tbody:last`).append(`
-        <tr id="tr_${next_id}">
-            <td class="tableTd_add_main">
-                <div class="tableTd_add">
-                <select class="form-select custSelect2" id="user_id_${next_id}" name="user_id" required="">
-                    <option selected="" value="">Select User</option>
-                    <% if(user_list.msg.length > 0){
-                        user_list.msg.forEach(dt => { 
-                            var selected = '';
-                            if(id > 0){
-                                if(dt == project_data.user_id) selected = 'selected';
-                            } %>
-                            <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
-                        <% })
-                    } %>
-                </select>
-                </div>
-                <div class="tableTd_add_btn">
-                    <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
-                onclick="del_row(${next_id})"><i class="icofont icofont-trash"></i></button>
-                </div>
-            </td>
-            
-        </tr>
-        `);
-        setTimeout(function () {
-            $('.custSelect2').select2({
-                placeholder: "-- Select an option --",
-                allowClear: false,
-                theme: "bootstrap-5"
-            });
-        }, 100)
+            <tr id="tr_${next_id}">
+                <td class="tableTd_add_main">
+                    <div class="tableTd_add">
+                    <select class="form-select custSelect2" id="user_id_${next_id}" name="user_id" required="">
+                        <option selected="" value="">Select User</option>
+                        <% if(user_list.msg.length > 0){
+                            user_list.msg.forEach(dt => { 
+                                var selected = '';
+                                if(id > 0){
+                                    if(dt == project_data.user_id) selected = 'selected';
+                                } %>
+                                <option value="<%= dt.id %>" <%= selected %>><%= dt.user_name %></option>
+                            <% })
+                        } %>
+                    </select>
+                    </div>
+                    <div class="tableTd_add_btn">
+                        <button type="button" class="btn btn_UR btn-outline-primary btn-air-primary" 
+                    onclick="del_row(${next_id})"><i class="icofont icofont-trash"></i></button>
+                    </div>
+                </td>
+                
+            </tr>
+            `);
+            setTimeout(function () {
+                $('.custSelect2').select2({
+                    placeholder: "-- Select an option --",
+                    allowClear: false,
+                    theme: "bootstrap-5"
+                });
+            }, 100)
         }
         function del_row(id) {
             if (confirm('Are you sure you want to delete?')) {
@@ -494,7 +1011,7 @@
             }
         }
     </script>
-
+    
     <script>
         $(document).ready(function () {
             if ($('#sec_id').val() > 0) {
@@ -502,18 +1019,22 @@
             }
         })
     </script>
-
+    
     <script>
         function changeSector(e) {
+            console.log($(e), 'e');
+            const elementSlNo = $(e).attr('id').split('_').pop()
+            console.log(elementSlNo, 'elementSlNo');
+            
             var selected_sec_id = []
             $('.projInfo .row').each(function () {
-                if($(this).children().eq(0).children('select').attr('id') != $(e).attr('id')) {
+                if ($(this).children().eq(0).children('select').attr('id') != $(e).attr('id')) {
                     var sel_sec_id = $(this).children().eq(0).children('select').val()
-                    if(sel_sec_id != undefined && sel_sec_id != '')
+                    if (sel_sec_id != undefined && sel_sec_id != '')
                         selected_sec_id.push(sel_sec_id)
                 }
             })
-            if(selected_sec_id.includes($(e).val())) {
+            if (selected_sec_id.includes($(e).val())) {
                 $(e).val('')
                 initiate_sweet_alert('', 'Sector already selected', 'danger')
                 return false
@@ -529,8 +1050,8 @@
                 success: function (result) {
                     var res = JSON.parse(result);
                     // console.log(res);
-                    $(e).parent().next().children('select').empty();
-                    $(e).parent().next().children('select').append($('<option>', { value: '', text: 'Select Industries' }));
+                    $(`#ind_id_${elementSlNo}`).empty();
+                    $(`#ind_id_${elementSlNo}`).append($('<option>', { value: '', text: 'Select Industries' }));
                     if (res.suc > 0 && res.msg.length > 0) {
                         var ind_id = '<%= project_data ? project_data.ind_id : 0 %>';
                         if (ind_id > 0) {
@@ -538,13 +1059,13 @@
                                 var selected = false
                                 if (item.id == ind_id)
                                     selected = true
-                                $(e).parent().next().children('select').append($('<option>', { value: item.id, text: item.ind_name, selected: selected }));
+                                $(`#ind_id_${elementSlNo}`).append($('<option>', { value: item.id, text: item.ind_name, selected: selected }));
                             });
-                            $(e).parent().next().children('select').change()
+                            $(`#ind_id_${elementSlNo}`).change()
                         }
                         else
                             $.each(res.msg, function (i, item) {
-                                $(e).parent().next().children('select').append($('<option>', { value: item.id, text: item.ind_name }));
+                                $(`#ind_id_${elementSlNo}`).append($('<option>', { value: item.id, text: item.ind_name }));
                             });
                     }
                 },
@@ -554,11 +1075,12 @@
             })
         }
     </script>
-
+    
     <script>
         function chnageInd(e) {
-            // console.log($(e).val(), 'INDUSTRY');
-            
+            console.log($(e), 'INDUSTRY');
+            const lastId = $(e).attr('id').split('_').pop();
+            console.log(lastId, 'LAST ID');
             $.ajax({
                 method: "GET",
                 url: "/get_busi_act_ajax",
@@ -570,8 +1092,8 @@
                 success: function (result) {
                     var res = JSON.parse(result);
                     // console.log(res);
-                    $(e).parent().next().children('select').empty();
-                    $(e).parent().next().children('select').append($('<option>', { value: '', text: 'Select Business' }));
+                    $(`#bus_id_${lastId}`).empty();
+                    $(`#bus_id_${lastId}`).append($('<option>', { value: '', text: 'Select Business' }));
                     if (res.suc > 0 && res.msg.length > 0) {
                         var bus_act = '<%= project_data ? (project_data.business_act != "" ? project_data.business_act : "") : "" %>'
                         bus_act = bus_act != "" ? bus_act.split(',') : []
@@ -579,13 +1101,13 @@
                             $.each(res.msg, function (i, item) {
                                 var selected = false
                                 if (bus_act.includes(item.busi_act_name)) selected = true
-                                $(e).parent().next().children('select').append(
+                                $(`#bus_id_${lastId}`).append(
                                     $("<option>", { value: item.id, text: item.busi_act_name, selected: selected })
                                 );
                             });
                         } else {
                             $.each(res.msg, function (i, item) {
-                                $(e).parent().next().children('select').append(
+                                $(`#bus_id_${lastId}`).append(
                                     $("<option>", { value: item.id, text: item.busi_act_name })
                                 );
                             });
@@ -598,7 +1120,7 @@
             });
         };
     </script>
-
+    
     <script>
         $("#project_name").on("change", function (e) {
             // console.log(e.target.value);
@@ -637,78 +1159,75 @@
     <script>
         $('.cust-floating-btn').on('click', function () {
             var prev_sec_id = $('.projInfo .row:first-child').find('select').eq(0).val(),
-            prev_ind_id = $('.projInfo .row:first-child').find('select').eq(1).val(),
-            prev_bus_id = $('.projInfo .row:first-child').find('select').eq(2).val(),
-            prev_loc_id = $('.projInfo .row:first-child').find('select').eq(3).val();
-            if(prev_sec_id != '' && prev_ind_id.length > 0 && prev_bus_id.length > 0 && prev_loc_id.length > 0) {
+                prev_ind_id = $('.projInfo .row:first-child').find('select').eq(1).val(),
+                prev_bus_id = $('.projInfo .row:first-child').find('select').eq(2).val(),
+                prev_loc_id = $('.projInfo .row:first-child').find('select').eq(3).val();
+            if (prev_sec_id != '' && prev_ind_id.length > 0 && prev_bus_id.length > 0 && prev_loc_id.length > 0) {
                 var i = parseInt($('.projInfo .row').length) + 1
                 var element = `<div class="row g-3 py-3">
-                    <div class="col-md-6">
-                        <label for="sec_id_${i}">
-                            <%= lang.manage.sector %>
-                        </label>
-                        <select class="form-select custSelect2" id="sec_id_${i}" name="sec_id_${i}" onchange="changeSector(this)" required="">
-                            <option selected="" value="">
-                                <%= lang.manage.sec_select %>
-                            </option>
-                            <% if(sec_data.msg.length> 0){
-                                sec_data.msg.forEach(dt => {
-                                var selected = '';
-                                if(project_data.sec_id)
-                                if(project_data.sec_id == dt.id) selected = 'selected'; %>
-                                <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+                        <div class="col-md-6">
+                            <label for="sec_id_${i}">
+                                <%= lang.manage.sector %>
+                            </label>
+                            <select class="form-select custSelect2" id="sec_id_${i}" name="sec_id_${i}" onchange="changeSector(this)" required="">
+                                <option selected="" value="">
+                                    <%= lang.manage.sec_select %>
                                 </option>
-                                <% }) } %>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="ind_id_${i}">
-                            <%= lang.manage.indus %>
-                        </label>
-                        <select class="form-select js-example-basic-multiple" id="ind_id_${i}" name="ind_id_${i}" onchange="chnageInd(this)" required="" multiple="multiple">
-                            <option selected="" value="">
-                                <%= lang.manage.ind_select %>
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-12 mb-2">
-                        <label for="bus_id_${i}" class="text-label">
-                            <%= lang.manage.bus_act %>
-                        </label>
-                        <select id="bus_id_${i}" name="bus_id_${i}"
-                            class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                            <option value="">Select Business Activity(ies)</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12 mb-2">
-                        <label for="location_id_${i}" class="text-label">
-                            <%= lang.manage.location %>
-                        </label>
-                        <select id="location_id_${i}" name="location_id_${i}"
-                            class="js-example-basic-multiple col-sm-12" multiple="multiple">
-                            <option value="">Select Location</option>
-                            <% if(loc_list.msg.length> 0){
-                                var location_list = project_data.length > 0 ?
-                                (project_data.location_busi_act != '' ?
-                                project_data.location_busi_act : '') : '';
-                                location_list = location_list ? location_list.split(',') : [];
-                                loc_list.msg.forEach(dt => {
-                                var selected = '';
-                                if(location_list.length > 0)
-                                if(location_list.includes(dt.location_name)) selected =
-                                'selected'; %>
-                                <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
-                                        %>
+                                <% if(sec_data.msg.length> 0){
+                                    sec_data.msg.forEach(dt => {
+                                    var selected = '';
+                                    if(project_data.sec_id)
+                                        if(project_data.sec_id == dt.id) selected = 'selected'; %>
+                                    <option value="<%= dt.id %>" <%=selected %>><%= dt.sec_name %>
+                                    </option>
+                                    <% }) } %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ind_id_${i}">
+                                <%= lang.manage.indus %>
+                            </label>
+                            <select class="form-select js-example-basic-multiple" id="ind_id_${i}" name="ind_id_${i}" onchange="chnageInd(this)" required="" multiple="multiple">
+                                <option selected="" value="">
+                                    <%= lang.manage.ind_select %>
                                 </option>
-                                <% }) } %>
-                        </select>
-                    </div>
-                    <input type="hidden" name="input_seq" value="${i}">
-                    <div class="col-md-12 mt-3">
-                        <button type="button" class="btn btn-danger float-end" onclick="delNewIndInfo(this)">Delete</button>
-                    </div>
-                    <hr>
-                </div>`
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label for="bus_id_${i}" class="text-label">
+                                <%= lang.manage.bus_act %>
+                            </label>
+                            <select id="bus_id_${i}" name="bus_id_${i}"
+                                class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                <option value="">Select Business Activity(ies)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label for="location_id_${i}" class="text-label">
+                                <%= lang.manage.location %>
+                            </label>
+                            <select id="location_id_${i}" name="location_id_${i}"
+                                class="js-example-basic-multiple col-sm-12" multiple="multiple">
+                                <option value="">Select Location</option>
+                                <% if(loc_list.msg.length> 0){
+                                    var location_list = project_data.length > 0 ? (project_data.location_busi_act != '' ? project_data.location_busi_act : '') : '';
+                                    location_list = location_list ? location_list.split(',') : [];
+                                    loc_list.msg.forEach(dt => {
+                                        var selected = '';
+                                        if(location_list.length > 0)
+                                            if(location_list.includes(dt.location_name)) selected = 'selected'; %>
+                                    <option value="<%= dt.id %>" <%=selected %>><%= dt.location_name
+                                            %>
+                                    </option>
+                                    <% }) } %>
+                            </select>
+                        </div>
+                        <input type="hidden" name="input_seq" value="${i}">
+                        <div class="col-md-12 mt-3">
+                            <button type="button" class="btn btn-danger float-end" onclick="delNewIndInfo(this)">Delete</button>
+                        </div>
+                        <hr>
+                    </div>`
                 $('.projInfo').prepend(element)
                 setTimeout(() => {
                     $('#ind_id_' + i).select2({
@@ -724,12 +1243,12 @@
                         width: '100%'
                     });
                 }, 500);
-            }else{
+            } else {
                 initiate_sweet_alert('', 'Please select sector, industry, business activity and location first', 'danger')
             }
         })
 
-        async function delNewIndInfo(e){
+        async function delNewIndInfo(e) {
             if (await inititate_sweet_conf_alert('Warning', 'Are you sure you want to delete?') > 0) {
                 $(e).parent().parent().remove()
             }

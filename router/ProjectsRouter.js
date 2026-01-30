@@ -165,10 +165,7 @@ ProjectRouter.get("/my_project_add", async (req, res) => {
     user_list,
     id,
     proj_id: req.query.id,
-    project_data:
-      project_data.suc > 0 && project_data.msg.length > 0
-        ? project_data.msg[0]
-        : [],
+    project_data: project_data.suc > 0 && project_data.msg.length > 0 ? project_data.msg[0] : [],
     loc_list,
     sec_data,
     ind_data,
