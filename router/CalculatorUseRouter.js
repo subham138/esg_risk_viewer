@@ -207,7 +207,7 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
   
   var maxQuestSlNo = await db_Select('IF(max(pro_sl_no) > 0, max(pro_sl_no), 0) max_no', 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.proj_year = ${sel_year} AND a.quest_id = '${data.quest_id}'`, null)
 
-  console.log(maxQuestSlNo, 'Max CHk');
+  // console.log(maxQuestSlNo, 'Max CHk------------');
 
 //   let chkHasChild = await db_Select('a.id, b.c_scope_id, b.c_sec_id, b.c_f_builder_id', 'md_cal_form_builder a, md_cal_form_build_map_quest b', `a.lang_flag COLLATE utf8mb4_general_ci =b.lang_flag AND a.scope_id=b.p_scope_id AND a.sec_id=b.p_sec_id AND a.id=p_f_builder_id
 // AND a.sequence=(SELECT b.parent_id FROM md_cal_form_builder b WHERE a.lang_flag=b.lang_flag AND a.scope_id=b.scope_id AND a.sec_id=b.sec_id AND b.id = ${data.quest_id})
@@ -222,7 +222,20 @@ CalcUserRouter.post('/cal_quest_save', async (req, res) => {
 
   maxQuestSlNo = maxQuestSlNo.suc > 0 && maxQuestSlNo.msg.length > 0 ? parseInt(maxQuestSlNo.msg[0].max_no)+1 : 1
 
-  var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND proj_year = ${sel_year} AND end_flag = 'N'`)
+  var chk_dt = await db_Select('id,quest_seq', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${data.quest_id} AND scope = ${data.scope_id} AND proj_year = ${sel_year} AND end_flag = 'N'`)
+
+  // console.log(chk_dt, 'CHK DT----------------------');
+  
+  if (chk_dt.suc > 0 && chk_dt.msg.length > 0 && ['No', 'Non', 'Non '].includes(quest_ans)){
+    try{
+      var questSeq = chk_dt.msg[0].quest_seq
+      var questIds = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND scope = ${data.scope_id} AND proj_year = ${sel_year} AND end_flag = 'N' AND quest_seq like "${questSeq}.%"`)
+      var questId = questIds.suc > 0 && questIds.msg.length > 0 ? questIds.msg.map(item => item.id).join(',') : '0'
+      await db_Delete('td_ghg_quest', `id IN(${questId})`)
+    }catch(err){
+      console.log(err);
+    }
+  }
 
   var table_name = 'td_ghg_quest',
     fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${quest_ans.split("'").join("\\'")}', modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, proj_year, pro_sl_no, entry_dt, quest_id, quest_type, quest_seq, quest_ans, created_by, created_dt)',
