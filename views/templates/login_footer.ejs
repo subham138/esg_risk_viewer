@@ -11,7 +11,8 @@
  <script src="js/bootstrap/popper.min.js"></script>
  <script src="js/bootstrap/bootstrap.min.js"></script>
  <!-- Plugins JS start-->
- <script src="js/sweet-alert/sweetalert.min.js"></script>
+ <!-- <script src="js/sweet-alert/sweetalert.min.js"></script> -->
+    <script src="js/sweet-alert/sweetalert.js"></script>
  <!-- <script src="js/sweet-alert/app.js"></script> -->
  <!-- <script src="js/popover-custom.js"></script> -->
  <!-- Plugins JS start-->
@@ -30,7 +31,7 @@
             key = ''
             if (event.key === "Escape") {
                 key = event.key
-                console.log('HERE');
+                // console.log('HERE');
                 event.preventDefault();  // Prevent the default action of the Escape key
                 event.stopPropagation(); // Stop the event from bubbling 
             }
@@ -74,7 +75,7 @@
             $(this).removeClass('icofont-eye-blocked')
             $(this).addClass('icofont-eye')
         }
-      console.log();
+    //   console.log();
     })
  </script>
  <script>
@@ -163,7 +164,7 @@
     // $(document).ready(function(){
         function initiate_sweet_alert(title, message, type){
             // swal(title, message, type);
-            swal(message, '', type);
+            Swal.fire(message, '', type);
         }
     // })
  </script>

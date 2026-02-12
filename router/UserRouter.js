@@ -93,7 +93,7 @@ UserRouter.post("/register", async (req, res) => {
     var whr = `user_id = '${email}' AND active_flag = 'Y'`;
     var chk_dt = await db_Select("*", table_name, whr, null);
     if (chk_dt.suc > 0 && chk_dt.msg.length > 0) {
-       req.session.message = { type: "danger", message: "User already exists" };
+       req.session.message = { type: "danger", message: "There is already an account registered with this email. Please log in or sign up for a new account." };
     }
 
     // MODIFIED BY VIKASH //
@@ -122,7 +122,7 @@ UserRouter.post("/register", async (req, res) => {
     if(res_dt.suc > 0){
     req.session.message = {
       type: "success",
-      message: "Register successfully. Please login to continue.",
+      message: "You have successfully registered an account. Please log in to continue.",
     };
     }
     res.redirect("/login");
@@ -222,7 +222,7 @@ UserRouter.post("/login", async (req, res) => {
         if (req.session.user.client_id && !await isMonthUser(data.email, req.session.user.client_id) && chk_dt.msg[0].user_type != "C" && chk_dt.msg[0].user_type != "S") {
           req.session.message = {
             type: "danger",
-            message: "Subscription plan expired or contact with admin.",
+            message: "You do not have an active account.Please contact your organisation’s Client User",
           };
           delete req.session.user;
           return res.redirect("/login");
@@ -430,7 +430,7 @@ UserRouter.post("/forgot_pass", async (req, res) => {
         if (email_send.suc > 0) {
           req.session.message = {
             type: "success",
-            message: "A password-reset link has been sent to your email.",
+            message: "Please check your email. We have sent you a link to reset your password. But if you now remember it, you can sign in below.",
           };
         } else {
           req.session.message = {

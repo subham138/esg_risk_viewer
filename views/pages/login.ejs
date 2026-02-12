@@ -90,43 +90,46 @@
 
     <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <!-- <center><label><b>Enter the access code</b></label></center> -->
-                    <div class="row text-center">
-                        <div class="col-md-12 text-center mt-3 mb-2" style="font-size: 18px; font-weight: 400;">We have sent a 6-digit
-                            access code to your email. Enter the code in the fields. It may take a few minutes to arrive.
+            <div class="modal-content"
+                style="border-radius: 24px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                <div class="modal-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="otp-icon-wrapper mb-3"
+                            style="width: 80px; height: 80px; background: #f3e5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                            <i class="fa fa-envelope-o" style="font-size: 32px; color: #7b1fa2;"></i>
+                        </div>
+                        <h3 style="font-weight: 700; color: #333;">Security Check</h3>
+                        <p class="text-muted" style="font-size: 15px; line-height: 1.6;">
+                            We have sent a 6-digit access code to your email.<br>
+                            Please enter it below to verify your identity.
+                        </p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <input type="text" class="form-control-lg" id="pincode-input1">
                         </div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col-md-12 text-center"><input type="password" class="form-control-lg"
-                                id="pincode-input1"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 text-center" id="pinErr"></div>
-                    </div>
+
+                    <div id="pinErr" class="text-center mt-2"></div>
                     <input type="hidden" id="pin">
-                    <div class="row mt-3">
-                        <div class="col-md-12 text-center h6">
-                            Didn’t receive one? <a href="javascript:void(0)" id="resend_otp">Resend</a>
-                            <!-- <div class="checkbox checkbox-primary">
-                                <input id="rem_me" value="Y" type="checkbox">
-                                <label for="rem_me">Remember me for 7 days.</label>
-                            </div> -->
-                        </div>
+
+                    <div class="text-center mt-4 pt-2">
+                        <p style="font-size: 14px; color: #666;">
+                            Didn’t receive the code?
+                            <a href="javascript:void(0)" id="resend_otp"
+                                style="color: #7b1fa2; font-weight: 600; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.3s;">
+                                Resend Now
+                            </a>
+                        </p>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <button class="btn btn-pill btn-custom" id="modalLoginBtn" type="button"
-                                style="display: none;">Sign in</button>
-                        </div>
+
+                    <div class="mt-4">
+                        <button class="btn btn-pill w-100" id="modalLoginBtn" type="button"
+                            style="display: none; background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); color: white; padding: 12px; border-radius: 12px; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(123, 31, 162, 0.3);">
+                            Verify & Sign In
+                        </button>
                     </div>
-                    <!-- <center class="pt-3">
-            <div class="bg-warning">
-              <i class="fa fa-exclamation-circle text-white pr-1" aria-hidden="true"></i> 
-              OTP has been send to your registered email Id.
-            </div>
-          </center> -->
                 </div>
             </div>
         </div>

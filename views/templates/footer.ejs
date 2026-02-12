@@ -187,7 +187,8 @@
     <!-- <script src="/js/jsPdf/jspdf.umd.min.js"></script> -->
     <script src="/js/html2Canvas/html2canvas.min.js"></script>
 
-    <script src="js/sweet-alert/sweetalert.min.js"></script>
+    <!-- <script src="js/sweet-alert/sweetalert.min.js"></script> -->
+    <script src="js/sweet-alert/sweetalert.js"></script>
     <!-- Plugins JS Ends-->
     <!-- Theme js-->
     <script src="/js/script.js"></script>
@@ -263,26 +264,29 @@
     </script>
 
     <script>
-      function initiate_sweet_alert(title, message, type) {
+      async function initiate_sweet_alert(title, message, type) {
         // console.log('here alert inititated');
         // swal(title, message, type != 'danger' ? type : 'error');
-        swal(message, '', type != 'danger' ? type : 'error');
+        await Swal.fire(message, '', type != 'danger' ? type : 'error');
       }
       function inititate_sweet_conf_alert(title, text) {
-        return new Promise((resolve, reject) => {
-          swal({
+        return new Promise(async (resolve, reject) => {
+          const result = await Swal.fire({
             title: title,
             text: text,
             icon: "warning",
-            buttons: true,
-            dangerMode: true,
-          }).then((willDelete) => {
-            if (willDelete) {
-              resolve(1);
-            } else {
-              resolve(0);
-            }
-          });
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+          })
+          
+          if(result.isConfirmed){
+            resolve(1)
+          }else{
+            resolve(0)
+          }
         })
       }
     </script>

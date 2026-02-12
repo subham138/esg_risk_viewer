@@ -187,7 +187,7 @@
                 for (let i = 0; i < this.settings.inputs; i++) {
 
                     let input = $('<input>').attr({
-                        'type': 'password',
+                        'type': 'text',
                         'maxlength': "1",
                         'autocomplete': 'off',
                         'placeholder': (placeholders[i] ? placeholders[i] : undefined)
