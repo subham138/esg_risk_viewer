@@ -1,6 +1,6 @@
+<link rel="stylesheet" href="/css/ppt-forms.css">
 <ul class="nav nav-tabs border-tab" id="sope-tab" role="tablist">
-    <% var i=0;
-    scope_list.forEach(dt=> { %>
+    <% var i=0; scope_list.forEach(dt=> { %>
         <li class="nav-item" scope-id="<%= dt.id %>">
             <a class="nav-link <%= i == 0 ? 'active' : '' %>" id="<%= dt.name.split(' ').join('_') %>_tab"
                 data-bs-toggle="tab" href="#<%= dt.name.split(' ').join('_') %>" role="tab"
@@ -13,8 +13,7 @@
         <% i++; }) %>
 </ul>
 <div class="tab-content" id="sope-tabContent">
-    <% var j=0;
-    scope_list.forEach(dt=> {
+    <% var j=0; scope_list.forEach(dt=> {
         var tab_id = dt.name.split(' ').join('_').split("'").join("") %>
         <div class="tab-pane fade <%= j == 0 ? 'show active' : '' %>" id="<%= tab_id %>" role="tabpanel"
             aria-labelledby="<%= tab_id %>_tab">

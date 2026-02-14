@@ -8,6 +8,20 @@ const QuestHandler = {
         if ($('#sope-tab li').length > 0) {
             $($('#sope-tab li')[0]).children('a.nav-link').click();
         }
+
+        // Global Enter key handler for PPT navigation
+        $(document).on('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const $activeInput = $(document.activeElement);
+                if ($activeInput.hasClass('ppt-input') || $activeInput.hasClass('ppt-select') || $activeInput.parent().hasClass('select2-container')) {
+                    const $nextBtn = $activeInput.closest('.question-box').find('.btn-next-ppt');
+                    if ($nextBtn.length > 0 && !$nextBtn.is(':disabled')) {
+                        $nextBtn.click();
+                        e.preventDefault();
+                    }
+                }
+            }
+        });
     },
 
     /**
@@ -105,8 +119,9 @@ const QuestHandler = {
                 await this.saveSimpleData($el.attr('quest-dt'), txt);
 
                 // Show next sibling question if exists (for sequential progression)
+                // SUPPRESS in PPT mode as manual Next button handles this
                 const $nextQuest = $parent.next();
-                if ($nextQuest.hasClass('question-box')) {
+                if ($nextQuest.hasClass('question-box') && !$parent.closest('.sub-sub-section').hasClass('ppt-wrapper')) {
                     $nextQuest.show();
                 }
 
@@ -137,7 +152,97 @@ const QuestHandler = {
                 $el.hide();
                 $next.removeClass('bounceInLeft animated');
                 $el.removeClass('bounceOutRight animated');
+
+                // If entering sub-sub-section, show only the first slide
+                if ($next.hasClass('sub-parent-container')) {
+                    const $slides = $next.find('.sub-sub-parent-quest');
+                    $slides.hide();
+                    $slides.first().show();
+                }
             }, 1000);
+        }
+    },
+
+    /**
+     * PPT Navigation: Next Slide
+     */
+    nextSubSlide: function (btn, isLast) {
+        const $current = $(btn).closest('.question-box');
+        const $input = $current.find('input, select');
+
+        // Validation: Ensure current VISIBLE field is filled
+        let isValid = true;
+        $input.each(function () {
+            const $el = $(this);
+            // Check if element is visible OR if it's a Select2 hidden select whose container is visible
+            const isVisible = $el.is(':visible') || ($el.hasClass('custSelect2') && $el.next('.select2-container').is(':visible'));
+
+            if ($el.prop('required') && isVisible && !$el.val()) {
+                isValid = false;
+                $el.addClass('is-invalid');
+                // For Select2, also highlight the container
+                if ($el.hasClass('custSelect2')) {
+                    $el.next('.select2-container').addClass('is-invalid');
+                }
+                setTimeout(() => {
+                    $el.removeClass('is-invalid');
+                    if ($el.hasClass('custSelect2')) {
+                        $el.next('.select2-container').removeClass('is-invalid');
+                    }
+                }, 2000);
+            }
+        });
+
+        if (!isValid) return;
+
+        if (isLast) {
+            // Find the hidden original save button and trigger it
+            const $saveBtn = $current.find('.legacy-save-btn');
+            if ($saveBtn.length > 0) {
+                $saveBtn.click();
+            } else {
+                // Fallback direct call if button not found by class
+                const $actionDiv = $current.find('[id^="inputActionDiv-"]');
+                const id = $actionDiv.attr('id').split('-').pop();
+                const subSeq = $current.attr('data-sub-seq');
+                this.saveCalculation(btn, id, subSeq);
+            }
+            return;
+        }
+
+        const $next = $current.next('.sub-sub-parent-quest');
+        if ($next.length > 0) {
+            $current.addClass('bounceOutLeft animated');
+            setTimeout(() => {
+                $current.hide().removeClass('bounceOutLeft animated');
+                $next.show().addClass('bounceInRight animated');
+                setTimeout(() => $next.removeClass('bounceInRight animated'), 1000);
+            }, 500);
+        }
+    },
+
+    /**
+     * PPT Navigation: Previous Slide
+     */
+    prevSubSlide: function (btn) {
+        const $current = $(btn).closest('.question-box');
+        const $prev = $current.prev('.sub-sub-parent-quest');
+
+        if ($prev.length > 0) {
+            $current.addClass('bounceOutRight animated');
+            setTimeout(() => {
+                $current.hide().removeClass('bounceOutRight animated');
+                $prev.show().addClass('bounceInLeft animated');
+                setTimeout(() => $prev.removeClass('bounceInLeft animated'), 1000);
+            }, 500);
+        } else {
+            // If no previous slide, show the sub-parent quest again
+            const $subParent = $current.closest('.sub-parent-container').find('.sub-parent-quest');
+            $current.addClass('bounceOutRight animated');
+            setTimeout(() => {
+                $current.hide().removeClass('bounceOutRight animated');
+                $subParent.find('.badge').click(); // Re-trigger the edit mode for sub-parent
+            }, 500);
         }
     },
 
@@ -235,7 +340,7 @@ const QuestHandler = {
                     ${['R', 'C', 'S'].includes(parent.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="QuestHandler.handleClickAction(this)" style="display:${hasAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${hasAns ? qAns[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                 </div>
                 <div class="quest-opt-btn mt-2" id="inputActionDiv-${parent.id}" style="display:${!hasAns ? 'block' : 'none'};">
-                    ${this.createActionHtml(parent.qu_option, parent.input_type, `user_input_${parent.id}`, parent.id, parent.option_val, 0, 0, 0, scope_id, qSeq, hasAns, hasAns ? qAns[0].quest_ans : '', 0, 0, false, false, 0, parent.pro_sec_id, flag)}
+                    ${this.createActionHtml(parent.qu_option, parent.input_type, `user_input_${parent.id}`, parent.id, parent.option_val, 0, 0, 0, scope_id, qSeq, hasAns, hasAns ? qAns[0].quest_ans : '', 0, 0, false, false, 0, parent.pro_sec_id, flag, false)}
                 </div>
             </div>`;
 
@@ -276,12 +381,12 @@ const QuestHandler = {
                     ${['R', 'C', 'S'].includes(sub.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="QuestHandler.handleClickAction(this)" style="display:${hasSubAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${hasSubAns ? qAns[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                 </div>
                 <div class="quest-opt-btn mt-2" id="inputActionDiv-${sub.id}" style="display:${!hasSubAns ? 'block' : 'none'};">
-                    ${this.createActionHtml(sub.qu_option, sub.input_type, `user_input_${sub.id}`, sub.id, sub.option_val, 0, 0, 0, scope_id, qSeq, hasSubAns, hasSubAns ? qAns[0].quest_ans : '', 0, 0, false, false, 0, sub.pro_sec_id, flag)}
+                    ${this.createActionHtml(sub.qu_option, sub.input_type, `user_input_${sub.id}`, sub.id, sub.option_val, 0, 0, 0, scope_id, qSeq, hasSubAns, hasSubAns ? qAns[0].quest_ans : '', 0, 0, false, false, 0, sub.pro_sec_id, flag, false)}
                 </div>
             </div>
-            <div class="sub-sub-section">`;
+            <div class="sub-sub-section ppt-wrapper">`;
 
-        let showNextInSubSub = true;
+        let hasShownFirstSlide = false;
         subSubData.forEach(ss => {
             const ssAns = res.proj_q_ans_dt.filter(a => a.quest_id === ss.id && a.end_flag !== 'Y');
             const hasSSAns = ssAns.length > 0;
@@ -290,22 +395,31 @@ const QuestHandler = {
             const subParentAns = qAns[0]?.quest_ans;
             const isSubParentYes = ['Yes', 'Oui'].includes(subParentAns);
 
-            // Sequential visibility on load: show answered questions + the first unanswered one
-            const isVisible = isSubParentYes && showNextInSubSub;
-            if (!hasSSAns) {
-                showNextInSubSub = false; // Stop showing further questions after the first unanswered one
-            }
+            // Slide navigation logic: Only show the first slide of the sub-sub-section initially
+            const isVisible = isSubParentYes && !hasShownFirstSlide;
+            if (isVisible) hasShownFirstSlide = true;
 
-            html += `<div class="question-box sub-sub-parent-quest" style="display:${isVisible && ['R', 'C', 'S', 'I', 'A'].includes(ss.input_type) ? 'block' : 'none'};">
+            const displayStyle = isVisible && ['R', 'C', 'S', 'I', 'A'].includes(ss.input_type) ? 'block' : 'none';
+
+            html += `<div class="question-box sub-sub-parent-quest ppt-fade-in" style="display:${displayStyle};" data-sub-seq="${subSubSeq}">
                 ${ss.input_heading ? `<h5 class="fadeIn animated">${ss.input_heading}</h5>` : ''}
                 <div class="quest-text">
-                    <p class="fadeIn animated">${subSubSeq} &nbsp; ${ss.input_label}</p>
+                    <p class="ppt-question fadeIn animated">${subSubSeq} &nbsp; ${ss.input_label}</p>
                     ${['R', 'C', 'S'].includes(ss.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="QuestHandler.handleClickAction(this)" style="display:${hasSSAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${hasSSAns ? ssAns[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
                 </div>
                 <div class="quest-opt-btn mt-2 ${isLastEmi ? 'last-emi-tab' : ''}" id="inputActionDiv-${ss.id}">
-                    ${this.createActionHtml(ss.qu_option, ss.input_type, `user_input_${ss.id}`, ss.id, ss.option_val, emiTypeQuest?.id || 0, unitQuest?.id || 0, lastTabQuest?.id || 0, scope_id, subSubSeq, hasSSAns, hasSSAns ? ssAns[0].quest_ans : '', 0, 0, false, false, actQuest?.id || 0, ss.pro_sec_id, flag)}
+                    ${this.createActionHtml(ss.qu_option, ss.input_type, `user_input_${ss.id}`, ss.id, ss.option_val, emiTypeQuest?.id || 0, unitQuest?.id || 0, lastTabQuest?.id || 0, scope_id, subSubSeq, hasSSAns, hasSSAns ? ssAns[0].quest_ans : '', 0, 0, false, false, actQuest?.id || 0, ss.pro_sec_id, flag, true)}
                 </div>
                 ${isLastEmi ? this.createCalculationTable(ss.id, ss.emi_head_opt1, ss.emi_head_opt2, ss.emi_head_opt3, qSeq) : ''}
+                
+                <div class="ppt-nav">
+                    <button type="button" class="btn-ppt btn-prev" onclick="QuestHandler.prevSubSlide(this)">
+                        <i class="icofont icofont-arrow-left m-r-10"></i> Back
+                    </button>
+                    <button type="button" class="btn-ppt btn-next btn-next-ppt" onclick="QuestHandler.nextSubSlide(this, ${isLastEmi})">
+                        ${isLastEmi ? 'Finish <i class="icofont icofont-check-alt m-l-10"></i>' : 'Next <i class="icofont icofont-arrow-right m-l-10"></i>'}
+                    </button>
+                </div>
             </div>`;
         });
 
@@ -419,7 +533,7 @@ const QuestHandler = {
                 </table>
             </div>
             <div class="col-md-12">
-                <button class="btn btn-pill btn-custom float-end" type="button" onclick="QuestHandler.saveCalculation(this, ${id}, '${subSeq}')">
+                <button class="btn btn-pill btn-custom float-end legacy-save-btn" type="button" onclick="QuestHandler.saveCalculation(this, ${id}, '${subSeq}')">
                     <i class="icofont icofont-save">Save</i>
                 </button>
             </div>
@@ -429,7 +543,7 @@ const QuestHandler = {
     /**
      * Creates the controls/buttons for each question type.
      */
-    createActionHtml: function (option, flag, label, id, option_val, emi_id, unit_id, last_table_id, scope_id, quest_seq, hasAns, ansVal, emiVal, unitVal, hasEmiVal, hasUnitVal, act_id, quest_sec_id, globalFlag) {
+    createActionHtml: function (option, flag, label, id, option_val, emi_id, unit_id, last_table_id, scope_id, quest_seq, hasAns, ansVal, emiVal, unitVal, hasEmiVal, hasUnitVal, act_id, quest_sec_id, globalFlag, isSubSub = false) {
         let optEle = '';
         const btnData = window.btoa(JSON.stringify({
             scope_id, quest_seq, quest_id: id, quest_type: flag,
@@ -446,14 +560,18 @@ const QuestHandler = {
                 });
                 break;
             case 'I':
-                optEle += `<input class="form-control" id="${label}" name="${label}" type="text" value="${hasAns ? ansVal : ''}" onchange="QuestHandler.handleInputChange(this)" quest-dt="${btnData}" required>`;
+                optEle += `<div class="${isSubSub ? 'ppt-input-group' : ''}">
+                    <input class="${isSubSub ? 'ppt-input' : 'form-control'}" id="${label}" name="${label}" type="text" value="${hasAns ? ansVal : ''}" onchange="QuestHandler.handleInputChange(this)" quest-dt="${btnData}" required placeholder="Type answer here...">
+                </div>`;
                 break;
             case 'A':
-                this.loadActivities(option_val, globalFlag, id, emi_id, unit_id, btnData, hasAns, ansVal, emiVal, unitVal, hasEmiVal, hasUnitVal, scope_id, quest_seq, quest_sec_id);
+                this.loadActivities(option_val, globalFlag, id, emi_id, unit_id, btnData, hasAns, ansVal, emiVal, unitVal, hasEmiVal, hasUnitVal, scope_id, quest_seq, quest_sec_id, isSubSub);
                 break;
             case 'Y':
                 const year_opts = [{ id: 'Y', name: 'Yearly' }, { id: 'Q', name: 'Quarterly' }, { id: 'M', name: 'Monthly' }];
-                optEle = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" id="mode_type_${id}" quest-dt="${btnData}" onchange="QuestHandler.updateModeTable(this, ${id}, ${last_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id}, ${quest_sec_id})"><option value="">Select Mode</option>`;
+                optEle = `<div class="${isSubSub ? 'ppt-input-group' : 'form-group'}">
+                    <select class="${isSubSub ? 'ppt-select' : 'form-select'} dynamic-sel-opt custSelect2" id="mode_type_${id}" quest-dt="${btnData}" onchange="QuestHandler.updateModeTable(this, ${id}, ${last_table_id}, ${emi_id}, ${unit_id}, '${ansVal}', ${act_id}, ${quest_sec_id})">
+                        <option value="">Select Mode</option>`;
                 year_opts.forEach(dt => {
                     optEle += `<option value="${dt.id}" ${hasAns && ansVal === dt.id ? 'selected' : ''}>${dt.name}</option>`;
                 });
@@ -466,14 +584,16 @@ const QuestHandler = {
     /**
      * AJAX/Render: Activities for a question.
      */
-    loadActivities: function (type_id, flag, id, emi_id, unit_id, btnData, hasAns, ansVal, emiVal, unitVal, hasEmiVal, hasUnitVal, scope_id, quest_seq, quest_sec_id) {
+    loadActivities: function (type_id, flag, id, emi_id, unit_id, btnData, hasAns, ansVal, emiVal, unitVal, hasEmiVal, hasUnitVal, scope_id, quest_seq, quest_sec_id, isSubSub = false) {
         $.ajax({
             method: 'POST',
             url: '/get_cal_act_ajax',
             data: { type_id, flag }
         }).done((result) => {
             if (result.suc > 0) {
-                let opt = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" id="act_id_${id}" data-type-id="${type_id}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="QuestHandler.loadEmissionTypes(this, ${hasAns ? ansVal : 0}, ${emiVal}, ${unitVal}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Activity</option>`;
+                let opt = `<div class="${isSubSub ? 'ppt-input-group' : 'form-group'}">
+                    <select class="${isSubSub ? 'ppt-select' : 'form-select'} dynamic-sel-opt custSelect2" id="act_id_${id}" data-type-id="${type_id}" next-id="${emi_id}" unit-id="${unit_id}" quest-dt="${btnData}" onchange="QuestHandler.loadEmissionTypes(this, ${hasAns ? ansVal : 0}, ${emiVal}, ${unitVal}, ${hasEmiVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id}, ${isSubSub})">
+                        <option value="">Select Activity</option>`;
                 result.msg.forEach(dt => {
                     opt += `<option value="${dt.id}" ${hasAns && dt.id == ansVal ? 'selected' : ''}>${dt.act_name}</option>`;
                 });
@@ -488,7 +608,7 @@ const QuestHandler = {
     /**
      * AJAX/Render: Emission types for an activity.
      */
-    loadEmissionTypes: function (e, selVal, emiVal, unitVal, hasUnitVal, hasEmiVal, scope_id, quest_seq, quest_sec_id) {
+    loadEmissionTypes: function (e, selVal, emiVal, unitVal, hasUnitVal, hasEmiVal, scope_id, quest_seq, quest_sec_id, isSubSub = false) {
         const $el = $(e);
         const type_id = $el.attr('data-type-id');
         const act_id = $el.val();
@@ -511,10 +631,15 @@ const QuestHandler = {
                     }));
 
                     const $container = $(`#inputActionDiv-${next_id}`);
-                    $container.parent().show();
+                    // Only show if NOT in PPT mode
+                    if (!$container.closest('.sub-sub-section').hasClass('ppt-wrapper')) {
+                        $container.parent().show();
+                    }
                     $container.empty();
 
-                    let opt = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" quest-dt="${btnData}" onchange="QuestHandler.loadUnits(this, ${emiVal}, ${unitVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id})"><option value="">Select Emission Source</option>`;
+                    let opt = `<div class="${isSubSub ? 'ppt-input-group' : 'form-group'}">
+                        <select class="${isSubSub ? 'ppt-select' : 'form-select'} dynamic-sel-opt custSelect2" id="emi_type_${next_id}" data-type-id="${type_id}" next-id="${unit_q_id}" quest-dt="${btnData}" onchange="QuestHandler.loadUnits(this, ${emiVal}, ${unitVal}, ${hasUnitVal}, ${scope_id}, '${quest_seq}', ${quest_sec_id}, ${isSubSub})">
+                            <option value="">Select Emission Source</option>`;
                     res.msg.forEach(dt => {
                         opt += `<option value="${dt.id}" ${emiVal == dt.id ? 'selected' : ''}>${dt.emi_name}</option>`;
                     });
@@ -530,7 +655,7 @@ const QuestHandler = {
     /**
      * AJAX/Render: Units for an emission type.
      */
-    loadUnits: function (e, emiVal, unitVal, hasUnitVal, scope_id, quest_seq, quest_sec_id) {
+    loadUnits: function (e, emiVal, unitVal, hasUnitVal, scope_id, quest_seq, quest_sec_id, isSubSub = false) {
         const $el = $(e);
         const emi_type_id = $el.val();
         const type_id = $el.attr('data-type-id');
@@ -554,10 +679,15 @@ const QuestHandler = {
                     }));
 
                     const $container = $(`#inputActionDiv-${next_id}`);
-                    $container.parent().show();
+                    // Only show if NOT in PPT mode
+                    if (!$container.closest('.sub-sub-section').hasClass('ppt-wrapper')) {
+                        $container.parent().show();
+                    }
                     $container.empty();
 
-                    let opt = `<div class="form-group"><select class="form-select dynamic-sel-opt custSelect2" id="unit_id_${next_id}" quest-dt="${btnData}" onchange="QuestHandler.handleUnitChange(this, ${unitVal})"><option value="">Select Unit</option>`;
+                    let opt = `<div class="${isSubSub ? 'ppt-input-group' : 'form-group'}">
+                        <select class="${isSubSub ? 'ppt-select' : 'form-select'} dynamic-sel-opt custSelect2" id="unit_id_${next_id}" quest-dt="${btnData}" onchange="QuestHandler.handleUnitChange(this, ${unitVal})">
+                            <option value="">Select Unit</option>`;
                     res.msg.forEach(dt => {
                         opt += `<option value="${dt.unit_id}" co-val="${dt.co_val}" ${unitVal == dt.unit_id ? 'selected' : ''}>${dt.unit_name}</option>`;
                     });
@@ -578,9 +708,10 @@ const QuestHandler = {
         const val = $el.val();
         if (val != unitVal) this.saveSimpleData($el.attr('quest-dt'), val);
 
-        // Show next sibling question if exists
-        const $nextQuest = $el.closest('.question-box').next();
-        if ($nextQuest.hasClass('question-box')) {
+        // Show next sibling question if exists (Only if NOT in PPT mode)
+        const $box = $el.closest('.question-box');
+        const $nextQuest = $box.next();
+        if ($nextQuest.hasClass('question-box') && !$box.closest('.sub-sub-section').hasClass('ppt-wrapper')) {
             $nextQuest.show();
         }
     },
@@ -613,7 +744,11 @@ const QuestHandler = {
 
         if (ansVal != flag) this.saveSimpleData(quest_dt, flag);
 
-        $el.closest('.question-box').next().show();
+        // Only show next if NOT in PPT mode
+        if (!$el.closest('.sub-sub-section').hasClass('ppt-wrapper')) {
+            $el.closest('.question-box').next().show();
+        }
+
         $tableBody.empty();
         $(`#tot_emi_cal_${lat_table_id}`).text('');
 
