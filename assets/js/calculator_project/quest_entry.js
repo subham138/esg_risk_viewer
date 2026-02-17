@@ -443,13 +443,13 @@ const QuestHandler = {
             const filtered = calData.filter(c => c.sl_no === sl);
             const totalCo2 = filtered.reduce((acc, curr) => acc + curr.co_val, 0);
             const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && a.quest_seq.charAt(2) === subParentSeq.charAt(2));
-            const q3Ans = qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
+            const q3Ans = qAnsSec[1]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
 
             let prevDataHtml = '<div class="col-md-12">';
             let isCopied = false;
 
             for (const qa of qAnsSec) {
-                if (qa.is_copy === 'Y') isCopied = true;
+                if (qa.is_copy === 'Y') {isCopied = true; break;}
                 if (qa.input_type === 'A') break;
 
                 // Extract the sequence number part (e.g., "3" from "1.1.3")
@@ -855,30 +855,6 @@ const QuestHandler = {
         const confirmed = await inititate_sweet_conf_alert('You are about to save this entry.', 'Once saved, you will only be able to edit the values used to calculate GHG emissions');
 
         if (confirmed > 0) {
-            // const data = {
-            //     enc_dt: $(`#mode_type_${$(`#mode_quest_id_${id}`).val()}`).attr('quest-dt'),
-            //     repo_period: $(`#repo_period_${id}`).val(),
-            //     strt_month: $(`#strt_month_${id}`).val(),
-            //     mode_quest_id: $(`#mode_quest_id_${id}`).val(),
-            //     mode_quest_val: $(`#mode_quest_val_${id}`).val(),
-            //     quest_id: id,
-            //     subSeq,
-            //     act_id: $(`#act_id_${$(`#act_id_tab_${id}`).val()}`).val(),
-            //     emi_id: $(`#emi_type_${$(`#emi_id_tab_${id}`).val()}`).val(),
-            //     unit_id: $(`#unit_id_${$(`#unit_id_tab_${id}`).val()}`).val(),
-            //     cal_val: JSON.stringify($(`input[name="cal_val_${id}"]`).map((i, el) => $(el).val()).get()),
-            //     emi_fact_val: JSON.stringify($(`input[name="emi_fact_val_${id}"]`).map((i, el) => $(el).val()).get()),
-            //     co_val: JSON.stringify($(`input[name="co_val_${id}"]`).map((i, el) => $(el).val()).get()),
-            //     repo_mode_label: JSON.stringify($(`input[name="cal_val_${id}"]`).map((i, el) => $(el).parent().prev().text().trim()).get())
-            // };
-
-            // $.ajax({
-            //     method: 'POST',
-            //     url: '/save_co_cal_ajax',
-            //     data: data,
-            //     success: (res) => { if (res.suc > 0) window.location.reload(); }
-            // });
-
             var repo_period = $(`#repo_period_${id}`).val(),
                 strt_month = $(`#strt_month_${id}`).val(),
                 mode_quest_id = $(`#mode_quest_id_${id}`).val(),
