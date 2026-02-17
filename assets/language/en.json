@@ -62,11 +62,13 @@
       "sub_header": "Project Add/Edit",
       "head": "You are working on the project",
       "sector": "Sector",
-      "sec_select": "Select Sector",
+      "sec_select": "Click to select sector of activity",
       "indus": "Industries",
-      "ind_select": "Select Industry",
+      "ind_select": "Click to select all relevant industries",
       "bus_act": "Business Activity(ies)",
+      "bus_act_select": "Click to select all relevant business activities",
       "location": "Location(s) of Business Activity(ies)",
+      "loc_select": "Click to select all relevant locations",
       "sub_btn": "Submit"
     },
     "report_edit": {

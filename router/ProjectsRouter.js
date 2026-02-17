@@ -89,7 +89,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
   var proj_count = await db_Select(
     "COUNT(*) AS cnt",
     "td_project",
-    `client_id = ${req.session?.user.client_id} AND repo_flag = '${flag}' AND proj_type='${dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode}'`,
+    `client_id = ${req.session?.user.client_id} AND active_flag = 'Y' AND repo_flag = '${flag}' AND proj_type='${dec_flag == "IC" || dec_flag == "FC" ? "C" : req.session.user.platform_mode}'`,
     null
   );
   let projCount = proj_count.suc > 0 ? proj_count.msg[0].cnt : 0

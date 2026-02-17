@@ -1,4 +1,4 @@
-<%- include('../templates/header.ejs') %>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: `${header}`, sub_header_url: header_url, sub_sub_header: sub_header, show_br: true}) %>
 
     <style>
         /* PowerPoint Style Interface */
@@ -308,8 +308,7 @@
                     <div class="ppt-nav">
                         <button type="button" class="btn-ppt btn-next" onclick="nextSlide(1)">Next <i
                                 class="icofont icofont-arrow-right list_icon ms-2"></i></button>
-                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter
-                                ↵</strong>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter ↵</strong>
                         </div>
                     </div>
                 </div>
@@ -337,6 +336,8 @@
                         <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(2)">Back</button>
                         <button type="button" class="btn-ppt btn-next" onclick="nextSlide(2)">Next <i
                                 class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter ↵</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -352,8 +353,7 @@
                         <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(3)">Back</button>
                         <button type="button" class="btn-ppt btn-next" onclick="nextSlide(3)">Next <i
                                 class="icofont icofont-arrow-right list_icon ms-2"></i></button>
-                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter
-                                ↵</strong>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter ↵</strong>
                         </div>
                     </div>
                 </div>
@@ -378,6 +378,8 @@
                         <button type="button" class="btn-ppt btn-prev" onclick="prevSlide(4)">Back</button>
                         <button type="button" class="btn-ppt btn-next" onclick="nextSlide(4)">Next <i
                                 class="icofont icofont-arrow-right list_icon ms-2"></i></button>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter ↵</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -405,6 +407,8 @@
                             style="background-color: #198754; box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);">
                             <%= id> 0 ? 'Update User' : 'Create User' %> <i class="icofont icofont-check-alt ms-2"></i>
                         </button>
+                        <div style="font-size: 0.8rem; color: #646464; margin-left: 1rem;">Press <strong>Enter ↵</strong>
+                        </div>
                     </div>
                 </div>
 
