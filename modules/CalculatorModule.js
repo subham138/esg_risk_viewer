@@ -155,9 +155,9 @@ module.exports = {
     getCalQuestUserDt: (scope_id = 1, proj_id, client_id, proj_year, flag = 'E') => {
         return new Promise(async (resolve, reject) => {
             var res_dt = {suc:0, msg:[]}
-            var select = 'id, sec_name',
-            whr = `scope_id = ${scope_id} AND lang_flag = '${flag}'`,
-            order = null;
+            var select = 'id, sl_no, sec_name',
+                whr = `scope_id = ${scope_id} AND lang_flag = '${flag}'`,
+                order = `ORDER BY sl_no`;
             var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
             if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
                 var newData = {}, calNewData = {}, calQuestDt = {};
