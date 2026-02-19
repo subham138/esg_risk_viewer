@@ -777,14 +777,15 @@ const QuestHandler = {
                     .forEach((m, i) => rows.push({ label: m, id: i + 1 }));
                 break;
         }
-
+        let calRow = 0
         rows.forEach(r => {
             $tableBody.append(`<tr>
                 <td><span id="input-mode-span-${r.id === 1 && flag === 'Y' ? subId : r.id + '-' + subId}">${r.label}</span>${r.id === 1 ? commonInputs : ''}</td>
-                <td><input class="form-control" name="cal_val_${subId}" type="text" onchange="QuestHandler.calculateEmissions(this, ${subId})" required></td>
+                <td><input class="form-control" name="cal_val_${subId}" type="text" onchange="QuestHandler.calculateEmissions(this, ${subId})" ${calRow === 0 ? 'required' : ''}></td>
                 <td><input class="form-control" name="emi_fact_val_${subId}" type="text" value="${colVal}" readonly></td>
                 <td><input class="form-control" name="co_val_${subId}" type="text" readonly></td>
             </tr>`);
+            calRow++;
         });
     },
 
