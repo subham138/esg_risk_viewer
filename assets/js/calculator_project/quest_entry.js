@@ -489,16 +489,16 @@ const QuestHandler = {
             accordion += `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCo2.toFixed(2)}</td></tr></tfoot></table></div></div>`;
 
             if (!isCopied) {
-                const editData = window.btoa(JSON.stringify({
+                const editData = window.btoa(encodeURIComponent(JSON.stringify({
                     cal_dt: filtered,
                     repo_mode: qAnsSec.find(q => q.quest_type === 'Y')?.quest_ans || 'Y',
                     hd1: lastQuest.emi_head_opt1.replace(/'/g, "\\'"),
                     hd2: lastQuest.emi_head_opt2.replace(/'/g, "\\'"),
                     hd3: lastQuest.emi_head_opt3.replace(/'/g, "\\'"),
                     title: `<span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} kg CO2e </span>`
-                }));
+                })));
                 accordion += `<div class="col-md-12 mt-3"><div class="float-end">
-                    <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.deleteRecord('${window.btoa(JSON.stringify(firstEntry))}')"><i class="icofont icofont-trash text-danger"></i></button>
+                    <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.deleteRecord('${window.btoa(encodeURIComponent(JSON.stringify(firstEntry)))}')"><i class="icofont icofont-trash text-danger"></i></button>
                     <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.editRecord('${editData}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
                 </div></div>`;
             }
@@ -782,7 +782,7 @@ const QuestHandler = {
             $tableBody.append(`<tr>
                 <td><span id="input-mode-span-${r.id === 1 && flag === 'Y' ? subId : r.id + '-' + subId}">${r.label}</span>${r.id === 1 ? commonInputs : ''}</td>
                 <td><input class="form-control" name="cal_val_${subId}" type="text" onchange="QuestHandler.calculateEmissions(this, ${subId})" ${calRow === 0 ? 'required' : ''}></td>
-                <td><input class="form-control" name="emi_fact_val_${subId}" type="text" value="${colVal}" readonly></td>
+                <td><input class="form-control" name="emi_fact_val_${subId}" type="text" onchange="QuestHandler.calculateEmissions(this, ${subId})" value="${colVal}" readonly></td>
                 <td><input class="form-control" name="co_val_${subId}" type="text" readonly></td>
             </tr>`);
             calRow++;
@@ -969,7 +969,7 @@ const QuestHandler = {
                         <input class="form-control" name="cal_val" type="text" onchange="QuestHandler.calculateEmissions(this, 'Md')" required>
                     </td>
                     <td>
-                        <input class="form-control" name="emi_fact_val" type="text" value="${emi_val}" readonly>
+                        <input class="form-control" name="emi_fact_val" type="text" value="${emi_val}" onchange="QuestHandler.calculateEmissions(this, 'Md')" readonly>
                     </td>
                     <td>
                         <input class="form-control" name="co_val" type="text" readonly>

@@ -263,7 +263,7 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
   currDate = dateFormat(new Date(), 'yyyy-mm-dd'), 
   user = req.session.user, res_dt= {};
 
-  console.log(req.body, 'Body Data');
+  // console.log(req.body, 'Body Data');
   
 
   var data = new Buffer.from(enc_dt, 'base64').toString()
@@ -294,14 +294,21 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
     
     var i = 0
     for(let dt of cal_val){
-      if(co_val[i] > 0){
+      if(co_val[i] >= 0){
+        // console.log('I am here in if function');
+        
         var table_name = 'td_ghg_quest_cal',
         fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
-        values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt}, ${emi_fact_val[i]}, ${co_val[i]}, '${user.user_name}', '${dateTime}')`,
+        values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${max_sl_no_dt.msg[0].next_sl_no}, ${sec_id}, ${act_id}, ${emi_id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${dt || 0}, ${emi_fact_val[i] || 0}, ${co_val[i] || 0}, '${user.user_name}', '${dateTime}')`,
         whr = null,
         flag = 0;
         res_dt = await db_Insert(table_name, fields, values, whr, flag)
+        // console.log(res_dt);
+        
       }
+      // else{
+      //   console.log('I am here in else function');
+      // }
       i++
     }
 
@@ -445,7 +452,7 @@ CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
   client_id = req.session.user.client_id,
   user_name = req.session.user.user_name,
   dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'), res_dt;
-  console.log(req_data, 'req_data =============');
+  // console.log(req_data, 'req_data =============');
   
   if(req_data.flag > 0){
     if (Array.isArray(req_data.cal_val)) {
@@ -500,7 +507,7 @@ CalcUserRouter.post('/ghg_edit_cal_data_ajax', async (req, res) => {
     res.redirect(`/cal_proj_report_view?${req_data.url}`)
   }else{
     var data = new Buffer.from(req_data.enc_dt, 'base64').toString()
-    data = JSON.parse(data)
+    data = JSON.parse(decodeURIComponent(data))
     res.render("calculator_project/calTabModal", {cal_data: data})
   }
 })

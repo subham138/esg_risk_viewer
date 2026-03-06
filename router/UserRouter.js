@@ -85,8 +85,8 @@ UserRouter.post("/register", async (req, res) => {
     let hashedPassword = await bcrypt.hashSync(password, 10);
 
     var table_name = "md_user",
-      fields = `(user_name, user_id, password, user_type, country,policy,created_dt)`,
-      values = `('${name}', '${email}', '${hashedPassword}', 'C', '${country}', '${policy}','${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
+      fields = `(user_name, user_id, password, user_type, country,policy, fast_login,created_dt)`,
+      values = `('${name}', '${email}', '${hashedPassword}', 'C', '${country}', '${policy}', 'N','${dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss")}')`,
       whr = null,
       flag = 0;
 
@@ -364,10 +364,10 @@ UserRouter.post("/chk_user_login", async (req, res) => {
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         if (chk_dt.msg[0].user_type != "S") {
-          var otp = Math.floor(100000 + Math.random() * 900000);
+          var otp = Math.floor(100000 + Math.random() * 900000); // 123456
           //  console.log(otp);
           req.session.message = {otp: otp}
-         var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
+          var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp) // {suc:1}
           if(send_email.suc > 0){
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: otp };
           }else{
