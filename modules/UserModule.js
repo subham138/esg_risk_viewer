@@ -126,9 +126,9 @@ module.exports = {
       // MODIFIED BY VIKASH //
         fields =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
-            ? `user_name = '${data.user_name}', user_type = 'C', country = '${data.country}',policy = '${data.policy}', user_id = '${data.user_id}', active_flag = 'Y', modified_by = '${user}', modified_dt = '${datetime}'`
-            : `(client_id, user_name, user_type,country,policy, user_id, password, active_flag, created_by, created_dt)`,
-        values = `('${client_id}', '${data.user_name}', 'C', '${data.country}', '${data.policy}', '${data.user_id}', '${pass}', 'Y', '${user}', '${datetime}')`,
+            ? `user_name = '${data.user_name}', user_type = 'C', country = '${data.country}',policy = '${data.policy}', user_id = '${data.user_id}', active_flag = 'Y', fast_login = 'N', modified_by = '${user}', modified_dt = '${datetime}'`
+            : `(client_id, user_name, user_type,country,policy, user_id, password, active_flag, fast_login, created_by, created_dt)`,
+        values = `('${client_id}', '${data.user_name}', 'C', '${data.country}', '${data.policy}', '${data.user_id}', '${pass}', 'Y', 'N', '${user}', '${datetime}')`,
         // END //
         whr =
           chk_dt.suc > 0 && chk_dt.msg.length > 0
