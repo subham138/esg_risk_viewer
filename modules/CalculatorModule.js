@@ -1,4 +1,4 @@
-const {db_Select, db_Insert} = require("./MasterModule")
+const {db_Select, db_Insert, SCOPE_2_ELECTRICITY_MASTER} = require("./MasterModule")
 const dateFormat = require("dateformat");
 module.exports = {
     getUnitList: (id = 0, flag='E') => {
@@ -220,6 +220,65 @@ module.exports = {
                 calWhr = `a.quest_id=b.id AND a.client_id = ${client_id} AND a.project_id = ${proj_id} AND a.proj_year = ${period} AND a.end_flag != 'N'`;
             var calVal = await db_Select(calSel, 'td_ghg_quest a, md_cal_form_builder b', calWhr, `ORDER BY a.scope, a.pro_sl_no`)
             resolve(calVal)
+        })
+    },
+    copyElectricGhgData: (rawData, user) => {
+        return new Promise(async (resolve, reject) => {
+            var { enc_dt, repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, quest_id, act_id, emi_id, unit_id, repo_mode_label, subSeq, pro_sl_no, sec_id } = rawData;
+
+            cal_val = JSON.parse(cal_val)
+            emi_fact_val = JSON.parse(emi_fact_val)
+            co_val = JSON.parse(co_val)
+            repo_mode_label = JSON.parse(repo_mode_label)
+
+            var dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+            res_dt = {};
+
+            var data = enc_dt
+
+            const sc2ElecMaster = SCOPE_2_ELECTRICITY_MASTER
+            
+            for (let dt of sc2ElecMaster) {
+                if (dt.is_parent != 'Y') {
+                    var ghg_emi_fact_val = await db_Select('co_val', 'md_cal_emi_val', `act_id = ${act_id} AND emi_type_id = ${dt.id} AND unit_id = ${unit_id}`)
+                    dt['emi_fact_val'] = ghg_emi_fact_val.suc > 0 && ghg_emi_fact_val.msg.length > 0 ? ghg_emi_fact_val.msg[0].co_val : 0
+
+                    var max_sl_no_dt = await db_Select('IF(MAX(sl_no) > 0, MAX(sl_no), 0)+1 next_sl_no', 'td_ghg_quest_cal', `scope=${data.scope_id} AND client_id = ${user.client_id} AND project_id=${data.proj_id} AND quest_id=${quest_id} AND repo_period = ${repo_period}`, null)
+                    
+                    var newSlNo = max_sl_no_dt.msg[0].next_sl_no
+
+                    let i = 0;
+
+                    for (let cdt of cal_val) {
+                        if (co_val[i] >= 0) {
+                            // console.log('I am here in if function');
+                            let newCoVal = ((parseFloat(cdt) * parseFloat(dt.emi_fact_val)) / 1000).toFixed(4) || 0
+                            var table_name = 'td_ghg_quest_cal',
+                                fields = `(client_id, scope, project_id, quest_id, sl_no, sec_id, act_id, emi_type_id, repo_period, repo_month, repo_mode_label, emi_type_unit_id, cal_val, emi_fact_val, co_val, created_by, created_dt)`,
+                                values = `(${user.client_id}, ${data.scope_id}, ${data.proj_id}, ${quest_id}, ${newSlNo}, ${sec_id}, ${act_id}, ${dt.id}, ${repo_period}, '${strt_month}', '${repo_mode_label[i]}', ${unit_id}, ${cdt || 0}, ${dt.emi_fact_val || 0}, ${newCoVal || 0}, '${user.user_name}', '${dateTime}')`,
+                                whr = null,
+                                flag = 0;
+                            res_dt = await db_Insert(table_name, fields, values, whr, flag)
+                        }
+                        i++
+                    }
+
+                    var ghg_all_data = await db_Select(`a.flag,a.client_id,a.scope,a.project_id,a.proj_year, ${newSlNo} pro_sl_no,a.entry_dt,a.quest_id,a.quest_type,a.quest_seq,a.quest_ans,a.repo_start_year,a.repo_start_month,a.repo_start_date,a.end_flag,a.is_copy,a.created_by,a.created_dt,a.modified_by,a.modified_dt`, 'td_ghg_quest a, md_cal_form_builder b', `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.quest_seq LIKE "${subSeq}%" AND a.end_flag = 'Y' AND a.pro_sl_no = ${pro_sl_no}`, null)
+
+                    if (ghg_all_data.suc > 0 && ghg_all_data.msg.length > 0) {
+                        for (let ghgDt of ghg_all_data.msg) {
+                            let newQuestAns = ghgDt.quest_type == 'E' && ghgDt.quest_ans == sc2ElecMaster[0].id ? dt.id : ghgDt.quest_ans;
+                            res_dt = await db_Insert('td_ghg_quest', `(flag,client_id,scope,project_id,proj_year,pro_sl_no,entry_dt,quest_id,quest_type,quest_seq,quest_ans,repo_start_year,repo_start_month,repo_start_date,end_flag,is_copy,created_by,created_dt)`, `('${ghgDt.flag}', ${ghgDt.client_id}, ${ghgDt.scope}, ${ghgDt.project_id}, ${ghgDt.proj_year}, ${ghgDt.pro_sl_no}, '${dateFormat(ghgDt.entry_dt, 'yyyy-mm-dd')}', ${ghgDt.quest_id}, '${ghgDt.quest_type}', '${ghgDt.quest_seq}', '${newQuestAns}', '${ghgDt.repo_start_year}', '${ghgDt.repo_start_month}', '${ghgDt.repo_start_date}', '${ghgDt.end_flag}', 'N', '${ghgDt.created_by}', '${dateFormat(ghgDt.created_dt, 'yyyy-mm-dd HH:MM:ss')}')`, null, 0)
+
+                            console.log(res_dt);
+                            
+                        }
+                    }else{
+                        res_dt = {suc: 0, msg: 'No data found to copy'}
+                    }
+                }
+            }
+            resolve(res_dt)
         })
     }
 }

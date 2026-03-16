@@ -290,12 +290,26 @@ const QuestHandler = {
             complete: () => $('.loader-wrapper').hide()
         });
     },
+    checkContainerReady: function (targetCount, intervalId) {
+        console.log(`I am in interval and the container ${targetCount} counts: `, $(targetCount).children().length);
+
+        if ($(targetCount).children().length > 0) {
+            $('.loader-wrapper').hide();
+            clearInterval(intervalId);
+        } else {
+            $('.loader-wrapper').show();
+        }
+    },
 
     /**
      * DOM Rendering: Builds the question UI.
      */
     renderQuestions: function (tabId, res, scope_id, flag) {
+        console.log(tabId);
+
         if (Object.keys(res.msg).length === 0) return;
+
+        // let intervalId = setInterval(() => this.checkContainerReady(`${tabId} #v-pills-tabContent  .tab-pane`, intervalId), 100);
 
         const $container = $(tabId).children('.quest-tab-context').empty();
         let navPills = '<div class="col-sm-3 tabs-responsive-side"><div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">';
@@ -303,7 +317,7 @@ const QuestHandler = {
 
         $.each(Object.keys(res.msg), (i, title) => {
             const cleanId = title.replace(/[^a-zA-Z0-9]/g, '_');
-            navPills += `<a class="nav-link ${i === 0 ? 'active' : ''}" id="${cleanId}_tab" data-bs-toggle="pill" href="#${cleanId}" role="tab">${title}</a>`;
+            navPills += `<a class="nav-link ghg-tabs ${i === 0 ? 'active' : ''}" id="${cleanId}_tab" data-bs-toggle="pill" href="#${cleanId}" role="tab">${title}</a>`;
             tabContent += `<div class="tab-pane fade bounceInRight animated ${i === 0 ? 'active show' : ''}" id="${cleanId}" role="tabpanel">`;
 
             if (res.msg[title].length > 0) {
@@ -319,6 +333,12 @@ const QuestHandler = {
         $container.append(navPills + tabContent);
 
         this.initPlugins();
+        let loaderInterval = setInterval(() => $('.loader-wrapper').show(), 100);
+        setTimeout(() => {
+            $('.loader-wrapper').hide();
+            clearInterval(loaderInterval)
+        }, 6000)
+        // $('.loader-wrapper').hide()
     },
 
     /**
@@ -449,7 +469,7 @@ const QuestHandler = {
             let isCopied = false;
 
             for (const qa of qAnsSec) {
-                if (qa.is_copy === 'Y') {isCopied = true; break;}
+                if (qa.is_copy === 'Y') { isCopied = true; break; }
                 if (qa.input_type === 'A') break;
 
                 // Extract the sequence number part (e.g., "3" from "1.1.3")
@@ -1012,3 +1032,15 @@ const QuestHandler = {
 };
 
 $(document).ready(() => QuestHandler.init());
+
+// $(document).on('click', '.ghg-tabs', function () {
+//     const chkGhgContainer = setInterval(() => {
+//         console.log($(this).attr('href'), 'TAB CLICKED')
+//         if($($(this).attr('href')).children().length > 0){
+//             $('.loader-wrapper').hide()
+//             clearInterval(chkGhgContainer)
+//         }else{
+//             $('.loader-wrapper').show()
+//         }
+//     }, 100)
+// })

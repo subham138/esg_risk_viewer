@@ -636,12 +636,14 @@
     
     window.onload = updateChart;
     window.onresize = () => {
-        act_chart.draw(actData, actOptions);
-        emiChart.draw(actData, emiOvtOpt);
-        console.log(emiActChart, emiActChartDt, emiActChartOpt, 'emiActChart')
-        emiActChart.draw(emiActChartDt, emiActChartOpt);
-        pathway_chart.draw(pathData, pathOptions);
-        chart.draw(subTrnsDt, options)
+        if($('#dash-top-tab').hasClass('active')){
+            act_chart.draw(actData, actOptions);
+            emiChart.draw(actData, emiOvtOpt);
+            console.log(emiActChart, emiActChartDt, emiActChartOpt, 'emiActChart')
+            emiActChart.draw(emiActChartDt, emiActChartOpt);
+            pathway_chart.draw(pathData, pathOptions);
+            chart.draw(subTrnsDt, options)
+        }
     };
 
     $('.toggleSidebarTogle').on('click', function(){

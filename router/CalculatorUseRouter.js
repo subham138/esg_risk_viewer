@@ -2,8 +2,8 @@ const { getMetNote } = require('../modules/AdminModule');
 const { getSusDiscList, getDynamicData, getActMetrialDtls } = require('../modules/DataCollectionModule');
 
 const CalcUserRouter = require('express').Router(),
-{ getCalQuestUserDt, getCalAct, getGhgCalList, getGhgQuestList, getCalTypeList } = require('../modules/CalculatorModule'),
-{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select, db_Delete, USER_TYPE_LIST } = require('../modules/MasterModule'),
+{ getCalQuestUserDt, getCalAct, getGhgCalList, getGhgQuestList, getCalTypeList, copyElectricGhgData } = require('../modules/CalculatorModule'),
+{ SCOPE_LIST, YEAR_LIST, PROJECT_LIST, db_Insert, db_Select, db_Delete, USER_TYPE_LIST, SCOPE_2_ELECTRICITY_MASTER } = require('../modules/MasterModule'),
 { getProjectList, getGhgEmiList, getSavedProjectWork, getActiveTopicList, getCheckedProjectTopList, getProjectListUpdated } = require('../modules/ProjectModule'),
 dateFormat = require('dateformat');
 
@@ -254,6 +254,9 @@ CalcUserRouter.post('/get_cal_save_dt_ajax', async (req, res) => {
 CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
   var {enc_dt, repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, quest_id, act_id, emi_id, unit_id, repo_mode_label, subSeq} = req.body
 
+  console.log(JSON.stringify(req.body));
+  
+
   cal_val = JSON.parse(cal_val)
   emi_fact_val = JSON.parse(emi_fact_val)
   co_val = JSON.parse(co_val)
@@ -272,7 +275,8 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
   var chk_dt = await db_Select('id', 'td_ghg_quest', `client_id = ${user.client_id} AND project_id = ${data.proj_id} AND quest_id = ${mode_quest_id} AND proj_year = ${repo_period} AND scope = ${data.scope_id}`)
 
   // console.log(chk_dt, 'chk_dt');
-  
+
+  let is_copy = act_id == SCOPE_2_ELECTRICITY_MASTER[0].act_id && emi_id == SCOPE_2_ELECTRICITY_MASTER[0].id ? true : false
 
   var table_name = 'td_ghg_quest',
   fields = chk_dt.suc > 0 && chk_dt.msg.length > 0 ? `quest_ans = '${mode_quest_val}', repo_start_year = '${repo_period}', repo_start_month = '${strt_month}', repo_start_date = 0, modified_by = '${user.user_id}', modified_dt = '${dateTime}'` : '(client_id, scope, project_id, proj_year, entry_dt, quest_id, quest_type, quest_seq, quest_ans, repo_start_year, repo_start_month, repo_start_date, created_by, created_dt)',
@@ -314,6 +318,15 @@ CalcUserRouter.post('/save_co_cal_ajax', async (req, res) => {
 
     try{
       await db_Insert('td_ghg_quest a, md_cal_form_builder b', `a.end_flag = 'Y', a.modified_by = '${user.user_id}', a.modified_dt = '${dateTime}'`, null, `a.quest_id=b.id AND a.client_id = ${user.client_id} AND a.project_id = ${data.proj_id} AND a.scope = ${data.scope_id} AND a.quest_seq LIKE "${subSeq}%" AND a.end_flag = 'N'`, 1)
+
+      if(is_copy){
+        let copyEntryData = req.body
+        copyEntryData['enc_dt'] = data
+        copyEntryData['pro_sl_no'] = max_sl_no_dt.msg[0].next_sl_no
+        copyEntryData['sec_id'] = sec_id
+
+        await copyElectricGhgData(copyEntryData, user)
+      }
     }catch(err){
       console.log(err);
     }
