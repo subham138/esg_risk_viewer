@@ -305,8 +305,6 @@ const QuestHandler = {
      * DOM Rendering: Builds the question UI.
      */
     renderQuestions: function (tabId, res, scope_id, flag) {
-        console.log(tabId);
-
         if (Object.keys(res.msg).length === 0) return;
 
         // let intervalId = setInterval(() => this.checkContainerReady(`${tabId} #v-pills-tabContent  .tab-pane`, intervalId), 100);
@@ -459,70 +457,77 @@ const QuestHandler = {
         const slNos = [...new Set(calData.map(c => c.sl_no))];
         let accordion = '';
 
+        let electricityDummyId = [2425, 2426, 2427, 741];
+        let rejNumArr = []
+        res.quest_ans_sec[title].map(dt => dt.quest_type == 'E' && electricityDummyId.includes(+dt.quest_ans) ? rejNumArr.push(dt.pro_sl_no) : null)
+        
+
         slNos.forEach(sl => {
-            const filtered = calData.filter(c => c.sl_no === sl);
-            const totalCo2 = filtered.reduce((acc, curr) => acc + curr.co_val, 0);
-            const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && a.quest_seq.charAt(2) === subParentSeq.charAt(2));
-            const q3Ans = qAnsSec[1]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
-
-            let prevDataHtml = '<div class="col-md-12">';
-            let isCopied = false;
-
-            for (const qa of qAnsSec) {
-                if (qa.is_copy === 'Y') { isCopied = true; break; }
-                if (qa.input_type === 'A') break;
-
-                // Extract the sequence number part (e.g., "3" from "1.1.3")
-                const seqParts = qa.quest_seq.split('.');
-                const seqNum = parseInt(seqParts[seqParts.length - 1] || seqParts[seqParts.length - 2]);
-                if (seqNum > 3) break;
-
-                if (qa.input_heading) prevDataHtml += `<p class="sub-title">${qa.input_heading}</p>`;
-                prevDataHtml += `<div class="figure d-block"><blockquote class="blockquote"><p class="mb-0">${qa.quest_seq} ${qa.input_label}</p></blockquote><div class="blockquote-footer">${qa.quest_ans}</div></div>`;
+            if (!rejNumArr.includes(sl)){
+                const filtered = calData.filter(c => c.sl_no === sl);
+                const totalCo2 = filtered.reduce((acc, curr) => acc + curr.co_val, 0);
+                const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && a.quest_seq.charAt(2) === subParentSeq.charAt(2));
+                const q3Ans = qAnsSec[1]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
+    
+                let prevDataHtml = '<div class="col-md-12">';
+                let isCopied = false;
+    
+                for (const qa of qAnsSec) {
+                    if (qa.is_copy === 'Y') { isCopied = true; break; }
+                    if (qa.input_type === 'A') break;
+    
+                    // Extract the sequence number part (e.g., "3" from "1.1.3")
+                    const seqParts = qa.quest_seq.split('.');
+                    const seqNum = parseInt(seqParts[seqParts.length - 1] || seqParts[seqParts.length - 2]);
+                    if (seqNum > 3) break;
+    
+                    if (qa.input_heading) prevDataHtml += `<p class="sub-title">${qa.input_heading}</p>`;
+                    prevDataHtml += `<div class="figure d-block"><blockquote class="blockquote"><p class="mb-0">${qa.quest_seq} ${qa.input_label}</p></blockquote><div class="blockquote-footer">${qa.quest_ans}</div></div>`;
+                }
+                prevDataHtml += '</div>';
+    
+                const firstEntry = filtered[0];
+                const accordionId = `accordionForIndCal${sl}-${lastQuest.id}`;
+    
+                accordion += `<div class="accordion custom-span-card" id="${accordionId}">
+                    <div class="accordion-item my-3 caruBackCol1">
+                        <h2 class="accordion-header" id="clCalHeading${sl}-${lastQuest.id}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${sl}-${lastQuest.id}">
+                                <p>${q3Ans}</p>
+                                <div><span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} tCO2e</span></div>
+                            </button>
+                        </h2>
+                        <div id="collapseColVal${sl}-${lastQuest.id}" class="accordion-collapse collapse" data-bs-parent="#${accordionId}">
+                            <div class="accordion-body row">
+                                ${prevDataHtml}
+                                <div class="col-md-12">
+                                    <div class="table-responsive mt-3">
+                                        <table class="table table-bordered text-center">
+                                            <thead><tr><th></th><th>${lastQuest.emi_head_opt1}</th><th>${lastQuest.emi_head_opt2}</th><th>${lastQuest.emi_head_opt3}</th></tr></thead>
+                                            <tbody>`;
+    
+                filtered.forEach(item => {
+                    accordion += `<tr><td>${item.repo_mode_label}</td><td>${item.cal_val}</td><td>${item.emi_fact_val}</td><td>${item.co_val}</td></tr>`;
+                });
+    
+                accordion += `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCo2.toFixed(2)}</td></tr></tfoot></table></div></div>`;
+    
+                if (!isCopied) {
+                    const editData = window.btoa(encodeURIComponent(JSON.stringify({
+                        cal_dt: filtered,
+                        repo_mode: qAnsSec.find(q => q.quest_type === 'Y')?.quest_ans || 'Y',
+                        hd1: lastQuest.emi_head_opt1.replace(/'/g, "\\'"),
+                        hd2: lastQuest.emi_head_opt2.replace(/'/g, "\\'"),
+                        hd3: lastQuest.emi_head_opt3.replace(/'/g, "\\'"),
+                        title: `<span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} kg CO2e </span>`
+                    })));
+                    accordion += `<div class="col-md-12 mt-3"><div class="float-end">
+                        <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.deleteRecord('${window.btoa(encodeURIComponent(JSON.stringify(firstEntry)))}')"><i class="icofont icofont-trash text-danger"></i></button>
+                        <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.editRecord('${editData}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
+                    </div></div>`;
+                }
+                accordion += '</div></div></div></div>';
             }
-            prevDataHtml += '</div>';
-
-            const firstEntry = filtered[0];
-            const accordionId = `accordionForIndCal${sl}-${lastQuest.id}`;
-
-            accordion += `<div class="accordion custom-span-card" id="${accordionId}">
-                <div class="accordion-item my-3 caruBackCol1">
-                    <h2 class="accordion-header" id="clCalHeading${sl}-${lastQuest.id}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${sl}-${lastQuest.id}">
-                            <p>${q3Ans}</p>
-                            <div><span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} tCO2e</span></div>
-                        </button>
-                    </h2>
-                    <div id="collapseColVal${sl}-${lastQuest.id}" class="accordion-collapse collapse" data-bs-parent="#${accordionId}">
-                        <div class="accordion-body row">
-                            ${prevDataHtml}
-                            <div class="col-md-12">
-                                <div class="table-responsive mt-3">
-                                    <table class="table table-bordered text-center">
-                                        <thead><tr><th></th><th>${lastQuest.emi_head_opt1}</th><th>${lastQuest.emi_head_opt2}</th><th>${lastQuest.emi_head_opt3}</th></tr></thead>
-                                        <tbody>`;
-
-            filtered.forEach(item => {
-                accordion += `<tr><td>${item.repo_mode_label}</td><td>${item.cal_val}</td><td>${item.emi_fact_val}</td><td>${item.co_val}</td></tr>`;
-            });
-
-            accordion += `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCo2.toFixed(2)}</td></tr></tfoot></table></div></div>`;
-
-            if (!isCopied) {
-                const editData = window.btoa(encodeURIComponent(JSON.stringify({
-                    cal_dt: filtered,
-                    repo_mode: qAnsSec.find(q => q.quest_type === 'Y')?.quest_ans || 'Y',
-                    hd1: lastQuest.emi_head_opt1.replace(/'/g, "\\'"),
-                    hd2: lastQuest.emi_head_opt2.replace(/'/g, "\\'"),
-                    hd3: lastQuest.emi_head_opt3.replace(/'/g, "\\'"),
-                    title: `<span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} kg CO2e </span>`
-                })));
-                accordion += `<div class="col-md-12 mt-3"><div class="float-end">
-                    <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.deleteRecord('${window.btoa(encodeURIComponent(JSON.stringify(firstEntry)))}')"><i class="icofont icofont-trash text-danger"></i></button>
-                    <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.editRecord('${editData}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
-                </div></div>`;
-            }
-            accordion += '</div></div></div></div>';
         });
 
         return accordion;
