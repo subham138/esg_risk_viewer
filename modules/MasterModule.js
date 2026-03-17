@@ -209,4 +209,11 @@ const SCOPE_2_ELECTRICITY_MASTER = [
   { id: 2427, act_id: 373, label: 'Generation', is_parent: 'N' },
 ]
 
-module.exports = { db_Routine, db_Select, db_Insert, db_Delete, db_Check, checkUserSubscriptionUsage, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST, FRAMEWORK_LIST, SCOPE_2_ELECTRICITY_MASTER };
+const SCOPE_2_HEAT_MASTER = [
+  { id: 219, act_id: 13, label: 'Heat and steam', is_parent: 'Y' },
+  { id: 2431, act_id: 13, label: 'Generation', is_parent: 'N' },
+  { id: 2432, act_id: 13, label: 'Extraction to power plant - Transmission & Distribution', is_parent: 'N' },
+  { id: 2433, act_id: 13, label: 'Power plant to organisation - Transmission & Distribution', is_parent: 'N' },
+]
+
+module.exports = { db_Routine, db_Select, db_Insert, db_Delete, db_Check, checkUserSubscriptionUsage, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST, FRAMEWORK_LIST, SCOPE_2_ELECTRICITY_MASTER, SCOPE_2_HEAT_MASTER };

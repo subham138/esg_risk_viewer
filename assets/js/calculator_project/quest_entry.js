@@ -457,7 +457,7 @@ const QuestHandler = {
         const slNos = [...new Set(calData.map(c => c.sl_no))];
         let accordion = '';
 
-        let electricityDummyId = [2425, 2426, 2427, 741];
+        let electricityDummyId = [2425, 2426, 2427, 741, 2431, 2432, 2433, 744];
         let rejNumArr = []
         res.quest_ans_sec[title].map(dt => dt.quest_type == 'E' && electricityDummyId.includes(+dt.quest_ans) ? rejNumArr.push(dt.pro_sl_no) : null)
         

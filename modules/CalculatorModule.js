@@ -1,4 +1,4 @@
-const {db_Select, db_Insert, SCOPE_2_ELECTRICITY_MASTER} = require("./MasterModule")
+const {db_Select, db_Insert} = require("./MasterModule")
 const dateFormat = require("dateformat");
 module.exports = {
     getUnitList: (id = 0, flag='E') => {
@@ -222,7 +222,7 @@ module.exports = {
             resolve(calVal)
         })
     },
-    copyElectricGhgData: (rawData, user) => {
+    copyElectricGhgData: (rawData, user, sc2ElecMaster) => {
         return new Promise(async (resolve, reject) => {
             var { enc_dt, repo_period, strt_month, cal_val, emi_fact_val, co_val, mode_quest_id, mode_quest_val, quest_id, act_id, emi_id, unit_id, repo_mode_label, subSeq, pro_sl_no, sec_id } = rawData;
 
@@ -236,7 +236,7 @@ module.exports = {
 
             var data = enc_dt
 
-            const sc2ElecMaster = SCOPE_2_ELECTRICITY_MASTER
+            // const sc2ElecMaster = SCOPE_2_ELECTRICITY_MASTER
             
             for (let dt of sc2ElecMaster) {
                 if (dt.is_parent != 'Y') {
