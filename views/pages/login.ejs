@@ -22,11 +22,20 @@
                                     <h2>Sign in to your account</h2>
                                 </div>
                                 <form class="theme-form login-form" id="loginForm" action="/login" method="POST">
-                                    <% if(message){ %>
-                                        <div class="alert alert-<%= message.type %>">
-                                            <%= message.message %>
+                                    <% if(message){
+                                        let imgName = ''
+                                        if(message.type == 'success'){
+                                            imgName = 'checkmark.png'
+                                        }else{
+                                            imgName = 'cross.png'
+                                        } %>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12 text-center border p-2">
+                                                <img src="/images/<%= imgName %>" alt="Tick" width="30px" height="30px"> &nbsp;
+                                                <span><%= message.message %></span>
+                                            </div>
                                         </div>
-                                        <% } %>
+                                    <% } %>
                                             <div class="mb-3">
                                                 <label for="logEmail" class="form-label">Email*</label>
                                                 <input type="email" class="form-control" id="logEmail" name="email"
@@ -92,21 +101,20 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content"
                 style="border-radius: 24px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
-                <div class="modal-body p-5">
+                <div class="modal-body p-3">
                     <div class="text-center mb-4">
                         <div class="otp-icon-wrapper mb-3"
                             style="width: 80px; height: 80px; background: #f3e5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                             <i class="fa fa-envelope-o" style="font-size: 32px; color: #7b1fa2;"></i>
                         </div>
-                        <h3 style="font-weight: 700; color: #333;">Security Check</h3>
-                        <p class="text-muted" style="font-size: 15px; line-height: 1.6;">
-                            We have sent a 6-digit access code to your email.<br>
-                            Please enter it below to verify your identity.
+                        <!-- <h3 style="font-weight: 700; color: #333;">Security Check</h3> -->
+                        <p class="text-muted" style="font-size: 20px; line-height: 1.6;">
+                            We have sent a 6-digit access code to your email. Please enter it below to verify your identity.
                         </p>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 d-flex justify-content-center">
+                        <div class="col-md-12 d-flex justify-content-center flex-column">
                             <input type="text" class="form-control-lg" id="pincode-input1">
                         </div>
                     </div>
@@ -118,7 +126,7 @@
                         <p style="font-size: 14px; color: #666;">
                             Didn’t receive the code?
                             <a href="javascript:void(0)" id="resend_otp"
-                                style="color: #7b1fa2; font-weight: 600; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.3s;">
+                                style="color: #186671; font-weight: 600; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.3s;">
                                 Resend Now
                             </a>
                         </p>
@@ -126,8 +134,8 @@
 
                     <div class="mt-4">
                         <button class="btn btn-pill w-100" id="modalLoginBtn" type="button"
-                            style="display: none; background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); color: white; padding: 12px; border-radius: 12px; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(123, 31, 162, 0.3);">
-                            Verify & Sign In
+                            style="display: none; background: linear-gradient(135deg, #186671 0%, #064750 100%); color: white; padding: 12px; border-radius: 12px; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(123, 31, 162, 0.3);">
+                            Sign In
                         </button>
                     </div>
                 </div>

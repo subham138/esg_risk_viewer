@@ -80,12 +80,26 @@ content="environmental, social, governance (ESG), esg risk, esg opportunities, e
       margin-bottom: 5px;
     }
     .popover-body .cross::before {
-      content: "❌ ";
-      color: red;
+      content: "";
+      display: inline-block;
+      width: 16px; 
+      height: 16px;
+      background-image: url("/images/cross.png"); /* Root-relative path */
+      background-size: contain;
+      background-repeat: no-repeat;
+      vertical-align: middle;
+      margin-right: 5px;
     }
     .popover-body .tick::before {
-      content: "✔️ ";
-      color: green;
+      content: "";
+      display: inline-block;
+      width: 16px; 
+      height: 16px;
+      background-image: url("/images/checkmark.png"); /* Root-relative path */
+      background-size: contain;
+      background-repeat: no-repeat;
+      vertical-align: middle;
+      margin-right: 5px;
     }
   </style>
 

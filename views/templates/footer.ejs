@@ -267,7 +267,21 @@
       async function initiate_sweet_alert(title, message, type) {
         // console.log('here alert inititated');
         // swal(title, message, type != 'danger' ? type : 'error');
-        await Swal.fire(message, '', type != 'danger' ? type : 'error');
+        // await Swal.fire(message, '', type != 'danger' ? type : 'error');
+        await Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        }).fire({
+          icon: type != 'danger' ? type : 'error',
+          title: message
+        });
       }
       function inititate_sweet_conf_alert(title, text) {
         return new Promise(async (resolve, reject) => {

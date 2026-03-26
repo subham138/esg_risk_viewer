@@ -45,9 +45,9 @@
     margin: 0;
 }
 
-.sing-up-form-title {
+/* .sing-up-form-title {
     margin-bottom: 30px;
-}
+} */
 
 .navbar-brand-logo {
     margin-bottom: 88px;
@@ -308,7 +308,7 @@ li.divider-gray {
 }
 .flag-icon {
     position: absolute;
-    top: -4px;
+    top: 30px;
     left: 7px;
     
 }

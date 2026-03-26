@@ -7,3 +7,6 @@ assets/videos/ESG_Risk_Viewer_Presentation_4K.mp4
 assets/editor/*
 firebase-service-account.json
 ssl
+scheduler/process_ghg_quest_sync.js
+scheduler/process_ghg_quest_cal_sync.js
+schedular/runGhgQuestSync.bat
