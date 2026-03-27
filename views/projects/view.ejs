@@ -69,7 +69,7 @@
     
                                     </div>
                                     <!-- <div class="table-responsive"> -->
-                                    <table class="display" id="basic-1">
+                                    <table class="table" id="basic-1">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
@@ -77,10 +77,10 @@
                                                     <%= lang.view.table.head1 %>
                                                 </th>
                                                 <th>
-                                                    <%= lang.view.table.head2 %>
+                                                    <%= lang.view.table.head3 %>
                                                 </th>
                                                 <th>
-                                                    <%= lang.view.table.head3 %>
+                                                    <%= lang.view.table.head2 %>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -96,10 +96,6 @@
                                                     </td>
                                                     <td>
                                                         <%= dt.project_name %>
-                                                    </td>
-                                                    <td>
-                                                        <%= dt.last_access !='' ?
-                                                            dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss' ) : '' %>
                                                     </td>
                                                     <td <% if(i==1){ %> id="my_project_td" <% } %>>
                                                             <% if(user_type=='A' || user_type=='C' || user_type=='S' ){
@@ -147,6 +143,9 @@
                                                                             <%= lang.view.delete_btn %>
                                                                         </a>
                                                                     <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <%= dt.last_access !='' ? dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss' ) : '' %>
                                                     </td>
                                                 </tr>
                                                 <% i++; })}else{ %>

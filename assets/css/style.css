@@ -8250,7 +8250,7 @@ table tbody .border-bottom-warning td {
 .btn {
   font-size: 14px;
   padding: 0.375rem 1.75rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .btn-lg {
@@ -8803,7 +8803,7 @@ table tbody .border-bottom-warning td {
 
 .card_body_Cus{border: #316379 solid 1px;}
 
-.btn_UR{border: none; box-shadow: none !important; padding: 0;}
+.btn_UR{border: none; box-shadow: none !important; padding: 0; color: #000 !important;}
 .btn_UR:hover{border: none; box-shadow: none !important; padding: 0; background: none !important; color: #316379 !important;}
 .dataTables_wrapper{padding-bottom:30px !important;}
 table.dataTable {margin: 0.5em 0 25px 0 !important;}

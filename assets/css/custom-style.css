@@ -29,7 +29,7 @@ textarea {
 }
 
 .select2-container {
-    border: 2px solid #7030a0;
+    border: 2px solid #efefef;
     border-radius: 10px;
 }
 .select2-container.select2-container--bootstrap-5.select2-container--open, .select2-container.select2-container--default.select2-container--open{
@@ -596,4 +596,24 @@ td.today.active.start-date.active.end-date.available, .daterangepicker.ltr tr td
 }
 .not-avail-text span{
     font-size: 15px;
+}
+.dataTables_wrapper table.dataTable tbody td {
+    border: none;
+    border-bottom: 1px solid #efefef;
+}
+
+.dataTables_wrapper table.dataTable thead th {
+    border-bottom: 1px solid #000;
+}
+.table> :not(:last-child)> :last-child>*{
+    border-color: #000;
+}
+.dataTables_wrapper table.dataTable{
+    border: none;
+}
+.dataTables_wrapper .dataTables_length select{
+    border: 1px solid #efefef;
+}
+.dataTables_wrapper .dataTables_filter input[type="search"]{
+    border: 1px solid #efefef;
 }
