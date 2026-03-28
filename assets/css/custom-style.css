@@ -495,6 +495,8 @@ footer.close_nav {
     border: 1px solid #884caa;
     background: #884caa;
     color: #fff;
+    font-weight: 400;
+    font-size: 12px;
 }
 a.nav-link.menu-title.link-nav.cusANavLink.cust-active{
     background-color: #3e506d;
@@ -604,6 +606,7 @@ td.today.active.start-date.active.end-date.available, .daterangepicker.ltr tr td
 
 .dataTables_wrapper table.dataTable thead th {
     border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
 }
 .table> :not(:last-child)> :last-child>*{
     border-color: #000;

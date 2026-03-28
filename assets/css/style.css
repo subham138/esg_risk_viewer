@@ -6024,7 +6024,7 @@ table tbody .border-bottom-warning td {
 
 .page-wrapper .page-body-wrapper .page-body {
   min-height: calc(100vh - 76px);
-  margin-top: 76px;
+  margin-top: 63px;
   padding: 0 15px 0 15px;
   position: relative;
   -webkit-transition: 0.5s;
@@ -6108,7 +6108,7 @@ table tbody .border-bottom-warning td {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 24px 40px;
+  padding: 10px 40px;
   border-right: 1px solid #e6edef;
 }
 
@@ -46428,7 +46428,7 @@ nav #mainnav .nav-menu{
   color: #c0cce9;
 }
 .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav {
-  top: 85px !important;
+  top: 62px !important;
 }
 .cusANavLink{
   font-size: 16px;
@@ -46795,7 +46795,7 @@ nav{
 }
 
 header.main-nav{
-  height: 88% !important;
+  height: 90.13% !important;
   /* overflow: scroll; */
 }
 
