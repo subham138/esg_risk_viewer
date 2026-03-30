@@ -731,7 +731,8 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const uniqueId = crypto.randomBytes(16).toString('hex');
     const userDataDir = path.join(os.tmpdir(), `puppeteer-${uniqueId}`);
 
-    browser = await puppeteer.launch({
+    // Configure browser launch options
+    const launchOptions = {
       headless: "new",
       userDataDir: userDataDir,
       args: [
@@ -771,7 +772,16 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
         '--disable-web-security',
         '--disable-features=VizDisplayCompositor'
       ]
-    });
+    };
+
+    // If CHROME_EXE_PATH environment variable is set, use it
+    // To set: set CHROME_EXE_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
+    // Or for Chromium: set CHROME_EXE_PATH="C:\Program Files\Chromium\Application\chrome.exe"
+    if (process.env.CHROME_EXE_PATH) {
+      launchOptions.executablePath = process.env.CHROME_EXE_PATH;
+    }
+
+    browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage();
 
@@ -870,7 +880,16 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     });
   } catch (error) {
     console.error("download_pdf_save error:", error);
-    return res.status(500).json({ suc: 0, message: "Unable to generate PDF." });
+
+    // Provide specific error messages for common issues
+    let errorMessage = "Unable to generate PDF.";
+    if (error.message && error.message.includes("Could not find Chrome")) {
+      errorMessage = "Chrome browser not found. Please install Chrome or set CHROME_EXE_PATH environment variable to the Chrome executable path.";
+    } else if (error.message && error.message.includes("browser already running")) {
+      errorMessage = "Browser conflict detected. Please try again.";
+    }
+
+    return res.json({ suc: 0, message: errorMessage });
   } finally {
     // Ensure browser is closed even if error occurs before assignment
     if (browser) {
