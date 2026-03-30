@@ -822,88 +822,11 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 });
 
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
-  let browser; // Declare browser outside try for cleanup
-  let userDataDir;
-
-  // Helper function to launch browser with retry logic
-  const launchBrowserWithRetry = async (launchOptions, maxRetries = 3) => {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        return await puppeteer.launch(launchOptions);
-      } catch (error) {
-        console.warn(`Browser launch attempt ${attempt} failed:`, error.message);
-
-        if (attempt === maxRetries) {
-          throw error;
-        }
-
-        // Wait before retry
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
-    }
-  };
-
   try {
     var data = req.body;
-
-    cleanupTempProfiles();
-    killChromeProcesses();
-
-    // Create an explicit unique profile directory to avoid puppeteer_dev_chrome_profile lock collisions
-    const profileId = crypto.randomBytes(8).toString("hex");
-    userDataDir = path.join(os.tmpdir(), `esg_puppeteer_profile_${Date.now()}_${profileId}`);
-
-    // Configure browser launch options
-    const launchOptions = {
+    const browser = await puppeteer.launch({
       headless: "new",
-      userDataDir,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-        '--disable-features=TranslateUI',
-        '--disable-ipc-flooding-protection',
-        '--disable-background-networking',
-        '--disable-default-apps',
-        '--disable-extensions',
-        '--disable-sync',
-        '--disable-translate',
-        '--hide-scrollbars',
-        '--metrics-recording-only',
-        '--mute-audio',
-        '--no-crash-upload',
-        '--disable-component-extensions-with-background-pages',
-        '--disable-background-downloads',
-        '--disable-breakpad',
-        '--disable-component-update',
-        '--disable-domain-reliability',
-        '--disable-client-side-phishing-detection',
-        '--disable-background-timer-throttling',
-        '--disable-ipc-flooding-protection',
-        '--disable-popup-blocking',
-        '--disable-print-preview',
-        '--disable-hang-monitor',
-        '--disable-prompt-on-repost',
-        '--force-color-profile=srgb',
-        '--disable-web-security',
-        '--disable-features=VizDisplayCompositor'
-      ]
-    };
-
-    // If CHROME_EXE_PATH environment variable is set, use it
-    // To set: set CHROME_EXE_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
-    // Or for Chromium: set CHROME_EXE_PATH="C:\Program Files\Chromium\Application\chrome.exe"
-    if (process.env.CHROME_EXE_PATH) {
-      launchOptions.executablePath = process.env.CHROME_EXE_PATH;
-    }
-
-    browser = await launchBrowserWithRetry(launchOptions);
+    });
 
     const page = await browser.newPage();
 
@@ -954,7 +877,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 </html>`;
 
     await page.setContent(htmlContent, {
-      waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
+      waitUntil: "networkidle0",
       timeout: 120000,
       baseURL: `${req.protocol}://${req.get("host")}`,
     });
@@ -962,25 +885,11 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
-      margin: {
-        top: '20px',
-        bottom: '20px',
-      },
+      margin: { top: '15mm', right: '10mm', bottom: '15mm', left: '10mm' },
       preferCSSPageSize: true,
     });
 
     await browser.close();
-
-    browser = null; // Mark as closed
-
-    // Cleanup profile folder immediately since browser is closed
-    if (userDataDir && fs.existsSync(userDataDir)) {
-      try {
-        fs.rmSync(userDataDir, { recursive: true, force: true });
-      } catch (cleanupError) {
-        console.warn("Failed to cleanup userDataDir:", cleanupError.message);
-      }
-    }
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
     if (!fs.existsSync(uploadDir)) {
@@ -1000,37 +909,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     });
   } catch (error) {
     console.error("download_pdf_save error:", error);
-
-    // Provide specific error messages for common issues
-    let errorMessage = "Unable to generate PDF.";
-    if (error.message && error.message.includes("Could not find Chrome")) {
-      errorMessage = "Chrome browser not found. Please install Chrome or set CHROME_EXE_PATH environment variable to the Chrome executable path.";
-    } else if (error.message && error.message.includes("browser already running")) {
-      errorMessage = "Browser conflict detected. The system will attempt to resolve this automatically. Please try again.";
-    } else if (error.message && error.message.includes("net::ERR_CONNECTION_REFUSED")) {
-      errorMessage = "Network connection error. Please check your internet connection and try again.";
-    } else if (error.message && error.message.includes("TimeoutError")) {
-      errorMessage = "PDF generation timed out. The report may be too large. Please try again.";
-    }
-
-    return res.json({ suc: 0, message: errorMessage });
-  } finally {
-    // Ensure browser is closed even if error occurs before assignment
-    if (browser) {
-      try {
-        await browser.close();
-      } catch (closeError) {
-        console.warn("Error closing browser:", closeError.message);
-      }
-    }
-
-    // Cleanup generated userDataDir if exists
-    if (userDataDir) {
-      safeRemoveDir(userDataDir);
-    }
-
-    // Extra cleanup of stale profile directories as guard
-    cleanupTempProfiles();
+    return res.status(500).json({ suc: 0, message: "Unable to generate PDF." });
   }
 });
 
