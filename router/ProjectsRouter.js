@@ -38,6 +38,7 @@ const {
 } = require("../modules/ProjectModule");
 const { getUserList } = require("../modules/UserModule");
 const dateFormat = require("dateformat");
+const crypto = require('crypto')
 
 const { my_project: en_lang } = require("../assets/language/en.json");
 const { my_project: fr_lang } = require("../assets/language/fr.json");
@@ -721,8 +722,13 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 });
 
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
+  let browser; // Declare browser outside try for cleanup
   try {
     var data = req.body;
+
+    // 1. Create a unique folder name for THIS specific request
+    const uniqueId = crypto.randomBytes(8).toString('hex');
+    const customUserDataDir = path.join(__dirname, '../temp', `puppeteer_profile_${uniqueId}`);
 
     // Set temp directory for Windows
     process.env.TEMP = path.join(__dirname, '../temp');
@@ -731,6 +737,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const browser = await puppeteer.launch({
       executablePath: process.env.CHROME_EXE_PATH,
       headless: true,
+      userDataDir: customUserDataDir,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
