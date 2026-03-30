@@ -51,6 +51,59 @@ const express = require("express"),
   os = require("os"),
   eng_flag = ["I", "E", "G", "EV"];
 
+const cleanupTempProfiles = () => {
+  const tempDir = os.tmpdir();
+  try {
+    const entries = fs.readdirSync(tempDir, { withFileTypes: true });
+    entries.forEach((entry) => {
+      if (!entry.isDirectory()) return;
+      if (entry.name.startsWith("puppeteer_dev_chrome_profile-") || entry.name.startsWith("puppeteer-")) {
+        const fullPath = path.join(tempDir, entry.name);
+        try {
+          fs.rmSync(fullPath, { recursive: true, force: true });
+        } catch (err) {
+          if (err.code && (err.code === "EBUSY" || err.code === "EPERM" || err.code === "ENOTEMPTY")) {
+            return;
+          }
+          console.warn("cleanupTempProfiles error:", err.message);
+        }
+      }
+    });
+  } catch (err) {
+    console.warn("cleanupTempProfiles dir scan error:", err.message);
+  }
+};
+
+const killChromeProcesses = () => {
+  if (os.platform() === "win32") {
+    try {
+      require("child_process").execSync('taskkill /f /im chrome.exe /t', { stdio: "ignore" });
+    } catch (err) {
+      // Ignore if no chrome running or no rights
+    }
+  }
+};
+
+const safeRemoveDir = (dirPath) => {
+  if (!dirPath || !fs.existsSync(dirPath)) return;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      fs.rmSync(dirPath, { recursive: true, force: true });
+      break;
+    } catch (err) {
+      if (attempt === 3) {
+        console.warn(`safeRemoveDir failed after ${attempt} retries for ${dirPath}:`, err.message);
+      } else if (err.code === "EBUSY" || err.code === "EPERM" || err.code === "ENOTEMPTY") {
+        const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+        require("child_process").execSync("ping -n 1 127.0.0.1 >nul");
+      } else {
+        console.warn("safeRemoveDir unexpected error:", err.message);
+        break;
+      }
+    }
+  }
+};
+
 // ProjectRouter.use((req, res, next) => {
 //     var user = req.session.user;
 //     if (user) {
@@ -693,8 +746,54 @@ ProjectRouter.post("/get_cal_unit_list_ajax", async (req, res) => {
 
 ProjectRouter.post("/download_pdf", async (req, res) => {
   var data = req.body;
+
+  // Cleanup stale profiles before launch
+  try {
+    if (typeof cleanupTempProfiles === 'function') cleanupTempProfiles();
+    if (typeof killChromeProcesses === 'function') killChromeProcesses();
+  } catch (cleanupErr) {
+    console.warn('download_pdf cleanup error:', cleanupErr.message);
+  }
+
   const browser = await puppeteer.launch({
     headless: "new",
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      '--disable-features=TranslateUI',
+      '--disable-ipc-flooding-protection',
+      '--disable-background-networking',
+      '--disable-default-apps',
+      '--disable-extensions',
+      '--disable-sync',
+      '--disable-translate',
+      '--hide-scrollbars',
+      '--metrics-recording-only',
+      '--mute-audio',
+      '--no-crash-upload',
+      '--disable-component-extensions-with-background-pages',
+      '--disable-background-downloads',
+      '--disable-breakpad',
+      '--disable-component-update',
+      '--disable-domain-reliability',
+      '--disable-client-side-phishing-detection',
+      '--disable-background-timer-throttling',
+      '--disable-ipc-flooding-protection',
+      '--disable-popup-blocking',
+      '--disable-print-preview',
+      '--disable-hang-monitor',
+      '--disable-prompt-on-repost',
+      '--force-color-profile=srgb',
+      '--disable-web-security',
+      '--disable-features=VizDisplayCompositor'
+    ]
   });
 
   // Open a new page
@@ -724,6 +823,7 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
   let browser; // Declare browser outside try for cleanup
+  let userDataDir;
 
   // Helper function to launch browser with retry logic
   const launchBrowserWithRetry = async (launchOptions, maxRetries = 3) => {
@@ -746,9 +846,17 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   try {
     var data = req.body;
 
+    cleanupTempProfiles();
+    killChromeProcesses();
+
+    // Create an explicit unique profile directory to avoid puppeteer_dev_chrome_profile lock collisions
+    const profileId = crypto.randomBytes(8).toString("hex");
+    userDataDir = path.join(os.tmpdir(), `esg_puppeteer_profile_${Date.now()}_${profileId}`);
+
     // Configure browser launch options
     const launchOptions = {
       headless: "new",
+      userDataDir,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -916,6 +1024,13 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
       }
     }
 
+    // Cleanup generated userDataDir if exists
+    if (userDataDir) {
+      safeRemoveDir(userDataDir);
+    }
+
+    // Extra cleanup of stale profile directories as guard
+    cleanupTempProfiles();
   }
 });
 
