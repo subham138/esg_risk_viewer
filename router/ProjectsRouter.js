@@ -724,7 +724,6 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
   let browser; // Declare browser outside try for cleanup
-  let userDataDir; // Track userDataDir for cleanup
 
   // Helper function to launch browser with retry logic
   const launchBrowserWithRetry = async (launchOptions, maxRetries = 3) => {
@@ -738,23 +737,8 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
           throw error;
         }
 
-        // Wait before retry and try to clean up
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        // Generate new userDataDir for retry
-        const newUniqueId = crypto.randomBytes(16).toString('hex');
-        const newUserDataDir = path.join(os.tmpdir(), `puppeteer-${newUniqueId}`);
-
-        if (fs.existsSync(newUserDataDir)) {
-          try {
-            fs.rmSync(newUserDataDir, { recursive: true, force: true });
-          } catch (cleanupError) {
-            console.warn("Failed to cleanup retry userDataDir:", cleanupError.message);
-          }
-        }
-
-        launchOptions.userDataDir = newUserDataDir;
-        userDataDir = newUserDataDir; // Update the tracked userDataDir
+        // Wait before retry
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
   };
@@ -762,34 +746,9 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   try {
     var data = req.body;
 
-    // Use system temp directory with unique ID to avoid conflicts
-    const uniqueId = crypto.randomBytes(16).toString('hex');
-    userDataDir = path.join(os.tmpdir(), `puppeteer-${uniqueId}`);
-
-    // Ensure the directory doesn't exist and clean up any leftover processes
-    if (fs.existsSync(userDataDir)) {
-      try {
-        // Kill any existing Chrome processes using this directory
-        if (os.platform() === 'win32') {
-          const { execSync } = require('child_process');
-          try {
-            // Find and kill Chrome processes
-            execSync(`taskkill /f /im chrome.exe /fi "WINDOWTITLE eq puppeteer*"`, { stdio: 'ignore' });
-          } catch (killError) {
-            // Ignore errors if no processes found
-          }
-        }
-        // Remove the directory
-        fs.rmSync(userDataDir, { recursive: true, force: true });
-      } catch (cleanupError) {
-        console.warn("Failed to cleanup existing userDataDir:", cleanupError.message);
-      }
-    }
-
     // Configure browser launch options
     const launchOptions = {
       headless: "new",
-      userDataDir: userDataDir,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -957,14 +916,6 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
       }
     }
 
-    // Cleanup userDataDir in finally block as well
-    if (userDataDir && fs.existsSync(userDataDir)) {
-      try {
-        fs.rmSync(userDataDir, { recursive: true, force: true });
-      } catch (cleanupError) {
-        console.warn("Failed to cleanup userDataDir in finally:", cleanupError.message);
-      }
-    }
   }
 });
 
