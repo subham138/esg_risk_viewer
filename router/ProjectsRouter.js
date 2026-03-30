@@ -739,6 +739,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
       executablePath: process.env.CHROME_EXE_PATH,
       headless: true,
       userDataDir: customUserDataDir,
+      pipe: true, // <--- Add this
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -747,7 +748,11 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
         '--no-first-run',
         '--no-zygote',
         // '--single-process',
-        '--disable-extensions'
+        '--disable-extensions',
+        '--disk-cache-dir=null',
+        '--media-cache-dir=null',
+        '--disk-cache-size=1',
+        '--ignore-certificate-errors'
       ],
       // timeout: 60000
     });
