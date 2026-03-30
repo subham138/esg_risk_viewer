@@ -829,12 +829,13 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   }
 
   isGenerating = true;
+
   let browser;
 
   try {
     const data = req.body;
 
-    browser = await puppeteer.launch({
+    const browser = await puppeteer.launch({
       headless: true,
       executablePath: process.env.CHROME_EXE_PATH,
       args: [
@@ -845,7 +846,14 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
         "--no-first-run",
         "--no-zygote",
         "--single-process",
-        "--disable-extensions"
+        "--disable-extensions",
+        "--disable-background-networking",
+        "--disable-default-apps",
+        "--disable-sync",
+        "--metrics-recording-only",
+        "--mute-audio",
+        "--no-default-browser-check",
+        "--user-data-dir=" + require("os").tmpdir() + "/puppeteer_" + Date.now() // 🔥 KEY FIX
       ]
     });
 
@@ -854,50 +862,16 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <base href="${req.protocol}://${req.get("host")}">
-  <title>ESG Risk Viewer Report</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/custom-style.css">
-
-  <style>
-    html, body { width: 100%; margin: 0; padding: 10px; }
-    body { font-family: 'IBM Plex Sans', sans-serif; color: #000; }
-
-    #printDiv { width: 100%; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      page-break-inside: auto;
-    }
-
-    table th, table td {
-      border: 1px solid #000;
-      padding: 6px;
-      font-size: 12px;
-    }
-
-    table thead { display: table-header-group; }
-
-    img { max-width: 100%; }
-
-    .report-head { font-size: 29px; color: #7030a0; font-weight: 600; }
-    .report-sub-head { font-size: 25px; font-weight: 600; }
-  </style>
+<meta charset="UTF-8">
+<base href="${req.protocol}://${req.get("host")}">
+<title>Report</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { font-family: Arial; }
+</style>
 </head>
-
 <body>
-  <div id="printDiv">
-    ${data.pdfDiv}
-  </div>
+  <div>${data.pdfDiv}</div>
 </body>
 </html>`;
 
@@ -908,19 +882,13 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     const pdfBuffer = await page.pdf({
       format: "A4",
-      printBackground: true,
-      margin: {
-        top: "15mm",
-        right: "10mm",
-        bottom: "15mm",
-        left: "10mm"
-      }
+      printBackground: true
     });
 
     await browser.close();
 
-    // 🧠 Important: give Windows time to release file handles
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // 🔥 VERY IMPORTANT (Windows handle release)
+    await new Promise(resolve => setTimeout(resolve, 700));
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
 
@@ -935,25 +903,17 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     return res.json({
       suc: 1,
-      message: "PDF generated successfully",
-      url: `/ghg_calculator_report_upload/${fileName}`,
-      filePath
+      url: `/ghg_calculator_report_upload/${fileName}`
     });
 
   } catch (error) {
     console.error("download_pdf_save error:", error);
 
-    // 🛑 Ensure browser is closed even on failure
     if (browser) {
-      try {
-        await browser.close();
-      } catch (e) { }
+      try { await browser.close(); } catch (e) { }
     }
 
-    return res.json({
-      suc: 0,
-      message: "Unable to generate PDF"
-    });
+    return res.json({ suc: 0, message: "PDF failed" });
 
   } finally {
     isGenerating = false;
