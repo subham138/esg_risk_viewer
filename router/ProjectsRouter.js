@@ -724,7 +724,19 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   try {
     var data = req.body;
     const browser = await puppeteer.launch({
-      headless: "new",
+      executablePath: process.env.CHROME_EXE_PATH,
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-extensions'
+      ],
+      timeout: 60000
     });
 
     const page = await browser.newPage();
@@ -776,7 +788,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 </html>`;
 
     await page.setContent(htmlContent, {
-      waitUntil: "networkidle0",
+      waitUntil: ['load', 'domcontentloaded', 'networkidle0'],
       timeout: 120000,
       baseURL: `${req.protocol}://${req.get("host")}`,
     });
@@ -784,7 +796,10 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,
-      margin: { top: '15mm', right: '10mm', bottom: '15mm', left: '10mm' },
+      margin: {
+        top: '20px',
+        bottom: '20px',
+      },
       preferCSSPageSize: true,
     });
 
