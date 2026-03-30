@@ -468,6 +468,9 @@ const QuestHandler = {
                 const totalCo2 = filtered.reduce((acc, curr) => acc + curr.co_val, 0);
                 const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && a.quest_seq.charAt(2) === subParentSeq.charAt(2));
                 const q3Ans = qAnsSec[1]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
+
+                console.log(q3Ans, subParentSeq, sl, slNos, lastQuest, '------------');
+                
     
                 let prevDataHtml = '<div class="col-md-12">';
                 let isCopied = false;
@@ -646,7 +649,7 @@ const QuestHandler = {
         $.ajax({
             method: 'POST',
             url: '/get_cal_emi_type_ajax',
-            data: { type_id, act_id, flag: 'E' }, // Hardcoded E as per original logic context
+            data: { type_id, act_id, flag: 'E', view_flag: 'Y' }, // Hardcoded E as per original logic context
             success: (res) => {
                 if (res.suc > 0) {
                     const btnData = window.btoa(JSON.stringify({

@@ -55,9 +55,21 @@
                         <input class="form-control" id="emi_name" name="emi_name" type="text" value="<%= id > 0 ? data[0].emi_name : '' %>" required="">
                         <div class="valid-feedback">No Error</div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="d-flex flex-column align-items-start">
+                            <label class="col-form-label mb-0">View Flag <small>(In GHG Calculator)</small></label>
+                            <div class="media-body text-end icon-state switch-outline">
+                                <label class="switch">
+                                    <input type="checkbox" id="view_flag" <%= id > 0 ? (data[0].view_flag == 'Y' ? 'checked' : '') : '' %>>
+                                    <span class="switch-state bg-primary"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <input type="hidden" name="id" value="<%= id > 0 ? id : 0 %>">
                 <input type="hidden" name="flag" value="<%= flag %>">
+                <input type="hidden" name="view_flag" id="view_flag_val" value="<%= id > 0 ? data[0].view_flag : '' %>">
                 <button class="btn btn-pill btn-outline-primary btn-air-primary m-t-10" type="submit">Submit</button>
                 </form>
             </div>
@@ -102,6 +114,15 @@
                 $('.loader-wrapper').hide()
             }
         })
+    })
+    $('#view_flag').on('change', function () {
+        if ($('#view_flag').attr('checked')) {
+            $('#view_flag_val').val('N')
+            $('#view_flag').removeAttr('checked')
+        } else {
+            $('#view_flag_val').val('Y')
+            $('#view_flag').attr('checked', 'checked')
+        }
     })
 </script>
 

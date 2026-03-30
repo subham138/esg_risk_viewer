@@ -70,11 +70,11 @@ module.exports = {
             resolve(res_dt)
         })
     },
-    getCalEmiType: (id = 0, type_id = 0, act_id = 0, flag = 'E') => {
+    getCalEmiType: (id = 0, type_id = 0, act_id = 0, flag = 'E', view_flag = null) => {
         return new Promise(async (resolve, reject) => {
-            var select = 'a.id, a.type_id, b.type_name, a.act_id, c.act_name, a.emi_name',
+            var select = 'a.id, a.type_id, b.type_name, a.act_id, c.act_name, a.emi_name, a.view_flag',
             table_name = 'md_cal_emi_type a, md_cal_type b, md_cal_act c',
-            whr = `a.type_id=b.id AND a.act_id=c.id AND a.flag = '${flag}' ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''} ${act_id > 0 ? `AND a.act_id = ${act_id}` : ''}`,
+                whr = `a.type_id=b.id AND a.act_id=c.id AND a.flag = '${flag}' ${id > 0 ? `AND a.id = ${id}` : ''} ${type_id > 0 ? `AND a.type_id = ${type_id}` : ''} ${act_id > 0 ? `AND a.act_id = ${act_id}` : ''} ${view_flag ? `a.view_flag = '${view_flag}'` : ''}`,
             order = 'ORDER BY a.emi_name';
             var res_dt = await db_Select(select, table_name, whr, order)
             resolve(res_dt)
@@ -84,9 +84,9 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             var datetime = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
             var table_name = 'md_cal_emi_type',
-            fields = data.id > 0 ? `type_id = '${data.type_id}', act_id = '${data.act_id}', emi_name = "${data.emi_name}", modified_by = '${user}', modified_dt = '${datetime}'` : 
-            '(flag, type_id, act_id, emi_name, created_by, created_dt)',
-            values = `('${data.flag}', '${data.type_id}', '${data.act_id}', "${data.emi_name}", '${user}', '${datetime}')`,
+            fields = data.id > 0 ? `type_id = '${data.type_id}', act_id = '${data.act_id}', emi_name = "${data.emi_name}", view_flag="${data.view_flag}", modified_by = '${user}', modified_dt = '${datetime}'` : 
+            '(flag, type_id, act_id, emi_name, view_flag, created_by, created_dt)',
+            values = `('${data.flag}', '${data.type_id}', '${data.act_id}', "${data.emi_name}", "${data.view_flag}", '${user}', '${datetime}')`,
             whr = data.id > 0 ? `id = ${data.id}` : null,
             flag = data.id > 0 ? 1 : 0;
             var res_dt = await db_Insert(table_name, fields, values, whr, flag)

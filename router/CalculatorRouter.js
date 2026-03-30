@@ -149,9 +149,10 @@ CalculatorRouter.get('/cal_emi_type', async (req, res) => {
 
 CalculatorRouter.post('/get_cal_emi_type_ajax', async (req, res) => {
     var type_id = req.body.type_id,
-    act_id = req.body.act_id,
-    flag = req.body.flag;
-    var res_dt = await getCalEmiType(0, type_id, act_id, flag)
+        act_id = req.body.act_id,
+        flag = req.body.flag,
+        view_flag = req.body.view_flag ? req.body.view_flag : null;
+    var res_dt = await getCalEmiType(0, type_id, act_id, flag, view_flag)
     res.send(res_dt)
 })
 
