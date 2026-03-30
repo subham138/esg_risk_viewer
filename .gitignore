@@ -10,3 +10,6 @@ ssl
 scheduler/process_ghg_quest_sync.js
 scheduler/process_ghg_quest_cal_sync.js
 schedular/runGhgQuestSync.bat
+assets/ghg_calculator_report_upload/*
+*copy.ejs
+*.bat

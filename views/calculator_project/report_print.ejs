@@ -261,9 +261,10 @@
                                                     <table class="table table-bordered">
                                                         <thead>
                                                             <tr>
+                                                                <th>Title</th>
                                                                 <th>Description</th>
-                                                                <th>Source</th>
-                                                                <th>t CO2e</th>
+                                                                <th>Emission Source</th>
+                                                                <th>Emission Value (tCO2e)</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>                                                        
@@ -287,6 +288,7 @@
                                                             filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
                                                         %>
                                                         <tr>
+                                                            <td><%= filterCalData.length> 0 ? filterCalData[0].quest_ans : '' %></td>
                                                             <td><%= filterCalData.length> 0 ? filterCalData[0].act_name : '' %></td>
                                                             <td><%= filterCalData.length> 0 ? filterCalData[0].emi_name : '' %></td>
                                                             <td><%= totEmiCalVal.toFixed(2) %></td>
@@ -297,7 +299,7 @@
 
                                                 }else{ %>
                                                     <tr>
-                                                        <td class="text-danger text-center" colspan="3">No Data Found</td>
+                                                        <td class="text-danger text-center" colspan="4">No Data Found</td>
                                                     </tr>
                                                 <% }
                                                 %>
@@ -336,6 +338,37 @@
 
 <script>
     function print(){
+        const divToPrint = document.getElementById('printDiv');
+        if(!divToPrint){
+            alert('Report content not found.');
+            return;
+        }
+
+        fetch('/download_pdf_save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ pdfDiv: divToPrint.innerHTML })
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result, '-------------');
+            
+            if (result.suc === 1 && result.url) {
+                window.open(result.url, '_blank');
+            } else {
+                console.error('PDF save failed:', result);
+                alert('Unable to create PDF. Please try again.');
+            }
+        })
+        .catch(err => {
+            console.error('Error saving PDF:', err);
+            alert('Unable to create PDF. Please check console.');
+        });
+    }
+
+    function print_backup(){
         var divToPrint = document.getElementById('printDiv');
         var WindowObject = window.open('', 'Print-Window');
         WindowObject.document.open();
@@ -372,10 +405,10 @@
         // console.log(WindowObject.document.documentElement.innerHTML, 'WindowObject');
         // console.log(WindowObject.document.documentElement, 'WindowObject');
         // downloadPrf(WindowObject.document)
-        
-        
+
+
         WindowObject.document.close();
-        setTimeout(function() {
+        setTimeout(function () {
             WindowObject.close();
         }, 1000);
     }

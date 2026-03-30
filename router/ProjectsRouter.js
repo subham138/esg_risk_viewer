@@ -63,7 +63,7 @@ ProjectRouter.get("/my_project", async (req, res) => {
     dec_flag = new Buffer.from(enc_dt, "base64").toString();
   var flag = dec_flag == "IC" ? "I" : (dec_flag == "FC" ? 'F' : dec_flag);
   console.log(flag, dec_flag, "flag");
-    
+
 
   // var req_data = req.query
   var user_type = req.session.user.user_type,
@@ -95,10 +95,10 @@ ProjectRouter.get("/my_project", async (req, res) => {
   let projCount = proj_count.suc > 0 ? proj_count.msg[0].cnt : 0
 
   var chkUserCapacity = await checkUserSubscriptionUsage(req.session.user.id, dec_flag)
-  
+
   console.log(projCount, chkUserCapacity, '---------+++++++++++++');
-  
-  
+
+
   var data = {
     lang: lang,
     user_type,
@@ -281,10 +281,10 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
   // UPDATE THE CODE ON 22.04.2025 FOR MULTIPLE SECTOR AND INDUSTRY INSERT INTO td_project_info
 
   console.log(data, 'data');
-  
 
-  if (Array.isArray(data.input_seq)){
-    for(let dt of data.input_seq){
+
+  if (Array.isArray(data.input_seq)) {
+    for (let dt of data.input_seq) {
       let sec_id = data[`sec_id_${dt}`],
         ind_id = data[`ind_id_${dt}`],
         bus_id = data[`bus_id_${dt}`],
@@ -330,9 +330,9 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
         }
         location_name = Array.isArray(location_name) ? (location_name.length > 0 ? location_name[0].location_name : "") : (location_name.location_name ? location_name.location_name : "");
       }
-      
-      if (Array.isArray(ind_id)){
-        for(let iid of ind_id){
+
+      if (Array.isArray(ind_id)) {
+        for (let iid of ind_id) {
           var chk_proj_dt = await db_Select('id', 'td_project_info', `proj_id = ${data.proj_id} AND sec_id = ${sec_id} AND ind_id = ${iid}`, null);
           var proj_info_id = chk_proj_dt.suc > 0 ? (chk_proj_dt.msg.length > 0 ? chk_proj_dt.msg[0].id : 0) : 0;
           var proj_table_name = 'td_project_info',
@@ -342,7 +342,7 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
             proj_flag = proj_info_id > 0 ? 1 : 0;
           proj_sec_insert = await db_Insert(proj_table_name, proj_fields, proj_values, proj_whr, proj_flag);
         }
-      }else{
+      } else {
         var chk_proj_dt = await db_Select('id', 'td_project_info', `proj_id = ${data.proj_id} AND sec_id = ${sec_id} AND ind_id = ${ind_id}`, null);
         var proj_info_id = chk_proj_dt.suc > 0 ? (chk_proj_dt.msg.length > 0 ? chk_proj_dt.msg[0].id : 0) : 0;
         var proj_table_name = 'td_project_info',
@@ -353,7 +353,7 @@ ProjectRouter.post("/save_proj_work", async (req, res) => {
         proj_sec_insert = await db_Insert(proj_table_name, proj_fields, proj_values, proj_whr, proj_flag);
       }
     }
-  }else{
+  } else {
     let dt = data.input_seq
     let sec_id = data[`sec_id_${dt}`],
       ind_id = data[`ind_id_${dt}`],
@@ -522,7 +522,7 @@ ProjectRouter.get("/project_report_view", async (req, res) => {
   var data = Buffer.from(enc_data, "base64");
   data = JSON.parse(data);
   console.log(data);
-  
+
 
   var lang = eng_flag.includes(data.flag) ? en_lang : fr_lang;
 
@@ -701,21 +701,115 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
   // Set the content of the page with your HTML
   const htmlContent = data.pdfDiv;
 
-  await page.setContent(htmlContent);
+  await page.setContent(htmlContent, {
+    waitUntil: "networkidle0",
+    timeout: 120000,
+    // baseURL needed for relative paths (/css, /js, etc.)
+    baseURL: `${req.protocol}://${req.get("host")}`,
+  });
 
   // Generate a PDF file
-  const pdfBuffer = await page.pdf({ format: "A4" });
-  // var pdfBlob = new Blob([pdfBuffer])
+  const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
 
   // Close the browser
   await browser.close();
 
-  // console.log(pdfBlob);
-
-  // Send the PDF as a download
+  // Send the PDF as a download (legacy behavior)
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", "attachment; filename=output.pdf");
   res.send(pdfBuffer);
+});
+
+ProjectRouter.post("/download_pdf_save", async (req, res) => {
+  try {
+    var data = req.body;
+    const browser = await puppeteer.launch({
+      headless: "new",
+    });
+
+    const page = await browser.newPage();
+
+    // Compose complete HTML page with head, styles and same links as print_backup
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <base href="${req.protocol}://${req.get("host")}">
+  <title>ESG Risk Viewer Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="/css/icofont.css">
+  <link rel="stylesheet" type="text/css" href="/css/themify.css">
+  <link rel="stylesheet" type="text/css" href="/css/flag-icon.css">
+  <link rel="stylesheet" type="text/css" href="/css/feather-icon.css">
+  <link rel="stylesheet" type="text/css" href="/css/animate.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link id="color" rel="stylesheet" href="/css/color-1.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="/css/responsive.css">
+  <link rel="stylesheet" type="text/css" href="/css/datatables.css">
+  <link rel="stylesheet" type="text/css" href="/css/custom-style.css">
+  <style>
+    html, body { width: 100% !important; margin: 0; padding: 10px; box-sizing: border-box; }
+    body { font-family: 'IBM Plex Sans', sans-serif; color: #000; }
+    #printDiv { width: 100% !important; max-width: 100% !important; margin: 0 auto; padding: 0 !important; }
+    #printDiv .container-fluid { width: 100% !important; max-width: 100% !important; margin: 0 auto !important; padding-left: 0 !important; padding-right: 0 !important; }
+    .row { margin-left: 0 !important; margin-right: 0 !important; }
+    .col-md-12, .col-md-8, .col-md-6, .col-md-4 { float: left; position: relative; width: 100% !important; }
+    table { width: 100% !important; border-collapse: collapse; page-break-inside: auto; }
+    table th, table td { border: 1px solid #000; padding: 6px; font-size: 12px; vertical-align: top; }
+    table thead { display: table-header-group; }
+    table tfoot { display: table-footer-group; }
+    img { max-width: 100%; height: auto; }
+    .logo-report { height: auto; width: 120px; }
+    .report-head { font-weight: 600; font-size: 29px; color: #7030a0; }
+    .report-sub-head { font-weight: 600; font-size: 25px; color: black; }
+  </style>
+</head>
+<body>
+  <div id="printDiv">
+    ${data.pdfDiv}
+  </div>
+</body>
+</html>`;
+
+    await page.setContent(htmlContent, {
+      waitUntil: "networkidle0",
+      timeout: 120000,
+      baseURL: `${req.protocol}://${req.get("host")}`,
+    });
+
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '15mm', right: '10mm', bottom: '15mm', left: '10mm' },
+      preferCSSPageSize: true,
+    });
+
+    await browser.close();
+
+    const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileName = `ghg_report_${Date.now()}.pdf`;
+    const filePath = path.join(uploadDir, fileName);
+
+    fs.writeFileSync(filePath, pdfBuffer);
+
+    return res.json({
+      suc: 1,
+      message: "PDF generated and stored successfully.",
+      url: `/ghg_calculator_report_upload/${fileName}`,
+      filePath,
+    });
+  } catch (error) {
+    console.error("download_pdf_save error:", error);
+    return res.status(500).json({ suc: 0, message: "Unable to generate PDF." });
+  }
 });
 
 ProjectRouter.post("/save_editor_data", async (req, res) => {
@@ -927,28 +1021,28 @@ ProjectRouter.get("/get_cal_emi_source_ajax", async (req, res) => {
 ProjectRouter.get("/deactive_project", async (req, res) => {
   var data = req.query;
   // flag = new Buffer.from(data, 'base64').toString();
-//   console.log(data, "jj");
+  //   console.log(data, "jj");
   var table_name = "td_project",
     fields = `active_flag = 'N'`,
     values = null,
     whr = `id = ${data.id}`,
     flag = 1;
   var res_dt = await db_Insert(table_name, fields, values, whr, flag);
-//   console.log(res_dt, "test");
+  //   console.log(res_dt, "test");
   res.redirect(`/my_project?flag=${data.flag}`);
 });
 
-ProjectRouter.get('/exist_project', async (req, res) =>{
- 
-    var data = req.query,
+ProjectRouter.get('/exist_project', async (req, res) => {
+
+  var data = req.query,
     user = req.session.user
 
-    var select = "project_name",
-      table_name = "td_project",
-      whr = `replace(lower(project_name), ' ', '') = '${data.project_name.split(" ").join("").toLowerCase()}' AND repo_flag = '${data.flag}' AND client_id = ${user.client_id}`,
-      order = null;
-    var res_dt = await db_Select (select,table_name,whr,order);
-    res.send(res_dt)
+  var select = "project_name",
+    table_name = "td_project",
+    whr = `replace(lower(project_name), ' ', '') = '${data.project_name.split(" ").join("").toLowerCase()}' AND repo_flag = '${data.flag}' AND client_id = ${user.client_id}`,
+    order = null;
+  var res_dt = await db_Select(select, table_name, whr, order);
+  res.send(res_dt)
 })
 
 ProjectRouter.post('/getSusDistPointDt', async (req, res) => {
