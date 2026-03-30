@@ -735,7 +735,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
       fs.mkdirSync(path.join(__dirname, '../temp'), { recursive: true });
     }
 
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       executablePath: process.env.CHROME_EXE_PATH,
       headless: true,
       userDataDir: customUserDataDir,
@@ -746,7 +746,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
         '--disable-gpu',
         '--no-first-run',
         '--no-zygote',
-        '--single-process',
+        // '--single-process',
         '--disable-extensions'
       ],
       // timeout: 60000
@@ -818,10 +818,14 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     await browser.close();
 
-    // Note: Use a try/catch or a slight delay if Windows locks the folder
+    browser = null; // Mark as closed
+
+    // Cleanup profile folder
     setTimeout(() => {
-      fs.rmSync(customUserDataDir, { recursive: true, force: true });
-    }, 5000);
+      if (fs.existsSync(customUserDataDir)) {
+        fs.rmSync(customUserDataDir, { recursive: true, force: true });
+      }
+    }, 10000); // Increased to 10s for Windows file release
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
     if (!fs.existsSync(uploadDir)) {
@@ -841,6 +845,9 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     });
   } catch (error) {
     console.error("download_pdf_save error:", error);
+    if (browser) {
+      await browser.close().catch(() => { });
+    }
     return res.json({ suc: 0, message: "Unable to generate PDF." });
   }
 });
