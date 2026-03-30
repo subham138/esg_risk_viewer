@@ -821,23 +821,29 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
   res.send(pdfBuffer);
 });
 
+let isGenerating = false;
+
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
+  if (isGenerating) {
+    return res.json({ message: "Please wait..." });
+  }
+
+  isGenerating = true;
   try {
     var data = req.body;
 
-    // Set temp directory for Windows
-    process.env.TEMP = path.join(__dirname, '../temp');
-    process.env.TMP = path.join(__dirname, '../temp');
-    process.env.PUPPETEER_CACHE_DIR = path.join(__dirname, '../temp');
+    const uniqueDir = path.join(__dirname, "../temp", `puppeteer_${Date.now()}`);
 
     const browser = await puppeteer.launch({
-      headless: "new",
+      headless: true,
       executablePath: process.env.CHROME_EXE_PATH,
+      userDataDir: uniqueDir,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
-        "--disable-gpu"
+        "--disable-gpu",
+        "--single-process"
       ]
     });
 
@@ -904,6 +910,9 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     await browser.close();
 
+    // cleanup (VERY IMPORTANT)
+    fs.rmSync(uniqueDir, { recursive: true, force: true });
+
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -922,7 +931,9 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     });
   } catch (error) {
     console.error("download_pdf_save error:", error);
-    return res.status(500).json({ suc: 0, message: "Unable to generate PDF." });
+    return res.json({ suc: 0, message: "Unable to generate PDF." });
+  } finally {
+    isGenerating = false;
   }
 });
 
