@@ -730,9 +730,10 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const uniqueId = crypto.randomBytes(8).toString('hex');
     const customUserDataDir = path.join(__dirname, '../temp', `puppeteer_profile_${uniqueId}`);
 
-    // Set temp directory for Windows
-    process.env.TEMP = path.join(__dirname, '../temp');
-    process.env.TMP = path.join(__dirname, '../temp');
+    // Ensure the temp directory exists, but DON'T set process.env.TEMP
+    if (!fs.existsSync(path.join(__dirname, '../temp'))) {
+      fs.mkdirSync(path.join(__dirname, '../temp'), { recursive: true });
+    }
 
     const browser = await puppeteer.launch({
       executablePath: process.env.CHROME_EXE_PATH,
@@ -817,6 +818,11 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     await browser.close();
 
+    // Note: Use a try/catch or a slight delay if Windows locks the folder
+    setTimeout(() => {
+      fs.rmSync(customUserDataDir, { recursive: true, force: true });
+    }, 5000);
+
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -835,7 +841,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     });
   } catch (error) {
     console.error("download_pdf_save error:", error);
-    return res.status(500).json({ suc: 0, message: "Unable to generate PDF." });
+    return res.json({ suc: 0, message: "Unable to generate PDF." });
   }
 });
 
