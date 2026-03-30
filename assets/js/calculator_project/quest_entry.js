@@ -466,10 +466,14 @@ const QuestHandler = {
             if (!rejNumArr.includes(sl)){
                 const filtered = calData.filter(c => c.sl_no === sl);
                 const totalCo2 = filtered.reduce((acc, curr) => acc + curr.co_val, 0);
-                const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && a.quest_seq.charAt(2) === subParentSeq.charAt(2));
-                const q3Ans = qAnsSec[1]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
+                // console.log(res.quest_ans_sec[title], 'Quest-----', title);
+                let pattern = /^\d+\.\d+\.1$/;
+                const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && pattern.test(a.quest_seq));
+                // console.log(qAnsSec, '---------Quest ANS-----------');
+                
+                const q3Ans = qAnsSec[0]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
 
-                console.log(q3Ans, subParentSeq, sl, slNos, lastQuest, '------------');
+                // console.log(q3Ans, subParentSeq, sl, slNos, lastQuest, '------------');
                 
     
                 let prevDataHtml = '<div class="col-md-12">';
