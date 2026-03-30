@@ -824,8 +824,21 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
   try {
     var data = req.body;
+
+    // Set temp directory for Windows
+    process.env.TEMP = path.join(__dirname, '../temp');
+    process.env.TMP = path.join(__dirname, '../temp');
+    process.env.PUPPETEER_CACHE_DIR = path.join(__dirname, '../temp');
+
     const browser = await puppeteer.launch({
       headless: "new",
+      executablePath: process.env.CHROME_EXE_PATH,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu"
+      ]
     });
 
     const page = await browser.newPage();
