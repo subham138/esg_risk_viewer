@@ -48,6 +48,7 @@ const express = require("express"),
   puppeteer = require("puppeteer"),
   fs = require("fs"),
   path = require("path"),
+  os = require("os"),
   eng_flag = ["I", "E", "G", "EV"];
 
 // ProjectRouter.use((req, res, next) => {
@@ -726,20 +727,13 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   try {
     var data = req.body;
 
-    // 1. Create a unique folder name for THIS specific request
-    const uniqueId = crypto.randomBytes(8).toString('hex');
-    const customUserDataDir = path.join(__dirname, '../temp', `puppeteer_profile_${uniqueId}`);
-
-    // Ensure the temp directory exists, but DON'T set process.env.TEMP
-    if (!fs.existsSync(path.join(__dirname, '../temp'))) {
-      fs.mkdirSync(path.join(__dirname, '../temp'), { recursive: true });
-    }
+    // Use system temp directory with unique ID to avoid conflicts
+    const uniqueId = crypto.randomBytes(16).toString('hex');
+    const userDataDir = path.join(os.tmpdir(), `puppeteer-${uniqueId}`);
 
     browser = await puppeteer.launch({
-      executablePath: process.env.CHROME_EXE_PATH,
-      headless: true,
-      userDataDir: customUserDataDir,
-      pipe: true, // <--- Add this
+      headless: "new",
+      userDataDir: userDataDir,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -747,14 +741,36 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
         '--disable-gpu',
         '--no-first-run',
         '--no-zygote',
-        // '--single-process',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+        '--disable-features=TranslateUI',
+        '--disable-ipc-flooding-protection',
+        '--disable-background-networking',
+        '--disable-default-apps',
         '--disable-extensions',
-        '--disk-cache-dir=null',
-        '--media-cache-dir=null',
-        '--disk-cache-size=1',
-        '--ignore-certificate-errors'
-      ],
-      // timeout: 60000
+        '--disable-sync',
+        '--disable-translate',
+        '--hide-scrollbars',
+        '--metrics-recording-only',
+        '--mute-audio',
+        '--no-crash-upload',
+        '--disable-component-extensions-with-background-pages',
+        '--disable-background-downloads',
+        '--disable-breakpad',
+        '--disable-component-update',
+        '--disable-domain-reliability',
+        '--disable-client-side-phishing-detection',
+        '--disable-background-timer-throttling',
+        '--disable-ipc-flooding-protection',
+        '--disable-popup-blocking',
+        '--disable-print-preview',
+        '--disable-hang-monitor',
+        '--disable-prompt-on-repost',
+        '--force-color-profile=srgb',
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor'
+      ]
     });
 
     const page = await browser.newPage();
@@ -825,12 +841,16 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     browser = null; // Mark as closed
 
-    // Cleanup profile folder
+    // Cleanup profile folder after a delay to ensure file handles are released
     setTimeout(() => {
-      if (fs.existsSync(customUserDataDir)) {
-        fs.rmSync(customUserDataDir, { recursive: true, force: true });
+      if (fs.existsSync(userDataDir)) {
+        try {
+          fs.rmSync(userDataDir, { recursive: true, force: true });
+        } catch (cleanupError) {
+          console.warn("Failed to cleanup userDataDir:", cleanupError.message);
+        }
       }
-    }, 10000); // Increased to 10s for Windows file release
+    }, 15000); // 15 seconds delay for Windows
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
     if (!fs.existsSync(uploadDir)) {
@@ -850,10 +870,16 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     });
   } catch (error) {
     console.error("download_pdf_save error:", error);
+    return res.status(500).json({ suc: 0, message: "Unable to generate PDF." });
+  } finally {
+    // Ensure browser is closed even if error occurs before assignment
     if (browser) {
-      await browser.close().catch(() => { });
+      try {
+        await browser.close();
+      } catch (closeError) {
+        console.warn("Error closing browser:", closeError.message);
+      }
     }
-    return res.json({ suc: 0, message: "Unable to generate PDF." });
   }
 });
 
