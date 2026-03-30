@@ -829,65 +829,71 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   }
 
   isGenerating = true;
+  let browser;
+
   try {
-    var data = req.body;
+    const data = req.body;
 
-    const uniqueDir = path.join(__dirname, "../temp", `puppeteer_${Date.now()}`);
-
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       headless: true,
       executablePath: process.env.CHROME_EXE_PATH,
-      userDataDir: uniqueDir,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
         "--disable-gpu",
-        "--single-process"
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process",
+        "--disable-extensions"
       ]
     });
 
     const page = await browser.newPage();
 
-    // Compose complete HTML page with head, styles and same links as print_backup
     const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <base href="${req.protocol}://${req.get("host")}">
   <title>ESG Risk Viewer Report</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="/css/fontawesome.css">
-  <link rel="stylesheet" type="text/css" href="/css/icofont.css">
-  <link rel="stylesheet" type="text/css" href="/css/themify.css">
-  <link rel="stylesheet" type="text/css" href="/css/flag-icon.css">
-  <link rel="stylesheet" type="text/css" href="/css/feather-icon.css">
-  <link rel="stylesheet" type="text/css" href="/css/animate.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="/css/style.css">
-  <link id="color" rel="stylesheet" href="/css/color-1.css" media="screen">
-  <link rel="stylesheet" type="text/css" href="/css/responsive.css">
-  <link rel="stylesheet" type="text/css" href="/css/datatables.css">
-  <link rel="stylesheet" type="text/css" href="/css/custom-style.css">
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/custom-style.css">
+
   <style>
-    html, body { width: 100% !important; margin: 0; padding: 10px; box-sizing: border-box; }
+    html, body { width: 100%; margin: 0; padding: 10px; }
     body { font-family: 'IBM Plex Sans', sans-serif; color: #000; }
-    #printDiv { width: 100% !important; max-width: 100% !important; margin: 0 auto; padding: 0 !important; }
-    #printDiv .container-fluid { width: 100% !important; max-width: 100% !important; margin: 0 auto !important; padding-left: 0 !important; padding-right: 0 !important; }
-    .row { margin-left: 0 !important; margin-right: 0 !important; }
-    .col-md-12, .col-md-8, .col-md-6, .col-md-4 { float: left; position: relative; width: 100% !important; }
-    table { width: 100% !important; border-collapse: collapse; page-break-inside: auto; }
-    table th, table td { border: 1px solid #000; padding: 6px; font-size: 12px; vertical-align: top; }
+
+    #printDiv { width: 100%; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      page-break-inside: auto;
+    }
+
+    table th, table td {
+      border: 1px solid #000;
+      padding: 6px;
+      font-size: 12px;
+    }
+
     table thead { display: table-header-group; }
-    table tfoot { display: table-footer-group; }
-    img { max-width: 100%; height: auto; }
-    .logo-report { height: auto; width: 120px; }
-    .report-head { font-weight: 600; font-size: 29px; color: #7030a0; }
-    .report-sub-head { font-weight: 600; font-size: 25px; color: black; }
+
+    img { max-width: 100%; }
+
+    .report-head { font-size: 29px; color: #7030a0; font-weight: 600; }
+    .report-sub-head { font-size: 25px; font-weight: 600; }
   </style>
 </head>
+
 <body>
   <div id="printDiv">
     ${data.pdfDiv}
@@ -897,23 +903,27 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     await page.setContent(htmlContent, {
       waitUntil: "networkidle0",
-      timeout: 120000,
-      baseURL: `${req.protocol}://${req.get("host")}`,
+      timeout: 120000
     });
 
     const pdfBuffer = await page.pdf({
-      format: 'A4',
+      format: "A4",
       printBackground: true,
-      margin: { top: '15mm', right: '10mm', bottom: '15mm', left: '10mm' },
-      preferCSSPageSize: true,
+      margin: {
+        top: "15mm",
+        right: "10mm",
+        bottom: "15mm",
+        left: "10mm"
+      }
     });
 
     await browser.close();
 
-    // cleanup (VERY IMPORTANT)
-    fs.rmSync(uniqueDir, { recursive: true, force: true });
+    // 🧠 Important: give Windows time to release file handles
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
+
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -925,13 +935,26 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     return res.json({
       suc: 1,
-      message: "PDF generated and stored successfully.",
+      message: "PDF generated successfully",
       url: `/ghg_calculator_report_upload/${fileName}`,
-      filePath,
+      filePath
     });
+
   } catch (error) {
     console.error("download_pdf_save error:", error);
-    return res.json({ suc: 0, message: "Unable to generate PDF." });
+
+    // 🛑 Ensure browser is closed even on failure
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (e) { }
+    }
+
+    return res.json({
+      suc: 0,
+      message: "Unable to generate PDF"
+    });
+
   } finally {
     isGenerating = false;
   }
