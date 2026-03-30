@@ -724,12 +724,67 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
   let browser; // Declare browser outside try for cleanup
+  let userDataDir; // Track userDataDir for cleanup
+
+  // Helper function to launch browser with retry logic
+  const launchBrowserWithRetry = async (launchOptions, maxRetries = 3) => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await puppeteer.launch(launchOptions);
+      } catch (error) {
+        console.warn(`Browser launch attempt ${attempt} failed:`, error.message);
+
+        if (attempt === maxRetries) {
+          throw error;
+        }
+
+        // Wait before retry and try to clean up
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Generate new userDataDir for retry
+        const newUniqueId = crypto.randomBytes(16).toString('hex');
+        const newUserDataDir = path.join(os.tmpdir(), `puppeteer-${newUniqueId}`);
+
+        if (fs.existsSync(newUserDataDir)) {
+          try {
+            fs.rmSync(newUserDataDir, { recursive: true, force: true });
+          } catch (cleanupError) {
+            console.warn("Failed to cleanup retry userDataDir:", cleanupError.message);
+          }
+        }
+
+        launchOptions.userDataDir = newUserDataDir;
+        userDataDir = newUserDataDir; // Update the tracked userDataDir
+      }
+    }
+  };
+
   try {
     var data = req.body;
 
     // Use system temp directory with unique ID to avoid conflicts
     const uniqueId = crypto.randomBytes(16).toString('hex');
-    const userDataDir = path.join(os.tmpdir(), `puppeteer-${uniqueId}`);
+    userDataDir = path.join(os.tmpdir(), `puppeteer-${uniqueId}`);
+
+    // Ensure the directory doesn't exist and clean up any leftover processes
+    if (fs.existsSync(userDataDir)) {
+      try {
+        // Kill any existing Chrome processes using this directory
+        if (os.platform() === 'win32') {
+          const { execSync } = require('child_process');
+          try {
+            // Find and kill Chrome processes
+            execSync(`taskkill /f /im chrome.exe /fi "WINDOWTITLE eq puppeteer*"`, { stdio: 'ignore' });
+          } catch (killError) {
+            // Ignore errors if no processes found
+          }
+        }
+        // Remove the directory
+        fs.rmSync(userDataDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        console.warn("Failed to cleanup existing userDataDir:", cleanupError.message);
+      }
+    }
 
     // Configure browser launch options
     const launchOptions = {
@@ -781,7 +836,7 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
       launchOptions.executablePath = process.env.CHROME_EXE_PATH;
     }
 
-    browser = await puppeteer.launch(launchOptions);
+    browser = await launchBrowserWithRetry(launchOptions);
 
     const page = await browser.newPage();
 
@@ -851,16 +906,14 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
 
     browser = null; // Mark as closed
 
-    // Cleanup profile folder after a delay to ensure file handles are released
-    setTimeout(() => {
-      if (fs.existsSync(userDataDir)) {
-        try {
-          fs.rmSync(userDataDir, { recursive: true, force: true });
-        } catch (cleanupError) {
-          console.warn("Failed to cleanup userDataDir:", cleanupError.message);
-        }
+    // Cleanup profile folder immediately since browser is closed
+    if (userDataDir && fs.existsSync(userDataDir)) {
+      try {
+        fs.rmSync(userDataDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        console.warn("Failed to cleanup userDataDir:", cleanupError.message);
       }
-    }, 15000); // 15 seconds delay for Windows
+    }
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
     if (!fs.existsSync(uploadDir)) {
@@ -886,7 +939,11 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     if (error.message && error.message.includes("Could not find Chrome")) {
       errorMessage = "Chrome browser not found. Please install Chrome or set CHROME_EXE_PATH environment variable to the Chrome executable path.";
     } else if (error.message && error.message.includes("browser already running")) {
-      errorMessage = "Browser conflict detected. Please try again.";
+      errorMessage = "Browser conflict detected. The system will attempt to resolve this automatically. Please try again.";
+    } else if (error.message && error.message.includes("net::ERR_CONNECTION_REFUSED")) {
+      errorMessage = "Network connection error. Please check your internet connection and try again.";
+    } else if (error.message && error.message.includes("TimeoutError")) {
+      errorMessage = "PDF generation timed out. The report may be too large. Please try again.";
     }
 
     return res.json({ suc: 0, message: errorMessage });
@@ -897,6 +954,15 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
         await browser.close();
       } catch (closeError) {
         console.warn("Error closing browser:", closeError.message);
+      }
+    }
+
+    // Cleanup userDataDir in finally block as well
+    if (userDataDir && fs.existsSync(userDataDir)) {
+      try {
+        fs.rmSync(userDataDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        console.warn("Failed to cleanup userDataDir in finally:", cleanupError.message);
       }
     }
   }
