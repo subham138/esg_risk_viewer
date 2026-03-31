@@ -322,11 +322,33 @@
 
                     <div class="row m-t-10">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-pill btn-sm btn-custom text-center" onclick="generatePDF()">
-                                <i class="icon icon-download mr-3"></i>&nbsp; <span>Preview & Download</span>
+                            <button id="generatePdfButton" type="button" class="btn btn-pill btn-sm btn-custom text-center" onclick="generatePDF()">
+                                <span id="generatePdfIcon"><i class="icon icon-download mr-3"></i></span>
+                                <span id="generatePdfText">Preview & Download</span>
                             </button>
                         </div>
                     </div>
+                    <style>
+                        .spinner-inline {
+                            display: inline-block;
+                            width: 18px;
+                            height: 18px;
+                            border: 2px solid rgba(0, 0, 0, 0.2);
+                            border-top-color: rgba(0, 0, 0, 0.85);
+                            border-radius: 50%;
+                            animation: spinner-rotate 0.8s linear infinite;
+                            vertical-align: middle;
+                            margin-right: 8px;
+                        }
+                        @keyframes spinner-rotate {
+                            from { transform: rotate(0deg); }
+                            to { transform: rotate(360deg); }
+                        }
+                        #generatePdfButton:disabled {
+                            opacity: 0.7;
+                            cursor: not-allowed;
+                        }
+                    </style>
                 </div>
             </div>
         </div>
@@ -336,37 +358,6 @@
 <script src="js/html2pdf/html2pdf.bundle.min.js"></script>
 
 <script>
-    function print(){
-        const divToPrint = document.getElementById('printDiv');
-        if(!divToPrint){
-            alert('Report content not found.');
-            return;
-        }
-
-        fetch('/download_pdf_save', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ pdfDiv: divToPrint.innerHTML })
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log(result, '-------------');
-            
-            if (result.suc === 1 && result.url) {
-                window.open(result.url, '_blank');
-            } else {
-                console.error('PDF save failed:', result);
-                alert('Unable to create PDF. Please try again.');
-            }
-        })
-        .catch(err => {
-            console.error('Error saving PDF:', err);
-            alert('Unable to create PDF. Please check console.');
-        });
-    }
-
     function print_backup(){
         var divToPrint = document.getElementById('printDiv');
         var WindowObject = window.open('', 'Print-Window');
@@ -411,317 +402,32 @@
             WindowObject.close();
         }, 1000);
     }
-    
-    function generateAndUploadPDF1() {
-        const divToPrint = document.getElementById('printDiv');
 
-        // Create a temporary container (same as print window)
-        const htmlContent = document.createElement("div");
+    function setGeneratePdfButtonState(isProcessing) {
+        const btn = document.getElementById('generatePdfButton');
+        const icon = document.getElementById('generatePdfIcon');
+        const text = document.getElementById('generatePdfText');
 
-        htmlContent.innerHTML = `
-        <base href="${window.location.origin}">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+        if (!btn || !icon || !text) return;
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <link rel="stylesheet" href="/css/style.css">
-        <link id="color" rel="stylesheet" href="/css/color-1.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="/css/responsive.css">
-        <link rel="stylesheet" type="text/css" href="/css/datatables.css">
-        <link rel="stylesheet" href="/css/custom-style.css">
-
-        <style type="text/css">
-            body { font-family: 'IBM Plex Sans', sans-serif; }footer{ margin-left: 0px !important; position: fixed; bottom: 10px; height: 20px; width: 100%; } footer small{ display: flex; justify-content: space-between; } .logo-report{ height: 30%; width: 30%; } .logo-report img{ height: 100%; width: 100%; } .report-head{ font-weight: 500; font-size: 29px; color: #7030a0; } .report-sub-head{ font-weight: 500; font-size: 27px; color: #319795; } .topic-sub-head{ font-weight: 500; font-size: 22px; color: #4472c4; } .info_head{ font-weight: 600; font-size: 17px; } #distance-gif{ display: none !important; } #distance-png{ display: block !important; } .highlight-context{ color: #7030a0; font-size: 20px; font-weight: 600; } .col-md-8{ flex: 0 0 auto; width: 66.66666667%; } .col-md-4{ flex: 0 0 auto; width: 33.33333333%; } .d-flex { display: flex !important ; } .flex-column { flex-direction: column !important; } .justify-content-center { justify-content: center !important; }
-        </style>
-
-        ${divToPrint.innerHTML}
-        `;
-
-        // console.log($(tempContainer));
-
-        // 🔥 Create hidden iframe
-        // const iframe = document.createElement("iframe");
-        // iframe.style.position = "fixed";
-        // iframe.style.left = "-9999px";
-        // document.body.appendChild(iframe);
-
-        // const iframeDoc = iframe.contentWindow.document;
-        // iframeDoc.open();
-        // iframeDoc.write(htmlContent);
-        // iframeDoc.close();
-
-        console.log(htmlContent);
-        
-
-        // ⏳ Wait for CSS to load
-        setTimeout(() => {
-
-            // html2pdf().set({
-            //     margin: 0.3,
-            //     filename: 'report.pdf',
-            //     image: { type: 'jpeg', quality: 1 },
-            //     html2canvas: { scale: 3, useCORS: true },
-            //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            // }).from(iframeDoc.body).outputPdf('blob').then(function (pdfBlob) {
-            //     const url = URL.createObjectURL(pdfBlob);
-            //     window.open(url, '_blank'); // 🔥 opens in new tab
-            // });
-
-            html2pdf()
-                .set({
-                    margin: 0.3,
-                    filename: 'report.pdf',
-                    image: { type: 'jpeg', quality: 1 },
-                    html2canvas: { scale: 3, useCORS: true },
-                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-                })
-                .from(htmlContent) // ✅ REAL DOM
-                .outputPdf('blob')
-                .then(function (pdfBlob) {
-                    console.log(htmlContent, '--------');
-                    
-                    const formData = new FormData();
-                    formData.append("file", pdfBlob, "report.pdf");
-
-                    fetch("/download_pdf_save", {
-                        method: "POST",
-                        body: formData
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.suc === 1) {
-                                window.open(data.url, "_blank");
-                            }
-                        });
-
-                    // cleanup
-                    document.body.removeChild(iframe);
-                });
-
-        }, 1000); // allow CSS to load
-        
-
-        // const opt = {
-        //     margin: 0.3,
-        //     filename: 'report.pdf',
-        //     image: { type: 'jpeg', quality: 1 },
-        //     html2canvas: { scale: 1 },
-        //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        // };
-
-        // html2pdf().set(opt).from($(tempContainer)).outputPdf('blob').then(function (pdfBlob) {
-
-        //     const formData = new FormData();
-        //     formData.append("file", pdfBlob, "report.pdf");
-
-        //     fetch("/download_pdf_save", {
-        //         method: "POST",
-        //         body: formData
-        //     })
-        //         .then(res => res.json())
-        //         .then(data => {
-        //             if (data.suc === 1) {
-        //                 window.open(data.url, "_blank"); // ✅ open saved PDF
-        //             } else {
-        //                 alert("Upload failed");
-        //             }
-        //         })
-        //         .catch(err => {
-        //             console.error("Upload error:", err);
-        //         });
-
-        // });
-    }
-
-    function generateAndUploadPDF2() {
-        const original = document.getElementById('printDiv');
-
-        // ✅ Clone real DOM
-        const clone = original.cloneNode(true);
-
-        console.log(clone);
-        
-
-        const style = document.createElement("style");
-        style.innerHTML = `@media print, screen {
-            html, body {
-                height: auto !important;
-                overflow: visible !important;
-            }
-
-            .d-flex {
-                display: block !important;
-            }
-
-            .row {
-                display: block !important;
-            }
-
-            .col-md-8,
-            .col-md-4,
-            .col-md-6,
-            .col-md-12 {
-                width: 100% !important;
-                float: none !important;
-            }
-
-            footer {
-                position: static !important;
-            }
-
-            table {
-                page-break-inside: auto;
-            }
-
-            tr {
-                page-break-inside: avoid;
-            }
-        }`;
-
-        // ✅ Wrap in container
-        const wrapper = document.createElement("div");
-        wrapper.style.padding = "10px";
-        wrapper.appendChild(style);
-        wrapper.appendChild(clone);
-
-        // ✅ Attach to body (invisible)
-        wrapper.style.position = "absolute";
-        // wrapper.style.left = "-9999px";
-        document.body.appendChild(wrapper);
-        
-
-        setTimeout(() => {
-
-            html2pdf()
-                .set({
-                    margin: 0.3,
-                    filename: 'report.pdf',
-                    image: { type: 'jpeg', quality: 1 },
-                    html2canvas: {
-                        scale: 2,
-                        useCORS: true,
-                        scrollY: 0 // 🔥 IMPORTANT FIX
-                    },
-                    jsPDF: {
-                        unit: 'in',
-                        format: 'a4',
-                        orientation: 'portrait'
-                    }
-                })
-                .from(wrapper) // ✅ REAL rendered DOM
-                .outputPdf('blob')
-                .then(function (pdfBlob) {
-                    console.log(wrapper);
-
-                    const formData = new FormData();
-                    formData.append("file", pdfBlob, "report.pdf");
-
-                    fetch("/download_pdf_save", {
-                        method: "POST",
-                        body: formData
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.suc === 1) {
-                                window.open(data.url, "_blank");
-                            }
-                        });
-
-                    // cleanup
-                    document.body.removeChild(wrapper);
-                });
-
-        }, 500);
-    }
-    function generateAndUploadPDF() {
-        const original = document.getElementById('printDiv');
-
-        // ✅ Clone DOM
-        const clone = original.cloneNode(true);
-
-        // 🔥 FORCE FIXED LAYOUT (VERY IMPORTANT)
-        clone.querySelectorAll('*').forEach(el => {
-            el.style.position = 'static';
-            el.style.float = 'none';
-        });
-
-        // 🔥 BREAK FLEX (ROOT CAUSE)
-        clone.querySelectorAll('.d-flex, .row').forEach(el => {
-            el.style.display = 'block';
-        });
-
-        // 🔥 FIX BOOTSTRAP COLUMNS
-        clone.querySelectorAll('[class*="col-"]').forEach(el => {
-            el.style.width = '100%';
-        });
-
-        // 🔥 REMOVE FIXED FOOTER ISSUES
-        clone.querySelectorAll('footer').forEach(el => {
-            el.style.position = 'static';
-        });
-
-        // ✅ Wrapper
-        const wrapper = document.createElement("div");
-        wrapper.appendChild(clone);
-
-        wrapper.style.position = "fixed";
-        wrapper.style.top = "0";
-        wrapper.style.left = "0";
-        wrapper.style.width = "100%";
-        wrapper.style.background = "#fff";
-        wrapper.style.zIndex = "-1";
-
-        document.body.appendChild(wrapper);
-
-        setTimeout(() => {
-
-            html2pdf()
-                .set({
-                    margin: 0.3,
-                    filename: 'report.pdf',
-                    image: { type: 'jpeg', quality: 1 },
-                    html2canvas: {
-                        scale: 2,
-                        useCORS: true,
-                        scrollY: 0
-                    },
-                    jsPDF: {
-                        unit: 'in',
-                        format: 'a4',
-                        orientation: 'portrait'
-                    }
-                })
-                .from(wrapper)
-                .outputPdf('blob')
-                .then(function (pdfBlob) {
-
-                    const formData = new FormData();
-                    formData.append("file", pdfBlob, "report.pdf");
-
-                    fetch("/download_pdf_save", {
-                        method: "POST",
-                        body: formData
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.suc === 1) {
-                                window.open(data.url, "_blank");
-                            }
-                        });
-
-                    document.body.removeChild(wrapper);
-                });
-
-        }, 500);
+        if (isProcessing) {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+            icon.innerHTML = '<span class="spinner-inline" aria-hidden="true"></span>';
+            text.textContent = 'PDF is generating please wait';
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('disabled');
+            icon.innerHTML = '<i class="icon icon-download mr-3"></i>';
+            text.textContent = 'Preview & Download';
+        }
     }
 
     function generatePDF() {
+            setGeneratePdfButtonState(true);
+            const timeoutReset = setTimeout(() => setGeneratePdfButtonState(false), 120000);
             const divToPrint = document.getElementById('printDiv');
-
-            const htmlContent = `
-    <!DOCTYPE html>
+            const htmlContent = `<!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
@@ -741,14 +447,14 @@
         <link rel="stylesheet" href="/css/custom-style.css">
 
         <style>
-            body { font-family: 'IBM Plex Sans', sans-serif; }
+            body { font-family: Arial, sans-serif; font-size: 14px; color: #333; margin: 0; padding: 0; } /* 2. Custom Typography from your HTML */ .report-head { font-size: 24px; font-weight: bold; color: #24695c; margin-bottom: 10px; } .report-head_1 { font-size: 18px; font-weight: bold; border-bottom: 2px solid #24695c; padding-bottom: 5px; margin-top: 20px; } .report-sub-head { font-size: 16px; font-weight: bold; background-color: #f4f4f4; padding: 5px 10px; } .report-sub-head_2 { font-weight: bold; color: #555; } .highlight-context { font-weight: bold; font-size: 1.1em; color: #000; } .emiss-card-val { font-weight: bold; font-size: 14px; } /* 3. Bootstrap-like Grid System (Simulated for PDF) */ .row { display: block; width: 100%; clear: both; margin-bottom: 15px; } /* Use floats for columns as Flexbox can be buggy in older PDF engines */ .col-md-12 { width: 100%; } .col-md-8 { width: 66.66%; float: left; } .col-md-6 { width: 50%; float: left; } .col-md-4 { width: 33.33%; float: left; } /* Clearfix for rows */ .row::after { content: ""; clear: both; display: table; } /* 4. Tables Styling */ table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; } th, td { padding: 8px; text-align: left; border-bottom: 1px solid #dee2e6; vertical-align: top; } .table-bordered th, .table-bordered td { border: 1px solid #dee2e6; } thead th { background-color: #f8f9fa; font-weight: bold; } /* 5. Utility Classes */ .mt-2 { margin-top: 0.5rem; } .mt-3 { margin-top: 1rem; } .mt-4 { margin-top: 1.5rem; } .px-5 { padding-left: 3rem; padding-right: 3rem; } .text-center { text-align: center; } .text-danger { color: #dc3545; } /* 6. Chart/SVG specific */ .cust-chart svg { max-width: 100%; height: auto; } /* 7. PDF Page Break Logic */ .row { page-break-inside: avoid; } #distance-gif { display: none !important; } #distance-png { display: block !important; } @media print { body { -webkit-print-color-adjust: exact; } }
         </style>
     </head>
     <body>
         ${divToPrint.innerHTML}
     </body>
     </html>
-    `;
+    `;   
 
             fetch("/download_pdf_save", {
                 method: "POST",
@@ -759,11 +465,21 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.suc === 1) {
+                    console.log(data, 'rrrrrrrrrrrrrrrr', data.url);
+
+                    if (data.suc == 1) {
                         window.open(data.url, "_blank");
                     } else {
                         alert("PDF failed");
                     }
+                })
+                .catch(err => {
+                    console.error("generatePDF error:", err);
+                    alert("PDF failed, please try again.");
+                })
+                .finally(() => {
+                    setGeneratePdfButtonState(false);
+                    clearTimeout(timeoutReset);
                 });
         }
 

@@ -13,3 +13,4 @@ schedular/runGhgQuestSync.bat
 assets/ghg_calculator_report_upload/*
 *copy.ejs
 *.bat
+playwright-browsers/*

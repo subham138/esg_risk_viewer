@@ -834,8 +834,14 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
   try {
     const { html } = req.body;
 
+    process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(__dirname, "../playwright-browsers");
+
     browser = await chromium.launch({
       headless: true,
+      executablePath: path.join(
+        __dirname,
+        "../playwright-browsers/chromium-1208/chrome-win64/chrome.exe"
+      ),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox"
@@ -845,7 +851,18 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const page = await browser.newPage();
 
     await page.setContent(html, {
-      waitUntil: "domcontentloaded"
+      waitUntil: "load",
+      timeout: 60000
+    });
+
+    await page.evaluate(() => {
+      return Promise.all(
+        Array.from(document.images)
+          .filter(img => !img.complete)
+          .map(img => new Promise(resolve => {
+            img.onload = img.onerror = resolve;
+          }))
+      );
     });
 
     const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
