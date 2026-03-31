@@ -42,6 +42,7 @@ const crypto = require('crypto')
 
 const { my_project: en_lang } = require("../assets/language/en.json");
 const { my_project: fr_lang } = require("../assets/language/fr.json");
+const { createPage, closePage, restartBrowserIfNeeded } = require("../modules/PuppeteerModule");
 
 const express = require("express"),
   ProjectRouter = express.Router(),
@@ -824,6 +825,103 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 let isGenerating = false;
 
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
+  if (isGenerating) {
+    return res.json({ message: "Please wait..." });
+  }
+
+  isGenerating = true;
+
+  let page;
+
+  try {
+    const data = req.body;
+
+    page = await createPage();
+
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <base href="${req.protocol}://${req.get("host")}">
+  <title>ESG Risk Viewer Report</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    table th, table td {
+      border: 1px solid #000;
+      padding: 6px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="printDiv">
+    ${data.pdfDiv}
+  </div>
+</body>
+</html>`;
+
+    await page.setContent(htmlContent, {
+      waitUntil: ["domcontentloaded", "networkidle0"],
+      timeout: 120000
+    });
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "15mm",
+        right: "10mm",
+        bottom: "15mm",
+        left: "10mm"
+      }
+    });
+
+    await closePage(page);
+
+    // 📁 Save PDF
+    const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileName = `ghg_report_${Date.now()}.pdf`;
+    const filePath = path.join(uploadDir, fileName);
+
+    fs.writeFileSync(filePath, pdfBuffer);
+
+    // 🔄 restart browser periodically
+    await restartBrowserIfNeeded();
+
+    return res.json({
+      suc: 1,
+      message: "PDF generated successfully",
+      url: `/ghg_calculator_report_upload/${fileName}`,
+      filePath
+    });
+
+  } catch (error) {
+    console.error("download_pdf_save error:", error);
+
+    if (page) {
+      try { await closePage(page); } catch (e) { }
+    }
+
+    return res.json({
+      suc: 0,
+      message: "Unable to generate PDF"
+    });
+
+  } finally {
+    isGenerating = false;
+  }
+});
+
+ProjectRouter.post("/download_pdf_save11", async (req, res) => {
   if (isGenerating) {
     return res.json({ message: "Please wait..." });
   }
