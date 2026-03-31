@@ -326,6 +326,8 @@
                                 <span id="generatePdfIcon"><i class="icon icon-download mr-3"></i></span>
                                 <span id="generatePdfText">Preview & Download</span>
                             </button>
+                            <a href="" id="pdf_view_link" class="btn btn-pill btn-sm btn-custom text-center" target="_blank" style="display: none;">
+                                <i class="icon icon-eye mr-3"></i>&nbsp; View PDF</a>
                         </div>
                     </div>
                     <style>
@@ -424,6 +426,7 @@
     }
 
     function generatePDF() {
+        $('#pdf_view_link').hide()
             setGeneratePdfButtonState(true);
             const timeoutReset = setTimeout(() => setGeneratePdfButtonState(false), 120000);
             const divToPrint = document.getElementById('printDiv');
@@ -465,9 +468,8 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data, 'rrrrrrrrrrrrrrrr', data.url);
-
                     if (data.suc == 1) {
+                        $('#pdf_view_link').attr('href', data.url).show()
                         window.open(data.url, "_blank");
                     } else {
                         alert("PDF failed");
