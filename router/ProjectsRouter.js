@@ -835,7 +835,11 @@ ProjectRouter.post("/download_pdf_save", async (req, res) => {
     const { html } = req.body;
 
     browser = await chromium.launch({
-      headless: true
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox"
+      ]
     });
 
     const page = await browser.newPage();
