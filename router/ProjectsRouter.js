@@ -38,7 +38,7 @@ const {
 } = require("../modules/ProjectModule");
 const { getUserList } = require("../modules/UserModule");
 const dateFormat = require("dateformat");
-const crypto = require('crypto')
+const fileUpload = require('express-fileupload');
 
 const { my_project: en_lang } = require("../assets/language/en.json");
 const { my_project: fr_lang } = require("../assets/language/fr.json");
@@ -51,6 +51,8 @@ const express = require("express"),
   path = require("path"),
   os = require("os"),
   eng_flag = ["I", "E", "G", "EV"];
+
+ProjectRouter.use(fileUpload())
 
 const cleanupTempProfiles = () => {
   const tempDir = os.tmpdir();
@@ -824,7 +826,97 @@ ProjectRouter.post("/download_pdf", async (req, res) => {
 
 let isGenerating = false;
 
+const { chromium } = require("playwright");
+
 ProjectRouter.post("/download_pdf_save", async (req, res) => {
+  let browser;
+
+  try {
+    const { html } = req.body;
+
+    browser = await chromium.launch({
+      headless: true
+    });
+
+    const page = await browser.newPage();
+
+    await page.setContent(html, {
+      waitUntil: "domcontentloaded"
+    });
+
+    const uploadDir = path.join(__dirname, "..", "assets", "ghg_calculator_report_upload");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileName = `ghg_report_${Date.now()}.pdf`;
+    const filePath = path.join(uploadDir, fileName);
+
+    await page.pdf({
+      path: filePath,
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "15mm",
+        right: "10mm",
+        bottom: "15mm",
+        left: "10mm"
+      }
+    });
+
+    await browser.close();
+
+    return res.json({
+      suc: 1,
+      url: `/ghg_calculator_report_upload/${fileName}`
+    });
+
+  } catch (error) {
+    console.error("Playwright PDF error:", error);
+
+    if (browser) {
+      try { await browser.close(); } catch (e) { }
+    }
+
+    return res.json({ suc: 0, message: "PDF generation failed" });
+  }
+});
+
+ProjectRouter.post("/download_pdf_save33", async (req, res) => {
+  try {
+    if (!req.files || !req.files.file) {
+      return res.json({ suc: 0, message: "No file uploaded" });
+    }
+
+    const file = req.files.file;
+
+    const uploadDir = path.join(__dirname, "../assets", "ghg_calculator_report_upload");
+
+    // create directory if not exists
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileName = `ghg_report_${Date.now()}.pdf`;
+    const filePath = path.join(uploadDir, fileName);
+
+    // move file
+    await file.mv(filePath);
+
+    return res.json({
+      suc: 1,
+      message: "PDF uploaded successfully",
+      url: `/ghg_calculator_report_upload/${fileName}`
+    });
+
+  } catch (error) {
+    console.error("upload-pdf error:", error);
+    return res.json({ suc: 0, message: "Upload failed" });
+  }
+});
+
+ProjectRouter.post("/download_pdf_save22", async (req, res) => {
   if (isGenerating) {
     return res.json({ message: "Please wait..." });
   }
