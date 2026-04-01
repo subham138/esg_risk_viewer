@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<div class="row align-items-center">
+<div class="row align-items-center my-4">
     <div class="col-4"><hr class="cust-hr"></div>
     <div class="col-4 text-center px-0"><span class="div-hr-cust-text">Progress</span></div>
     <div class="col-4"><hr class="cust-hr"></div>
@@ -374,6 +374,9 @@
         // Define initial options
         options = {
             title: 'Pathway - Actual',
+            titleTextStyle: {
+                fontSize: 20,
+            },
             chartArea: {width: '85%', height: '85%'},
             curveType: 'function',
             tooltip: { isHtml: true },
@@ -414,12 +417,18 @@
 
         actOptions = {
           title: 'Actual',
+          titleTextStyle: {
+                fontSize: 20,
+            },
           chartArea: {width: '75%', height: '75%'},
           isStacked: true,
           tooltip: { isHtml: true },
           colors: seriesColors,
           vAxis: {
             title: 'Total Emissions',
+            titleTextStyle: {
+                fontSize: 15,
+              }
             },
         //   vAxis: {
         //     title: 'Total Emissions',
@@ -444,13 +453,19 @@
 
     function drawEmiOvtChart(){
         emiOvtOpt = {
-          title: 'Emissions over time',
+        //   title: 'Emissions over time',
+        //   titleTextStyle: {
+        //         fontSize: 20,
+        //     },
           chartArea: {width: '75%', height: '75%'},
           isStacked: true,
           tooltip: { isHtml: true },
           colors: seriesColors,
           vAxis: {
             title: 'Total Emissions',
+            titleTextStyle: {
+                  fontSize: 15,
+              }
             },
         //   vAxis: {
         //     title: 'Total Emissions',
@@ -491,6 +506,9 @@
 
         pathOptions = {
           title: 'Pathway',
+          titleTextStyle: {
+                fontSize: 20,
+            },
           chartArea: {width: '75%', height: '75%'},
           isStacked: true,
           tooltip: { isHtml: true },
@@ -500,7 +518,10 @@
         //     minValue: 0
         //   },
           vAxis: {
-            title: 'Total Emissions'
+            title: 'Total Emissions',
+            titleTextStyle: {
+                  fontSize: 15,
+              }
           },
           legend: {
             position: 'right',
@@ -524,7 +545,10 @@
             ['Indirect Emissions (Scope 3-Downstream)', +$('#tot_emi_sc3_d').text()]
         ]);
         emiActChartOpt = {
-            title: 'Emissions by activity (tCO2e)-Current Year',
+            // title: 'Emissions by activity (tCO2e)-Current Year',
+            // titleTextStyle: {
+            //     fontSize: 20,
+            // },
             pieHole: 0.4,
             width: '100%',
             height: 300,

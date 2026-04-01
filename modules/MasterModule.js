@@ -175,8 +175,8 @@ PROJECT_LIST = {
   SFDR: "Sustainable Finance Disclosures Regulation (SFDR)",
   SDR: "UK\'s Sustainability Disclosure Requirements (SDR)",
   CFA: "CFA Institute's Diversity, Equity, & Inclusion Code",
-  IC: "Carbon - Only",
-  FC: "Carbon - Only (French)",
+  IC: "GHG Emissions Module",
+  FC: "GHG Emissions Module (French)",
 },
 INPUT_TYPE_LIST = {
   radio: "R",
