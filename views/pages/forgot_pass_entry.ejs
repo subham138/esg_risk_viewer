@@ -4,52 +4,84 @@
     font-size: 20px !important;
   }
 </style>
-<div class="row login_back_color">
-    <div class="col-12">
-      <div class="login-card">
-        <form class="theme-form login-form" action="/reset_pass" method="POST" autocomplete="off">
-          <% if(message){ %>
-          <div class="alert alert-<%= message.type %> outline alert-dismissible fade show" role="alert" style="border-width: 3px;width: 32vw;">
-           
-            <p style=" text-align: center;
-            font-size: 17px;"><i data-feather="clock"></i>&nbsp;&nbsp;<%= message.message %></p>
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close" style="top: 5px;"></button>
-          </div>
-          <% } %>
-          <img width="100%" height="100%" src="images/logo_white.png" alt="">
-          <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-              <div class="form-group mt-3">
-                <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
-                  <input class="form-control loginInput example-popover" type="password" name="pass" id="pass" required="" placeholder="Password" onchange="chk_pass()" aria-describedby="passwordHelp">
-                  <div class="pas-eye"><span class="show-pass"><i class="icofont icofont-eye"></i></span></div>
-                </div>
-              </div>
-              <div class="form-group mt-3">
-                <div class="input-group"><span class="input-group-text bg-white"><i class="icofont icofont-ui-lock"></i></span>
-                  <input class="form-control loginInput" type="password" name="re_pass" id="re_pass" required="" placeholder="Re-Enter Password" onchange="chk_pass()">
-                  <div class="pas-eye"><span class="show-pass"><i class="icofont icofont-eye"></i></span></div>
-                </div>
-              </div>
-              <div class="form-group">
+<div class="page-wrapper">
+        <div class="sing-up-section">
+            <div class="container-fluid">
                 <div class="row">
-                  <div class="col-md-12">
-                    <input type="hidden" name="email" value="<%= email %>">
-                    <button class="btn btn-pill btn-custom btn-block lginBtn" id="subBtnFrPass" type="submit">Submit</button>
-                  </div>
+                    <div class="col-md-12">
+                        <div class="navbar-brand-logo">
+                            <a href="#"><img src="latest/img/logo.svg" alt=""></a>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <!-- <div class="form-group mt-0 pt-0">
-                <a class="link text-white text-center LoginFpText" href="/login">Login</a>
-              </div> -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="sing-up-form">
+                            <div class="sing-up-form-card">
+                                <div class="sing-up-form-title">
+                                    <h2>Sign in to your account</h2>
+                                </div>
+                                <form class="theme-form login-form" id="loginForm" action="/reset_pass" method="POST">
+                                    <% if(message){
+                                        let imgName = ''
+                                        if(message.type == 'success'){
+                                            imgName = 'checkmark.png'
+                                        }else{
+                                            imgName = 'cross.png'
+                                        } %>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12 text-center border p-2">
+                                                <img src="/images/<%= imgName %>" alt="Tick" width="30px" height="30px"> &nbsp;
+                                                <span><%= message.message %></span>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                            <div class="mb-3">
+                                                <label for="pass" class="form-label">Password*</label>
+                                                <input type="password" class="form-control loginInput example-popover showPass" name="pass" id="pass" required="" placeholder="Password" onchange="chk_pass()" aria-describedby="passwordHelp">
+                                                <span toggle="#pass" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                              <label for="re_pass" class="form-label">Confirm Password*</label>
+                                              <input type="password" class="form-control showPass" name="re_pass" id="re_pass" required placeholder="Re-Enter Password" onchange="chk_pass()">
+                                              <span toggle="#re_pass" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                            </div>
+
+                                            <button class="btn btn-primary sign-up-button lginBtn" id="signInBtn" type="submit">Submit</button>
+                                </form>
+                            </div>
+                            <div class="signup-content">
+                                <h3>Want to go back? <a href="/login">Sign In</a></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="footer">
+                            <ul>
+                                <li>© ESG Risk Viewer</li>
+                                <li class="divider-gray">|</li>
+                                <li><a href="#">Privacy & Terms</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
   <script>
+    $(".toggle-password").click(function () {
+
+        $(this).toggleClass("fa-eye fa-eye-slash");
+        var input = $($(this).attr("toggle"));
+        if (input.attr("type") == "password") {
+          input.attr("type", "text");
+        } else {
+          input.attr("type", "password");
+        }
+      });
     function chk_pass(){
         var pass = $('#pass').val(),
             re_pass = $('#re_pass').val();
@@ -63,26 +95,5 @@
             }
         }
     }
-  </script>
-  <script>
-    // var passInput = $('#pass')
-    // $(document).ready(function(){
-    //   const popoverTemplate = `
-    //     <div class="popover" role="tooltip" id="password-popover">
-    //       <div class="popover-body"></div>
-    //     </div>
-    //   `;
-      
-    //   passInput.popover({
-    //     trigger: 'manual',
-    //     placement: 'right',
-    //     content: '',
-    //     template: popoverTemplate
-    //   });
-    // })
-    // passInput.on('input', function(){
-    //   console.log($(this).val());
-    //   passInput.popover('show');
-    // })
   </script>
 <%- include('../templates/login_footer.ejs') %>
