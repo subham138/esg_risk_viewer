@@ -1,0 +1,209 @@
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: header, sub_header_url: header_url, sub_sub_header: sub_header, show_br: true}) %>
+
+<style>
+    :root {
+        --primary-color: #316379;
+        --secondary-color: #424f6f;
+        --white: #ffffff;
+        --bg-light: #f8f9fa;
+        --border-color: #eee;
+        --tag-bg: #e8f4f8;
+        --text-muted: #777;
+    }
+
+    .articles-container {
+        padding: 0px 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .article-row {
+        background: var(--white);
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .article-row:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .article-image-wrapper {
+        width: 15%;
+        min-width: 120px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .article-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+
+    .article-row:hover .article-image {
+        transform: scale(1.05);
+    }
+
+    .article-content {
+        width: 85%;
+        padding: 15px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .article-tag {
+        display: inline-block;
+        background: var(--tag-bg);
+        color: var(--primary-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        align-self: flex-start;
+    }
+
+    .article-heading {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        line-height: 1.3;
+    }
+
+    .article-description {
+        color: #555;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .article-footer {
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .posted-by {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .posted-by i {
+        width: 14px;
+        height: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .article-row {
+            flex-direction: column;
+        }
+        .article-image-wrapper {
+            width: 100%;
+            height: 200px;
+        }
+        .article-content {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="articles-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 style="color: var(--primary-color); font-weight: 700;">Latest Articles</h2>
+            <p class="text-muted">In-depth guides and analysis on the evolving ESG landscape.</p>
+        </div>
+    </div>
+
+    <!-- Article 1 -->
+    <div class="article-row">
+        <div class="article-image-wrapper">
+            <img src="/images/other-images/carbon-neutral.png" alt="ESG Reporting" class="article-image">
+        </div>
+        <div class="article-content">
+            <span class="article-tag">Sustainability</span>
+            <h3 class="article-heading">The Future of Sustainability Reporting for SMEs</h3>
+            <p class="article-description">Explore the upcoming regulatory changes and how small to medium-sized enterprises can stay ahead of the curve in their environmental disclosures.</p>
+            <div class="article-footer">
+                <div class="posted-by d-flex align-items-center gap-2">
+                    <i data-feather="user"></i>
+                    <span>Posted by Admin</span>
+                </div>
+                <div class="post-date d-flex align-items-center gap-2">
+                    <i data-feather="calendar"></i>
+                    <span>Oct 24, 2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article 2 -->
+    <div class="article-row">
+        <div class="article-image-wrapper">
+            <img src="/images/other-images/industrial-emissions.png" alt="GHG Emissions" class="article-image">
+        </div>
+        <div class="article-content">
+            <span class="article-tag">Environment</span>
+            <h3 class="article-heading">Getting Started with GHG Emissions Tracking</h3>
+            <p class="article-description">A comprehensive guide to understanding Scope 1, 2, and 3 emissions, and how to implement a robust tracking system for your organization.</p>
+            <div class="article-footer">
+                <div class="posted-by d-flex align-items-center gap-2">
+                    <i data-feather="user"></i>
+                    <span>Posted by Environmental Expert</span>
+                </div>
+                <div class="post-date d-flex align-items-center gap-2">
+                    <i data-feather="calendar"></i>
+                    <span>Nov 12, 2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article 3 -->
+    <div class="article-row">
+        <div class="article-image-wrapper">
+            <img src="/images/other-images/carbon-neutral_3.png" alt="Materiality Assessment" class="article-image">
+        </div>
+        <div class="article-content">
+            <span class="article-tag">Strategy</span>
+            <h3 class="article-heading">Mastering Dual Materiality in ESG Risk Assessment</h3>
+            <p class="article-description">Learn how to evaluate both the impact of your business on the world and the impact of the world on your business risks.</p>
+            <div class="article-footer">
+                <div class="posted-by d-flex align-items-center gap-2">
+                    <i data-feather="user"></i>
+                    <span>Posted by Risk Analyst</span>
+                </div>
+                <div class="post-date d-flex align-items-center gap-2">
+                    <i data-feather="calendar"></i>
+                    <span>Dec 05, 2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../templates/footer.ejs') %>
+
+<script>
+    feather.replace();
+</script>

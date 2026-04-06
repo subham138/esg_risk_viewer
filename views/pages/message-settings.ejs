@@ -1,58 +1,286 @@
-<%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6 row">
-                <!-- <div class="col-md-4">
-                    <h5 class="text-muted mt-2"><%= header %></h5>
-                </div> -->
-                <div class="col-md-12">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                        <li class="breadcrumb-item"><%= header %></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-        <hr>
-    </div>
-</div>
-<div class="container-fluid">
-    <div class="row">
-        <div class="card card-form">
-           <h5>If you would like change your subscription to receive (or to stop receiving) emails
-            from ESG Risk Viewer about products updates, industry news and events, you can
-            change your preferences below</h5> 
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: "Notification Settings", show_br: true}) %>
 
-            <div class="col-md-6">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="<%= product_update %>" id="productUpdate" <%= policy == 'Y' && product_update == 'Y' ? 'checked' : '' %>> 
-                    <label class="form-check-label" for="productUpdate">
-                       Products updates
-                    </label>
-                </div>
+<style>
+    :root {
+        --primary-color: #316379;
+        --secondary-color: #424f6f;
+        --success-color: #008f00;
+        --bg-light: #f8f9fa;
+        --text-dark: #333;
+        --text-muted: #666;
+        --white: #ffffff;
+        --transition-speed: 0.3s;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-wrapper {
+        padding: 0px 20px;
+        min-height: calc(100vh - 150px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        background-color: var(--bg-light);
+    }
+
+    .settings-card {
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        width: 100%;
+        max-width: 600px;
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .settings-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 40px 30px;
+        text-align: center;
+        color: var(--white);
+    }
+
+    .settings-header .icon-box {
+        background: rgba(255, 255, 255, 0.2);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        backdrop-filter: blur(5px);
+    }
+
+    .settings-header .icon-box i {
+        font-size: 32px;
+    }
+
+    .settings-header h2 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 0.5px;
+    }
+
+    .settings-header p {
+        margin: 10px 0 0;
+        opacity: 0.8;
+        font-size: 15px;
+    }
+
+    .settings-body {
+        padding: 30px;
+    }
+
+    .preference-group {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .preference-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-radius: 12px;
+        background: #fbfbff;
+        border: 1px solid #eee;
+        transition: all var(--transition-speed);
+    }
+
+    .preference-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-color: var(--secondary-color);
+    }
+
+    .item-info {
+        flex: 1;
+        padding-right: 20px;
+    }
+
+    .item-info h3 {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0 0 5px;
+        color: var(--text-dark);
+    }
+
+    .item-info p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* Switch Component */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: var(--secondary-color);
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px var(--secondary-color);
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    .settings-footer {
+        padding: 0 30px 40px;
+        text-align: center;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        color: var(--white);
+        border: none;
+        padding: 14px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all var(--transition-speed);
+        box-shadow: 0 4px 15px rgba(112, 48, 160, 0.3);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(112, 48, 160, 0.4);
+        color: var(--white);
+    }
+
+    .btn-save:active {
+        transform: translateY(0);
+    }
+
+    .btn-save:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 576px) {
+        .settings-header { padding: 30px 20px; }
+        .settings-body { padding: 20px; }
+        .preference-item { padding: 15px; }
+    }
+</style>
+
+<div class="settings-wrapper">
+    <div class="settings-card">
+        <div class="settings-header">
+            <div class="icon-box">
+                <i data-feather="bell"></i>
             </div>
-            <div class="col-md-6">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="<%= industry_news %>" id="industryNews" <%= policy == 'Y' && industry_news == 'Y' ? 'checked' : '' %>>
-                    <label class="form-check-label" for="industryNews">
-                        Industry news and events
-                    </label>
-                </div>
-            </div>
-             <div class="button-row">
-            <button type="submit" class="btn btn-primary blue-button">Save</button>
+            <h2>Notification Preferences</h2>
+            <p>Select which updates you want to receive via email</p>
         </div>
+        
+        <div class="settings-body">
+            <div class="preference-group">
+                <div class="preference-item">
+                    <div class="item-info">
+                        <h3>Product Updates</h3>
+                        <p>Receive notifications about new features, improvements, and fixes.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="productUpdate" <%= policy == 'Y' && product_update == 'Y' ? 'checked' : '' %>>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="preference-item">
+                    <div class="item-info">
+                        <h3>Industry News & Events</h3>
+                        <p>Stay informed about ESG trends, webinars, and upcoming industry events.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="industryNews" <%= policy == 'Y' && industry_news == 'Y' ? 'checked' : '' %>>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-footer">
+            <button type="submit" id="saveBtn" class="btn btn-save">
+                <i data-feather="save"></i>
+                <span>Save Preferences</span>
+                <span class="spinner-border spinner-border-sm d-none" id="saveSpinner" role="status"></span>
+            </button>
         </div>
     </div>
 </div>
 
 <script>
     $(document).ready(function(){
-        $('button[type="submit"]').on('click', function(e){
+        // Initialize Feather icons if Feather is loaded
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        $('#saveBtn').on('click', function(e){
             e.preventDefault();
+            
+            const $btn = $(this);
+            const $spinner = $('#saveSpinner');
+            const $btnText = $btn.find('span:not(.spinner-border)');
+            
+            // Show loading state
+            $btn.prop('disabled', true);
+            $spinner.removeClass('d-none');
+            $btnText.text('Saving...');
+
             var industryNews = $('#industryNews').is(':checked') ? 'Y' : 'N';
             var productUpdate = $('#productUpdate').is(':checked') ? 'Y' : 'N';
+            
             $.ajax({
                 url: '/message-settings',
                 type: 'POST',
@@ -62,11 +290,21 @@
                 },
                 success: function(response){
                    if(response){
-                    location.reload();
+                       // Show success state briefly before reload
+                       $btnText.text('Saved!');
+                       setTimeout(function() {
+                           location.reload();
+                       }, 800);
                    }
                 },
                 error: function(xhr, status, error){
-                    console.log(error);
+                    console.error("Error saving settings:", error);
+                    alert("There was an error saving your preferences. Please try again.");
+                    
+                    // Reset button state
+                    $btn.prop('disabled', false);
+                    $spinner.addClass('d-none');
+                    $btnText.text('Save Preferences');
                 }
             });
         });

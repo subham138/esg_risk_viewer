@@ -1,0 +1,65 @@
+<style>
+    .coming-soon-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 70vh;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .construction-graphic {
+        /* Using the class found in custom-style.css */
+        background-image: url(/images/web_construction.svg);
+        background-repeat: no-repeat;
+        width: 100%;
+        max-width: 600px;
+        height: 400px;
+        background-size: contain;
+        background-position: center;
+        margin-bottom: 30px;
+    }
+
+    .coming-soon-content h1 {
+        font-weight: 700;
+        color: #316379;
+        margin-bottom: 15px;
+    }
+
+    .coming-soon-content p {
+        font-size: 18px;
+        color: #424f6f;
+        max-width: 500px;
+        margin: 0 auto 30px;
+    }
+
+    .btn-back {
+        background-color: #316379;
+        color: #fff;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(49, 99, 121, 0.2);
+    }
+
+    .btn-back:hover {
+        background-color: #424f6f;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(49, 99, 121, 0.3);
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="coming-soon-wrapper">
+        <div class="construction-graphic"></div>
+        <div class="coming-soon-content">
+            <h1>Something exciting is coming!</h1>
+            <p>We are working hard to bring you new features. This section will be available very soon. Stay tuned!</p>
+            <a href="/dashboard" class="btn btn-back">Back to Dashboard</a>
+        </div>
+    </div>
+</div>

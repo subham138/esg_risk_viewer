@@ -12,6 +12,7 @@ const {
   PLAN_LIST,
   PLATFORM_MODE,
   checkUserSubscriptionUsage,
+  ORG_TYPE_LIST,
 } = require("../modules/MasterModule");
 const {
   getUserList,
@@ -200,7 +201,7 @@ UserRouter.post("/login", async (req, res) => {
   var data = req.body;
   // MODIFIED BY VIKASH //
   var select =
-    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy,industry_news,product_update, active_flag, fast_login, login_dt, plan_is_active, active_pan_id",
+    "id, client_id,stripe_customer_id, user_name, user_id, password, user_type, policy,industry_news,product_update, active_flag, fast_login, login_dt, plan_is_active, active_pan_id, company_name, main_sector, type_of_org, country",
     table_name = "md_user",
     whr = `user_id = '${data.email}' AND active_flag = 'Y'`,
     order = null;
@@ -364,10 +365,10 @@ UserRouter.post("/chk_user_login", async (req, res) => {
     if (chk_dt.msg.length > 0) {
       if (await bcrypt.compare(data.password, chk_dt.msg[0].password)) {
         if (chk_dt.msg[0].user_type != "S") {
-          var otp = Math.floor(100000 + Math.random() * 900000); // 123456
+          var otp = Math.floor(100000 + Math.random() * 900000);
           //  console.log(otp);
           req.session.message = {otp: otp}
-          var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp) // {suc:1}
+          var send_email = await sendOtp(data.email, chk_dt.msg[0].user_name, otp)
           if(send_email.suc > 0){
           res_dt = { suc: 1, msg: chk_dt.msg[0], pin: otp };
           }else{
@@ -601,7 +602,7 @@ UserRouter.get("/manage_user", async (req, res) => {
   var data = {
     user_data,
     user_type_list: USER_TYPE_LIST,
-    header: "Manage User",
+    header: "Users",
     // MODOFIED BY VIKASH //
     subs: chk_dt.msg.length > 0 ? chk_dt.msg[0] : null,
     count: user_count.suc > 0 ? user_count.msg[0].cnt : 0,
@@ -620,8 +621,8 @@ UserRouter.get("/manage_user_edit", async (req, res) => {
     user_data,
     id,
     user_type_list: USER_TYPE_LIST,
-    header: "Manage User",
-    sub_header: "Manage User Add/Edit",
+    header: "Users",
+    sub_header: "Add/Edit",
     header_url: "/manage_user",
   };
   res.render("manage_user/add", data);
@@ -793,7 +794,12 @@ UserRouter.get('/deactive_client', async (req, res) => {
 
 // MODOFIED BY VIKASH //
 UserRouter.get('/profile-security', async (req, res) => {
+  const sectorList = await db_Select('distinct sec_name', 'md_sector', `repo_flag NOT LIKE "%F"`, 'ORDER BY sec_name')
+  const countryList = await db_Select('id, country_code, country_name, flag_file', 'md_country', null, 'ORDER BY country_name')
   var data = {
+    sectorList: sectorList.suc > 0 ? sectorList.msg : [],
+    countryList: countryList.suc > 0 ? countryList.msg : [],
+    orgTypeList: ORG_TYPE_LIST,
     header: "Profile & Security",
     name: req.session.user.user_name,
     email: req.session.user.user_id,
@@ -802,6 +808,87 @@ UserRouter.get('/profile-security', async (req, res) => {
 });
 
 UserRouter.post('/profile-security', async (req, res) => {
+  console.log(req.body);
+  // console.log(req.session.user);
+  // return res.send(req.body);
+  try{
+    const reqData = req.body,
+    userData = req.session.user;
+    if(userData.id > 0){
+      let isPasswordMatched = true, passNotMatchMsg = '', table_name = 'md_user', fields = '', values = null, whr = `id = ${userData.id}`, flag = 1, 
+      currDt = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
+      switch (reqData.tab){
+        case 'company':
+          fields = `country = '${reqData.country}', company_name = '${reqData.company_name}', main_sector = '${reqData.main_sector}', type_of_org = '${reqData.organization_type}', modified_by = '${userData.user_name}', modified_dt = '${currDt}'`;
+          break;
+        case 'personal':
+          fields = `user_name = '${reqData.name}', modified_by = '${userData.user_name}', modified_dt = '${currDt}'`;
+          break;
+        case 'password':
+          var chk_dt = await db_Select("id, password", table_name, whr, null);
+          if (chk_dt.suc > 0 && chk_dt.msg.length > 0) {
+            const chkUserPass = chk_dt.msg[0];
+            // Check current password
+            const match = await bcrypt.compare(reqData.current_password, chkUserPass.password);
+            if (!match) {
+              isPasswordMatched = false
+              passNotMatchMsg = "Current password is incorrect.";
+              break;
+            }
+
+            if (reqData.password !== reqData.confirm_password) {
+              isPasswordMatched = false
+              passNotMatchMsg = "New password and confirm password do not match.";
+              break;
+            }
+            // Update password and name
+            let hashedPassword = await bcrypt.hash(reqData.password, 10);
+            fields = `password = '${hashedPassword}', modified_by = '${userData.user_name}', modified_dt = '${currDt}'`;
+          }
+          break;
+        default:
+          break;
+      }
+
+      if (!isPasswordMatched){
+        req.session.message = {
+          type: "danger",
+          message: passNotMatchMsg,
+        };
+        return res.redirect(`/profile-security`);
+      }
+
+      let res_dt = await db_Insert(table_name, fields, values, whr, flag)
+      if (res_dt.suc > 0){
+        if (reqData.tab == 'company' && reqData.tab == 'personal'){
+          req.session.user = reqData.tab == 'company' ? { ...userData, country: reqData.country, company_name: reqData.company_name, main_sector: reqData.main_sector, type_of_org: reqData.organization_type } : { ...userData, user_name: reqData.name };
+        }
+        req.session.message = {
+          type: "success",
+          message: "Profile updated successfully.",
+        };
+        return res.redirect(`/profile-security`);
+      }else{
+        req.session.message = {
+          type: "error",
+          message: "Error occurs while updating profile.",
+        };
+        return res.redirect(`/profile-security`);
+      }
+    }else{
+      res.status(500).json({ error: 'No user found' });
+    }
+  }catch(error){
+    console.log(error);
+    
+    res.status(500).json({ error: error.message });
+  }
+})
+
+UserRouter.post('/profile-security1', async (req, res) => {
+  console.log(req.body);
+  return res.send(req.body);
+  
   const { name, email, current_password, password, confirm_password } = req.body;
 
   if (!name || !email || !current_password || !confirm_password) {
@@ -894,10 +981,40 @@ UserRouter.get('/faq', async (req, res) => {
 
 UserRouter.get('/knowledgebase', async (req, res) => {
   var data = {
-    header: "Knowledgebase",
+    header: "Knowledge Base",
     policy: req.session.user.user_id
   };
   return res.render("pages/knowledgebase", data);
+});
+
+UserRouter.get('/articles', async (req, res) => {
+  var data = {
+    header: "Knowledge Base",
+    header_url: "/knowledgebase",
+    sub_header: "Articles",
+    policy: req.session.user.user_id
+  };
+  return res.render("pages/articles", data);
+});
+
+UserRouter.get('/posts', async (req, res) => {
+  var data = {
+    header: "Knowledge Base",
+    header_url: "/knowledgebase",
+    sub_header: "Posts",
+    policy: req.session.user.user_id
+  };
+  return res.render("pages/posts", data);
+});
+
+UserRouter.get('/courses', async (req, res) => {
+  var data = {
+    header: "Knowledge Base",
+    header_url: "/knowledgebase",
+    sub_header: "Courses",
+    policy: req.session.user.user_id
+  };
+  return res.render("pages/courses", data);
 });
 // END //
 

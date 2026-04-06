@@ -1,89 +1,493 @@
-<%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6 row">
-                <!-- <div class="col-md-4">
-                    <h5 class="text-muted mt-2"><%= header %></h5>
-                </div> -->
-                <div class="col-md-12">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                        <li class="breadcrumb-item"><%= header %></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-        <hr>
-    </div>
-</div>
-<div class="container-fluid">
-    <div class="row">
-       <div class="card card-form">
-        <form method="post" action="/profile-security">
-            <div class="col-md-12">
-            <h5 class="text-title">Let us know about any changes to your details</h5>
-            </div>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: header, show_br: true})
+    %>
+
+    <style>
+        .profile-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            padding: 30px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .profile-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+            background: #f8f9fa;
+            padding: 0 30px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #666;
+            font-weight: 500;
+            padding: 15px 20px;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: #333;
+            border-bottom-color: #d0d0d0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #0066cc;
+            border-bottom-color: #0066cc;
+            background: transparent;
+        }
+
+        .tab-content {
+            padding: 40px 30px;
+            min-height: 400px;
+        }
+
+        .tab-pane {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .btn-ppt {
+            padding: 0.8rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-ppt.btn-next {
+            background-color: #186671;
+            color: white;
+            box-shadow: 0 4px 15px rgba(112, 48, 160, 0.3);
+        }
+
+        .btn-ppt.btn-next:hover {
+            background-color: #186671;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(112, 48, 160, 0.4);
+        }
+
+        .form-control::placeholder {
+            color: #8D99AC !important;
+        }
+
+        .form-control {
+            padding: 13px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--Gray-200, #D5DAE1);
+            background: var(--White, #FFF);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            color: #8D99AC;
+            font-family: "Roboto", sans-serif;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 24px;
+        }
+
+        .form-select {
+            padding: 13px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--Gray-200, #D5DAE1);
+            background-color: var(--White, #FFF);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            color: #8D99AC;
+            font-family: "Roboto", sans-serif;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 24px;
+            padding-left: 50px;
+        }
+
+        .flag-icon {
+            position: absolute;
+            top: -7px;
+            left: 20px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 25px;
+            bottom: 18px;
+            color: #BDBDBD;
+        }
+
+        hr {
+            color: #c1c1c1;
+        }
+
+        #password-popover .popover-body {
+            white-space: pre-wrap;
+        }
+
+        .popover-body li {
+            list-style: none;
+            margin-bottom: 5px;
+        }
+
+        .popover-body .cross::before {
+            content: "";
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-image: url("/images/cross.png");
+            /* Root-relative path */
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .popover-body .tick::before {
+            content: "";
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-image: url("/images/checkmark.png");
+            /* Root-relative path */
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+    </style>
+
+    <div class="profile-container">
+        <div class="profile-card">
             <% if(message){ %>
-                <div class="alert alert-<%= message.type %> col-md-6">
-                    <%= message.message %>
+                <div style="padding: 0 30px; padding-top: 20px;">
+                    <div class="alert alert-<%= message.type %>">
+                        <%= message.message %>
+                    </div>
                 </div>
                 <% } %>
-        <div class="mb-3">
-            <div class="col-md-6">
-                <label for="exampleInputName" class="form-label">Name</label>
-            <input type="text" name="name" class="form-control" id="exampleInputName" value="<%= name %>" placeholder="Enter user name">
-            </div>
-        </div>
-        <div class="mb-3">
-           <div class="col-md-6">
-             <label for="exampleInputEmail" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="exampleInputEmail" readonly value="<%= email %>">
-           </div>
-        </div>
-       <div class="mb-3">
-            <label class="form-label">To change your password, enter your current password</label>
-            <div class="col-md-6 position-relative">
-                <input id="password1" type="password" class="form-control" name="current_password">
-                <span toggle="#password1" class="fa fa-fw fa-eye field-icon toggle-password" 
-                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></span>
-            </div>
-        </div>
 
-        <div class="mb-3">
-        <label class="form-label">New password</label>
-        <div class="col-md-6 position-relative">
-            <input id="password2" type="password" class="form-control" name="password">
-            <span toggle="#password2" class="fa fa-fw fa-eye field-icon toggle-password" 
-                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></span>
+                    <!-- Tabs Navigation -->
+                    <ul class="nav nav-tabs profile-security-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="company-tab" data-bs-toggle="tab"
+                                data-bs-target="#company" role="tab">
+                                Company Info
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal"
+                                role="tab">
+                                Personal Info
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password"
+                                role="tab">
+                                Change Password
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tabs Content -->
+                    <div class="tab-content">
+                        <!-- Company Info Tab -->
+                        <div class="tab-pane fade show active" id="company" role="tabpanel">
+                            <form method="post" action="/profile-security" id="companyForm">
+                                <input type="hidden" name="tab" value="company">
+
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="companyName">Company Name</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" id="companyName" name="company_name" class="form-control" placeholder="Enter your company name" value="<%= user && user.company_name ? user.company_name : '' %>">
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="country">Country</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="flag-icon">
+                                            <img id="selected-flag" src="latest/img/kingdom.svg" width="34">
+                                        </div>
+                                        <select id="country" name="country" class="form-select"
+                                            aria-label="Select Country" required>
+                                            <option value="" data-flag="unknown.png" selected disabled>
+                                                Select Country
+                                            </option>
+                                            <% if(countryList.length> 0){
+                                                countryList.forEach(country => {
+                                                    let _selected = '';
+                                                    if(user.country == country.country_code) _selected = 'selected' %>
+                                                <option value="<%= country.country_code %>" data-flag="<%= country.flag_file %>" <%= _selected %>>
+                                                    <%= country.country_name %>
+                                                </option>
+                                                <% }) } %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="mainSector">Main Sector</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select id="mainSector" name="main_sector" class="form-control">
+                                            <option value="">Select Sector</option>
+                                            <% if(sectorList.length> 0){
+                                                sectorList.forEach(sector => {
+                                                    let _selected = ''; 
+                                                    if(user.main_sector == sector.sec_name) _selected = 'selected' %>
+                                                <option value="<%= sector.sec_name %>" <%= _selected %>>
+                                                    <%= sector.sec_name %>
+                                                </option>
+                                                <% }) } %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="orgType">What type of organization are you?</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select id="orgType" name="organization_type" class="form-control">
+                                            <option value="">Select Organization Type</option>
+                                            <% if(orgTypeList.length> 0){
+                                                orgTypeList.forEach(org => { 
+                                                    let _selected = '';
+                                                    if(user.type_of_org == org.id) _selected = 'selected' %>
+                                                <option value="<%= org.id %>" <%= _selected %>>
+                                                    <%= org.name %>
+                                                </option>
+                                                <% }) } %>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="float-end my-2">
+                                    <button type="submit" class="btn-ppt btn-next">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Personal Info Tab -->
+                        <div class="tab-pane fade" id="personal" role="tabpanel">
+                            <form method="post" action="/profile-security" id="personalForm">
+                                <input type="hidden" name="tab" value="personal">
+
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="personalName">Name</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" id="personalName" name="name" class="form-control"
+                                            value="<%= name %>" placeholder="Enter your full name">
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="personalEmail">Email</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="email" id="personalEmail" name="email" class="form-control"
+                                            value="<%= email %>" readonly>
+                                        <small style="color: #999; margin-top: 5px; display: block;">Your email address
+                                            cannot be changed</small>
+                                    </div>
+                                </div>
+
+                                <div class="float-end my-2">
+                                    <button type="submit" class="btn-ppt btn-next">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Change Password Tab -->
+                        <div class="tab-pane fade" id="password" role="tabpanel">
+                            <form method="post" action="/profile-security" id="passwordForm">
+                                <input type="hidden" name="tab" value="password">
+
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="oldPassword">Old Password</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input id="oldPassword" type="password" name="current_password"
+                                            class="form-control loginInput example-popover"
+                                            placeholder="Enter your password" required>
+                                        <span toggle="#oldPassword"
+                                            class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="newPassword">New Password</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input id="newPassword" type="password" name="password" class="form-control loginInput example-popover" placeholder="Enter your new password" aria-describedby="passwordHelp" required>
+                                        <span toggle="#newPassword"
+                                            class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="confirmPassword">Confirm Password</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input id="confirmPassword" type="password" name="confirm_password" class="form-control loginInput example-popover" placeholder="Enter your new password" required>
+                                        <span toggle="#confirmPassword"
+                                            class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    </div>
+                                </div>
+
+                                <div class="float-end my-2">
+                                    <button type="submit" class="btn-ppt btn-next">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
         </div>
-        </div>
-         <div class="mb-3">
-        <label class="form-label">Re-enter new password</label>
-        <div class="col-md-6 position-relative">
-            <input id="password3" type="password" class="form-control" name="confirm_password">
-            <span toggle="#password3" class="fa fa-fw fa-eye field-icon toggle-password" 
-                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;"></span>
-        </div>
-        </div>
-       
-        <div class="button-row">
-            <button type="submit" class="btn btn-primary blue-button">Save</button>
-        </div>
-        </form>
-       </div>
     </div>
-</div>
-<script>
-   $(".toggle-password").click(function () {
-  $(this).toggleClass("fa-eye fa-eye-slash");
-  var input = $($(this).attr("toggle"));
-  if (input.attr("type") === "password") {
-    input.attr("type", "text");
-  } else {
-    input.attr("type", "password");
-  }
-});
-</script>
 
-<%- include('../templates/footer.ejs') %>
+    <script>
+        $('#country').on('change', function () {
+            let flagUrl = $(this).find('option:selected').data('flag');
+            if (flagUrl) {
+                $('#selected-flag').attr('src', 'https://flagcdn.com/' + flagUrl);
+            }
+        });
+        // Toggle password visibility
+        $(".toggle-password").click(function () {
+            $(this).toggleClass("fa-eye fa-eye-slash");
+            var input = $($(this).attr("toggle"));
+            if (input.attr("type") === "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
+    </script>
+    <script>
+        $('.profile-security-tab .nav-item').on('click', function () {
+
+            let target = $(this).find('button').data('bs-target')
+            console.log(target, '==============');
+            if (target == '#password') {
+                var sub_btn = false;
+                const passwordInput = $('#newPassword');
+
+                // Initialize popover with dynamic content function
+                let popoverInstance = new bootstrap.Popover(passwordInput[0], {
+                    trigger: 'manual',
+                    placement: 'right',
+                    html: true,
+                    content: function () {
+                        const password = passwordInput.val();
+                        let strength = '<b>Password Requirements</b>';
+                        strength += `<ul style="margin-top: 10px; padding-left: 15px;">
+                            <li id="lowercase" class="cross">At least one lowercase letter</li>
+                            <li id="uppercase" class="cross">At least one uppercase letter</li>
+                            <li id="number" class="cross">At least one number</li>
+                            <li id="special" class="cross">At least one special character</li>
+                            <li id="length" class="cross">Minimum length of 8 characters</li>
+                        </ul>`;
+                        return strength;
+                    }
+                });
+
+                passwordInput.on('focus', function () {
+                    const password = $(this).val();
+                    popoverInstance.show();
+
+                    if (password != '') {
+                        updatePopoverItem(password, /[a-z]/, '#lowercase');
+                        updatePopoverItem(password, /[A-Z]/, '#uppercase');
+                        updatePopoverItem(password, /[0-9]/, '#number');
+                        updatePopoverItem(password, /[!@#$%^&*(),.?":{}|<>]/, '#special');
+                        updatePopoverItem(password, /.{8,}/, '#length');
+                    }
+                });
+
+                passwordInput.on('input', function () {
+                    const password = $(this).val();
+
+                    // Update popover content
+                    popoverInstance.dispose();
+                    popoverInstance = new bootstrap.Popover(passwordInput[0], {
+                        trigger: 'manual',
+                        placement: 'right',
+                        html: true,
+                        content: function () {
+                            const password = passwordInput.val();
+                            let strength = '<b>Password Requirements</b>';
+                            strength += `<ul style="margin-top: 10px; padding-left: 15px;">
+                                <li id="lowercase" class="cross">At least one lowercase letter</li>
+                                <li id="uppercase" class="cross">At least one uppercase letter</li>
+                                <li id="number" class="cross">At least one number</li>
+                                <li id="special" class="cross">At least one special character</li>
+                                <li id="length" class="cross">Minimum length of 8 characters</li>
+                            </ul>`;
+                            return strength;
+                        }
+                    });
+
+                    if (passwordInput.is(':focus')) {
+                        popoverInstance.show();
+                    }
+
+                    // Validate password and update list items
+                    updatePopoverItem(password, /[a-z]/, '#lowercase');
+                    updatePopoverItem(password, /[A-Z]/, '#uppercase');
+                    updatePopoverItem(password, /[0-9]/, '#number');
+                    updatePopoverItem(password, /[!@#$%^&*(),.?":{}|<>]/, '#special');
+                    updatePopoverItem(password, /.{8,}/, '#length');
+
+                    if (/[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*(),.?":{}|<>]/.test(password) && /.{8,}/.test(password)) {
+                        sub_btn = true
+                    } else {
+                        sub_btn = false
+                    }
+                })
+
+                passwordInput.on('blur', function () {
+                    popoverInstance.hide();
+                    if (sub_btn) {
+                        $('#subBtnFrPass').removeAttr('disabled')
+                    } else {
+                        $('#subBtnFrPass').attr('disabled', true)
+                    }
+                });
+
+                function updatePopoverItem(password, regex, elementId) {
+                    const item = $(elementId);
+                    if (regex.test(password)) {
+                        item.removeClass('cross').addClass('tick');
+                    } else {
+                        item.removeClass('tick').addClass('cross');
+                    }
+                }
+            }
+        })
+    </script>
+
+    <%- include('../templates/footer.ejs') %>

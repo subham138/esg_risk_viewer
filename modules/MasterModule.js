@@ -216,4 +216,11 @@ const SCOPE_2_HEAT_MASTER = [
   { id: 2433, act_id: 13, label: 'Power plant to organisation - Transmission & Distribution', is_parent: 'N' },
 ]
 
-module.exports = { db_Routine, db_Select, db_Insert, db_Delete, db_Check, checkUserSubscriptionUsage, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST, FRAMEWORK_LIST, SCOPE_2_ELECTRICITY_MASTER, SCOPE_2_HEAT_MASTER };
+const ORG_TYPE_LIST = [
+  { id: 1, name: 'Micro (≤ 9 employees and ≤ €2 million turnover)' },
+  { id: 2, name: 'Small (≤ 49 employees and ≤ €10 million turnover)' },
+  { id: 3, name: 'Medium-sized (≤ 249 employees and ≤ €50 million turnover)' },
+  { id: 4, name: 'Large (> 249 employees and > €50 million turnover)' },
+]
+
+module.exports = { db_Routine, db_Select, db_Insert, db_Delete, db_Check, checkUserSubscriptionUsage, USER_TYPE_LIST, CALCULATOR_LANG, PLAN_LIST, PROJECT_LIST, INPUT_TYPE_LIST, SCOPE_LIST, PLATFORM_MODE, YEAR_LIST, FRAMEWORK_LIST, SCOPE_2_ELECTRICITY_MASTER, SCOPE_2_HEAT_MASTER, ORG_TYPE_LIST };

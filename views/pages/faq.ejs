@@ -1,27 +1,179 @@
-<%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6 row">
-                <!-- <div class="col-md-4">
-                    <h5 class="text-muted mt-2"><%= header %></h5>
-                </div> -->
-                <div class="col-md-12">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                        <li class="breadcrumb-item"><%= header %></li>
-                    </ol>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: "FAQ", show_br: true}) %>
+
+<style>
+    :root {
+        --primary-color: #316379;
+        --secondary-color: #424f6f;
+        --accent-hover: #f0f7f9;
+        --bg-light: #f8f9fa;
+        --border-color: #dee2e6;
+        --text-color: #444;
+        --white: #ffffff;
+    }
+
+    .faq-container {
+        padding: 40px 15px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .faq-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .faq-header h2 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .faq-header p {
+        color: var(--secondary-color);
+        opacity: 0.8;
+    }
+
+    .faq-accordion .accordion-item {
+        border: 1px solid var(--border-color);
+        border-radius: 12px !important;
+        margin-bottom: 15px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        transition: transform 0.2s ease;
+        background-color: var(--white);
+    }
+
+    .faq-accordion .accordion-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+    }
+
+    .faq-accordion .accordion-button {
+        padding: 20px 25px;
+        font-weight: 600;
+        font-size: 17px;
+        color: var(--primary-color);
+        background-color: var(--white);
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .faq-accordion .accordion-button:not(.collapsed) {
+        background-color: var(--accent-hover);
+        color: var(--primary-color);
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .faq-accordion .accordion-button::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23316379'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+
+    .faq-accordion .accordion-body {
+        padding: 25px;
+        color: var(--text-color);
+        line-height: 1.6;
+        font-size: 15px;
+        background-color: var(--white);
+    }
+
+    .help-footer {
+        text-align: center;
+        margin-top: 50px;
+        padding: 30px;
+        background: var(--accent-hover);
+        border-radius: 15px;
+    }
+
+    .help-footer p {
+        margin-bottom: 15px;
+        font-weight: 500;
+    }
+
+    .btn-contact {
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 10px 25px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .btn-contact:hover {
+        opacity: 0.9;
+        color: var(--white);
+    }
+</style>
+
+<%- include('./coming-soon.ejs') %>
+
+<div class="faq-container" style="display: none;">
+    <div class="faq-header">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about navigating the ESG Risk Viewer</p>
+    </div>
+
+    <div class="accordion faq-accordion" id="faqAccordion">
+        <!-- Question 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                    What is the ESG Risk Viewer used for?
+                </button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    The ESG Risk Viewer provides a comprehensive, intuitive, and values-driven platform for all your ESG needs. It helps businesses assess environmental, social, and governance risks while identifying opportunities for sustainable value creation.
                 </div>
             </div>
         </div>
-        <hr>
-    </div>
-</div>
-<div class="container-fluid">
-    <div class="row">
-        <div class="card card-form">
-           <h5>Coming Soon!</h5>
+
+        <!-- Question 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                    How is the Risk Score calculated?
+                </button>
+            </h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Risk scores are calculated using a weighted average technique that combines industry standards with proprietary analytical models. Our algorithms process hundreds of data points across the ESG spectrum to provide a granular view of your risk profile.
+                </div>
+            </div>
         </div>
+
+        <!-- Question 3 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                    Can I export my GHG emission reports?
+                </button>
+            </h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Yes! You can export your GHG emission reports in PDF, Excel, or CSV formats from the Calculation Dashboard. This allows for easy sharing with stakeholders or integration into your annual sustainability reports.
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                    How often is the ESG data updated?
+                </button>
+            </h2>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Our database is updated continuously to reflect the latest global regulations and industry benchmarks. User-provided data can be updated in real-time through the data entry modules.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="help-footer">
+        <p>Still have questions?</p>
+        <a href="/contact" class="btn btn-contact">Contact Support</a>
     </div>
 </div>
 

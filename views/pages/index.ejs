@@ -222,5 +222,56 @@
                   }
                 }
               </script>
-              <!-- Container-fluid Ends-->
-              <%- include('../templates/footer.ejs') %>
+
+              <% if(user && user.user_type != 'S') { %>
+                <!-- Company Info Modal -->
+                <div class="modal fade" id="companyInfoModal" tabindex="-1" role="dialog" aria-labelledby="companyInfoModalTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                            <div class="modal-header" style="border-bottom: 2px solid #f0f7f9; padding: 25px;">
+                                <h5 class="modal-title" id="companyInfoModalTitle" style="color: #316379; font-weight: 700;">
+                                    <i data-feather="info" style="width: 20px; height: 20px; margin-right: 10px; vertical-align: middle;"></i>
+                                    Complete Your Profile
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="padding: 30px; line-height: 1.6; color: #555;">
+                                <p style="margin-bottom: 0;">Please take a moment to update your <b>Company Name, Sector, and Organization Type</b> under Profile & Security.</p>
+                            </div>
+                            <div class="modal-footer" style="border-top: none; padding: 25px; justify-content: space-between;">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 20px; padding: 10px 25px; font-weight: 600;">Maybe Later</button>
+                                <a href="/profile-security" class="btn" style="background-color: #316379; color: white; border-radius: 20px; padding: 10px 25px; font-weight: 600; box-shadow: 0 4px 12px rgba(49, 99, 121, 0.2);">
+                                    Go to Profile & Security
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <script>
+                    $(document).ready(function() {
+                        var companyName = '<%= user.company_name || "" %>';
+                        var mainSector = '<%= user.main_sector || "" %>';
+                        var typeOfOrg = '<%= user.type_of_org || "" %>';
+                        var country = '<%= user.country || "" %>';
+        
+                        // Check if any mandatory company info is missing
+                        var isInfoMissing = !companyName || !mainSector || !typeOfOrg || !country;
+                        
+                        // Show modal if info is missing and not already dismissed in this session
+                        if (isInfoMissing && !sessionStorage.getItem('companyModalDismissed')) {
+                            setTimeout(function() {
+                                $('#companyInfoModal').modal('show');
+                            }, 2000);
+                        }
+        
+                        // Mark as dismissed in session storage when closed
+                        $('#companyInfoModal').on('hide.bs.modal', function() {
+                            sessionStorage.setItem('companyModalDismissed', 'true');
+                        });
+                    });
+                </script>
+            <% } %>
+
+            <!-- Container-fluid Ends-->
+            <%- include('../templates/footer.ejs') %>

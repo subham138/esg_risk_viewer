@@ -1,37 +1,155 @@
-<%- include('../templates/header.ejs') %>
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-sm-6 row">
-                    <!-- <div class="col-md-4">
-                    <h5 class="text-muted mt-2"><%= header %></h5>
-                </div> -->
-                    <div class="col-md-12">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                            <li class="breadcrumb-item">
-                                <%= header %>
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-            <hr>
-        </div>
-    </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="card card-form">
-                <h5>Insights:</h5>
-                <ul class="list_ul">
-                    <li>Sustainability Reporting for SMEs: Is your Business at a Downstream or Upstream Control
-                        Point? <a href="https://is.gd/UI07Hh" target="_blank">Read</a> </li>
-                    <!-- <li>Materiality Assessment: Weighting the Relative Contributions of Different Stakeholder Groups.        <a href="https://is.gd/Kn3S2I" target="_blank">Read</a></li> -->
-                    <li>Getting Started with GHG Emissions.<a href="https://is.gd/Kn3S2I" target="_blank">Read</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: "Knowledge Base", show_br: true}) %>
+
+<style>
+    :root {
+        --primary-color: #316379;
+        --secondary-color: #424f6f;
+        --accent-color: #f0f7f9;
+        --white: #ffffff;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .knowledge-wrapper {
+        padding: 0px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .kb-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .kb-header h2 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .kb-header p {
+        color: var(--secondary-color);
+        font-size: 18px;
+        opacity: 0.8;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        padding-bottom: 40px;
+    }
+
+    .category-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none !important;
+        height: 100%;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 30px rgba(49, 99, 121, 0.15);
+        border-color: var(--primary-color);
+    }
+
+    .card-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--accent-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover .card-icon {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    .category-card h3 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 15px;
+        font-size: 22px;
+    }
+
+    .category-card p {
+        color: var(--secondary-color);
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+        opacity: 0.8;
+    }
+
+    .btn-explore {
+        margin-top: auto;
+        padding: 10px 30px;
+        background: var(--primary-color);
+        color: var(--white) !important;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover .btn-explore {
+        background: var(--secondary-color);
+    }
+</style>
+
+<div class="knowledge-wrapper">
+    <div class="kb-header">
+        <h2>Explore Our Knowledge Base</h2>
+        <p>Your ultimate resource for ESG insights, updates, and learning</p>
     </div>
 
-    <%- include('../templates/footer.ejs') %>
+    <div class="category-grid">
+        <!-- Articles -->
+        <a href="/articles" class="category-card">
+            <div class="card-icon">
+                <i data-feather="book-open" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h3>Articles</h3>
+            <p>In-depth insights and thorough analyses of ESG trends and sustainability reporting.</p>
+            <span class="btn-explore">Read Articles</span>
+        </a>
+
+        <!-- Posts -->
+        <a href="/posts" class="category-card">
+            <div class="card-icon">
+                <i data-feather="edit-3" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h3>Posts</h3>
+            <p>Short, impactful updates and the latest news from across the global ESG landscape.</p>
+            <span class="btn-explore">View Posts</span>
+        </a>
+
+        <!-- Courses -->
+        <a href="/courses" class="category-card">
+            <div class="card-icon">
+                <i data-feather="video" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h3>Courses</h3>
+            <p>Take your ESG expertise to the next level with our upcoming structured learning modules.</p>
+            <span class="btn-explore">Stay Tuned</span>
+        </a>
+    </div>
+</div>
+
+<%- include('../templates/footer.ejs') %>
+
+<script>
+    feather.replace();
+</script>

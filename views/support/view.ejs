@@ -1,22 +1,4 @@
-<%- include('../templates/header.ejs') %>
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6 row">
-                <!-- <div class="col-md-4">
-                    <h5 class="text-muted mt-2"><%= header %></h5>
-                </div> -->
-                <div class="col-md-12">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                        <li class="breadcrumb-item"><%= header %></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-        <hr>
-    </div>
-</div>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: header, show_br: true}) %>
 <div class="container-fluid">
     <div class="row">
         <!-- Zero Configuration  Starts-->
@@ -27,11 +9,6 @@
                         initiate_sweet_alert('<%= header %>', '<%= message.message %>', "<%= message.type != 'danger' ? message.type : 'error' %>")
                     }, 1000);
                 </script>
-                <!-- <div class="alert alert-<%# message.type %> dark alert-dismissible fade show" role="alert">
-                  <i data-feather="clock"></i>
-                  <p><%# message.message %></p>
-                  <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div> -->
             <% } %>
             <div class="card">
                 <div class="card-body card_body_Cus">
@@ -53,14 +30,6 @@
                                 </label>
                             </div>
                         </div>
-                        <!-- <div class="col-md-2">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="support_tb" id="support_tb_r" value="R">
-                                <label class="form-check-label" for="support_tb_r">
-                                    Rejected
-                                </label>
-                            </div>
-                        </div> -->
                         <% if(user_type != 'S'){ %>
                         <div class="col-md-8 my-2 text-end">
                             <a href="/support_edit?id=0" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip" data-bs-placement="left" title="Create a new support" data-bs-original-title="Edit">Create a New Support Ticket</a>
@@ -71,7 +40,7 @@
 
                         <div class="col-md-12">
                             <!-- <div class="table-responsive"> -->
-                                <table class="display" id="cust-data-tab">
+                                <table class="table" id="cust-data-tab">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -101,14 +70,11 @@
                                             <td><a href="/support_edit?id=<%= dt.id %>" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
                                                 <i class="icofont icofont-ui-edit"></i> Edit
                                             </a>
-                                            <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
-                                                <i class="icofont icofont-ui-delete"></i> Delete
-                                            </a> -->
                                             </td>
                                         </tr>
                                         <% i++; })}else{ %>
                                         <tr>
-                                            <td class="text-danger text-center" colspan="<%= user_type == 'S' ? 6 : 5 %>">No Data Found</td>
+                                            <td class="text-danger text-center" colspan="<%= user_type == 'S' ? 6 : 6 %>">No Data Found</td>
                                         </tr>
                                         <% } %>
                                     </tbody>
