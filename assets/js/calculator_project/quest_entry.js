@@ -303,74 +303,109 @@ const QuestHandler = {
 
     /**
      * DOM Rendering: Builds the question UI.
+     * Uses granular chunked rendering (5 questions at a time) to keep the browser responsive.
      */
     renderQuestions: function (tabId, res, scope_id, flag) {
         if (Object.keys(res.msg).length === 0) return;
 
-        // let intervalId = setInterval(() => this.checkContainerReady(`${tabId} #v-pills-tabContent  .tab-pane`, intervalId), 100);
-
+        const titles = Object.keys(res.msg);
         const $container = $(tabId).children('.quest-tab-context').empty();
-        let navPills = '<div class="col-sm-3 tabs-responsive-side"><div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">';
-        let tabContent = '<div class="col-sm-9"><div class="tab-content" id="v-pills-tabContent">';
 
-        $.each(Object.keys(res.msg), (i, title) => {
+        // Phase 1: Build & inject Navigation and Tab shells immediately
+        let navPills = '<div class="col-sm-3 tabs-responsive-side"><div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">';
+        let tabShells = '<div class="col-sm-9"><div class="tab-content" id="v-pills-tabContent">';
+
+        titles.forEach((title, i) => {
             const cleanId = title.replace(/[^a-zA-Z0-9]/g, '_');
             navPills += `<a class="nav-link ghg-tabs ${i === 0 ? 'active' : ''}" id="${cleanId}_tab" data-bs-toggle="pill" href="#${cleanId}" role="tab">${title}</a>`;
-            tabContent += `<div class="tab-pane fade bounceInRight animated ${i === 0 ? 'active show' : ''}" id="${cleanId}" role="tabpanel">`;
-
-            if (res.msg[title].length > 0) {
-                tabContent += this.buildQuestionGroup(res.msg[title], res, scope_id, flag, title);
-            } else {
-                tabContent += '<div class="text-center"><strong class="text-danger">No Data Found</strong></div>';
-            }
-            tabContent += '</div>';
+            tabShells += `<div class="tab-pane fade bounceInRight animated ${i === 0 ? 'active show' : ''}" id="${cleanId}" role="tabpanel"></div>`;
         });
 
         navPills += '</div></div>';
-        tabContent += '</div></div>';
-        $container.append(navPills + tabContent);
+        tabShells += '</div></div>';
+        $container.append(navPills + tabShells);
 
-        this.initPlugins();
-        let loaderInterval = setInterval(() => $('.loader-wrapper').show(), 100);
-        setTimeout(() => {
-            $('.loader-wrapper').hide();
-            clearInterval(loaderInterval)
-        }, 6000)
-        // $('.loader-wrapper').hide()
+        // Phase 2: Start the background rendering queue
+        const self = this;
+        $('.loader-wrapper').show(); // Show loader immediately
+
+        const renderQueue = titles.slice();
+        
+        const processNextTab = (tabIndex) => {
+            if (tabIndex >= titles.length) {
+                $('.loader-wrapper').hide(); // Finally hide loader when all tabs are done
+                return;
+            }
+
+            const title = titles[tabIndex];
+            const cleanId = title.replace(/[^a-zA-Z0-9]/g, '_');
+            const $pane = $container.find(`#${cleanId}`);
+            const questions = res.msg[title];
+
+            if (!questions || questions.length === 0) {
+                $pane.html('<div class="text-center"><strong class="text-danger">No Data Found</strong></div>');
+                processNextTab(tabIndex + 1);
+                return;
+            }
+
+            const parentQuests = questions.filter(q => q.is_parent === 'Y' && q.parent_id === 0);
+            let batchIndex = 0;
+            const batchSize = 5;
+
+            const renderBatch = () => {
+                if (batchIndex >= parentQuests.length) {
+                    processNextTab(tabIndex + 1);
+                    return;
+                }
+
+                const batch = parentQuests.slice(batchIndex, batchIndex + batchSize);
+                let batchHtml = '';
+
+                batch.forEach(parent => {
+                    batchHtml += self.renderSingleParentBatch(parent, questions, res, scope_id, flag, title);
+                });
+
+                $pane.append(batchHtml);
+                self.initPlugins($pane); // Target only current pane for efficiency
+
+                batchIndex += batchSize;
+                setTimeout(renderBatch, 0); // Yield browser thread
+            };
+
+            renderBatch();
+        };
+
+        setTimeout(() => processNextTab(0), 0);
     },
 
     /**
-     * Builds HTML for a group of questions.
+     * Helper to render a single parent question's HTML structure.
      */
-    buildQuestionGroup: function (questions, res, scope_id, flag, title) {
-        let html = '';
-        const parentQuests = questions.filter(q => q.is_parent === 'Y' && q.parent_id === 0);
+    renderSingleParentBatch: function (parent, allQuestions, res, scope_id, flag, title) {
+        const qAns = res.proj_q_ans_dt.filter(a => a.quest_id === parent.id && a.end_flag !== 'Y');
+        const hasAns = qAns.length > 0;
+        const qSeq = `${parent.sequence}.`;
 
-        parentQuests.forEach(parent => {
-            const qAns = res.proj_q_ans_dt.filter(a => a.quest_id === parent.id && a.end_flag !== 'Y');
-            const hasAns = qAns.length > 0;
-            const qSeq = `${parent.sequence}.`;
+        let html = `<div class="question-box parent-quest">
+            ${parent.input_heading ? `<h4 class="fadeIn animated">${parent.input_heading}</h4>` : ''}
+            <div class="quest-text">
+                <p class="fadeIn animated">${qSeq} &nbsp; ${parent.input_label}</p>
+                ${['R', 'C', 'S'].includes(parent.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="QuestHandler.handleClickAction(this)" style="display:${hasAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${hasAns ? qAns[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
+            </div>
+            <div class="quest-opt-btn mt-2" id="inputActionDiv-${parent.id}" style="display:${!hasAns ? 'block' : 'none'};">
+                ${this.createActionHtml(parent.qu_option, parent.input_type, `user_input_${parent.id}`, parent.id, parent.option_val, 0, 0, 0, scope_id, qSeq, hasAns, hasAns ? qAns[0].quest_ans : '', 0, 0, false, false, 0, parent.pro_sec_id, flag, false)}
+            </div>
+        </div>`;
 
-            html += `<div class="question-box parent-quest">
-                ${parent.input_heading ? `<h4 class="fadeIn animated">${parent.input_heading}</h4>` : ''}
-                <div class="quest-text">
-                    <p class="fadeIn animated">${qSeq} &nbsp; ${parent.input_label}</p>
-                    ${['R', 'C', 'S'].includes(parent.input_type) ? `<span class="badge rounded-pill badge-primary cust-badge-quest" onclick="QuestHandler.handleClickAction(this)" style="display:${hasAns ? 'block' : 'none'};"><span class="cust-badge-quest-txt m-r-10">${hasAns ? qAns[0].quest_ans : ''}</span><i class="icofont icofont-ui-edit"></i></span>` : ''}
-                </div>
-                <div class="quest-opt-btn mt-2" id="inputActionDiv-${parent.id}" style="display:${!hasAns ? 'block' : 'none'};">
-                    ${this.createActionHtml(parent.qu_option, parent.input_type, `user_input_${parent.id}`, parent.id, parent.option_val, 0, 0, 0, scope_id, qSeq, hasAns, hasAns ? qAns[0].quest_ans : '', 0, 0, false, false, 0, parent.pro_sec_id, flag, false)}
-                </div>
-            </div>`;
-
-            // Sub-parent logic
-            const subParents = questions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y' && q.sub_parent_id === 0 && q.parent_id === parent.sequence);
-            subParents.forEach(sub => {
-                html += this.buildSubParentHtml(sub, questions, res, scope_id, flag, parent, title);
-            });
+        const subParents = allQuestions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y' && q.sub_parent_id === 0 && q.parent_id === parent.sequence);
+        subParents.forEach(sub => {
+            html += this.buildSubParentHtml(sub, allQuestions, res, scope_id, flag, parent, title);
         });
 
         return html;
     },
+
+
 
     /**
      * Builds HTML for sub-parent questions.
@@ -631,7 +666,7 @@ const QuestHandler = {
                 });
                 opt += '</select></div>';
                 $(`#inputActionDiv-${id}`).append(opt);
-                this.initPlugins();
+                this.initPlugins($(`#inputActionDiv-${id}`));
                 if (hasAns) $(`#act_id_${id}`).change();
             }
         });
@@ -677,7 +712,7 @@ const QuestHandler = {
                     });
                     opt += '</select></div>';
                     $container.append(opt);
-                    this.initPlugins();
+                    this.initPlugins($container);
                     if (selVal == act_id && act_id > 0) $(`#emi_type_${next_id}`).change();
                 }
             }
@@ -725,7 +760,7 @@ const QuestHandler = {
                     });
                     opt += '</select></div>';
                     $container.append(opt);
-                    this.initPlugins();
+                    this.initPlugins($container);
                     if (emi_type_id == emiVal && emiVal > 0) $(`#unit_id_${next_id}`).change();
                 }
             }
@@ -1031,10 +1066,13 @@ const QuestHandler = {
 
     /**
      * Plugins initializer.
+     * @param {jQuery|string} [target] - Optional target container or selector to narrow the scope.
      */
-    initPlugins: function () {
+    initPlugins: function (target) {
+        const $scope = target ? $(target) : $(document);
         setTimeout(() => {
-            $('.custSelect2').select2({
+            // Only initialize on elements that don't already have Select2 applied
+            $scope.find('.custSelect2:not(.select2-hidden-accessible)').select2({
                 placeholder: "-- Select an option --",
                 allowClear: false,
                 theme: "bootstrap-5"
