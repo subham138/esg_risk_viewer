@@ -14,3 +14,6 @@ assets/ghg_calculator_report_upload/*
 *copy.ejs
 *.bat
 playwright-browsers/*
+memory
+*.sql
+*.xlsx

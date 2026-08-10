@@ -1,0 +1,1389 @@
+<%- include('../templates/header.ejs') %>
+
+<style>
+  .vsme-builder-container {
+    background-color: #f8fafc;
+    min-height: calc(100vh - 120px);
+    padding-bottom: 50px;
+  }
+  .category-card {
+    border: 2px solid #e2e8f0;
+    border-left: 6px solid #3b82f6;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+  }
+  .label-card {
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #06b6d4;
+    border-radius: 6px;
+    background: #f1f5f9;
+    margin-bottom: 16px;
+  }
+  .question-card {
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #10b981;
+    border-radius: 6px;
+    background: #ffffff;
+    margin-bottom: 12px;
+  }
+  .table-config-card {
+    border: 1px dashed #8b5cf6;
+    background-color: #f5f3ff;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
+  }
+  .badge-hierarchy {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .lang-checkbox-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 15px;
+  }
+  .info-text-box {
+    background-color: #fdfbf7;
+    border: 1px solid #fef3c7;
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 8px;
+  }
+  .vsme-floating-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 2px solid #3b82f6;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.12);
+    padding: 12px 24px;
+  }
+  .vsme-builder-container {
+    padding-bottom: 100px !important;
+  }
+  .border-dashed {
+    border-style: dashed !important;
+    border-width: 1.5px !important;
+    transition: all 0.2s ease;
+  }
+  .border-dashed:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  }
+</style>
+
+<div class="container-fluid vsme-builder-container">
+  <div class="page-header">
+    <div class="row align-items-center">
+      <div class="col-sm-6">
+        <h3 class="mb-1"><i class="icofont icofont-ui-edit me-2 text-primary"></i><%= header %></h3>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+          <li class="breadcrumb-item"><a href="/admin/vsme-templates">VSME Templates</a></li>
+          <li class="breadcrumb-item active"><%= template ? 'Edit Template' : 'Create Template' %></li>
+        </ol>
+      </div>
+      <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+        <a href="/admin/vsme-templates" class="btn btn-outline-secondary px-4 me-2">
+          <i class="icofont icofont-arrow-left me-1"></i> Back to Templates
+        </a>
+        <button type="button" id="btnSaveTemplate" class="btn btn-primary btn-air-primary px-4">
+          <i class="icofont icofont-save me-1"></i> <%= template ? 'Update Template' : 'Save Template' %>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Admin User Guide & Quick Reference Card -->
+  <div class="card border-0 shadow-sm mb-4 bg-primary-subtle border-start border-4 border-primary">
+    <div class="card-body p-3">
+      <div class="d-flex align-items-center justify-content-between cursor-pointer" onclick="$('#adminGuideContent').slideToggle(200)">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary rounded-circle p-2"><i class="icofont icofont-read-book fs-6"></i></span>
+          <div>
+            <h6 class="mb-0 fw-bold text-primary">VSME XBRL Template Builder — Interactive Admin User Guide</h6>
+            <small class="text-secondary">Click to expand full step-by-step instructions for Excel cell mapping, multilingual translations, date splitting & formulas</small>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill">
+          <i class="icofont icofont-info-circle me-1"></i> Toggle User Guide
+        </button>
+      </div>
+
+      <div id="adminGuideContent" class="mt-3 pt-3 border-top border-primary-subtle" style="display: none;">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="p-2 bg-white rounded border h-100">
+              <h6 class="fw-bold text-dark small mb-1"><i class="icofont icofont-listing-number text-primary me-1"></i>1. Form Hierarchy Structure</h6>
+              <small class="text-muted d-block" style="font-size: 0.75rem;">
+                • <b>Template</b>: Top-level standard configuration.<br>
+                • <b>Category</b>: Major disclosure section (e.g. <i>B7 Resource Use</i>).<br>
+                • <b>Label</b>: Sub-grouping of questions (e.g. <i>Material Flow Disclosures</i>).<br>
+                • <b>Question</b>: Individual input data point.
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-2 bg-white rounded border h-100">
+              <h6 class="fw-bold text-dark small mb-1"><i class="icofont icofont-file-excel text-success me-1"></i>2. Excel Sheet & Cell Mapping</h6>
+              <small class="text-muted d-block" style="font-size: 0.75rem;">
+                • <b>Physical Sheet Name</b>: Original Excel sheet name (e.g. <code>Sheet2</code>, <code>Environmental Disclosures</code>).<br>
+                • <b>Single Cell Ref</b>: e.g. <code>D22</code><br>
+                • <b>Dual Dropdown Ref</b>: <code>D21, D22</code> (Option + Custom Value)<br>
+                • <b>3-Cell Date Ref</b>: <code>D6, D7, D8</code> (Year, Month, Day)
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-2 bg-white rounded border h-100">
+              <h6 class="fw-bold text-dark small mb-1"><i class="icofont icofont-globe-alt text-info me-1"></i>3. Multilingual Translations</h6>
+              <small class="text-muted d-block" style="font-size: 0.75rem;">
+                English (<code>EN</code>) is mandatory. Check target languages (<code>FR</code>, <code>DE</code>, <code>ES</code>, <code>IT</code>) in the header bar to dynamically add localized text boxes for titles, guidance text, and table headers.
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-2 bg-white rounded border h-100">
+              <h6 class="fw-bold text-dark small mb-1"><i class="icofont icofont-options text-purple me-1"></i>4. Logic & Formulas</h6>
+              <small class="text-muted d-block" style="font-size: 0.75rem;">
+                • <b>Auto-Calculated Field</b>: Read-only computed field (SUM, Subtraction, Division).<br>
+                • <b>Show/Hide Logic</b>: Dynamic conditional visibility based on trigger cell values (e.g. <code>G29 = TRUE</code>).<br>
+                • <b>Section Omission</b>: Allow end-users to mark section as classified info.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form id="templateBuilderForm" onsubmit="return false;">
+    <!-- Template Meta Header Card -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body bg-white rounded-3">
+        <div class="row align-items-center mb-3">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <label for="template_name" class="form-label fw-bold text-dark me-2">Template Title / Name</label>
+            <input type="text" class="form-control form-control-lg border-primary-subtle" id="template_name" name="template_name" 
+                   value="<%= template ? template.template_name : 'VSME XBRL Standard Template' %>" placeholder="e.g. VSME ESG XBRL Template 2026" required>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <label class="form-label fw-bold text-dark d-block">Publication Status</label>
+            <div class="form-check form-switch mt-2">
+              <input class="form-check-input" type="checkbox" id="is_published" name="is_published" <%= (template && template.is_published === 1) ? 'checked' : '' %>>
+              <label class="form-check-label fw-semibold text-secondary" for="is_published" id="publishedLabel">
+                <%= (template && template.is_published === 1) ? 'Published' : 'Draft Mode' %>
+              </label>
+            </div>
+          </div>
+          <div class="col-md-3 text-md-end">
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" onclick="addCategory()">
+              <i class="icofont icofont-plus-circle me-1"></i> Add Category
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Multilingual Configurator Header -->
+        <div class="lang-checkbox-card">
+          <div class="d-flex align-items-center flex-wrap gap-3">
+            <span class="fw-bold text-dark me-2"><i class="icofont icofont-globe-alt text-primary me-1"></i> Active Form Languages:</span>
+            
+            <div class="form-check form-check-inline">
+              <input class="form-check-input lang-selector" type="checkbox" value="en" id="lang_en" checked disabled>
+              <label class="form-check-label fw-bold text-primary" for="lang_en">EN (English - Mandatory)</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input lang-selector" type="checkbox" value="fr" id="lang_fr">
+              <label class="form-check-label fw-semibold text-secondary" for="lang_fr">FR (French)</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input lang-selector" type="checkbox" value="de" id="lang_de">
+              <label class="form-check-label fw-semibold text-secondary" for="lang_de">DE (German)</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input lang-selector" type="checkbox" value="es" id="lang_es">
+              <label class="form-check-label fw-semibold text-secondary" for="lang_es">ES (Spanish)</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+              <input class="form-check-input lang-selector" type="checkbox" value="it" id="lang_it">
+              <label class="form-check-label fw-semibold text-secondary" for="lang_it">IT (Italian)</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Validation Banner -->
+    <div id="validationErrorBanner" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+      <i class="icofont icofont-exclamation-tringle me-2 fs-5"></i>
+      <span id="validationErrorMsg">Please complete all required fields.</span>
+      <button type="button" class="btn-close" onclick="$('#validationErrorBanner').addClass('d-none')"></button>
+    </div>
+
+    <!-- Categories Container -->
+    <div id="categoriesContainer">
+      <!-- Dynamic Categories appended via JS -->
+    </div>
+
+    <!-- Bottom Add Category Action Bar -->
+    <div class="text-center my-4">
+      <button type="button" class="btn btn-light border border-dashed border-primary text-primary fw-bold px-4 py-2 rounded-3 shadow-sm" onclick="addCategory('General', {}, {}, true)">
+        <i class="icofont icofont-plus me-1"></i> Add New Category Block
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Sticky Floating Action Bar for Quick Access -->
+<div class="vsme-floating-bar">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <span class="badge bg-primary rounded-pill px-3 py-2 fw-semibold fs-7 shadow-sm">
+        <i class="icofont icofont-layers me-1"></i> <span id="floatingCategoryCount">1 Category</span>
+      </span>
+      <small class="text-secondary fw-bold d-none d-md-inline">
+        <i class="icofont icofont-info-circle text-primary me-1"></i>
+        <span id="floatingStatusText"><%= (template && template.is_published === 1) ? 'Published Template' : 'Draft Mode' %></span>
+      </small>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <a href="/admin/vsme-templates" class="btn btn-outline-secondary btn-sm rounded-pill px-3 me-1">
+        <i class="icofont icofont-arrow-left me-1"></i> Back
+      </a>
+      <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm" onclick="addCategory('General', {}, {}, true)">
+        <i class="icofont icofont-plus-circle me-1"></i> Add Category
+      </button>
+      <button type="button" class="btn btn-primary btn-air-primary btn-sm rounded-pill px-4 shadow" onclick="submitTemplateForm()" id="btnSaveTemplateFloating">
+        <i class="icofont icofont-save me-1"></i> <%= template ? 'Update Template' : 'Save Template' %>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ALL_LANGUAGES = [
+    { code: 'en', name: 'English', required: true },
+    { code: 'fr', name: 'French', required: false },
+    { code: 'de', name: 'German', required: false },
+    { code: 'es', name: 'Spanish', required: false },
+    { code: 'it', name: 'Italian', required: false }
+  ];
+
+  const dropdownGroupOptions = <%- JSON.stringify(dropdown_groups || []) %>;
+  const initialTemplateData = <%- JSON.stringify(template || null) %>;
+
+  let activeLangs = ['en', 'fr'];
+  let categoryCounter = 0;
+  let labelCounter = 0;
+  let questionCounter = 0;
+  let tableColCounter = 0;
+  let tableSummaryCounter = 0;
+
+  $(document).ready(function() {
+    $('#is_published').on('change', function() {
+      $('#publishedLabel').text(this.checked ? 'Published' : 'Draft Mode');
+    });
+
+    // Check languages based on initial data or defaults
+    if (initialTemplateData && initialTemplateData.supported_languages) {
+      activeLangs = initialTemplateData.supported_languages;
+    }
+    
+    // Set checkbox states
+    activeLangs.forEach(lang => {
+      $(`#lang_${lang}`).prop('checked', true);
+    });
+
+    // Listen for language selector changes
+    $('.lang-selector').on('change', function() {
+      syncActiveLanguages();
+    });
+
+    // Populate existing template data if present
+    if (initialTemplateData && initialTemplateData.categories && initialTemplateData.categories.length > 0) {
+      initialTemplateData.categories.forEach(cat => {
+        const catId = addCategory(cat.sheet_name, cat.name_translations, cat.info_translations);
+        if (cat.labels && cat.labels.length > 0) {
+          cat.labels.forEach(lbl => {
+            const lblId = addLabel(catId, lbl.name_translations, lbl.info_translations);
+            if (lbl.questions && lbl.questions.length > 0) {
+              lbl.questions.forEach(q => {
+                addQuestion(lblId, q);
+              });
+            }
+          });
+        }
+      });
+    } else {
+      const defaultCatId = addCategory('General Information', { en: '' }, null);
+      const defaultLblId = addLabel(defaultCatId, { en: '' }, null);
+      addQuestion(defaultLblId, null);
+    }
+
+    $('#btnSaveTemplate').on('click', function() {
+      submitTemplateForm();
+    });
+  });
+
+  function syncActiveLanguages() {
+    activeLangs = ['en'];
+    $('.lang-selector:checked').each(function() {
+      const val = $(this).val();
+      if (val !== 'en' && !activeLangs.includes(val)) {
+        activeLangs.push(val);
+      }
+    });
+
+    // Toggle visibility of multilingual input fields across the DOM
+    ALL_LANGUAGES.forEach(lang => {
+      const isVisible = activeLangs.includes(lang.code);
+      $(`.lang-field-${lang.code}`).toggleClass('d-none', !isVisible);
+    });
+  }
+
+  // -------------------------------------------------------------
+  // Dynamic Category Builder
+  // -------------------------------------------------------------
+  function addCategory(sheetName = 'General', nameTrans = {}, infoTrans = {}, shouldScroll = false) {
+    categoryCounter++;
+    const catId = `cat_${categoryCounter}`;
+
+    let nameFieldsHtml = '';
+    let infoFieldsHtml = '';
+
+    ALL_LANGUAGES.forEach(lang => {
+      const isVisible = activeLangs.includes(lang.code);
+      const valName = (nameTrans && nameTrans[lang.code]) ? nameTrans[lang.code] : (lang.code === 'en' && nameTrans ? nameTrans.en || '' : '');
+      const valInfo = (infoTrans && infoTrans[lang.code]) ? infoTrans[lang.code] : '';
+
+      nameFieldsHtml += `
+        <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <label class="form-label small fw-bold text-secondary">Category Name (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
+          <input type="text" class="form-control cat-name-${lang.code}" value="${escapeHtml(valName)}" placeholder="e.g. Environmental Disclosures (${lang.code.toUpperCase()})">
+        </div>
+      `;
+
+      infoFieldsHtml += `
+        <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <label class="form-label small fw-bold text-secondary">Category Guidance Info (${lang.name})</label>
+          <textarea class="form-control form-control-sm cat-info-${lang.code}" rows="1" placeholder="Optional category guidance text...">${escapeHtml(valInfo)}</textarea>
+        </div>
+      `;
+    });
+
+    const catHtml = `
+      <div class="category-card p-3" id="${catId}">
+        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary badge-hierarchy">Category</span>
+            <h6 class="mb-0 fw-bold text-dark cat-title-display">Category #${$('.category-card').length + 1}</h6>
+          </div>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary" onclick="moveElementUp('${catId}', '.category-card')" title="Move Up"><i class="icofont icofont-arrow-up"></i></button>
+            <button type="button" class="btn btn-outline-secondary" onclick="moveElementDown('${catId}', '.category-card')" title="Move Down"><i class="icofont icofont-arrow-down"></i></button>
+            <button type="button" class="btn btn-outline-danger" onclick="removeElement('${catId}', 'Category')" title="Delete Category"><i class="icofont icofont-trash"></i></button>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <div class="p-2 bg-primary-subtle border border-primary-subtle rounded-2">
+              <label class="form-label small fw-bold text-primary mb-1"><i class="icofont icofont-file-excel me-1"></i>Excel Physical Sheet Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm cat-sheet-name" value="${escapeHtml(sheetName)}" placeholder="e.g. Sheet2, Sheet1, Env_Disc" required>
+              <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Original Excel sheet name (e.g. Sheet2)</small>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="row g-2">
+              ${nameFieldsHtml}
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-warning fw-bold" onclick="$('#cat_info_wrapper_${catId}').toggleClass('d-none')">
+            <i class="icofont icofont-info-circle me-1"></i> Add Category Guidance Description (+)
+          </button>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input cat-is-omittable" type="checkbox" id="cat_omit_${catId}">
+            <label class="form-check-label small fw-bold text-secondary" for="cat_omit_${catId}">Allow End-User to Omit Section (Mark Classified)</label>
+          </div>
+        </div>
+        <div class="info-text-box ${infoTrans && Object.keys(infoTrans).length > 0 ? '' : 'd-none'} mb-3" id="cat_info_wrapper_${catId}">
+          <div class="row g-2">
+            ${infoFieldsHtml}
+          </div>
+        </div>
+
+        <!-- Labels Container -->
+        <div class="labels-container p-2 bg-light rounded-2 border mb-2">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <small class="fw-bold text-info"><i class="icofont icofont-sub-listing me-1"></i>Labels inside this Category</small>
+            <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 shadow-sm" onclick="addLabel('${catId}', {}, {}, true)">
+              <i class="icofont icofont-plus me-1"></i> Add Label
+            </button>
+          </div>
+          <div class="labels-list"></div>
+          <!-- Convenient Bottom Add Label Action Button -->
+          <div class="mt-2 text-center">
+            <button type="button" class="btn btn-sm btn-outline-info border-dashed w-100 py-2 fw-bold shadow-sm rounded-2 bg-white" onclick="addLabel('${catId}', {}, {}, true)">
+              <i class="icofont icofont-plus-circle me-1"></i> Add New Label to this Category
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $('#categoriesContainer').append(catHtml);
+    reindexCategoryTitles();
+
+    if (shouldScroll) {
+      setTimeout(() => {
+        const newEl = document.getElementById(catId);
+        if (newEl) {
+          newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const firstInput = newEl.querySelector(`.cat-name-${activeLangs[0] || 'en'}`) || newEl.querySelector('input');
+          if (firstInput) firstInput.focus();
+        }
+      }, 100);
+    }
+
+    return catId;
+  }
+
+  // -------------------------------------------------------------
+  // Dynamic Label Builder
+  // -------------------------------------------------------------
+  function addLabel(catId, nameTrans = {}, infoTrans = {}, shouldScroll = false) {
+    labelCounter++;
+    const lblId = `lbl_${labelCounter}`;
+
+    let nameFieldsHtml = '';
+    let infoFieldsHtml = '';
+
+    ALL_LANGUAGES.forEach(lang => {
+      const isVisible = activeLangs.includes(lang.code);
+      const valName = (nameTrans && nameTrans[lang.code]) ? nameTrans[lang.code] : (lang.code === 'en' && nameTrans ? nameTrans.en || '' : '');
+      const valInfo = (infoTrans && infoTrans[lang.code]) ? infoTrans[lang.code] : '';
+
+      nameFieldsHtml += `
+        <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <label class="form-label small fw-bold text-secondary">Label Name (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
+          <input type="text" class="form-control form-control-sm lbl-name-${lang.code}" value="${escapeHtml(valName)}" placeholder="e.g. Resource Use & Circular Economy">
+        </div>
+      `;
+
+      infoFieldsHtml += `
+        <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <label class="form-label small fw-bold text-secondary">Label Guidance Info (${lang.name})</label>
+          <textarea class="form-control form-control-sm lbl-info-${lang.code}" rows="1" placeholder="Optional label guidance text...">${escapeHtml(valInfo)}</textarea>
+        </div>
+      `;
+    });
+
+    const lblHtml = `
+      <div class="label-card p-3" id="${lblId}">
+        <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-light">
+          <div class="d-flex align-items-center">
+            <span class="badge bg-info text-white me-2 badge-hierarchy">Label</span>
+            <small class="fw-bold text-dark lbl-title-display">Label</small>
+          </div>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0" onclick="moveElementUp('${lblId}', '.label-card')" title="Move Up"><i class="icofont icofont-arrow-up"></i></button>
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0" onclick="moveElementDown('${lblId}', '.label-card')" title="Move Down"><i class="icofont icofont-arrow-down"></i></button>
+            <button type="button" class="btn btn-outline-danger btn-sm py-0" onclick="removeElement('${lblId}', 'Label')" title="Delete Label"><i class="icofont icofont-trash"></i></button>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-2">
+          ${nameFieldsHtml}
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-info fw-bold small" onclick="$('#lbl_info_wrapper_${lblId}').toggleClass('d-none')">
+            <i class="icofont icofont-info-circle me-1"></i> Add Label Guidance Description (+)
+          </button>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input lbl-is-omittable" type="checkbox" id="lbl_omit_${lblId}">
+            <label class="form-check-label small fw-bold text-secondary" for="lbl_omit_${lblId}">Allow End-User Omission</label>
+          </div>
+        </div>
+        <div class="info-text-box ${infoTrans && Object.keys(infoTrans).length > 0 ? '' : 'd-none'} mb-2" id="lbl_info_wrapper_${lblId}">
+          <div class="row g-2">
+            ${infoFieldsHtml}
+          </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div class="questions-container p-2 bg-white rounded border">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <small class="fw-bold text-success"><i class="icofont icofont-question-square me-1"></i>Questions under this Label</small>
+            <button type="button" class="btn btn-sm btn-outline-success rounded-pill py-0 px-2 shadow-sm" onclick="addQuestion('${lblId}', null, true)">
+              <i class="icofont icofont-plus me-1"></i> Add Question
+            </button>
+          </div>
+          <div class="questions-list"></div>
+          <!-- Convenient Bottom Add Question Action Button -->
+          <div class="mt-2 text-center">
+            <button type="button" class="btn btn-sm btn-outline-success border-dashed w-100 py-1.5 fw-bold shadow-sm rounded-2 bg-white" onclick="addQuestion('${lblId}', null, true)">
+              <i class="icofont icofont-plus-circle me-1"></i> Add New Question to this Label
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $(`#${catId} .labels-list`).append(lblHtml);
+
+    if (shouldScroll) {
+      setTimeout(() => {
+        const newEl = document.getElementById(lblId);
+        if (newEl) {
+          newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const firstInput = newEl.querySelector(`.lbl-name-${activeLangs[0] || 'en'}`) || newEl.querySelector('input');
+          if (firstInput) firstInput.focus();
+        }
+      }, 100);
+    }
+
+    return lblId;
+  }
+
+  // -------------------------------------------------------------
+  // Dynamic Question Builder
+  // -------------------------------------------------------------
+  function addQuestion(lblId, qData = null, shouldScroll = false) {
+    questionCounter++;
+    const qId = `q_${questionCounter}`;
+
+    const qTrans = qData ? qData.question_translations : {};
+    const infoTrans = qData ? qData.info_translations : {};
+    const excelCell = qData ? qData.excel_cell_ref : '';
+    const inputType = qData ? qData.input_type : 'string';
+    const allowMultiple = qData ? (qData.allow_multiple === 1 || qData.allow_multiple === true) : false;
+    const hasValueInput = qData ? (qData.has_value_input === 1 || qData.has_value_input === true) : false;
+    const dropdownGroup = qData ? qData.dropdown_group_name : '';
+    const tableConfig = qData ? qData.table_config : null;
+
+    let textFieldsHtml = '';
+    let infoFieldsHtml = '';
+
+    ALL_LANGUAGES.forEach(lang => {
+      const isVisible = activeLangs.includes(lang.code);
+      const valText = (qTrans && qTrans[lang.code]) ? qTrans[lang.code] : (lang.code === 'en' && qTrans ? qTrans.en || '' : (qData ? qData.question_en || '' : ''));
+      const valInfo = (infoTrans && infoTrans[lang.code]) ? infoTrans[lang.code] : '';
+
+      textFieldsHtml += `
+        <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <label class="form-label small fw-bold text-secondary">Question Text (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
+          <textarea class="form-control form-control-sm q-text-${lang.code}" rows="2" placeholder="e.g. Question description in ${lang.name}...">${escapeHtml(valText)}</textarea>
+        </div>
+      `;
+
+      infoFieldsHtml += `
+        <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <label class="form-label small fw-bold text-secondary">Information / Guidance Description (${lang.name}) (Shown on "i" Hover Tooltip)</label>
+          <textarea class="form-control form-control-sm q-info-${lang.code}" rows="2" placeholder="Guidance description displayed when end-user hovers 'i' button...">${escapeHtml(valInfo)}</textarea>
+        </div>
+      `;
+    });
+
+    let dropdownOptionsHtml = `<option value="">-- Select Master List Group --</option>`;
+    dropdownGroupOptions.forEach(grp => {
+      const selected = (dropdownGroup === grp) ? 'selected' : '';
+      dropdownOptionsHtml += `<option value="${grp}" ${selected}>${grp}</option>`;
+    });
+
+    const qHtml = `
+      <div class="question-card p-3" id="${qId}">
+        <div class="d-flex align-items-center justify-content-between mb-2 border-bottom pb-1">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success badge-hierarchy">Question</span>
+            <small class="text-muted fw-bold">ID: ${qId}</small>
+          </div>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0" onclick="moveElementUp('${qId}', '.question-card')" title="Move Up"><i class="icofont icofont-arrow-up"></i></button>
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0" onclick="moveElementDown('${qId}', '.question-card')" title="Move Down"><i class="icofont icofont-arrow-down"></i></button>
+            <button type="button" class="btn btn-outline-danger btn-sm py-0" onclick="removeElement('${qId}', 'Question')" title="Delete Question"><i class="icofont icofont-trash"></i></button>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-2">
+          ${textFieldsHtml}
+        </div>
+
+        <!-- Optional Information Guidance ("i" Tooltip) Section -->
+        <div class="mb-3">
+          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-success fw-bold small" onclick="$('#q_info_wrapper_${qId}').toggleClass('d-none')">
+            <i class="icofont icofont-info-circle me-1"></i> Add Information / Description ("i" Hover Tooltip) (+)
+          </button>
+          <div class="info-text-box ${infoTrans && Object.keys(infoTrans).length > 0 ? '' : 'd-none'}" id="q_info_wrapper_${qId}">
+            <div class="row g-2">
+              ${infoFieldsHtml}
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 align-items-center">
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-secondary">Excel Cell Ref <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm q-excel-ref" value="${escapeHtml(excelCell)}" placeholder="${inputType === 'date' ? 'e.g. D6,D7,D8' : (inputType === 'dropdown' && hasValueInput ? 'e.g. D22,D23' : 'e.g. D22')}" required>
+            <small class="text-muted d-block q-cell-hint" style="font-size: 0.7rem;">Cell ref under Category sheet</small>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-secondary">Input Type</label>
+            <select class="form-select form-select-sm q-input-type" onchange="toggleQuestionInputTypeControls('${qId}')">
+              <option value="string" ${inputType === 'string' ? 'selected' : ''}>Text (String)</option>
+              <option value="number" ${inputType === 'number' ? 'selected' : ''}>Numeric (Number)</option>
+              <option value="boolean" ${inputType === 'boolean' ? 'selected' : ''}>Boolean (Yes/No)</option>
+              <option value="dropdown" ${inputType === 'dropdown' ? 'selected' : ''}>Dropdown Select</option>
+              <option value="calculated" ${inputType === 'calculated' ? 'selected' : ''}>Auto-Calculated (Formula Field)</option>
+              <option value="url" ${inputType === 'url' ? 'selected' : ''}>Web URL Link</option>
+              <option value="email" ${inputType === 'email' ? 'selected' : ''}>Email Address</option>
+              <option value="date" ${inputType === 'date' ? 'selected' : ''}>Date Picker</option>
+              <option value="table" ${inputType === 'table' ? 'selected' : ''}>Dynamic Grid / Table Question</option>
+            </select>
+          </div>
+
+          <div class="col-md-3 dropdown-group-wrapper ${inputType === 'dropdown' ? '' : 'd-none'}" id="dd_wrapper_${qId}">
+            <label class="form-label small fw-bold text-secondary">Dropdown Master List</label>
+            <select class="form-select form-select-sm q-dropdown-group">
+              ${dropdownOptionsHtml}
+            </select>
+          </div>
+
+          <div class="col-md-2 dropdown-value-wrapper ${inputType === 'dropdown' ? '' : 'd-none'}" id="dd_val_wrapper_${qId}">
+            <label class="form-label small fw-bold text-secondary d-block">Value Input Box</label>
+            <div class="form-check form-switch mt-1">
+              <input class="form-check-input q-has-value-input" type="checkbox" ${hasValueInput ? 'checked' : ''}>
+              <label class="form-check-label small text-muted">Allow Custom Value</label>
+            </div>
+            <small class="text-muted d-block" style="font-size: 0.65rem;">Requires 2 comma-separated cell refs</small>
+          </div>
+
+          <div class="col-md-3 date-cell-hint-wrapper ${inputType === 'date' ? '' : 'd-none'}" id="date_hint_wrapper_${qId}">
+            <div class="p-2 bg-info-subtle border border-info-subtle rounded-2">
+              <small class="fw-bold text-info d-block mb-1"><i class="icofont icofont-calendar me-1"></i>Date → 3 Cell Mapping</small>
+              <small class="text-muted d-block" style="font-size: 0.68rem;">User picks a single date. The value is auto-split into <b>Year, Month, Day</b> and mapped to 3 separate Excel cells.</small>
+              <small class="text-info d-block mt-1" style="font-size: 0.68rem;">Format: <code>YearCell, MonthCell, DayCell</code><br>Example: <code>D6, D7, D8</code></small>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-secondary d-block">Multiple Answers (+)</label>
+            <div class="form-check form-switch mt-1">
+              <input class="form-check-input q-allow-multiple" type="checkbox" ${allowMultiple ? 'checked' : ''}>
+              <label class="form-check-label small text-muted">Allow Multiple</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formula Configurator Card (shown when inputType == 'calculated') -->
+        <div class="formula-config-card p-2 border border-info rounded bg-info-subtle mt-3 mb-2 ${inputType === 'calculated' ? '' : 'd-none'}" id="formula_wrapper_${qId}">
+          <small class="fw-bold text-info mb-2 d-block"><i class="icofont icofont-calculator me-1"></i>Auto-Calculated Formula Field (Read-Only to End-User)</small>
+          <div class="row g-2 align-items-center">
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-secondary">Formula Type</label>
+              <select class="form-select form-select-sm q-formula-type">
+                <option value="sum" ${qData && qData.formula_config && qData.formula_config.formula_type === 'sum' ? 'selected' : ''}>SUM (Total)</option>
+                <option value="subtract" ${qData && qData.formula_config && qData.formula_config.formula_type === 'subtract' ? 'selected' : ''}>Subtract (Difference)</option>
+                <option value="divide" ${qData && qData.formula_config && qData.formula_config.formula_type === 'divide' ? 'selected' : ''}>Divide (Ratio/Percentage)</option>
+                <option value="multiply" ${qData && qData.formula_config && qData.formula_config.formula_type === 'multiply' ? 'selected' : ''}>Multiply (Product)</option>
+                <option value="concat" ${qData && qData.formula_config && qData.formula_config.formula_type === 'concat' ? 'selected' : ''}>Concat (Text Join)</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-secondary">Source Cell References</label>
+              <input type="text" class="form-control form-control-sm q-formula-sources" value="${qData && qData.formula_config ? (qData.formula_config.source_cells || []).join(', ') : ''}" placeholder="e.g. D22, D23 or D303, D310">
+              <small class="text-muted" style="font-size: 0.65rem;">Comma-separated cells used in calculation</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conditional Visibility Logic Panel -->
+        <div class="mt-2">
+          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-secondary fw-bold small" onclick="$('#vis_wrapper_${qId}').toggleClass('d-none')">
+            <i class="icofont icofont-eye me-1"></i> Add Conditional Visibility (Show/Hide Logic) (+)
+          </button>
+          <div class="border rounded p-2 bg-light mt-1 ${qData && qData.visibility_condition ? '' : 'd-none'}" id="vis_wrapper_${qId}">
+            <small class="fw-bold text-secondary mb-2 d-block"><i class="icofont icofont-filter me-1"></i>Show/Hide Trigger Condition</small>
+            <div class="row g-2 align-items-center">
+              <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Trigger Cell / Ref</label>
+                <input type="text" class="form-control form-control-sm q-vis-trigger" value="${qData && qData.visibility_condition ? escapeHtml(qData.visibility_condition.depends_on_cell || '') : ''}" placeholder="e.g. G29 or D316">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Condition</label>
+                <select class="form-select form-select-sm q-vis-op">
+                  <option value="equals" ${qData && qData.visibility_condition && qData.visibility_condition.operator === 'equals' ? 'selected' : ''}>Equals</option>
+                  <option value="not_equals" ${qData && qData.visibility_condition && qData.visibility_condition.operator === 'not_equals' ? 'selected' : ''}>Not Equals</option>
+                  <option value="is_true" ${qData && qData.visibility_condition && qData.visibility_condition.operator === 'is_true' ? 'selected' : ''}>Is True / Checked</option>
+                  <option value="is_false" ${qData && qData.visibility_condition && qData.visibility_condition.operator === 'is_false' ? 'selected' : ''}>Is False / Unchecked</option>
+                  <option value="gt" ${qData && qData.visibility_condition && qData.visibility_condition.operator === 'gt' ? 'selected' : ''}>Greater Than</option>
+                  <option value="lt" ${qData && qData.visibility_condition && qData.visibility_condition.operator === 'lt' ? 'selected' : ''}>Less Than</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Target Value</label>
+                <input type="text" class="form-control form-control-sm q-vis-val" value="${qData && qData.visibility_condition ? escapeHtml(qData.visibility_condition.value || '') : ''}" placeholder="e.g. YES or 100">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Action</label>
+                <select class="form-select form-select-sm q-vis-action">
+                  <option value="show" ${qData && qData.visibility_condition && qData.visibility_condition.action === 'show' ? 'selected' : ''}>Show Question</option>
+                  <option value="hide" ${qData && qData.visibility_condition && qData.visibility_condition.action === 'hide' ? 'selected' : ''}>Hide Question</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Validation Rules Panel -->
+        <div class="mt-2">
+          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-secondary fw-bold small" onclick="$('#val_wrapper_${qId}').toggleClass('d-none')">
+            <i class="icofont icofont-shield me-1"></i> Add Validation Constraints (Min/Max, Pattern) (+)
+          </button>
+          <div class="border rounded p-2 bg-light mt-1 ${qData && qData.validation_rules ? '' : 'd-none'}" id="val_wrapper_${qId}">
+            <div class="row g-2 align-items-center">
+              <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Min Value / Length</label>
+                <input type="number" class="form-control form-control-sm q-val-min" value="${qData && qData.validation_rules ? (qData.validation_rules.min || '') : ''}" placeholder="e.g. 0">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Max Value / Length</label>
+                <input type="number" class="form-control form-control-sm q-val-max" value="${qData && qData.validation_rules ? (qData.validation_rules.max || '') : ''}" placeholder="e.g. 100000">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">Regex Pattern</label>
+                <input type="text" class="form-control form-control-sm q-val-pattern" value="${qData && qData.validation_rules ? escapeHtml(qData.validation_rules.pattern || '') : ''}" placeholder="e.g. ^[A-Z0-9]+$">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Table Configurator Card (shown when inputType == 'table') -->
+        <div class="table-config-card ${inputType === 'table' ? '' : 'd-none'}" id="table_config_wrapper_${qId}">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h6 class="fw-bold text-purple mb-0"><i class="icofont icofont-table me-1"></i>Dynamic Table Configuration (e.g. B7 Material Flows)</h6>
+            <button type="button" class="btn btn-sm btn-outline-purple rounded-pill py-0 px-2" onclick="addTableColumn('${qId}')">
+              <i class="icofont icofont-plus me-1"></i> Add Column
+            </button>
+          </div>
+
+          <div class="row g-2 mb-2 align-items-center">
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-secondary">Default Row Count</label>
+              <input type="number" class="form-control form-control-sm q-table-initial-rows" value="${tableConfig ? (tableConfig.initial_rows || 3) : 3}" min="1" max="20">
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch mt-4">
+                <input class="form-check-input q-table-allow-add-rows" type="checkbox" ${tableConfig && tableConfig.allow_user_add_rows === false ? '' : 'checked'}>
+                <label class="form-check-label small fw-bold text-secondary">Allow User to Add Rows (+)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Columns List -->
+          <div class="border rounded p-2 bg-white mb-3">
+            <small class="fw-bold text-secondary mb-2 d-block">Table Columns Definition</small>
+            <div class="table-cols-list" id="table_cols_list_${qId}"></div>
+          </div>
+
+          <!-- Summary Calculation Rows Manager -->
+          <div class="border rounded p-2 bg-white">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <small class="fw-bold text-secondary"><i class="icofont icofont-calculator-alt me-1"></i>Summary Calculation Rows (e.g. Total Mass in kg / Volume in m³)</small>
+              <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="addTableSummaryRow('${qId}')">
+                <i class="icofont icofont-plus me-1"></i> Add Summary Row
+              </button>
+            </div>
+            <div class="table-summary-list" id="table_summary_list_${qId}"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $(`#${lblId} .questions-list`).append(qHtml);
+
+    // Initialize Table Config columns & summary rows if existing
+    if (tableConfig) {
+      if (tableConfig.columns && tableConfig.columns.length > 0) {
+        tableConfig.columns.forEach(col => addTableColumn(qId, col));
+      }
+      if (tableConfig.summary_rows && tableConfig.summary_rows.length > 0) {
+        tableConfig.summary_rows.forEach(sum => addTableSummaryRow(qId, sum));
+      }
+    } else if (inputType === 'table') {
+      // Default sample columns for B7
+      addTableColumn(qId, { col_id: 'col_1', title: { en: 'Row ID' }, type: 'row_id', excel_cell: '' });
+      addTableColumn(qId, { col_id: 'col_2', title: { en: 'Name of key material' }, type: 'string', excel_cell: 'D23:D25' });
+      addTableColumn(qId, { col_id: 'col_3', title: { en: 'Mass / Volume' }, type: 'number', excel_cell: 'E23:E25' });
+      addTableColumn(qId, { col_id: 'col_4', title: { en: 'Unit of measurement' }, type: 'dropdown', dropdown_group: 'unit_list', excel_cell: 'F23:F25' });
+      addTableSummaryRow(qId, { title: { en: 'Total annual mass-flow (mass in kg)' }, aggregate_type: 'sum', target_column: 'col_3', unit: 'kilograms (kg)', excel_cell: 'E26' });
+    }
+
+    if (shouldScroll) {
+      setTimeout(() => {
+        const newEl = document.getElementById(qId);
+        if (newEl) {
+          newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const firstInput = newEl.querySelector(`.q-text-${activeLangs[0] || 'en'}`) || newEl.querySelector('textarea') || newEl.querySelector('input');
+          if (firstInput) firstInput.focus();
+        }
+      }, 100);
+    }
+
+    return qId;
+  }
+
+  // -------------------------------------------------------------
+  // Dynamic Table Configurator Methods
+  // -------------------------------------------------------------
+  function addTableColumn(qId, colData = null) {
+    tableColCounter++;
+    const colId = colData ? colData.col_id : `col_${tableColCounter}`;
+
+    const colType = colData ? colData.type : 'string';
+    const dropdownGrp = colData ? colData.dropdown_group : '';
+    const excelCell = colData ? colData.excel_cell : '';
+    const titleTrans = colData ? colData.title : {};
+
+    let titleInputsHtml = '';
+    ALL_LANGUAGES.forEach(lang => {
+      const isVisible = activeLangs.includes(lang.code);
+      const valTitle = (titleTrans && titleTrans[lang.code]) ? titleTrans[lang.code] : (lang.code === 'en' && titleTrans ? titleTrans.en || '' : '');
+
+      titleInputsHtml += `
+        <div class="col-md-3 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <input type="text" class="form-control form-control-sm tcol-title-${lang.code}" value="${escapeHtml(valTitle)}" placeholder="Header (${lang.name})">
+        </div>
+      `;
+    });
+
+    let dropdownOptionsHtml = `<option value="">-- Select Master List --</option>`;
+    dropdownGroupOptions.forEach(grp => {
+      const selected = (dropdownGrp === grp) ? 'selected' : '';
+      dropdownOptionsHtml += `<option value="${grp}" ${selected}>${grp}</option>`;
+    });
+
+    const colHtml = `
+      <div class="row g-2 align-items-center mb-2 p-2 border-bottom tcol-item" data-col-id="${colId}">
+        <div class="col-md-1">
+          <span class="badge bg-purple text-white">${colId}</span>
+        </div>
+        ${titleInputsHtml}
+        <div class="col-md-2">
+          <select class="form-select form-select-sm tcol-type" onchange="toggleTableColDropdownSelect(this)">
+            <option value="row_id" ${colType === 'row_id' ? 'selected' : ''}>Row ID (Auto)</option>
+            <option value="string" ${colType === 'string' ? 'selected' : ''}>Text (String)</option>
+            <option value="number" ${colType === 'number' ? 'selected' : ''}>Numeric (Number)</option>
+            <option value="dropdown" ${colType === 'dropdown' ? 'selected' : ''}>Dropdown Select</option>
+          </select>
+        </div>
+        <div class="col-md-2 tcol-dd-wrapper ${colType === 'dropdown' ? '' : 'd-none'}">
+          <select class="form-select form-select-sm tcol-dropdown-group">
+            ${dropdownOptionsHtml}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control form-control-sm tcol-excel-cell" value="${escapeHtml(excelCell)}" placeholder="Cell Range e.g. D23:D25">
+        </div>
+        <div class="col-md-1 text-end">
+          <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="$(this).closest('.tcol-item').remove()"><i class="icofont icofont-trash"></i></button>
+        </div>
+      </div>
+    `;
+
+    $(`#table_cols_list_${qId}`).append(colHtml);
+  }
+
+  function toggleTableColDropdownSelect(selectEl) {
+    const val = $(selectEl).val();
+    const wrapper = $(selectEl).closest('.tcol-item').find('.tcol-dd-wrapper');
+    if (val === 'dropdown') {
+      wrapper.removeClass('d-none');
+    } else {
+      wrapper.addClass('d-none');
+    }
+  }
+
+  function addTableSummaryRow(qId, sumData = null) {
+    tableSummaryCounter++;
+    const aggType = sumData ? sumData.aggregate_type : 'sum';
+    const targetCol = sumData ? sumData.target_column : '';
+    const unitText = sumData ? sumData.unit : '';
+    const excelCell = sumData ? sumData.excel_cell : '';
+    const titleTrans = sumData ? sumData.title : {};
+
+    let titleInputsHtml = '';
+    ALL_LANGUAGES.forEach(lang => {
+      const isVisible = activeLangs.includes(lang.code);
+      const valTitle = (titleTrans && titleTrans[lang.code]) ? titleTrans[lang.code] : (lang.code === 'en' && titleTrans ? titleTrans.en || '' : '');
+
+      titleInputsHtml += `
+        <div class="col-md-3 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
+          <input type="text" class="form-control form-control-sm tsum-title-${lang.code}" value="${escapeHtml(valTitle)}" placeholder="Summary Title (${lang.name})">
+        </div>
+      `;
+    });
+
+    const sumHtml = `
+      <div class="row g-2 align-items-center mb-2 p-2 border-bottom tsum-item">
+        ${titleInputsHtml}
+        <div class="col-md-2">
+          <select class="form-select form-select-sm tsum-agg-type">
+            <option value="sum" ${aggType === 'sum' ? 'selected' : ''}>Sum (Total)</option>
+            <option value="average" ${aggType === 'average' ? 'selected' : ''}>Average</option>
+            <option value="count" ${aggType === 'count' ? 'selected' : ''}>Count</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control form-control-sm tsum-target-col" value="${escapeHtml(targetCol)}" placeholder="Target Col ID e.g. col_3">
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control form-control-sm tsum-unit" value="${escapeHtml(unitText)}" placeholder="Unit e.g. kilograms (kg)">
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control form-control-sm tsum-excel-cell" value="${escapeHtml(excelCell)}" placeholder="Output Cell e.g. E26">
+        </div>
+        <div class="col-md-1 text-end">
+          <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="$(this).closest('.tsum-item').remove()"><i class="icofont icofont-trash"></i></button>
+        </div>
+      </div>
+    `;
+
+    $(`#table_summary_list_${qId}`).append(sumHtml);
+  }
+
+  function toggleQuestionInputTypeControls(qId) {
+    const type = $(`#${qId} .q-input-type`).val();
+    const refInput = $(`#${qId} .q-excel-ref`);
+    const cellHint = $(`#${qId} .q-cell-hint`);
+
+    // Hide all conditional sections first
+    $(`#dd_wrapper_${qId}`).addClass('d-none');
+    $(`#dd_val_wrapper_${qId}`).addClass('d-none');
+    $(`#table_config_wrapper_${qId}`).addClass('d-none');
+    $(`#date_hint_wrapper_${qId}`).addClass('d-none');
+    $(`#formula_wrapper_${qId}`).addClass('d-none');
+
+    if (type === 'dropdown') {
+      $(`#dd_wrapper_${qId}`).removeClass('d-none');
+      $(`#dd_val_wrapper_${qId}`).removeClass('d-none');
+      refInput.attr('placeholder', 'e.g. D22 or D22,D23');
+      cellHint.text('Cell ref under Category sheet');
+    } else if (type === 'table') {
+      $(`#table_config_wrapper_${qId}`).removeClass('d-none');
+      refInput.attr('placeholder', 'e.g. D23:F27');
+      cellHint.text('Cell range for entire table block');
+    } else if (type === 'date') {
+      $(`#date_hint_wrapper_${qId}`).removeClass('d-none');
+      refInput.attr('placeholder', 'e.g. D6, D7, D8');
+      cellHint.html('3 cells: <b>Year, Month, Day</b>');
+    } else if (type === 'calculated') {
+      $(`#formula_wrapper_${qId}`).removeClass('d-none');
+      refInput.attr('placeholder', 'e.g. D25');
+      cellHint.text('Output cell for calculated result');
+    } else {
+      refInput.attr('placeholder', 'e.g. D22');
+      cellHint.text('Cell ref under Category sheet');
+    }
+  }
+
+  function moveElementUp(id, selector) {
+    const el = $(`#${id}`);
+    const prev = el.prev(selector);
+    if (prev.length > 0) {
+      el.insertBefore(prev);
+      reindexCategoryTitles();
+    }
+  }
+
+  function moveElementDown(id, selector) {
+    const el = $(`#${id}`);
+    const next = el.next(selector);
+    if (next.length > 0) {
+      el.insertAfter(next);
+      reindexCategoryTitles();
+    }
+  }
+
+  function removeElement(id, typeName) {
+    if (confirm(`Are you sure you want to remove this ${typeName}?`)) {
+      $(`#${id}`).fadeOut(200, function() {
+        $(this).remove();
+        reindexCategoryTitles();
+      });
+    }
+  }
+
+  function reindexCategoryTitles() {
+    const catCount = $('.category-card').length;
+    $('.category-card').each(function(idx) {
+      $(this).find('.cat-title-display').first().text(`Category #${idx + 1}`);
+    });
+    $('#floatingCategoryCount').text(`${catCount} ${catCount === 1 ? 'Category' : 'Categories'}`);
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  // -------------------------------------------------------------
+  // Validation & Form Submission Handler
+  // -------------------------------------------------------------
+  function submitTemplateForm() {
+    $('#validationErrorBanner').addClass('d-none');
+
+    const templateName = $('#template_name').val().trim();
+    if (!templateName) {
+      showValidationError('Please enter a Template Title / Name.');
+      $('#template_name').focus();
+      return;
+    }
+
+    const categories = [];
+    const excelCellMap = new Map();
+    let hasError = false;
+
+    const catCards = $('.category-card');
+    if (catCards.length === 0) {
+      showValidationError('Please add at least one Category to the template.');
+      return;
+    }
+
+    catCards.each(function(cIdx) {
+      if (hasError) return;
+
+      const catEl = $(this);
+      const sheetName = catEl.find('.cat-sheet-name').val().trim();
+
+      if (!sheetName) {
+        showValidationError(`Category #${cIdx + 1} must have an Excel Sheet Name.`);
+        hasError = true;
+        return;
+      }
+
+      const catNameTrans = {};
+      const catInfoTrans = {};
+
+      activeLangs.forEach(lang => {
+        const nameVal = catEl.find(`.cat-name-${lang}`).val().trim();
+        const infoVal = catEl.find(`.cat-info-${lang}`).val().trim();
+        if (lang === 'en' && !nameVal) {
+          showValidationError(`Category #${cIdx + 1} must have an English Name.`);
+          hasError = true;
+          return;
+        }
+        if (nameVal) catNameTrans[lang] = nameVal;
+        if (infoVal) catInfoTrans[lang] = infoVal;
+      });
+
+      if (hasError) return;
+
+      const labels = [];
+      const lblCards = catEl.find('.label-card');
+
+      if (lblCards.length === 0) {
+        showValidationError(`Category #${cIdx + 1} ("${catNameTrans.en}") must contain at least one Label.`);
+        hasError = true;
+        return;
+      }
+
+      lblCards.each(function(lIdx) {
+        if (hasError) return;
+
+        const lblEl = $(this);
+        const lblNameTrans = {};
+        const lblInfoTrans = {};
+
+        activeLangs.forEach(lang => {
+          const nameVal = lblEl.find(`.lbl-name-${lang}`).val().trim();
+          const infoVal = lblEl.find(`.lbl-info-${lang}`).val().trim();
+          if (lang === 'en' && !nameVal) {
+            showValidationError(`Label under Category "${catNameTrans.en}" must have an English Name.`);
+            hasError = true;
+            return;
+          }
+          if (nameVal) lblNameTrans[lang] = nameVal;
+          if (infoVal) lblInfoTrans[lang] = infoVal;
+        });
+
+        if (hasError) return;
+
+        const questions = [];
+        const qCards = lblEl.find('.question-card');
+
+        if (qCards.length === 0) {
+          showValidationError(`Label "${lblNameTrans.en}" must contain at least one Question.`);
+          hasError = true;
+          return;
+        }
+
+        qCards.each(function(qIdx) {
+          if (hasError) return;
+
+          const qEl = $(this);
+          const qTextTrans = {};
+          const qInfoTrans = {};
+
+          activeLangs.forEach(lang => {
+            const textVal = qEl.find(`.q-text-${lang}`).val().trim();
+            const infoVal = qEl.find(`.q-info-${lang}`).val().trim();
+            if (lang === 'en' && !textVal) {
+              showValidationError(`Question #${qIdx + 1} in Label "${lblNameTrans.en}" must have an English Question Text.`);
+              hasError = true;
+              return;
+            }
+            if (textVal) qTextTrans[lang] = textVal;
+            if (infoVal) qInfoTrans[lang] = infoVal;
+          });
+
+          if (hasError) return;
+
+          const excelRef = qEl.find('.q-excel-ref').val().trim();
+          const inputType = qEl.find('.q-input-type').val();
+          const dropdownGrp = qEl.find('.q-dropdown-group').val();
+          const allowMultiple = qEl.find('.q-allow-multiple').is(':checked');
+          const hasValueInput = qEl.find('.q-has-value-input').is(':checked');
+
+          if (!excelRef) {
+            showValidationError(`Question "${qTextTrans.en.substring(0, 25)}..." is missing an Excel Cell Reference.`);
+            hasError = true;
+            return;
+          }
+
+          // Validation for Dropdown with Custom Value Entry -> Requires 2 cell references (e.g. D22, D23)
+          if (inputType === 'dropdown' && hasValueInput) {
+            const cellParts = excelRef.split(',').map(c => c.trim()).filter(c => c.length > 0);
+            if (cellParts.length < 2) {
+              showValidationError(`Question "${qTextTrans.en.substring(0, 25)}..." has Custom Value Entry enabled. Please enter 2 comma-separated cell references (e.g. D22, D23).`);
+              hasError = true;
+              return;
+            }
+          }
+
+          // Validation for Date type -> Requires exactly 3 cell references (Year, Month, Day)
+          if (inputType === 'date') {
+            const dateCellParts = excelRef.split(',').map(c => c.trim()).filter(c => c.length > 0);
+            if (dateCellParts.length !== 3) {
+              showValidationError(`Question "${qTextTrans.en.substring(0, 25)}..." is a Date Picker and requires exactly 3 comma-separated cell references for Year, Month, Day (e.g. D6, D7, D8).`);
+              hasError = true;
+              return;
+            }
+          }
+
+          // Duplicate Cell Ref Check
+          const normalizedRef = excelRef.toUpperCase();
+          if (excelCellMap.has(normalizedRef)) {
+            showValidationError(`Duplicate Excel Cell Reference found: "${excelRef}". Each question cell reference must be unique.`);
+            hasError = true;
+            return;
+          }
+          excelCellMap.set(normalizedRef, true);
+
+          if (inputType === 'dropdown' && !dropdownGrp) {
+            showValidationError(`Question "${qTextTrans.en.substring(0, 25)}..." is set to Dropdown but no Master List Group was selected.`);
+            hasError = true;
+            return;
+          }
+
+          // Table Config Assembly if inputType == 'table'
+          let tableConfigObj = null;
+          if (inputType === 'table') {
+            const tableCols = [];
+            qEl.find('.tcol-item').each(function() {
+              const colEl = $(this);
+              const colId = colEl.attr('data-col-id');
+              const colType = colEl.find('.tcol-type').val();
+              const colDdGrp = colEl.find('.tcol-dropdown-group').val();
+              const colCell = colEl.find('.tcol-excel-cell').val().trim();
+              const colTitleTrans = {};
+
+              activeLangs.forEach(lang => {
+                const tVal = colEl.find(`.tcol-title-${lang}`).val().trim();
+                if (tVal) colTitleTrans[lang] = tVal;
+              });
+
+              tableCols.push({
+                col_id: colId,
+                title: colTitleTrans,
+                type: colType,
+                dropdown_group: colType === 'dropdown' ? colDdGrp : null,
+                excel_cell: colCell
+              });
+            });
+
+            const tableSummaryRows = [];
+            qEl.find('.tsum-item').each(function() {
+              const sumEl = $(this);
+              const aggType = sumEl.find('.tsum-agg-type').val();
+              const targetCol = sumEl.find('.tsum-target-col').val().trim();
+              const unitText = sumEl.find('.tsum-unit').val().trim();
+              const excelCellOut = sumEl.find('.tsum-excel-cell').val().trim();
+              const sumTitleTrans = {};
+
+              activeLangs.forEach(lang => {
+                const tVal = sumEl.find(`.tsum-title-${lang}`).val().trim();
+                if (tVal) sumTitleTrans[lang] = tVal;
+              });
+
+              tableSummaryRows.push({
+                title: sumTitleTrans,
+                aggregate_type: aggType,
+                target_column: targetCol,
+                unit: unitText,
+                excel_cell: excelCellOut
+              });
+            });
+
+            tableConfigObj = {
+              initial_rows: parseInt(qEl.find('.q-table-initial-rows').val()) || 3,
+              allow_user_add_rows: qEl.find('.q-table-allow-add-rows').is(':checked'),
+              columns: tableCols,
+              summary_rows: tableSummaryRows
+            };
+          }
+
+          // Formula Config Assembly if inputType == 'calculated'
+          let formulaConfigObj = null;
+          if (inputType === 'calculated') {
+            const fType = qEl.find('.q-formula-type').val();
+            const fSourcesStr = qEl.find('.q-formula-sources').val().trim();
+            const sourceCellsArr = fSourcesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            formulaConfigObj = {
+              formula_type: fType,
+              source_cells: sourceCellsArr
+            };
+          }
+
+          // Visibility Condition Assembly
+          let visCondObj = null;
+          const visTrigger = qEl.find('.q-vis-trigger').val().trim();
+          if (visTrigger) {
+            visCondObj = {
+              depends_on_cell: visTrigger,
+              operator: qEl.find('.q-vis-op').val(),
+              value: qEl.find('.q-vis-val').val().trim(),
+              action: qEl.find('.q-vis-action').val()
+            };
+          }
+
+          // Validation Rules Assembly
+          let valRulesObj = null;
+          const valMin = qEl.find('.q-val-min').val();
+          const valMax = qEl.find('.q-val-max').val();
+          const valPattern = qEl.find('.q-val-pattern').val().trim();
+          if (valMin !== '' || valMax !== '' || valPattern !== '') {
+            valRulesObj = {
+              min: valMin !== '' ? parseFloat(valMin) : null,
+              max: valMax !== '' ? parseFloat(valMax) : null,
+              pattern: valPattern || null
+            };
+          }
+
+          questions.push({
+            question_translations: qTextTrans,
+            info_translations: Object.keys(qInfoTrans).length > 0 ? qInfoTrans : null,
+            question_en: qTextTrans.en || '',
+            question_fr: qTextTrans.fr || '',
+            excel_cell_ref: excelRef,
+            input_type: inputType,
+            dropdown_group_name: inputType === 'dropdown' ? dropdownGrp : null,
+            has_value_input: inputType === 'dropdown' ? hasValueInput : false,
+            table_config: tableConfigObj,
+            formula_config: formulaConfigObj,
+            visibility_condition: visCondObj,
+            validation_rules: valRulesObj,
+            allow_multiple: allowMultiple,
+            order_index: qIdx + 1
+          });
+        });
+
+        labels.push({
+          name_translations: lblNameTrans,
+          info_translations: Object.keys(lblInfoTrans).length > 0 ? lblInfoTrans : null,
+          name_en: lblNameTrans.en || '',
+          name_fr: lblNameTrans.fr || '',
+          is_omittable: lblEl.find('.lbl-is-omittable').is(':checked'),
+          order_index: lIdx + 1,
+          questions: questions
+        });
+      });
+
+      categories.push({
+        sheet_name: sheetName,
+        name_translations: catNameTrans,
+        info_translations: Object.keys(catInfoTrans).length > 0 ? catInfoTrans : null,
+        name_en: catNameTrans.en || '',
+        name_fr: catNameTrans.fr || '',
+        is_omittable: catEl.find('.cat-is-omittable').is(':checked'),
+        order_index: cIdx + 1,
+        labels: labels
+      });
+    });
+
+    if (hasError) return;
+
+    const payload = {
+      template_name: templateName,
+      is_published: $('#is_published').is(':checked'),
+      supported_languages: activeLangs,
+      categories: categories
+    };
+
+    const isEdit = initialTemplateData && initialTemplateData.id;
+    const url = isEdit ? `/admin/vsme-templates/update/${initialTemplateData.id}` : `/admin/vsme-templates/store`;
+
+    $('#btnSaveTemplate, #btnSaveTemplateFloating').prop('disabled', true).html('<i class="icofont icofont-spinner spin me-1"></i> Saving...');
+
+    $.ajax({
+      url: url,
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(payload),
+      success: function(response) {
+        if (response.success) {
+          window.location.href = response.redirect || '/admin/vsme-templates';
+        } else {
+          showValidationError(response.message || 'Error saving template.');
+          $('#btnSaveTemplate, #btnSaveTemplateFloating').prop('disabled', false).html('<i class="icofont icofont-save me-1"></i> ' + (isEdit ? 'Update Template' : 'Save Template'));
+        }
+      },
+      error: function(xhr) {
+        const errJson = xhr.responseJSON;
+        showValidationError(errJson && errJson.message ? errJson.message : 'Server error occurred while saving.');
+        $('#btnSaveTemplate, #btnSaveTemplateFloating').prop('disabled', false).html('<i class="icofont icofont-save me-1"></i> ' + (isEdit ? 'Update Template' : 'Save Template'));
+      }
+    });
+  }
+
+  function showValidationError(msg) {
+    $('#validationErrorMsg').text(msg);
+    $('#validationErrorBanner').removeClass('d-none')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+
+<%- include('../templates/footer.ejs') %>

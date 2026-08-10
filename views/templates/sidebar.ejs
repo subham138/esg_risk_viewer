@@ -432,6 +432,9 @@
             <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink <%= active == 'map_ques' ? (query_params.includes('flag') ? '' : 'cust-active') : '' %>" href="/map_ques?f=Rg%3D%3D">
               <i class="icofont icofont-abc m-r-20 cusINavLink"></i><span class="cusSpanNavLink">Map Questions</span></a>
             </li>
+            <li class="dropdown"><a class="nav-link menu-title link-nav cusANavLink <%= active == 'vsme-templates' ? 'cust-active' : '' %>" href="/admin/vsme-templates">
+              <i class="icofont icofont-file-alt m-r-20 cusINavLink"></i><span class="cusSpanNavLink">VSME Templates</span></a>
+            </li>
             <% } %>
             <% if(user.user_type == 'C' || user.user_type == 'A' || user.user_type == 'E' || user.user_type == 'V'){ %>
               <% if(user.user_type == 'C') { %>
@@ -449,9 +452,9 @@
                   <% }else{ %>
                     <li><a href="/my_project?flag=RkM%3D">GHG Emissions Module - FR</a></li>
                   <% } %>
-                  <%# if([user.ifrs_flag, user.ifrs_fr_flag, user.esrs_flag, user.esrs_fr_flag, user.esrs_vsme_flag, user.esrs_vsme_fr_flag, user.gri_flag, user.gri_fr_flag].includes('Y')){ %>
-                    <li><a href="/my_project?flag=SQ%3D%3D">Sustainability Module</a></li>
-                  <%# } %>
+                  <li><a href="/my_project?flag=SQ%3D%3D">Sustainability Module</a></li>
+                  <!-- <li><a href="/my_project?flag=RVY%3D">ESRS VSME</a></li>
+                  <li><a href="/my_project?flag=RVZG">ESRS VSME - French</a></li> -->
                 </ul>
               </li>
               <% } if(user.platform_mode == 'C'){ %>

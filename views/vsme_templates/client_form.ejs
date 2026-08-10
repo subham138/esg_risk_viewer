@@ -1,0 +1,2233 @@
+<%- include('../templates/header.ejs', {
+  header: header || 'VSME Sustainability Questionnaire',
+  sub_header: sub_header || 'Interactive XBRL Disclosure Data Capture',
+  header_url: header_url || '/admin/vsme-templates'
+}) %>
+
+<!-- Custom Presentation & Slide CSS -->
+<style>
+  :root {
+    --vsme-primary: #1e5bb8;
+    --vsme-primary-light: #e8f0fe;
+    --vsme-primary-dark: #123d80;
+    --vsme-success: #10b981;
+    --vsme-success-light: #ecfdf5;
+    --vsme-warning: #f59e0b;
+    --vsme-danger: #ef4444;
+    --vsme-gray-50: #f8fafc;
+    --vsme-gray-100: #f1f5f9;
+    --vsme-gray-200: #e2e8f0;
+    --vsme-gray-300: #cbd5e1;
+    --vsme-gray-600: #475569;
+    --vsme-gray-800: #1e293b;
+    --vsme-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --vsme-card-glow: 0 0 0 2px rgba(30, 91, 184, 0.25);
+  }
+
+  .vsme-presentation-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+  }
+
+  /* Top Action Bar (scrolls with page) */
+  .vsme-top-control-bar {
+    background: #ffffff;
+    border: 1px solid var(--vsme-gray-200);
+    border-radius: 12px;
+    padding: 10px 18px;
+    margin-bottom: 6px;
+    box-shadow: var(--vsme-card-shadow);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: relative;
+    z-index: 5;
+  }
+
+  .vsme-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .vsme-brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--vsme-primary), #3b82f6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 10px rgba(30, 91, 184, 0.25);
+  }
+
+  .vsme-brand-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--vsme-gray-800);
+    margin: 0;
+  }
+
+  .vsme-brand-subtitle {
+    font-size: 0.75rem;
+    color: var(--vsme-gray-600);
+    margin: 0;
+  }
+
+  /* Auto-save & Status Badge */
+  .vsme-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--vsme-gray-100);
+    color: var(--vsme-gray-600);
+    transition: all 0.3s ease;
+  }
+
+  .vsme-status-badge.saved {
+    background: var(--vsme-success-light);
+    color: var(--vsme-success);
+  }
+
+  .vsme-status-badge.saving {
+    background: #fef3c7;
+    color: var(--vsme-warning);
+  }
+
+  .vsme-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    display: inline-block;
+  }
+
+  .vsme-status-badge.saving .vsme-status-dot {
+    animation: vsmePulse 1.2s infinite;
+  }
+
+  @keyframes vsmePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.4; }
+  }
+
+  /* Horizontal Category Tabs */
+  .vsme-category-nav-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    scrollbar-width: thin;
+  }
+
+  .vsme-cat-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #ffffff;
+    border: 1.5px solid var(--vsme-gray-200);
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--vsme-gray-600);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-cat-tab-btn:hover {
+    border-color: var(--vsme-primary);
+    color: var(--vsme-primary);
+    background: var(--vsme-primary-light);
+    transform: translateY(-1px);
+  }
+
+  .vsme-cat-tab-btn.active {
+    background: var(--vsme-primary);
+    border-color: var(--vsme-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(30, 91, 184, 0.2);
+  }
+
+  .vsme-cat-badge {
+    padding: 2px 7px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--vsme-gray-100);
+    color: var(--vsme-gray-600);
+  }
+
+  .vsme-cat-tab-btn.active .vsme-cat-badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+
+  /* Full Width Main Stage */
+  .vsme-full-stage-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Slide Presentation Stage */
+  .vsme-slide-stage {
+    background: #ffffff;
+    border: 1px solid var(--vsme-gray-200);
+    border-radius: 16px;
+    box-shadow: var(--vsme-card-shadow);
+    padding: 20px 24px;
+    position: relative;
+    min-height: auto;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .vsme-slide-header {
+    border-bottom: 1.5px solid var(--vsme-gray-100);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .vsme-slide-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--vsme-primary);
+    background: var(--vsme-primary-light);
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+
+  .vsme-slide-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--vsme-gray-800);
+    margin: 4px 0 0 0;
+  }
+
+  /* Question Progress Tracker Bar */
+  .vsme-question-tracker-bar {
+    background: #f8fafc;
+    border: 1px solid var(--vsme-gray-200);
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-bottom: 16px;
+  }
+
+  .vsme-q-step-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .vsme-q-step-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vsme-q-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1.5px solid var(--vsme-gray-300);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--vsme-gray-600);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-q-pill-btn:hover {
+    border-color: var(--vsme-primary);
+    color: var(--vsme-primary);
+    transform: translateY(-1px);
+  }
+
+  .vsme-q-pill-btn.active {
+    background: var(--vsme-primary);
+    border-color: var(--vsme-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(30, 91, 184, 0.25);
+  }
+
+  .vsme-q-pill-btn.filled:not(.active) {
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #166534;
+  }
+
+  .vsme-q-pill-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .vsme-q-pill-btn.active .vsme-q-pill-dot {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+
+  .vsme-q-pill-btn.filled:not(.active) .vsme-q-pill-dot {
+    background: #22c55e;
+    color: #ffffff;
+  }
+
+  /* Single Question Focus Slide Card */
+  .vsme-q-card {
+    background: #ffffff;
+    border: 1.5px solid var(--vsme-gray-200);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    animation: vsmeFadeSlide 0.2s ease-out;
+  }
+
+  @keyframes vsmeFadeSlide {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .vsme-q-card:hover, .vsme-q-card:focus-within {
+    border-color: var(--vsme-primary);
+    box-shadow: 0 4px 14px rgba(30, 91, 184, 0.08);
+  }
+
+  .vsme-q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--vsme-gray-100);
+  }
+
+  .vsme-q-label {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--vsme-gray-800);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .vsme-q-info-btn {
+    color: var(--vsme-primary);
+    background: var(--vsme-primary-light);
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .vsme-q-info-btn:hover {
+    transform: scale(1.12);
+  }
+
+  /* Form Inputs Styling */
+  .vsme-input-control {
+    border: 1.5px solid var(--vsme-gray-300);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--vsme-gray-800);
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-input-control:focus {
+    border-color: var(--vsme-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 91, 184, 0.15);
+  }
+
+  /* Segmented Boolean Switch */
+  .vsme-segmented-bool {
+    display: inline-flex;
+    background: var(--vsme-gray-200);
+    padding: 4px;
+    border-radius: 10px;
+    gap: 4px;
+  }
+
+  .vsme-seg-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 18px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--vsme-gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-seg-btn.active-yes {
+    background: var(--vsme-success);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+  }
+
+  .vsme-seg-btn.active-no {
+    background: #64748b;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(100, 116, 139, 0.3);
+  }
+
+  /* Calculated Field Box */
+  .vsme-calc-box {
+    background: #f0fdf4;
+    border: 1.5px dashed #86efac;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .vsme-calc-val {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #166534;
+  }
+
+  .vsme-calc-formula {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: #15803d;
+    background: #dcfce7;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+
+  /* Spacious Modern Data Grid Table in Slide */
+  .vsme-slide-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--vsme-gray-200);
+    border-radius: 14px;
+    margin-top: 14px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    scrollbar-width: thin;
+    scrollbar-color: var(--vsme-primary) #f1f5f9;
+  }
+
+  .vsme-slide-table-wrap::-webkit-scrollbar {
+    height: 9px;
+  }
+  .vsme-slide-table-wrap::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 6px;
+  }
+  .vsme-slide-table-wrap::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 6px;
+  }
+  .vsme-slide-table-wrap::-webkit-scrollbar-thumb:hover {
+    background: var(--vsme-primary);
+  }
+
+  .vsme-table-toolbar {
+    padding: 10px 16px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--vsme-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--vsme-gray-600);
+  }
+
+  .vsme-slide-table {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 0.92rem;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .vsme-slide-table th {
+    background: #f8fafc;
+    color: var(--vsme-gray-800);
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--vsme-gray-200);
+    border-right: 1px solid var(--vsme-gray-200);
+    vertical-align: middle;
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .vsme-slide-table th:last-child {
+    border-right: none;
+  }
+
+  .vsme-slide-table td {
+    padding: 10px 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--vsme-gray-200);
+    border-right: 1px solid var(--vsme-gray-200);
+    background: #ffffff;
+    transition: background 0.15s ease;
+  }
+
+  .vsme-slide-table td:last-child {
+    border-right: none;
+  }
+
+  .vsme-slide-table tbody tr:hover td {
+    background: #f8fafc;
+  }
+
+  .vsme-slide-table tbody tr:hover td.vsme-sticky-col {
+    background: #f1f5f9;
+  }
+
+  /* Sticky First Column (#) */
+  .vsme-sticky-col {
+    position: sticky;
+    left: 0;
+    background: #f8fafc !important;
+    z-index: 3;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+  }
+
+  th.vsme-sticky-col {
+    z-index: 4;
+  }
+
+  /* Roomy & Beautiful Table Inputs */
+  .table-cell-input {
+    width: 100%;
+    min-width: 180px;
+    height: 42px;
+    padding: 8px 14px;
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: var(--vsme-gray-800);
+    border: 1.5px solid var(--vsme-gray-300);
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .table-cell-input:focus {
+    border-color: var(--vsme-primary);
+    background: #ffffff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 91, 184, 0.15);
+  }
+
+  .table-cell-input.form-select {
+    cursor: pointer;
+    background-color: #ffffff;
+  }
+
+  /* Top Horizontal Section Stepper Ribbon Card (Sticks when scrolled) */
+  .vsme-h-stepper-card {
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid var(--vsme-gray-200);
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    padding: 8px 14px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    transition: box-shadow 0.2s ease;
+  }
+
+  /* Fixed sticky class activated on scroll */
+  .vsme-h-stepper-card.vsme-sticky-active {
+    position: fixed !important;
+    z-index: 999 !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+    border-color: var(--vsme-primary-light) !important;
+  }
+
+  .vsme-h-stepper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .vsme-h-stepper-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--vsme-gray-600);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .vsme-h-stepper-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  .vsme-strip-nav-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1.5px solid var(--vsme-gray-300);
+    color: var(--vsme-gray-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .vsme-strip-nav-btn:hover {
+    background: var(--vsme-primary);
+    border-color: var(--vsme-primary);
+    color: #ffffff;
+    transform: scale(1.06);
+  }
+
+  .vsme-strip-nav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+    background: #f1f5f9;
+    border-color: var(--vsme-gray-200);
+    color: var(--vsme-gray-400);
+  }
+
+  .vsme-horizontal-stepper-track {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 2px 2px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-grow: 1;
+  }
+
+  .vsme-horizontal-stepper-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vsme-h-step-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #f8fafc;
+    border: 1.5px solid var(--vsme-gray-200);
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .vsme-h-step-item:hover {
+    background: #ffffff;
+    border-color: var(--vsme-primary-light);
+    box-shadow: 0 3px 10px rgba(30, 91, 184, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .vsme-h-step-item.active {
+    background: var(--vsme-primary);
+    border-color: var(--vsme-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(30, 91, 184, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .vsme-h-step-item.completed:not(.active) {
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #166534;
+  }
+
+  .vsme-h-step-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1.5px solid var(--vsme-gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--vsme-gray-700);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-h-step-item.active .vsme-h-step-num {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: transparent;
+    color: #ffffff;
+  }
+
+  .vsme-h-step-item.completed:not(.active) .vsme-h-step-num {
+    background: #22c55e;
+    border-color: #22c55e;
+    color: #ffffff;
+  }
+
+  .vsme-h-step-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: inherit;
+    margin: 0;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .vsme-h-step-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+  }
+
+  .vsme-h-step-item.active .vsme-h-step-badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+
+  /* Slide Controls Footer */
+  .vsme-slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1.5px solid var(--vsme-gray-100);
+  }
+
+  .vsme-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: all 0.2s ease;
+  }
+
+  /* Offcanvas Guidance Drawer */
+  .vsme-guidance-drawer {
+    width: 440px !important;
+  }
+
+  .vsme-guidance-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--vsme-gray-800);
+  }
+</style>
+
+<div class="container-fluid vsme-presentation-wrapper">
+
+  <!-- TOP CONTROL BAR: Language, Version, Progress, Auto-Save -->
+  <div class="vsme-top-control-bar">
+    <div class="vsme-header-brand">
+      <div class="vsme-brand-icon">
+        <i class="icofont icofont-presentation"></i>
+      </div>
+      <div>
+        <h4 class="vsme-brand-title" id="tplTitleText"><%= formData.template.template_name %></h4>
+        <p class="vsme-brand-subtitle">
+          <span class="badge bg-primary">v<%= formData.template.version_number %>.0</span>
+          • XBRL Data Capture Mode
+        </p>
+      </div>
+    </div>
+
+    <!-- Center Control Badges: Language & Auto-Save -->
+    <div class="d-flex align-items-center gap-3">
+      <!-- Language Switcher Dropdown/Pills -->
+      <div class="btn-group" role="group" id="langSwitcherGroup">
+        <% 
+          const suppLangs = formData.template.supported_languages || ['en'];
+          const langLabels = { en: '🇬🇧 EN', fr: '🇫🇷 FR', de: '🇩🇪 DE', es: '🇪🇸 ES', it: '🇮🇹 IT' };
+          suppLangs.forEach(langCode => { 
+        %>
+          <button type="button" class="btn btn-outline-primary btn-sm lang-btn <%= (selected_language || 'en') === langCode ? 'active' : '' %>" data-lang="<%= langCode %>">
+            <%= langLabels[langCode] || langCode.toUpperCase() %>
+          </button>
+        <% }); %>
+      </div>
+
+      <!-- Version Switcher Dropdown (if multiple versions) -->
+      <% if (formData.availableTemplates && formData.availableTemplates.length > 1) { %>
+        <select class="form-select form-select-sm" id="versionSelector" style="width: auto;">
+          <% formData.availableTemplates.forEach(t => { %>
+            <option value="<%= t.id %>" <%= t.id == formData.template.id ? 'selected' : '' %>>
+              v<%= t.version_number %>.0 <%= t.is_published ? '(Published)' : '(Draft)' %>
+            </option>
+          <% }); %>
+        </select>
+      <% } %>
+
+      <!-- Live Auto-Save Status Badge -->
+      <div class="vsme-status-badge saved" id="autoSaveBadge">
+        <span class="vsme-status-dot"></span>
+        <span id="autoSaveText">All changes saved</span>
+      </div>
+    </div>
+
+    <!-- Right Action Buttons: Save Draft & Final Submit -->
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="btnManualDraftSave">
+        <i class="icofont icofont-save me-1"></i> Save Draft
+      </button>
+      <button type="button" class="btn btn-success btn-sm" id="btnFinalSubmit">
+        <i class="icofont icofont-check-circled me-1"></i> Final Save & Submit
+      </button>
+    </div>
+  </div>
+
+  <!-- PROGRESS METER -->
+  <div class="card p-3 mb-2 shadow-sm border-0" style="border-radius: 14px;">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="fw-bold text-muted small text-uppercase">Questionnaire Progress</span>
+      <span class="fw-bold text-primary" id="progressStatsText">0% Completed (0/0 Answered)</span>
+    </div>
+    <div class="progress" style="height: 8px; border-radius: 6px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="progressBarFill" role="progressbar" style="width: 0%;"></div>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL CATEGORY NAVIGATION TABS -->
+  <div class="vsme-category-nav-tabs" id="categoryNavTabs">
+    <% (formData.template.categories || []).forEach((cat, cIdx) => { 
+        let totalQInCat = 0;
+        (cat.labels || []).forEach(l => { totalQInCat += (l.questions || []).length; });
+    %>
+      <button type="button" class="vsme-cat-tab-btn <%= cIdx === 0 ? 'active' : '' %>" data-cat-id="<%= cat.id %>" data-cat-idx="<%= cIdx %>">
+        <i class="icofont icofont-folder me-1"></i>
+        <span class="cat-tab-title" data-en="<%= cat.name_en || '' %>" data-fr="<%= cat.name_fr || '' %>">
+          <%= cat.name_en || 'Category ' + (cIdx + 1) %>
+        </span>
+        <span class="vsme-cat-badge" id="catBadge_<%= cat.id %>">0/<%= totalQInCat %></span>
+      </button>
+    <% }); %>
+  </div>
+
+  <!-- MAIN STAGE: TOP HORIZONTAL SECTION STEPPER RIBBON + FULL WIDTH PPT SLIDE STAGE -->
+  <div class="vsme-full-stage-wrapper" id="fullStageWrapper">
+    
+    <!-- Placeholder element to prevent page jumping when stepper is fixed on scroll -->
+    <div id="hStepperPlaceholder" style="display: none;"></div>
+
+    <!-- TOP: HORIZONTAL SECTION STEPPER RIBBON CARD -->
+    <div class="vsme-h-stepper-card" id="hStepperCard">
+      <div class="vsme-h-stepper-header">
+        <div class="vsme-h-stepper-title">
+          <i class="icofont icofont-navigation-menu text-primary"></i>
+          <span>Sections in <span class="text-primary fw-bold" id="treeCategoryName">General</span></span>
+        </div>
+        <div class="small fw-bold text-muted" id="hStepperStats">
+          Section 1 of 1
+        </div>
+      </div>
+
+      <div class="vsme-h-stepper-ribbon">
+        <!-- Left Scroll Arrow -->
+        <button type="button" class="vsme-strip-nav-btn prev" id="btnStripScrollLeft" title="Previous Sections">
+          <i class="icofont icofont-arrow-left"></i>
+        </button>
+
+        <!-- Horizontal Scrollable Track -->
+        <div class="vsme-horizontal-stepper-track" id="horizontalStepperTrack">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+        <!-- Right Scroll Arrow -->
+        <button type="button" class="vsme-strip-nav-btn next" id="btnStripScrollRight" title="Next Sections">
+          <i class="icofont icofont-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- FULL WIDTH: THE PRESENTATION SLIDE CARD STAGE -->
+    <div class="vsme-slide-stage" id="slideStageContainer">
+      <!-- Dynamic Slide Contents Rendered by JS -->
+      <div id="slideContentArea"></div>
+
+      <!-- Slide Bottom Control Bar -->
+      <div class="vsme-slide-footer">
+        <button type="button" class="btn btn-outline-secondary vsme-nav-btn" id="btnPrevSlide">
+          <i class="icofont icofont-arrow-left"></i> Previous
+        </button>
+        <span class="fw-bold text-muted small text-center" id="slideCounterText">Question 1 of 1</span>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-outline-warning vsme-nav-btn" id="btnSkipQuestion" title="Skip this question for now">
+            Skip Question <i class="icofont icofont-curved-right"></i>
+          </button>
+          <button type="button" class="btn btn-primary vsme-nav-btn" id="btnNextSlide">
+            Next Question <i class="icofont icofont-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- OFFCANVAS GUIDANCE DRAWER -->
+<div class="offcanvas offcanvas-end vsme-guidance-drawer" tabindex="-1" id="guidanceDrawer" aria-labelledby="guidanceDrawerLabel">
+  <div class="offcanvas-header bg-light border-bottom">
+    <h5 class="offcanvas-title vsme-guidance-title" id="guidanceDrawerLabel">
+      <i class="icofont icofont-info-circle text-primary me-2"></i> Disclosure Guidance
+    </h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-4" id="guidanceDrawerBody">
+    <p class="text-muted">No specific guidance for this disclosure.</p>
+  </div>
+</div>
+
+<!-- SUBMISSION CONFIRMATION MODAL -->
+<div class="modal fade" id="submitModal" tabindex="-1" aria-labelledby="submitModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="submitModalLabel">
+          <i class="icofont icofont-check-circled me-2"></i> Confirm Final Submission
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="mb-3">You are about to submit your VSME Questionnaire for final XBRL report compilation.</p>
+        <div class="alert alert-info py-2 px-3 small mb-0">
+          <i class="icofont icofont-shield-check me-1"></i> All captured values, table rows, and calculated formulas will be locked and saved into the project records.
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" id="btnConfirmSubmit">Confirm & Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client Questionnaire Engine Script -->
+<script>
+  // Server injected data
+  const rawTemplate = <%- JSON.stringify(formData.template) %>;
+  const rawAnswers = <%- JSON.stringify(formData.answers || {}) %>;
+  const rawClassified = <%- JSON.stringify(formData.classifiedSections || {}) %>;
+  const dropdownMasterMap = <%- JSON.stringify(formData.dropdownMaster || {}) %>;
+  const projectId = <%= project_id || 0 %>;
+  let currentLanguage = '<%= selected_language || "en" %>';
+
+  // Client State
+  let activeCatIndex = 0;
+  let activeLabelIndex = 0;
+  let activeQuestionIndex = 0;
+  const answerStore = { ...rawAnswers };
+  const classifiedStore = { ...rawClassified };
+  let isDirty = false;
+  let autoSaveTimer = null;
+  let idleTimer = null;
+
+  // Flattened slide index map for smooth carousel
+  let activeCategory = null;
+  let activeLabel = null;
+
+  // DOM Elements
+  const slideContentArea = document.getElementById('slideContentArea');
+  const labelTreeList = document.getElementById('labelTreeList');
+  const treeCategoryName = document.getElementById('treeCategoryName');
+  const slideCounterText = document.getElementById('slideCounterText');
+  const autoSaveBadge = document.getElementById('autoSaveBadge');
+  const autoSaveText = document.getElementById('autoSaveText');
+  const progressBarFill = document.getElementById('progressBarFill');
+  const progressStatsText = document.getElementById('progressStatsText');
+
+  // Initialization
+  document.addEventListener('DOMContentLoaded', () => {
+    initCategoryTabs();
+    renderActiveSlide();
+    updateOverallProgress();
+    setupEventListeners();
+    setupIdleDetection();
+    initStickyStepper();
+  });
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function getLocalized(obj, fallback = '') {
+    if (!obj) return fallback;
+    if (typeof obj === 'string') return obj;
+    return obj[currentLanguage] || obj['en'] || fallback;
+  }
+
+  function isQuestionFilled(q) {
+    if (!q) return false;
+    const a = answerStore[q.id];
+    if (!a || a.answer_val === undefined || a.answer_val === null) return false;
+    return String(a.answer_val).trim() !== '';
+  }
+
+  function initCategoryTabs() {
+    const catBtns = document.querySelectorAll('.vsme-cat-tab-btn');
+    catBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCatIndex = parseInt(btn.getAttribute('data-cat-idx'), 10);
+        activeLabelIndex = 0;
+        activeQuestionIndex = 0;
+        renderActiveSlide();
+      });
+    });
+  }
+
+  function renderActiveSlide() {
+    if (!rawTemplate.categories || rawTemplate.categories.length === 0) return;
+
+    activeCategory = rawTemplate.categories[activeCatIndex];
+    if (!activeCategory || !activeCategory.labels || activeCategory.labels.length === 0) {
+      slideContentArea.innerHTML = '<div class="alert alert-info">No labels or questions configured in this category.</div>';
+      return;
+    }
+
+    if (activeLabelIndex >= activeCategory.labels.length) {
+      activeLabelIndex = 0;
+    }
+    activeLabel = activeCategory.labels[activeLabelIndex];
+
+    // 1. Update Horizontal Stepper on Top
+    renderHorizontalStepper();
+
+    // 2. Render Questions in Center PPT Slide
+    renderSlideStage();
+
+    // 3. Update Slide Navigation Buttons
+    updateNavButtons();
+  }
+
+  function renderHorizontalStepper() {
+    const treeCategoryName = document.getElementById('treeCategoryName');
+    if (treeCategoryName) {
+      treeCategoryName.innerText = getLocalized(activeCategory.name_translations, activeCategory.name_en || 'Category');
+    }
+    const track = document.getElementById('horizontalStepperTrack');
+    if (!track) return;
+    track.innerHTML = '';
+
+    const labels = activeCategory.labels || [];
+    const statsEl = document.getElementById('hStepperStats');
+    if (statsEl) {
+      statsEl.innerText = `Section ${activeLabelIndex + 1} of ${labels.length}`;
+    }
+
+    labels.forEach((lbl, idx) => {
+      const isCompleted = checkLabelCompleted(lbl);
+      const isActive = idx === activeLabelIndex;
+      const qCount = (lbl.questions || []).length;
+      const lblName = getLocalized(lbl.name_translations, lbl.name_en || 'Label ' + (idx + 1));
+
+      const item = document.createElement('div');
+      item.className = `vsme-h-step-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+      item.id = `hStepItem_${idx}`;
+      item.innerHTML = `
+        <span class="vsme-h-step-num">
+          ${isCompleted ? '<i class="icofont icofont-check"></i>' : (idx + 1)}
+        </span>
+        <span class="vsme-h-step-title" title="${escapeHtml(lblName)}">${escapeHtml(lblName)}</span>
+        <span class="vsme-h-step-badge">${qCount} Qs</span>
+      `;
+      item.addEventListener('click', () => {
+        activeLabelIndex = idx;
+        activeQuestionIndex = 0;
+        renderActiveSlide();
+      });
+      track.appendChild(item);
+    });
+
+    // Auto-scroll active item into view
+    setTimeout(() => {
+      const activeEl = document.getElementById(`hStepItem_${activeLabelIndex}`);
+      if (activeEl && track) {
+        const leftPos = activeEl.offsetLeft - track.offsetLeft - (track.clientWidth / 2) + (activeEl.clientWidth / 2);
+        track.scrollTo({ left: Math.max(0, leftPos), behavior: 'smooth' });
+      }
+      updateStripNavArrows();
+    }, 60);
+  }
+
+  function updateStripNavArrows() {
+    const track = document.getElementById('horizontalStepperTrack');
+    const btnLeft = document.getElementById('btnStripScrollLeft');
+    const btnRight = document.getElementById('btnStripScrollRight');
+    if (!track || !btnLeft || !btnRight) return;
+
+    btnLeft.disabled = track.scrollLeft <= 5;
+    btnRight.disabled = (track.scrollLeft + track.clientWidth) >= (track.scrollWidth - 5);
+  }
+
+  function checkLabelCompleted(lbl) {
+    if (classifiedStore[lbl.id]) return true;
+    if (!lbl.questions || lbl.questions.length === 0) return true;
+    return lbl.questions.every(q => {
+      const a = answerStore[q.id];
+      return a && a.answer_val && String(a.answer_val).trim() !== '';
+    });
+  }
+
+  function renderSlideStage() {
+    const catTitle = getLocalized(activeCategory.name_translations, activeCategory.name_en || '');
+    const lblTitle = getLocalized(activeLabel.name_translations, activeLabel.name_en || '');
+    const isOmittable = activeLabel.is_omittable || activeCategory.is_omittable;
+    const isClassified = classifiedStore[activeLabel.id] ? true : false;
+    const questions = activeLabel.questions || [];
+    const totalQ = questions.length;
+
+    if (activeQuestionIndex >= totalQ && totalQ > 0) {
+      activeQuestionIndex = 0;
+    }
+
+    let html = `
+      <div class="vsme-slide-header">
+        <div>
+          <span class="vsme-slide-tag">${catTitle}</span>
+          <h3 class="vsme-slide-title">${lblTitle}</h3>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          ${isOmittable ? `
+            <div class="form-check form-switch d-flex align-items-center gap-2">
+              <input class="form-check-input" type="checkbox" id="omissionToggle_${activeLabel.id}" ${isClassified ? 'checked' : ''} onchange="toggleOmissionSection(${activeLabel.id})">
+              <label class="form-check-label small fw-bold text-muted" for="omissionToggle_${activeLabel.id}">Mark as Confidential / Omitted</label>
+            </div>
+          ` : ''}
+          ${activeLabel.info_translations ? `
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="showGuidanceDrawer('label', ${activeLabel.id})">
+              <i class="icofont icofont-info-circle me-1"></i> Section Guidance
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    if (totalQ === 0) {
+      html += '<div class="alert alert-secondary py-4 text-center">No questions defined under this section.</div>';
+    } else {
+      let answeredInLbl = questions.filter(q => isQuestionFilled(q)).length;
+      let currentQ = questions[activeQuestionIndex];
+      let isCurrentFilled = isQuestionFilled(currentQ);
+
+      html += `
+        <!-- Question Step Progress Tracker Bar -->
+        <div class="vsme-question-tracker-bar">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary px-3 py-1.5" style="border-radius: 8px;">Question ${activeQuestionIndex + 1} of ${totalQ}</span>
+              <span class="small fw-bold text-muted">(${answeredInLbl}/${totalQ} Answered)</span>
+            </div>
+            <div>
+              ${isCurrentFilled ? 
+                '<span class="badge bg-success-subtle text-success border border-success px-2 py-1"><i class="icofont icofont-check-circled me-1"></i> Answered</span>' : 
+                '<span class="badge bg-light text-secondary border px-2 py-1">In Progress</span>'
+              }
+            </div>
+          </div>
+          <div class="vsme-q-step-pills">
+            ${questions.map((q, idx) => {
+              const filled = isQuestionFilled(q);
+              const isActive = idx === activeQuestionIndex;
+              return `
+                <button type="button" class="vsme-q-pill-btn ${isActive ? 'active' : ''} ${filled ? 'filled' : ''}" onclick="jumpToQuestion(${idx})" title="Jump to Question ${idx + 1}">
+                  <span class="vsme-q-pill-dot">${filled ? '<i class="icofont icofont-check"></i>' : (idx + 1)}</span>
+                  <span>Q${idx + 1}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div id="questionsContainer" style="${isClassified ? 'opacity: 0.45; pointer-events: none;' : ''}">
+          ${renderQuestionCard(currentQ, activeQuestionIndex)}
+        </div>
+      `;
+    }
+
+    slideContentArea.innerHTML = html;
+
+    // Trigger calculation updates and visibility evaluation
+    evaluateFormulas();
+    evaluateVisibility();
+  }
+
+  function renderQuestionCard(q, qIdx) {
+    const qText = getLocalized(q.question_translations, q.question_en || '');
+    const currentAnsObj = answerStore[q.id] || {};
+    let val = currentAnsObj.answer_val !== undefined && currentAnsObj.answer_val !== null ? currentAnsObj.answer_val : '';
+
+    let inputHtml = '';
+
+    if (q.input_type === 'boolean') {
+      const isYes = val === 'true' || val === '1' || val === 'Yes' || val === 'TRUE';
+      const isNo = val === 'false' || val === '0' || val === 'No' || val === 'FALSE';
+      inputHtml = `
+        <div class="vsme-segmented-bool" data-qid="${q.id}">
+          <button type="button" class="vsme-seg-btn ${isYes ? 'active-yes' : ''}" onclick="setBoolAnswer(${q.id}, 'TRUE', this)">Yes</button>
+          <button type="button" class="vsme-seg-btn ${isNo ? 'active-no' : ''}" onclick="setBoolAnswer(${q.id}, 'FALSE', this)">No</button>
+          <button type="button" class="vsme-seg-btn ${val === 'N/A' ? 'active-no' : ''}" onclick="setBoolAnswer(${q.id}, 'N/A', this)">N/A</button>
+        </div>
+      `;
+    } else if (q.input_type === 'dropdown') {
+      const options = dropdownMasterMap[q.dropdown_group_name] || [];
+      let customVal = '';
+      let selectedOption = val;
+
+      if (q.has_value_input) {
+        try {
+          const parsed = JSON.parse(val);
+          selectedOption = parsed.dropdown || '';
+          customVal = parsed.custom || '';
+        } catch (e) {
+          selectedOption = val;
+        }
+      }
+
+      inputHtml = `
+        <div class="row g-2">
+          <div class="${q.has_value_input ? 'col-md-6' : 'col-12'}">
+            <select class="form-select vsme-input-control" data-qid="${q.id}" onchange="handleDropdownChange(${q.id}, this, ${q.has_value_input})">
+              <option value="">-- Select Option --</option>
+              ${options.map(opt => `
+                <option value="${opt.value_en}" ${selectedOption === opt.value_en ? 'selected' : ''}>
+                  ${currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          ${q.has_value_input ? `
+            <div class="col-md-6">
+              <input type="text" class="form-control vsme-input-control" id="customInput_${q.id}" placeholder="Enter specific value..." value="${customVal}" oninput="handleCustomValChange(${q.id}, this)">
+            </div>
+          ` : ''}
+        </div>
+      `;
+    } else if (q.input_type === 'date') {
+      inputHtml = `
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="icofont icofont-ui-calendar text-primary"></i></span>
+          <input type="date" class="form-control vsme-input-control" data-qid="${q.id}" value="${val}" onchange="handleInputChange(${q.id}, this.value)">
+        </div>
+      `;
+    } else if (q.input_type === 'calculated') {
+      inputHtml = `
+        <div class="vsme-calc-box">
+          <span class="vsme-calc-val" id="calcDisplay_${q.id}">0.00</span>
+          <span class="vsme-calc-formula"><i class="icofont icofont-calculator-alt me-1"></i> Auto-Calculated</span>
+        </div>
+      `;
+    } else if (q.input_type === 'table') {
+      inputHtml = renderTableQuestion(q, val);
+    } else if (q.input_type === 'number') {
+      inputHtml = `
+        <input type="number" step="any" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="Enter numeric value..." value="${val}" oninput="handleInputChange(${q.id}, this.value)">
+      `;
+    } else {
+      inputHtml = `
+        <input type="text" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="Type answer here..." value="${val}" oninput="handleInputChange(${q.id}, this.value)">
+      `;
+    }
+
+    return `
+      <div class="vsme-q-card" id="qCard_${q.id}" data-qid="${q.id}">
+        <div class="vsme-q-header">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border">${qIdx + 1}</span>
+            <h6 class="vsme-q-label">${qText}</h6>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            ${q.info_translations ? `
+              <button type="button" class="vsme-q-info-btn" title="View guidance" onclick="showGuidanceDrawer('question', ${q.id})">
+                <i class="icofont icofont-info"></i>
+              </button>
+            ` : ''}
+          </div>
+        </div>
+        <div class="vsme-q-body">
+          ${inputHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  function getColumnHeader(c, idx) {
+    if (!c) return `Column ${idx + 1}`;
+    const titleObj = c.title || c.header_translations || c.header || c.name || c.title_translations;
+    const fallback = c.col_name || c.col_id || c.id || `Column ${idx + 1}`;
+    return getLocalized(titleObj, fallback);
+  }
+
+  function getColumnKey(c, idx) {
+    if (!c) return `col_${idx + 1}`;
+    return c.col_id || c.id || `col_${idx + 1}`;
+  }
+
+  function renderTableQuestion(q, rawTableVal) {
+    const config = q.table_config || { columns: [], summary_rows: [], initial_rows: 3, allow_user_add_rows: true };
+    let cols = config.columns && config.columns.length > 0 ? config.columns : [
+      { col_id: 'col_1', title: { en: 'Name' }, type: 'string' },
+      { col_id: 'col_2', title: { en: 'Amount' }, type: 'number' }
+    ];
+
+    let rowsData = [];
+    try {
+      rowsData = typeof rawTableVal === 'string' && rawTableVal ? JSON.parse(rawTableVal) : (Array.isArray(rawTableVal) ? rawTableVal : []);
+    } catch (e) {
+      rowsData = [];
+    }
+
+    const initialRowCount = config.initial_rows && config.initial_rows > 0 ? config.initial_rows : 1;
+    if (rowsData.length === 0) {
+      for (let r = 0; r < initialRowCount; r++) {
+        rowsData.push({});
+      }
+    }
+
+    const allowAddRows = config.allow_user_add_rows !== false;
+    const minTableWidth = Math.max(750, cols.length * 220 + 130);
+
+    let html = `
+      <div class="vsme-slide-table-wrap">
+        <div class="vsme-table-toolbar">
+          <div>
+            <i class="icofont icofont-table text-primary me-1"></i>
+            <span class="fw-bold text-dark">${cols.length} Columns</span> &bull; 
+            <span>${rowsData.length} Rows</span>
+          </div>
+          ${cols.length >= 3 ? `
+            <div>
+              <span class="badge bg-light text-secondary border">
+                <i class="icofont icofont-scroll-left-right text-primary me-1"></i> Scroll horizontally to view & edit all columns
+              </span>
+            </div>
+          ` : ''}
+        </div>
+        <table class="table vsme-slide-table align-middle" id="tableGrid_${q.id}" style="min-width: ${minTableWidth}px;">
+          <thead>
+            <tr>
+              <th style="width: 55px; min-width: 55px;" class="text-center vsme-sticky-col">#</th>
+              ${cols.map((c, cIdx) => {
+                const headerText = getColumnHeader(c, cIdx);
+                let colMinWidth = 220;
+                if (c.type === 'number') colMinWidth = 180;
+                else if (headerText.length > 25) colMinWidth = Math.min(380, Math.max(260, headerText.length * 7.5));
+                return `<th style="min-width: ${colMinWidth}px;">${headerText}</th>`;
+              }).join('')}
+              ${allowAddRows ? `<th style="width: 70px; min-width: 70px;" class="text-center">Action</th>` : ''}
+            </tr>
+          </thead>
+          <tbody id="tableBody_${q.id}">
+            ${rowsData.map((row, rIdx) => `
+              <tr data-row-idx="${rIdx}">
+                <td class="text-center fw-bold text-muted vsme-sticky-col">${rIdx + 1}</td>
+                ${cols.map((c, cIdx) => {
+                  const colKey = getColumnKey(c, cIdx);
+                  const cellVal = row[colKey] !== undefined && row[colKey] !== null ? row[colKey] : '';
+                  if (c.type === 'dropdown') {
+                    const options = dropdownMasterMap[c.dropdown_group] || [];
+                    return `
+                      <td>
+                        <select class="form-select table-cell-input" data-col-id="${colKey}" onchange="handleTableInput(${q.id})">
+                          <option value="">-- Select --</option>
+                          ${options.map(opt => `
+                            <option value="${opt.value_en}" ${cellVal === opt.value_en ? 'selected' : ''}>
+                              ${currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en}
+                            </option>
+                          `).join('')}
+                        </select>
+                      </td>
+                    `;
+                  } else if (c.type === 'number') {
+                    return `
+                      <td>
+                        <input type="number" step="any" class="form-control table-cell-input" data-col-id="${colKey}" placeholder="0.00" value="${cellVal}" oninput="handleTableInput(${q.id})">
+                      </td>
+                    `;
+                  } else {
+                    return `
+                      <td>
+                        <input type="text" class="form-control table-cell-input" data-col-id="${colKey}" placeholder="Enter text..." value="${cellVal}" oninput="handleTableInput(${q.id})">
+                      </td>
+                    `;
+                  }
+                }).join('')}
+                ${allowAddRows ? `
+                  <td class="text-center">
+                    <button type="button" class="btn btn-outline-danger btn-sm py-1 px-2 rounded-pill" onclick="removeTableRow(${q.id}, ${rIdx})" title="Delete row">
+                      <i class="icofont icofont-trash"></i>
+                    </button>
+                  </td>
+                ` : ''}
+              </tr>
+            `).join('')}
+          </tbody>
+          ${(config.summary_rows && config.summary_rows.length > 0) ? `
+            <tfoot class="table-light border-top-2" id="tableFoot_${q.id}">
+              ${config.summary_rows.map((sum, sIdx) => {
+                const sumTitle = getLocalized(sum.title, `Summary ${sIdx + 1}`);
+                const unit = sum.unit ? ` (${sum.unit})` : '';
+                return `
+                  <tr class="fw-bold text-secondary">
+                    <td colspan="${Math.max(1, cols.length - 1)}" class="text-end py-3">
+                      <i class="icofont icofont-calculator-alt me-1 text-primary"></i> ${sumTitle}${unit}:
+                    </td>
+                    <td class="py-3 text-primary fw-bold" id="tableSummaryVal_${q.id}_${sIdx}">
+                      0.00
+                    </td>
+                    ${allowAddRows ? `<td></td>` : ''}
+                  </tr>
+                `;
+              }).join('')}
+            </tfoot>
+          ` : ''}
+        </table>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          ${allowAddRows ? `
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="addTableRow(${q.id})">
+              <i class="icofont icofont-plus me-1"></i> Add Row
+            </button>
+          ` : ''}
+        </div>
+        <span class="small text-muted fw-bold" id="tableSummary_${q.id}">Total Rows: ${rowsData.length}</span>
+      </div>
+    `;
+    return html;
+  }
+
+  // Answer Handlers
+  function handleInputChange(qId, val) {
+    answerStore[qId] = {
+      ...answerStore[qId],
+      question_id: qId,
+      answer_val: val,
+      category_id: activeCategory.id,
+      label_id: activeLabel.id,
+      sheet_name: activeCategory.sheet_name
+    };
+    markDirty();
+    evaluateFormulas();
+    evaluateVisibility();
+    updateOverallProgress();
+    updateLiveTrackerPills();
+  }
+
+  function updateLiveTrackerPills() {
+    const questions = activeLabel ? (activeLabel.questions || []) : [];
+    const totalQ = questions.length;
+    let answeredInLbl = 0;
+
+    questions.forEach((q, idx) => {
+      const filled = isQuestionFilled(q);
+      if (filled) answeredInLbl++;
+      const pill = document.querySelectorAll('.vsme-q-pill-btn')[idx];
+      if (pill) {
+        if (filled) {
+          pill.classList.add('filled');
+          const dot = pill.querySelector('.vsme-q-pill-dot');
+          if (dot) dot.innerHTML = '<i class="icofont icofont-check"></i>';
+        } else {
+          pill.classList.remove('filled');
+          const dot = pill.querySelector('.vsme-q-pill-dot');
+          if (dot) dot.innerText = idx + 1;
+        }
+      }
+    });
+
+    const isCurrentFilled = isQuestionFilled(questions[activeQuestionIndex]);
+    const trackerStats = document.querySelector('.vsme-question-tracker-bar');
+    if (trackerStats) {
+      const countEl = trackerStats.querySelector('.small.fw-bold.text-muted');
+      if (countEl) countEl.innerText = `(${answeredInLbl}/${totalQ} Answered)`;
+      const badgeContainer = trackerStats.querySelector('.d-flex.align-items-center.justify-content-between > div:last-child');
+      if (badgeContainer) {
+        badgeContainer.innerHTML = isCurrentFilled ? 
+          '<span class="badge bg-success-subtle text-success border border-success px-2 py-1"><i class="icofont icofont-check-circled me-1"></i> Answered</span>' : 
+          '<span class="badge bg-light text-secondary border px-2 py-1">In Progress</span>';
+      }
+    }
+
+    // Update section stepper item
+    const isCompleted = checkLabelCompleted(activeLabel);
+    const stepEl = document.getElementById(`hStepItem_${activeLabelIndex}`);
+    if (stepEl) {
+      if (isCompleted) {
+        stepEl.classList.add('completed');
+        const numEl = stepEl.querySelector('.vsme-h-step-num');
+        if (numEl) numEl.innerHTML = '<i class="icofont icofont-check"></i>';
+      } else {
+        stepEl.classList.remove('completed');
+        const numEl = stepEl.querySelector('.vsme-h-step-num');
+        if (numEl) numEl.innerText = activeLabelIndex + 1;
+      }
+    }
+  }
+
+  function setBoolAnswer(qId, val, btnElem) {
+    const parent = btnElem.parentElement;
+    parent.querySelectorAll('.vsme-seg-btn').forEach(b => {
+      b.classList.remove('active-yes', 'active-no');
+    });
+    if (val === 'TRUE') btnElem.classList.add('active-yes');
+    else btnElem.classList.add('active-no');
+
+    handleInputChange(qId, val);
+  }
+
+  function handleDropdownChange(qId, selectElem, hasCustom) {
+    const dropdownVal = selectElem.value;
+    if (hasCustom) {
+      const customInput = document.getElementById(`customInput_${qId}`);
+      const customVal = customInput ? customInput.value : '';
+      const combo = JSON.stringify({ dropdown: dropdownVal, custom: customVal });
+      handleInputChange(qId, combo);
+    } else {
+      handleInputChange(qId, dropdownVal);
+    }
+  }
+
+  function handleCustomValChange(qId, customElem) {
+    const card = document.getElementById(`qCard_${qId}`);
+    const selectElem = card ? card.querySelector('select') : null;
+    const dropdownVal = selectElem ? selectElem.value : '';
+    const combo = JSON.stringify({ dropdown: dropdownVal, custom: customElem.value });
+    handleInputChange(qId, combo);
+  }
+
+  function handleTableInput(qId) {
+    const tbody = document.getElementById(`tableBody_${qId}`);
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll('tr');
+    const tableData = [];
+
+    rows.forEach(tr => {
+      const rowObj = {};
+      tr.querySelectorAll('.table-cell-input').forEach(input => {
+        const colId = input.getAttribute('data-col-id');
+        rowObj[colId] = input.value;
+      });
+      tableData.push(rowObj);
+    });
+
+    handleInputChange(qId, JSON.stringify(tableData));
+    const summarySpan = document.getElementById(`tableSummary_${qId}`);
+    if (summarySpan) summarySpan.innerText = `Total Rows: ${tableData.length}`;
+
+    evaluateTableSummaries(qId);
+  }
+
+  function evaluateTableSummaries(qId) {
+    const qObj = findQuestionById(qId);
+    if (!qObj || !qObj.table_config || !qObj.table_config.summary_rows) return;
+
+    const summaryRows = qObj.table_config.summary_rows;
+    if (summaryRows.length === 0) return;
+
+    let rowsData = [];
+    if (answerStore[qId] && answerStore[qId].answer_val) {
+      try {
+        rowsData = typeof answerStore[qId].answer_val === 'string' ? JSON.parse(answerStore[qId].answer_val) : answerStore[qId].answer_val;
+      } catch (e) {
+        rowsData = [];
+      }
+    }
+
+    summaryRows.forEach((sum, sIdx) => {
+      const aggType = sum.aggregate_type || 'sum';
+      const targetCol = sum.target_column || 'col_2';
+      let total = 0;
+      let count = 0;
+
+      if (Array.isArray(rowsData)) {
+        rowsData.forEach(row => {
+          const val = parseFloat(row[targetCol]);
+          if (!isNaN(val)) {
+            total += val;
+            count++;
+          }
+        });
+      }
+
+      let res = total;
+      if (aggType === 'avg') res = count > 0 ? (total / count) : 0;
+      else if (aggType === 'count') res = count;
+
+      const displayEl = document.getElementById(`tableSummaryVal_${qId}_${sIdx}`);
+      if (displayEl) {
+        displayEl.innerText = res.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+    });
+  }
+
+  function addTableRow(qId) {
+    const tbody = document.getElementById(`tableBody_${qId}`);
+    if (!tbody) return;
+    const qObj = findQuestionById(qId);
+    if (!qObj) return;
+
+    const config = qObj.table_config || {};
+    const cols = config.columns && config.columns.length > 0 ? config.columns : [
+      { col_id: 'col_1', type: 'string' },
+      { col_id: 'col_2', type: 'number' }
+    ];
+    const newIdx = tbody.querySelectorAll('tr').length;
+
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-row-idx', newIdx);
+    tr.innerHTML = `
+      <td class="text-center fw-bold text-muted">${newIdx + 1}</td>
+      ${cols.map((c, cIdx) => {
+        const colKey = getColumnKey(c, cIdx);
+        if (c.type === 'dropdown') {
+          const options = dropdownMasterMap[c.dropdown_group] || [];
+          return `
+            <td>
+              <select class="form-select form-select-sm table-cell-input" data-col-id="${colKey}" onchange="handleTableInput(${qId})">
+                <option value="">-- Select --</option>
+                ${options.map(opt => `
+                  <option value="${opt.value_en}">
+                    ${currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en}
+                  </option>
+                `).join('')}
+              </select>
+            </td>
+          `;
+        } else if (c.type === 'number') {
+          return `
+            <td>
+              <input type="number" step="any" class="form-control form-control-sm table-cell-input" data-col-id="${colKey}" value="" oninput="handleTableInput(${qId})">
+            </td>
+          `;
+        } else {
+          return `
+            <td>
+              <input type="text" class="form-control form-control-sm table-cell-input" data-col-id="${colKey}" value="" oninput="handleTableInput(${qId})">
+            </td>
+          `;
+        }
+      }).join('')}
+      <td class="text-center">
+        <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="removeTableRow(${qId}, ${newIdx})"><i class="icofont icofont-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+    handleTableInput(qId);
+  }
+
+  function removeTableRow(qId, rIdx) {
+    const tbody = document.getElementById(`tableBody_${qId}`);
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll('tr');
+    if (rows.length <= 1) return; // Keep at least one row
+    if (rows[rIdx]) {
+      rows[rIdx].remove();
+      // Re-index remaining rows
+      tbody.querySelectorAll('tr').forEach((tr, idx) => {
+        tr.setAttribute('data-row-idx', idx);
+        const numCell = tr.querySelector('td:first-child');
+        if (numCell) numCell.innerText = idx + 1;
+        const delBtn = tr.querySelector('button');
+        if (delBtn) delBtn.setAttribute('onclick', `removeTableRow(${qId}, ${idx})`);
+      });
+      handleTableInput(qId);
+    }
+  }
+
+  function toggleOmissionSection(labelId) {
+    const toggle = document.getElementById(`omissionToggle_${labelId}`);
+    classifiedStore[labelId] = toggle && toggle.checked ? 1 : 0;
+    markDirty();
+    renderSlideStage();
+    updateOverallProgress();
+  }
+
+  function findQuestionById(qId) {
+    for (let c of (rawTemplate.categories || [])) {
+      for (let l of (c.labels || [])) {
+        for (let q of (l.questions || [])) {
+          if (q.id === qId) return q;
+        }
+      }
+    }
+    return null;
+  }
+
+  // Real-time Formula Evaluation Engine
+  function evaluateFormulas() {
+    if (!rawTemplate.categories) return;
+
+    rawTemplate.categories.forEach(c => {
+      (c.labels || []).forEach(l => {
+        (l.questions || []).forEach(q => {
+          if (q.input_type === 'calculated' && q.formula_config) {
+            const op = q.formula_config.operation || 'sum';
+            const sourceCells = q.formula_config.source_cells || [];
+            let result = 0;
+
+            const values = sourceCells.map(cellRef => {
+              const srcQ = findQuestionByCell(cellRef);
+              if (srcQ && answerStore[srcQ.id]) {
+                const num = parseFloat(answerStore[srcQ.id].answer_val);
+                return isNaN(num) ? 0 : num;
+              }
+              return 0;
+            });
+
+            if (op === 'sum') {
+              result = values.reduce((acc, v) => acc + v, 0);
+            } else if (op === 'subtract') {
+              result = values.length > 0 ? values.reduce((acc, v, i) => i === 0 ? v : acc - v, values[0]) : 0;
+            } else if (op === 'multiply') {
+              result = values.reduce((acc, v) => acc * v, 1);
+            } else if (op === 'divide') {
+              result = values[1] && values[1] !== 0 ? (values[0] / values[1]) : 0;
+            }
+
+            const calcDisplay = document.getElementById(`calcDisplay_${q.id}`);
+            if (calcDisplay) {
+              calcDisplay.innerText = result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            answerStore[q.id] = {
+              ...answerStore[q.id],
+              question_id: q.id,
+              answer_val: String(result),
+              calculated_val: String(result),
+              category_id: c.id,
+              label_id: l.id
+            };
+          }
+        });
+      });
+    });
+  }
+
+  function findQuestionByCell(cellRef) {
+    for (let c of (rawTemplate.categories || [])) {
+      for (let l of (c.labels || [])) {
+        for (let q of (l.questions || [])) {
+          if (q.excel_cell_ref && q.excel_cell_ref.includes(cellRef)) return q;
+        }
+      }
+    }
+    return null;
+  }
+
+  // Conditional Visibility Engine
+  function evaluateVisibility() {
+    if (!rawTemplate.categories) return;
+
+    rawTemplate.categories.forEach(c => {
+      (c.labels || []).forEach(l => {
+        (l.questions || []).forEach(q => {
+          if (q.visibility_condition && q.visibility_condition.depends_on_cell) {
+            const triggerQ = findQuestionByCell(q.visibility_condition.depends_on_cell);
+            const card = document.getElementById(`qCard_${q.id}`);
+            if (triggerQ && card) {
+              const triggerVal = answerStore[triggerQ.id] ? String(answerStore[triggerQ.id].answer_val) : '';
+              const targetVal = String(q.visibility_condition.target_value);
+              const op = q.visibility_condition.operator || 'equals';
+              let matches = false;
+
+              if (op === 'equals') matches = triggerVal.toLowerCase() === targetVal.toLowerCase();
+              else if (op === 'not_equals') matches = triggerVal.toLowerCase() !== targetVal.toLowerCase();
+              else if (op === 'is_true') matches = triggerVal === 'TRUE' || triggerVal === '1' || triggerVal === 'Yes';
+              else if (op === 'is_false') matches = triggerVal === 'FALSE' || triggerVal === '0' || triggerVal === 'No';
+
+              if (q.visibility_condition.action === 'show') {
+                card.style.display = matches ? 'block' : 'none';
+              } else {
+                card.style.display = matches ? 'none' : 'block';
+              }
+            }
+          }
+        });
+      });
+    });
+  }
+
+  // Navigation & Carousel Controls
+  function jumpToQuestion(qIdx) {
+    const questions = activeLabel ? (activeLabel.questions || []) : [];
+    if (qIdx >= 0 && qIdx < questions.length) {
+      activeQuestionIndex = qIdx;
+      renderSlideStage();
+      updateNavButtons();
+    }
+  }
+
+  function advanceNextSlide() {
+    advanceNextQuestion();
+  }
+
+  function advancePrevSlide() {
+    advancePrevQuestion();
+  }
+
+  function advanceNextQuestion() {
+    const questions = activeLabel ? (activeLabel.questions || []) : [];
+    if (activeQuestionIndex < questions.length - 1) {
+      activeQuestionIndex++;
+      renderSlideStage();
+      updateNavButtons();
+    } else {
+      advanceNextSection();
+    }
+  }
+
+  function advanceNextSection() {
+    const totalLabels = (activeCategory.labels || []).length;
+    if (activeLabelIndex < totalLabels - 1) {
+      activeLabelIndex++;
+      activeQuestionIndex = 0;
+      renderActiveSlide();
+    } else if (activeCatIndex < rawTemplate.categories.length - 1) {
+      activeCatIndex++;
+      activeLabelIndex = 0;
+      activeQuestionIndex = 0;
+      updateCategoryTabActive();
+      renderActiveSlide();
+    } else {
+      // Final slide: open submit modal
+      const modal = new bootstrap.Modal(document.getElementById('submitModal'));
+      modal.show();
+    }
+  }
+
+  function advancePrevQuestion() {
+    if (activeQuestionIndex > 0) {
+      activeQuestionIndex--;
+      renderSlideStage();
+      updateNavButtons();
+    } else {
+      advancePrevSection();
+    }
+  }
+
+  function advancePrevSection() {
+    if (activeLabelIndex > 0) {
+      activeLabelIndex--;
+      const prevLbl = activeCategory.labels[activeLabelIndex];
+      activeQuestionIndex = Math.max(0, (prevLbl.questions || []).length - 1);
+      renderActiveSlide();
+    } else if (activeCatIndex > 0) {
+      activeCatIndex--;
+      const prevCat = rawTemplate.categories[activeCatIndex];
+      activeLabelIndex = Math.max(0, (prevCat.labels || []).length - 1);
+      const prevLbl = prevCat.labels[activeLabelIndex];
+      activeQuestionIndex = Math.max(0, (prevLbl.questions || []).length - 1);
+      updateCategoryTabActive();
+      renderActiveSlide();
+    }
+  }
+
+  function skipCurrentQuestion() {
+    advanceNextQuestion();
+  }
+
+  function updateNavButtons() {
+    const btnPrev = document.getElementById('btnPrevSlide');
+    const btnNext = document.getElementById('btnNextSlide');
+    const btnSkip = document.getElementById('btnSkipQuestion');
+    const questions = activeLabel ? (activeLabel.questions || []) : [];
+    const totalQ = questions.length;
+    const lblTitle = getLocalized(activeLabel.name_translations, activeLabel.name_en || '');
+
+    if (totalQ > 0) {
+      slideCounterText.innerText = `Question ${activeQuestionIndex + 1} of ${totalQ} in ${lblTitle}`;
+    } else {
+      slideCounterText.innerText = `${lblTitle}`;
+    }
+
+    btnPrev.disabled = (activeCatIndex === 0 && activeLabelIndex === 0 && activeQuestionIndex === 0);
+
+    const isLastLabel = (activeCatIndex === rawTemplate.categories.length - 1 && activeLabelIndex === (activeCategory.labels || []).length - 1);
+    const isLastQ = (activeQuestionIndex >= totalQ - 1);
+
+    if (isLastLabel && isLastQ) {
+      btnNext.innerHTML = 'Review & Submit <i class="icofont icofont-check-circled ms-1"></i>';
+      btnNext.className = 'btn btn-success vsme-nav-btn';
+    } else if (isLastQ) {
+      btnNext.innerHTML = 'Next Section <i class="icofont icofont-arrow-right ms-1"></i>';
+      btnNext.className = 'btn btn-primary vsme-nav-btn';
+    } else {
+      btnNext.innerHTML = 'Next Question <i class="icofont icofont-arrow-right ms-1"></i>';
+      btnNext.className = 'btn btn-primary vsme-nav-btn';
+    }
+
+    if (btnSkip) {
+      btnSkip.style.display = (isLastLabel && isLastQ) ? 'none' : 'inline-flex';
+    }
+  }
+
+  function updateCategoryTabActive() {
+    const catBtns = document.querySelectorAll('.vsme-cat-tab-btn');
+    catBtns.forEach((b, idx) => {
+      if (idx === activeCatIndex) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+  }
+
+  function updateOverallProgress() {
+    let totalQuestions = 0;
+    let totalAnswered = 0;
+
+    (rawTemplate.categories || []).forEach(c => {
+      let catQ = 0;
+      let catAns = 0;
+      (c.labels || []).forEach(l => {
+        const isClassified = classifiedStore[l.id];
+        (l.questions || []).forEach(q => {
+          totalQuestions++;
+          catQ++;
+          if (isClassified || (answerStore[q.id] && answerStore[q.id].answer_val && String(answerStore[q.id].answer_val).trim() !== '')) {
+            totalAnswered++;
+            catAns++;
+          }
+        });
+      });
+      const badge = document.getElementById(`catBadge_${c.id}`);
+      if (badge) badge.innerText = `${catAns}/${catQ}`;
+    });
+
+    const percent = Math.min(100, Math.round((totalAnswered / Math.max(1, totalQuestions)) * 100));
+    progressBarFill.style.width = `${percent}%`;
+    progressStatsText.innerText = `${percent}% Completed (${totalAnswered}/${totalQuestions} Answered)`;
+  }
+
+  // Guidance Drawer Trigger
+  function showGuidanceDrawer(type, id) {
+    const drawerLabel = document.getElementById('guidanceDrawerLabel');
+    const drawerBody = document.getElementById('guidanceDrawerBody');
+    let title = 'Disclosure Guidance';
+    let infoObj = null;
+
+    if (type === 'label') {
+      const lbl = (activeCategory.labels || []).find(l => l.id === id);
+      if (lbl) {
+        title = getLocalized(lbl.name_translations, lbl.name_en || '');
+        infoObj = lbl.info_translations;
+      }
+    } else {
+      const q = findQuestionById(id);
+      if (q) {
+        title = getLocalized(q.question_translations, q.question_en || '');
+        infoObj = q.info_translations;
+      }
+    }
+
+    drawerLabel.innerHTML = `<i class="icofont icofont-info-circle text-primary me-2"></i> ${title}`;
+    const desc = getLocalized(infoObj, 'No detailed guidance description has been configured for this item.');
+    drawerBody.innerHTML = `
+      <div class="card p-3 bg-light border-0 mb-3" style="border-radius: 12px;">
+        <h6 class="fw-bold text-dark mb-2">ESRS / VSME Standard Instructions</h6>
+        <p class="text-secondary mb-0" style="line-height: 1.6; white-space: pre-line;">${desc}</p>
+      </div>
+    `;
+
+    const bsOffcanvas = new bootstrap.Offcanvas(document.getElementById('guidanceDrawer'));
+    bsOffcanvas.show();
+  }
+
+  // Auto-Save & Draft Save Persistence
+  function markDirty() {
+    isDirty = true;
+    autoSaveBadge.className = 'vsme-status-badge saving';
+    autoSaveText.innerText = 'Unsaved changes...';
+
+    // Debounce auto-save after 3 seconds
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      saveDraftAjax(true);
+    }, 3000);
+  }
+
+  function setupIdleDetection() {
+    const resetIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (isDirty) {
+          saveDraftAjax(true);
+        }
+      }, 15000); // 15 seconds of idle inactivity
+    };
+
+    ['mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+  }
+
+  async function saveDraftAjax(isSilent = false) {
+    if (!isDirty && isSilent) return;
+
+    if (!isSilent) {
+      autoSaveBadge.className = 'vsme-status-badge saving';
+      autoSaveText.innerText = 'Saving draft...';
+    }
+
+    try {
+      const payload = {
+        template_id: rawTemplate.id,
+        project_id: projectId,
+        selected_language: currentLanguage,
+        answers: answerStore,
+        classified_sections: classifiedStore
+      };
+
+      const response = await fetch('/vsme/save-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const res = await response.json();
+      if (res.success) {
+        isDirty = false;
+        autoSaveBadge.className = 'vsme-status-badge saved';
+        autoSaveText.innerText = `Saved at ${res.last_saved || 'now'}`;
+      } else {
+        autoSaveBadge.className = 'vsme-status-badge';
+        autoSaveText.innerText = 'Error saving';
+      }
+    } catch (err) {
+      console.error('Error in saveDraftAjax:', err);
+      autoSaveBadge.className = 'vsme-status-badge';
+      autoSaveText.innerText = 'Offline / Retrying';
+    }
+  }
+
+  async function submitFinalAjax() {
+    const btn = document.getElementById('btnConfirmSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Submitting...';
+
+    try {
+      const payload = {
+        template_id: rawTemplate.id,
+        project_id: projectId,
+        selected_language: currentLanguage,
+        answers: answerStore,
+        classified_sections: classifiedStore
+      };
+
+      const response = await fetch('/vsme/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const res = await response.json();
+      if (res.success) {
+        window.location.href = res.redirect || '/admin/vsme-templates';
+      } else {
+        alert(res.message || 'Error submitting questionnaire');
+        btn.disabled = false;
+        btn.innerText = 'Confirm & Submit';
+      }
+    } catch (err) {
+      console.error('Error in submitFinalAjax:', err);
+      alert('Server error while submitting questionnaire.');
+      btn.disabled = false;
+      btn.innerText = 'Confirm & Submit';
+    }
+  }
+
+  function setupEventListeners() {
+    // Nav buttons
+    document.getElementById('btnNextSlide').addEventListener('click', advanceNextQuestion);
+    document.getElementById('btnPrevSlide').addEventListener('click', advancePrevQuestion);
+    const btnSkip = document.getElementById('btnSkipQuestion');
+    if (btnSkip) {
+      btnSkip.addEventListener('click', skipCurrentQuestion);
+    }
+
+    // Save buttons
+    document.getElementById('btnManualDraftSave').addEventListener('click', () => saveDraftAjax(false));
+    document.getElementById('btnFinalSubmit').addEventListener('click', () => {
+      const modal = new bootstrap.Modal(document.getElementById('submitModal'));
+      modal.show();
+    });
+    document.getElementById('btnConfirmSubmit').addEventListener('click', submitFinalAjax);
+
+    // Language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLanguage = btn.getAttribute('data-lang');
+
+        // Dynamic update of all labels, categories, and question texts without page reload!
+        document.querySelectorAll('.cat-tab-title').forEach(el => {
+          el.innerText = el.getAttribute(`data-${currentLanguage}`) || el.getAttribute('data-en');
+        });
+        renderActiveSlide();
+      });
+    });
+
+    // Version selector
+    const verSel = document.getElementById('versionSelector');
+    if (verSel) {
+      verSel.addEventListener('change', (e) => {
+        window.location.href = `/vsme/questionnaire?template_id=${e.target.value}&project_id=${projectId}&lang=${currentLanguage}`;
+      });
+    }
+
+    // Stepper Ribbon Scroll Arrow Buttons
+    const track = document.getElementById('horizontalStepperTrack');
+    const btnStripLeft = document.getElementById('btnStripScrollLeft');
+    const btnStripRight = document.getElementById('btnStripScrollRight');
+
+    if (btnStripLeft && track) {
+      btnStripLeft.addEventListener('click', () => {
+        track.scrollBy({ left: -260, behavior: 'smooth' });
+        setTimeout(updateStripNavArrows, 320);
+      });
+    }
+    if (btnStripRight && track) {
+      btnStripRight.addEventListener('click', () => {
+        track.scrollBy({ left: 260, behavior: 'smooth' });
+        setTimeout(updateStripNavArrows, 320);
+      });
+    }
+    if (track) {
+      track.addEventListener('scroll', updateStripNavArrows, { passive: true });
+    }
+
+    // Enter key inside single input fields to advance
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && e.target && e.target.classList && e.target.classList.contains('vsme-input-control') && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        advanceNextQuestion();
+      } else if (e.altKey && e.key === 'ArrowRight') {
+        e.preventDefault();
+        advanceNextQuestion();
+      } else if (e.altKey && e.key === 'ArrowLeft') {
+        e.preventDefault();
+        advancePrevQuestion();
+      } else if (e.altKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        skipCurrentQuestion();
+      }
+    });
+  }
+
+  function initStickyStepper() {
+    const card = document.getElementById('hStepperCard');
+    const placeholder = document.getElementById('hStepperPlaceholder');
+    const wrapper = document.getElementById('fullStageWrapper');
+    if (!card || !placeholder || !wrapper) return;
+
+    function updateStickyPosition() {
+      const headerEl = document.querySelector('.page-main-header');
+      const headerHeight = headerEl ? headerEl.offsetHeight : 80;
+      const placeholderRect = placeholder.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
+
+      const isCurrentlySticky = card.classList.contains('vsme-sticky-active');
+      const checkTop = isCurrentlySticky ? placeholderRect.top : cardRect.top;
+
+      if (checkTop <= headerHeight) {
+        if (!isCurrentlySticky) {
+          placeholder.style.height = `${card.offsetHeight}px`;
+          placeholder.style.marginBottom = '5px';
+          placeholder.style.display = 'block';
+          card.classList.add('vsme-sticky-active');
+        }
+        card.style.left = `${wrapperRect.left}px`;
+        card.style.width = `${wrapperRect.width}px`;
+        card.style.top = `${headerHeight}px`;
+      } else {
+        if (isCurrentlySticky) {
+          card.classList.remove('vsme-sticky-active');
+          placeholder.style.display = 'none';
+          card.style.left = '';
+          card.style.width = '';
+          card.style.top = '';
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateStickyPosition, { passive: true });
+    window.addEventListener('resize', updateStickyPosition, { passive: true });
+    document.querySelectorAll('#sidebar-toggle, .toggle-sidebar, .lang-btn, .vsme-cat-tab-btn').forEach(el => {
+      el.addEventListener('click', () => setTimeout(updateStickyPosition, 250));
+    });
+
+    // Initial check
+    setTimeout(updateStickyPosition, 100);
+  }
+</script>
+
+<%- include('../templates/footer.ejs') %>

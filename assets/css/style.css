@@ -47726,6 +47726,10 @@ a.cust-link-btn {
   align-items: center;
 }
 
+.text-purple {
+  color: mediumpurple;
+}
+
 /* Keyframes for rotating the ring */
 @keyframes spin {
   from {
