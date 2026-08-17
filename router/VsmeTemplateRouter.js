@@ -1,5 +1,6 @@
 const express = require('express');
 const VsmeRouter = express.Router();
+const { db_Select } = require('../modules/MasterModule');
 const {
   getTemplateList,
   getDropdownGroupNames,
@@ -151,7 +152,12 @@ VsmeRouter.get('/vsme/questionnaire', async (req, res) => {
   try {
     const templateId = req.query.template_id || req.query.id || null;
     const projectId = req.query.project_id || 0;
+    const flag = req.query.flag || 'RVY%3D';
     const initialLang = req.query.lang || 'en';
+
+    const isAdmin = (req.session.user && req.session.user.user_type === 'A');
+    const safeFlag = flag.includes('%') ? flag : encodeURIComponent(flag);
+    const fallbackUrl = isAdmin ? '/admin/vsme-templates' : `/my_project?flag=${safeFlag}`;
 
     const userId = req.session.user ? req.session.user.id || req.session.user.user_id || 0 : 0;
     const clientId = req.session.user ? req.session.user.client_id || '0' : '0';
@@ -160,24 +166,40 @@ VsmeRouter.get('/vsme/questionnaire', async (req, res) => {
 
     if (formRes.suc === 0 || !formRes.data) {
       req.session.message = { type: 'warning', message: formRes.msg || 'No active template available.' };
-      return res.redirect('/admin/vsme-templates');
+      return res.redirect(fallbackUrl);
+    }
+
+    let projectName = '';
+    if (projectId > 0) {
+      try {
+        const projRes = await db_Select('project_name', 'td_project', `id = ${projectId}`, null);
+        if (projRes.suc > 0 && projRes.msg.length > 0) {
+          projectName = projRes.msg[0].project_name;
+        }
+      } catch (e) {
+        console.error('Error fetching project name for VSME questionnaire:', e);
+      }
     }
 
     const viewData = {
       header: 'VSME Sustainability Questionnaire',
-      sub_header: 'Interactive XBRL Disclosure Data Capture',
-      header_url: '/admin/vsme-templates',
+      sub_header: projectName ? `Project: ${projectName}` : 'Interactive XBRL Disclosure Data Capture',
+      header_url: fallbackUrl,
       formData: formRes.data,
       selected_language: initialLang,
       project_id: projectId,
+      project_name: projectName,
+      flag: flag,
+      is_admin: isAdmin,
       user: req.session.user || { user_name: 'Client User' }
     };
 
     res.render('vsme_templates/client_form', viewData);
   } catch (err) {
     console.error('Error loading client VSME questionnaire:', err);
+    const isAdmin = (req.session.user && req.session.user.user_type === 'A');
     req.session.message = { type: 'danger', message: 'Error opening questionnaire' };
-    res.redirect('/admin/vsme-templates');
+    res.redirect(isAdmin ? '/admin/vsme-templates' : '/my_project?flag=RVY%3D');
   }
 });
 
@@ -240,9 +262,15 @@ VsmeRouter.post('/vsme/submit', async (req, res) => {
         type: 'success',
         message: 'VSME Questionnaire successfully submitted for XBRL generation!'
       };
+
+      const isAdmin = (req.session.user && req.session.user.user_type === 'A');
+      const flag = payload.flag || req.query.flag || 'RVY%3D';
+      const safeFlag = flag.includes('%') ? flag : encodeURIComponent(flag);
+      const redirectUrl = isAdmin ? '/admin/vsme-templates' : `/my_project?flag=${safeFlag}`;
+
       return res.json({
         success: true,
-        redirect: '/admin/vsme-templates',
+        redirect: redirectUrl,
         message: 'VSME Questionnaire successfully submitted!'
       });
     } else {

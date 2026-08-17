@@ -65,7 +65,7 @@ const getTemplateById = async (templateId) => {
  */
 const getDropdownGroupNames = async () => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT DISTINCT list_group_name FROM md_vsme_dropdown_master ORDER BY list_group_name ASC`;
+    const sql = `SELECT DISTINCT list_group_name FROM md_vsme_dropdown_master WHERE active_flag='Y' ORDER BY list_group_name ASC`;
     db.query(sql, (err, results) => {
       if (err) return resolve({ suc: 0, msg: err.message, data: [] });
       const groupNames = results.map(r => r.list_group_name);
@@ -381,7 +381,7 @@ const updateTemplateHierarchy = async (templateId, templateData, updatedBy = 'Ad
  */
 const getDropdownMasterFullMap = async () => {
   return new Promise((resolve) => {
-    const sql = `SELECT * FROM md_vsme_dropdown_master ORDER BY list_group_name ASC, order_index ASC, id ASC`;
+    const sql = `SELECT * FROM md_vsme_dropdown_master WHERE active_flag='Y' ORDER BY list_group_name ASC, order_index ASC, id ASC`;
     db.query(sql, (err, results) => {
       if (err) return resolve({ suc: 0, msg: err.message, data: {} });
       const map = {};
@@ -408,6 +408,20 @@ const getVsmeClientQuestionnaire = async (templateId = null, userId = 0, clientI
   const promiseDb = db.promise();
   try {
     let targetTemplateId = templateId;
+    let targetProjectId = parseInt(projectId || 0, 10);
+    let effectiveClientId = String(clientId || '0');
+
+    // If project_id > 0, resolve effective client_id from td_project to ensure accuracy across all user types
+    if (targetProjectId > 0) {
+      try {
+        const [projRows] = await promiseDb.query(`SELECT client_id FROM td_project WHERE id = ?`, [targetProjectId]);
+        if (projRows && projRows.length > 0 && projRows[0].client_id) {
+          effectiveClientId = String(projRows[0].client_id);
+        }
+      } catch (e) {
+        console.error('Error resolving client_id from td_project:', e);
+      }
+    }
 
     // If templateId not provided, find the latest published or highest version template
     if (!targetTemplateId) {
@@ -433,10 +447,18 @@ const getVsmeClientQuestionnaire = async (templateId = null, userId = 0, clientI
     const dropdownMaster = dropdownMapRes.suc > 0 ? dropdownMapRes.data : {};
 
     // 3. Fetch existing saved responses
-    const [responses] = await promiseDb.query(
-      `SELECT * FROM td_vsme_responses WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
-      [targetTemplateId, userId || 0, String(clientId || '0'), projectId || 0]
-    );
+    // For a project (targetProjectId > 0), load responses saved for that client and project
+    // For scratch/preview (targetProjectId === 0), load responses for that user and client
+    let respQuery = '';
+    let respParams = [];
+    if (targetProjectId > 0) {
+      respQuery = `SELECT * FROM td_vsme_responses WHERE template_id = ? AND client_id = ? AND project_id = ?`;
+      respParams = [targetTemplateId, effectiveClientId, targetProjectId];
+    } else {
+      respQuery = `SELECT * FROM td_vsme_responses WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = 0`;
+      respParams = [targetTemplateId, userId || 0, effectiveClientId];
+    }
+    const [responses] = await promiseDb.query(respQuery, respParams);
 
     const answersMap = {};
     const classifiedSections = {};
@@ -460,10 +482,16 @@ const getVsmeClientQuestionnaire = async (templateId = null, userId = 0, clientI
     }
 
     // 4. Fetch submission tracking record
-    const [submissions] = await promiseDb.query(
-      `SELECT * FROM td_vsme_submissions WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
-      [targetTemplateId, userId || 0, String(clientId || '0'), projectId || 0]
-    );
+    let subQuery = '';
+    let subParams = [];
+    if (targetProjectId > 0) {
+      subQuery = `SELECT * FROM td_vsme_submissions WHERE template_id = ? AND client_id = ? AND project_id = ?`;
+      subParams = [targetTemplateId, effectiveClientId, targetProjectId];
+    } else {
+      subQuery = `SELECT * FROM td_vsme_submissions WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = 0`;
+      subParams = [targetTemplateId, userId || 0, effectiveClientId];
+    }
+    const [submissions] = await promiseDb.query(subQuery, subParams);
     const submission = submissions && submissions.length > 0 ? submissions[0] : null;
 
     // 5. Fetch all available template versions for version switcher dropdown
@@ -501,6 +529,18 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
     const answers = payload.answers || {}; // { [question_id]: { answer_val, calculated_val, excel_cell_ref, sheet_name, category_id, label_id, is_classified } }
     const classifiedSections = payload.classified_sections || {}; // { [label_id]: 1/0 }
 
+    let effectiveClientId = String(clientId || '0');
+    if (projectId > 0) {
+      try {
+        const [projRows] = await promiseDb.query(`SELECT client_id FROM td_project WHERE id = ?`, [projectId]);
+        if (projRows && projRows.length > 0 && projRows[0].client_id) {
+          effectiveClientId = String(projRows[0].client_id);
+        }
+      } catch (e) {
+        console.error('Error resolving client_id in saveVsmeDraftResponses:', e);
+      }
+    }
+
     if (!templateId) {
       return { suc: 0, msg: 'Invalid template ID.' };
     }
@@ -522,7 +562,23 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
       const isClassified = classifiedSections[labelId] ? 1 : (qData.is_classified ? 1 : 0);
 
       if (answerVal !== null && answerVal.trim() !== '') {
-        totalAnswered++;
+        try {
+          const parsed = JSON.parse(answerVal);
+          if (Array.isArray(parsed)) {
+            const hasContent = parsed.some(it => {
+              if (it === null || it === undefined) return false;
+              if (typeof it === 'object') {
+                return (it.dropdown && String(it.dropdown).trim() !== '') || (it.custom && String(it.custom).trim() !== '');
+              }
+              return String(it).trim() !== '';
+            });
+            if (hasContent) totalAnswered++;
+          } else {
+            totalAnswered++;
+          }
+        } catch (e) {
+          totalAnswered++;
+        }
       }
 
       await promiseDb.query(
@@ -530,6 +586,7 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
           (user_id, client_id, project_id, template_id, category_id, label_id, question_id, excel_cell_ref, sheet_name, answer_val, calculated_val, is_classified, status, created_by, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, NOW(), NOW())
         ON DUPLICATE KEY UPDATE 
+          user_id = VALUES(user_id),
           category_id = VALUES(category_id),
           label_id = VALUES(label_id),
           excel_cell_ref = VALUES(excel_cell_ref),
@@ -538,10 +595,11 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
           calculated_val = VALUES(calculated_val),
           is_classified = VALUES(is_classified),
           status = 'draft',
+          created_by = VALUES(created_by),
           updated_at = NOW()`,
         [
           userId || 0,
-          String(clientId || '0'),
+          effectiveClientId,
           projectId,
           templateId,
           categoryId,
@@ -571,6 +629,7 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
         (user_id, client_id, project_id, template_id, selected_language, progress_percent, total_questions, answered_questions, status, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', NOW())
       ON DUPLICATE KEY UPDATE
+        user_id = VALUES(user_id),
         selected_language = VALUES(selected_language),
         progress_percent = VALUES(progress_percent),
         total_questions = VALUES(total_questions),
@@ -578,7 +637,7 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
         updated_at = NOW()`,
       [
         userId || 0,
-        String(clientId || '0'),
+        effectiveClientId,
         projectId,
         templateId,
         selectedLanguage,
@@ -619,19 +678,45 @@ const submitVsmeFinalResponses = async (payload, userId = 0, clientId = '0', use
     const projectId = parseInt(payload.project_id || 0, 10);
     const selectedLanguage = payload.selected_language || 'en';
 
-    // 2. Mark all responses as submitted
-    await promiseDb.query(
-      `UPDATE td_vsme_responses SET status = 'submitted', updated_at = NOW() WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
-      [templateId, userId || 0, String(clientId || '0'), projectId]
-    );
+    let effectiveClientId = String(clientId || '0');
+    if (projectId > 0) {
+      try {
+        const [projRows] = await promiseDb.query(`SELECT client_id FROM td_project WHERE id = ?`, [projectId]);
+        if (projRows && projRows.length > 0 && projRows[0].client_id) {
+          effectiveClientId = String(projRows[0].client_id);
+        }
+      } catch (e) {
+        console.error('Error resolving client_id in submitVsmeFinalResponses:', e);
+      }
+    }
 
-    // 3. Mark submission as completed & submitted
-    await promiseDb.query(
-      `UPDATE td_vsme_submissions 
-       SET status = 'submitted', submitted_at = NOW(), selected_language = ?, updated_at = NOW() 
-       WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = ?`,
-      [selectedLanguage, templateId, userId || 0, String(clientId || '0'), projectId]
-    );
+    // 2. Mark all responses as submitted
+    if (projectId > 0) {
+      await promiseDb.query(
+        `UPDATE td_vsme_responses SET status = 'submitted', user_id = ?, created_by = ?, updated_at = NOW() WHERE template_id = ? AND client_id = ? AND project_id = ?`,
+        [userId || 0, userName, templateId, effectiveClientId, projectId]
+      );
+
+      // 3. Mark submission as completed & submitted
+      await promiseDb.query(
+        `UPDATE td_vsme_submissions 
+         SET status = 'submitted', submitted_at = NOW(), selected_language = ?, user_id = ?, updated_at = NOW() 
+         WHERE template_id = ? AND client_id = ? AND project_id = ?`,
+        [selectedLanguage, userId || 0, templateId, effectiveClientId, projectId]
+      );
+    } else {
+      await promiseDb.query(
+        `UPDATE td_vsme_responses SET status = 'submitted', user_id = ?, created_by = ?, updated_at = NOW() WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = 0`,
+        [userId || 0, userName, templateId, userId || 0, effectiveClientId]
+      );
+
+      await promiseDb.query(
+        `UPDATE td_vsme_submissions 
+         SET status = 'submitted', submitted_at = NOW(), selected_language = ?, user_id = ?, updated_at = NOW() 
+         WHERE template_id = ? AND user_id = ? AND client_id = ? AND project_id = 0`,
+        [selectedLanguage, userId || 0, templateId, userId || 0, effectiveClientId]
+      );
+    }
 
     return {
       suc: 1,

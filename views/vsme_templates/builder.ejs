@@ -483,8 +483,11 @@
 
       nameFieldsHtml += `
         <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
-          <label class="form-label small fw-bold text-secondary">Label Name (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
-          <input type="text" class="form-control form-control-sm lbl-name-${lang.code}" value="${escapeHtml(valName)}" placeholder="e.g. Resource Use & Circular Economy">
+          <div class="d-flex align-items-center justify-content-between">
+            <label class="form-label small fw-bold text-secondary mb-1">Label Name (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
+            <span class="badge bg-light text-muted border px-1.5 py-0" style="font-size: 0.68rem;" title="Use {FROM DATE}, {TO DATE}, or {CURRENCY}"><i class="icofont icofont-magic me-1 text-primary"></i>{FROM DATE}, {TO DATE}</span>
+          </div>
+          <input type="text" class="form-control form-control-sm lbl-name-${lang.code}" value="${escapeHtml(valName)}" placeholder="e.g. B1 - General information from {FROM DATE} to {TO DATE}">
         </div>
       `;
 
@@ -590,7 +593,10 @@
 
       textFieldsHtml += `
         <div class="col-md-6 lang-field-${lang.code} ${isVisible ? '' : 'd-none'}">
-          <label class="form-label small fw-bold text-secondary">Question Text (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
+          <div class="d-flex align-items-center justify-content-between">
+            <label class="form-label small fw-bold text-secondary mb-1">Question Text (${lang.name}) ${lang.required ? '<span class="text-danger">*</span>' : ''}</label>
+            <span class="badge bg-light text-muted border px-1.5 py-0" style="font-size: 0.68rem;" title="Use {FROM DATE}, {TO DATE}, or {CURRENCY} to dynamically show selected values"><i class="icofont icofont-magic me-1 text-primary"></i>{FROM DATE}, {TO DATE}, {CURRENCY}</span>
+          </div>
           <textarea class="form-control form-control-sm q-text-${lang.code}" rows="2" placeholder="e.g. Question description in ${lang.name}...">${escapeHtml(valText)}</textarea>
         </div>
       `;

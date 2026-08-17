@@ -165,11 +165,23 @@
     <script>
         function redirectToPage(id, sec_id, ind_id, proj_name, route, isDisabled='false') {
             if(isDisabled != 'true'){
+                var decFlag = '<%= dec_flag %>';
+                var encFlag = '<%= enc_dt %>';
+                var isVsme = (decFlag === 'EV' || decFlag === 'EVF' || encFlag === 'RVY%3D' || encFlag === 'RVY=' || encFlag === 'RVZG');
+
+                if (isVsme && (route === 'project_report_view' || route === 'cal_proj_report_view')) {
+                    window.location.href = `/vsme/questionnaire?project_id=${id}&flag=${encodeURIComponent(encFlag)}`;
+                    return;
+                }
+
                 if (sec_id > 0 && ind_id > 0) {
                     window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>', dec_flag: '<%= dec_flag %>' }))}`
-                    // window.location.href = `/proj_work_view?dt=${window.btoa(JSON.stringify({proj_id: id, sec_id: sec_id, ind_id: ind_id, flag: '<%= flag %>'}))}`
                 } else {
-                    window.location.href = `/my_project_add?id=${id}&flag=<%= enc_dt %>`
+                    if (isVsme) {
+                        window.location.href = `/vsme/questionnaire?project_id=${id}&flag=${encodeURIComponent(encFlag)}`;
+                    } else {
+                        window.location.href = `/my_project_add?id=${id}&flag=<%= enc_dt %>`
+                    }
                 }
             }else{
                 openNewWindow('P')

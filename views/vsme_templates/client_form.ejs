@@ -302,6 +302,51 @@
     color: #ffffff;
   }
 
+  .vsme-q-pill-btn.skipped:not(.active) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #94a3b8;
+    text-decoration: line-through;
+    opacity: 0.8;
+  }
+
+  .vsme-q-pill-btn.skipped:not(.active) .vsme-q-pill-dot {
+    background: #e2e8f0;
+    color: #64748b;
+  }
+
+  .vsme-q-card.vsme-q-card-skipped {
+    border-color: #fde68a !important;
+    background: #fffdf5 !important;
+  }
+
+  .vsme-q-pill-btn.vsme-q-pill-child:not(.active):not(.skipped) {
+    background: #faf5ff;
+    border-color: #d8b4fe;
+    color: #7e22ce;
+  }
+
+  .vsme-q-pill-btn.vsme-q-pill-child:not(.active):not(.skipped) .vsme-q-pill-dot {
+    background: #e9d5ff;
+    color: #7e22ce;
+  }
+
+  .bg-purple {
+    background-color: #8b5cf6 !important;
+  }
+
+  .text-purple {
+    color: #7c3aed !important;
+  }
+
+  .bg-purple-subtle {
+    background-color: #f3e8ff !important;
+  }
+
+  .border-purple-subtle {
+    border-color: #d8b4fe !important;
+  }
+
   /* Single Question Focus Slide Card */
   .vsme-q-card {
     background: #ffffff;
@@ -767,14 +812,71 @@
   }
 
   /* Offcanvas Guidance Drawer */
-  .vsme-guidance-drawer {
-    width: 440px !important;
+  /* Multiple Answers (+) Component Styles */
+  .vsme-multi-ans-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .vsme-guidance-title {
-    font-size: 1.15rem;
+  .vsme-multi-ans-row {
+    background: #f8fafc;
+    border: 1.5px solid var(--vsme-gray-200);
+    border-radius: 10px;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-multi-ans-row:hover {
+    background: #ffffff;
+    border-color: var(--vsme-gray-300);
+  }
+
+  .vsme-multi-ans-row:focus-within {
+    background: #ffffff;
+    border-color: var(--vsme-primary);
+    box-shadow: 0 3px 10px rgba(30, 91, 184, 0.08);
+  }
+
+  .vsme-multi-row-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--vsme-primary-light);
+    color: var(--vsme-primary);
+    font-size: 0.78rem;
     font-weight: 700;
-    color: var(--vsme-gray-800);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .vsme-multi-del-btn {
+    border-radius: 8px;
+    padding: 6px 10px;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+
+  .vsme-add-ans-btn {
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-add-ans-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(30, 91, 184, 0.15);
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
   }
 </style>
 
@@ -787,8 +889,15 @@
         <i class="icofont icofont-presentation"></i>
       </div>
       <div>
-        <h4 class="vsme-brand-title" id="tplTitleText"><%= formData.template.template_name %></h4>
-        <p class="vsme-brand-subtitle">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h4 class="vsme-brand-title mb-0" id="tplTitleText"><%= formData.template.template_name %></h4>
+          <% if (typeof project_name !== 'undefined' && project_name) { %>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 fw-bold" style="border-radius: 8px;">
+              <i class="icofont icofont-folder me-1"></i><%= project_name %>
+            </span>
+          <% } %>
+        </div>
+        <p class="vsme-brand-subtitle mt-1 mb-0">
           <span class="badge bg-primary">v<%= formData.template.version_number %>.0</span>
           • XBRL Data Capture Mode
         </p>
@@ -828,8 +937,11 @@
       </div>
     </div>
 
-    <!-- Right Action Buttons: Save Draft & Final Submit -->
+    <!-- Right Action Buttons: Back to Projects, Save Draft & Final Submit -->
     <div class="d-flex align-items-center gap-2">
+      <a href="<%= (typeof header_url !== 'undefined' && header_url) ? header_url : '/my_project?flag=RVY%3D' %>" class="btn btn-outline-secondary btn-sm" title="Back">
+        <i class="icofont icofont-arrow-left me-1"></i><%= (typeof is_admin !== 'undefined' && is_admin) ? 'Back to Templates' : 'Back to Projects' %>
+      </a>
       <button type="button" class="btn btn-outline-secondary btn-sm" id="btnManualDraftSave">
         <i class="icofont icofont-save me-1"></i> Save Draft
       </button>
@@ -847,6 +959,39 @@
     </div>
     <div class="progress" style="height: 8px; border-radius: 6px;">
       <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="progressBarFill" role="progressbar" style="width: 0%;"></div>
+    </div>
+  </div>
+
+  <!-- REPORTING CONTEXT TOOLBAR: FROM DATE, TO DATE, CURRENCY -->
+  <div class="card p-2 px-3 mb-2 shadow-sm border-0" style="border-radius: 12px; background: #ffffff;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 fw-bold" style="border-radius: 8px;">
+          <i class="icofont icofont-calendar me-1"></i>Reporting Context
+        </span>
+        <span class="small text-muted fw-bold d-none d-lg-inline">
+          Dates &amp; Currency dynamically update all labels ({FROM DATE}, {TO DATE}, {CURRENCY}) in real-time
+        </span>
+      </div>
+      <div class="d-flex align-items-center flex-wrap gap-3">
+        <!-- From Date -->
+        <div class="d-flex align-items-center gap-1.5">
+          <label for="topFromDate" class="small fw-bold text-secondary mb-0"><i class="icofont icofont-calendar text-primary me-1"></i>From Date:</label>
+          <input type="date" class="form-control form-control-sm" id="topFromDate" style="width: 145px; border-radius: 8px;" onchange="handleGlobalFromDateChange(this.value)">
+        </div>
+        <!-- To Date -->
+        <div class="d-flex align-items-center gap-1.5">
+          <label for="topToDate" class="small fw-bold text-secondary mb-0"><i class="icofont icofont-calendar text-primary me-1"></i>To Date:</label>
+          <input type="date" class="form-control form-control-sm" id="topToDate" style="width: 145px; border-radius: 8px;" onchange="handleGlobalToDateChange(this.value)">
+        </div>
+        <!-- Currency Select -->
+        <div class="d-flex align-items-center gap-1.5">
+          <label for="topCurrencySelect" class="small fw-bold text-secondary mb-0"><i class="icofont icofont-cur-dollar text-success me-1"></i>Currency:</label>
+          <select class="form-select form-select-sm" id="topCurrencySelect" style="width: 140px; border-radius: 8px;" onchange="handleGlobalCurrencyChange(this.value)">
+            <option value="">-- Currency --</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1001,6 +1146,7 @@
 
   // Initialization
   document.addEventListener('DOMContentLoaded', () => {
+    initReportingContext();
     initCategoryTabs();
     renderActiveSlide();
     updateOverallProgress();
@@ -1008,6 +1154,156 @@
     setupIdleDetection();
     initStickyStepper();
   });
+
+  // Dynamic Reporting Context (Dates & Currency) Engine
+  let globalReportingFromDate = '';
+  let globalReportingToDate = '';
+  let globalReportingCurrency = '';
+
+  function initReportingContext() {
+    // 1. Check if dates or currency are already present in answerStore
+    for (let qId in answerStore) {
+      const q = findQuestionById(parseInt(qId, 10));
+      if (!q) continue;
+      const a = answerStore[qId];
+      if (!a || a.answer_val === undefined || a.answer_val === null) continue;
+      const val = String(a.answer_val).trim();
+      if (!val) continue;
+
+      const qEn = (q.question_en || '').toLowerCase();
+      if (!globalReportingFromDate && (qEn.includes('reporting period start') || qEn.includes('start date') || q.id === 396)) {
+        globalReportingFromDate = val;
+      }
+      if (!globalReportingToDate && (qEn.includes('reporting period end') || qEn.includes('end date') || q.id === 397)) {
+        globalReportingToDate = val;
+      }
+      if (!globalReportingCurrency && (q.dropdown_group_name === 'currency' || qEn.includes('currency of the monetary') || q.id === 395)) {
+        globalReportingCurrency = val;
+      }
+    }
+
+    // 2. Populate top toolbar currency dropdown
+    const topCurrSel = document.getElementById('topCurrencySelect');
+    if (topCurrSel && dropdownMasterMap && dropdownMasterMap['currency']) {
+      const currOpts = dropdownMasterMap['currency'] || [];
+      topCurrSel.innerHTML = '<option value="">-- Currency --</option>' + currOpts.map(opt => `
+        <option value="${escapeHtml(opt.value_en)}" ${globalReportingCurrency === opt.value_en ? 'selected' : ''}>
+          ${escapeHtml(opt.value_en)}
+        </option>
+      `).join('');
+    }
+
+    // 3. Populate top toolbar date inputs
+    const topFrom = document.getElementById('topFromDate');
+    const topTo = document.getElementById('topToDate');
+    if (topFrom && globalReportingFromDate) topFrom.value = globalReportingFromDate;
+    if (topTo && globalReportingToDate) topTo.value = globalReportingToDate;
+  }
+
+  function getActivePeriodAndCurrency() {
+    return {
+      fromDate: globalReportingFromDate || '',
+      toDate: globalReportingToDate || '',
+      currency: globalReportingCurrency || ''
+    };
+  }
+
+  function formatDynamicText(text) {
+    if (!text || typeof text !== 'string') return text || '';
+    const { fromDate, toDate, currency } = getActivePeriodAndCurrency();
+
+    let formatted = text;
+
+    // 1. Explicit indicators: {FROM DATE}, {TO DATE}, {CURRENCY}
+    if (fromDate) {
+      formatted = formatted.replace(/\{(from\s*date|from_date|start_date|start\s*date)\}/gi, fromDate);
+    }
+    if (toDate) {
+      formatted = formatted.replace(/\{(to\s*date|to_date|end_date|end\s*date)\}/gi, toDate);
+    }
+    if (currency) {
+      formatted = formatted.replace(/\{(currency|currency_code|curr)\}/gi, currency);
+    }
+
+    // 2. Existing template date pattern: "from - to -"
+    if (fromDate || toDate) {
+      const fromStr = fromDate || '-';
+      const toStr = toDate || '-';
+      formatted = formatted.replace(/\bfrom\s*-\s*to\s*-(?!\w)/gi, `from ${fromStr} to ${toStr}`);
+    }
+
+    // 3. Currency pattern replacement: "in AMD" / "in USD" / "in EUR" -> "in [CURRENCY]"
+    if (currency) {
+      formatted = formatted.replace(/\bin\s+(AMD|EUR|USD|GBP|CAD|CHF|AUD|JPY)\b/g, `in ${currency}`);
+    }
+
+    return formatted;
+  }
+
+  function handleGlobalFromDateChange(val) {
+    globalReportingFromDate = val ? String(val).trim() : '';
+    syncReportingQuestionAnswer('start_date', globalReportingFromDate);
+    refreshAllDynamicLabels();
+  }
+
+  function handleGlobalToDateChange(val) {
+    globalReportingToDate = val ? String(val).trim() : '';
+    syncReportingQuestionAnswer('end_date', globalReportingToDate);
+    refreshAllDynamicLabels();
+  }
+
+  function handleGlobalCurrencyChange(val) {
+    globalReportingCurrency = val ? String(val).trim() : '';
+    syncReportingQuestionAnswer('currency', globalReportingCurrency);
+    refreshAllDynamicLabels();
+  }
+
+  function syncReportingQuestionAnswer(type, val) {
+    for (let c of (rawTemplate.categories || [])) {
+      for (let l of (c.labels || [])) {
+        for (let q of (l.questions || [])) {
+          const qEn = (q.question_en || '').toLowerCase();
+          let match = false;
+          if (type === 'start_date' && (q.id === 396 || qEn.includes('reporting period start') || qEn.includes('start date'))) match = true;
+          if (type === 'end_date' && (q.id === 397 || qEn.includes('reporting period end') || qEn.includes('end date'))) match = true;
+          if (type === 'currency' && (q.id === 395 || q.dropdown_group_name === 'currency' || qEn.includes('currency of the monetary'))) match = true;
+
+          if (match) {
+            answerStore[q.id] = {
+              ...answerStore[q.id],
+              question_id: q.id,
+              excel_cell_ref: q.excel_cell_ref || '',
+              answer_val: val,
+              category_id: c.id,
+              label_id: l.id,
+              sheet_name: c.sheet_name || ''
+            };
+            markDirty();
+          }
+        }
+      }
+    }
+  }
+
+  function refreshAllDynamicLabels() {
+    // 1. Re-render category tabs titles
+    (rawTemplate.categories || []).forEach(cat => {
+      const catBtn = document.querySelector(`.vsme-cat-tab-btn[data-cat-id="${cat.id}"] .cat-tab-title`);
+      if (catBtn) {
+        catBtn.innerText = getLocalized(cat.name_translations, cat.name_en || '');
+      }
+    });
+
+    // 2. Re-render horizontal stepper ribbon
+    renderHorizontalStepper();
+
+    // 3. Re-render slide stage (current question & headers)
+    renderSlideStage();
+
+    // 4. Update overall progress & nav buttons
+    updateOverallProgress();
+    updateNavButtons();
+  }
 
   function escapeHtml(str) {
     if (str === null || str === undefined) return '';
@@ -1020,15 +1316,134 @@
   }
 
   function getLocalized(obj, fallback = '') {
-    if (!obj) return fallback;
-    if (typeof obj === 'string') return obj;
-    return obj[currentLanguage] || obj['en'] || fallback;
+    if (!obj) return formatDynamicText(fallback);
+    if (typeof obj === 'string') return formatDynamicText(obj);
+    const raw = obj[currentLanguage] || obj['en'] || fallback;
+    return formatDynamicText(raw);
+  }
+
+  function isMultipleAllowed(q) {
+    if (!q) return false;
+    return q.allow_multiple === 1 || q.allow_multiple === true || q.allow_multiple === '1' || q.allow_multiple === 'true';
+  }
+
+  function parseMultipleAnswers(rawVal, inputType, hasValueInput) {
+    if (rawVal === undefined || rawVal === null || rawVal === '') {
+      if (inputType === 'dropdown' && hasValueInput) {
+        return [{ dropdown: '', custom: '' }];
+      }
+      return [''];
+    }
+    let arr = [];
+    if (Array.isArray(rawVal)) {
+      arr = rawVal;
+    } else if (typeof rawVal === 'object') {
+      arr = [rawVal];
+    } else if (typeof rawVal === 'string') {
+      try {
+        const parsed = JSON.parse(rawVal);
+        if (Array.isArray(parsed)) {
+          arr = parsed;
+        } else if (typeof parsed === 'object' && parsed !== null) {
+          arr = [parsed];
+        } else {
+          arr = [parsed];
+        }
+      } catch (e) {
+        if (inputType === 'dropdown' && hasValueInput) {
+          arr = [{ dropdown: rawVal, custom: '' }];
+        } else {
+          arr = [rawVal];
+        }
+      }
+    } else {
+      arr = [rawVal];
+    }
+
+    if (arr.length === 0) {
+      if (inputType === 'dropdown' && hasValueInput) {
+        return [{ dropdown: '', custom: '' }];
+      }
+      return [''];
+    }
+
+    return arr.map(item => {
+      if (inputType === 'dropdown' && hasValueInput) {
+        if (typeof item === 'object' && item !== null) {
+          return {
+            dropdown: item.dropdown !== undefined && item.dropdown !== null ? String(item.dropdown) : '',
+            custom: item.custom !== undefined && item.custom !== null ? String(item.custom) : ''
+          };
+        }
+        return { dropdown: String(item || ''), custom: '' };
+      }
+      if (typeof item === 'object' && item !== null) {
+        return item.dropdown !== undefined ? String(item.dropdown) : (item.val !== undefined ? String(item.val) : JSON.stringify(item));
+      }
+      return item !== undefined && item !== null ? String(item) : '';
+    });
+  }
+
+  function isValidHttpUrl(string) {
+    if (!string || typeof string !== 'string') return false;
+    const str = string.trim();
+    if (!str) return false;
+    // Strict URL structure: protocol http/https, domain with valid TLD or localhost/IP
+    const urlPattern = /^(https?:\/\/)?((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|localhost|(\d{1,3}\.){3}\d{1,3})(:\d+)?(\/[^\s]*)?$/i;
+    return urlPattern.test(str);
+  }
+
+  function normalizeUrlString(val) {
+    if (!val || typeof val !== 'string') return '';
+    let str = val.trim();
+    if (!str) return '';
+    if (/^https?:\/\//i.test(str)) {
+      return str;
+    }
+    if (/^www\./i.test(str) || /^(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})/i.test(str)) {
+      return 'https://' + str;
+    }
+    return str;
   }
 
   function isQuestionFilled(q) {
     if (!q) return false;
     const a = answerStore[q.id];
     if (!a || a.answer_val === undefined || a.answer_val === null) return false;
+
+    if (isMultipleAllowed(q) && q.input_type !== 'table') {
+      const multiArr = parseMultipleAnswers(a.answer_val, q.input_type, q.has_value_input);
+      if (q.input_type === 'url') {
+        const validUrls = multiArr.filter(item => {
+          if (!item) return false;
+          const s = String(item).trim();
+          return s !== '' && isValidHttpUrl(s);
+        });
+        return validUrls.length > 0;
+      }
+      return multiArr.some(item => {
+        if (item === null || item === undefined) return false;
+        if (typeof item === 'object') {
+          return (item.dropdown && String(item.dropdown).trim() !== '') || (item.custom && String(item.custom).trim() !== '');
+        }
+        return String(item).trim() !== '';
+      });
+    }
+
+    if (q.input_type === 'url') {
+      const valStr = String(a.answer_val).trim();
+      return valStr !== '' && isValidHttpUrl(valStr);
+    }
+
+    if (q.input_type === 'table') {
+      try {
+        const rows = typeof a.answer_val === 'string' ? JSON.parse(a.answer_val) : a.answer_val;
+        if (Array.isArray(rows)) {
+          return rows.some(r => Object.values(r).some(v => v !== undefined && v !== null && String(v).trim() !== ''));
+        }
+      } catch (e) {}
+    }
+
     return String(a.answer_val).trim() !== '';
   }
 
@@ -1091,6 +1506,8 @@
       const qCount = (lbl.questions || []).length;
       const lblName = getLocalized(lbl.name_translations, lbl.name_en || 'Label ' + (idx + 1));
 
+      const isQ1No = isFirstQuestionNo(lbl);
+
       const item = document.createElement('div');
       item.className = `vsme-h-step-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
       item.id = `hStepItem_${idx}`;
@@ -1099,7 +1516,7 @@
           ${isCompleted ? '<i class="icofont icofont-check"></i>' : (idx + 1)}
         </span>
         <span class="vsme-h-step-title" title="${escapeHtml(lblName)}">${escapeHtml(lblName)}</span>
-        <span class="vsme-h-step-badge">${qCount} Qs</span>
+        <span class="vsme-h-step-badge">${isQ1No && qCount > 1 ? 'Q1 (No - Skipped)' : `${qCount} Qs`}</span>
       `;
       item.addEventListener('click', () => {
         activeLabelIndex = idx;
@@ -1130,13 +1547,119 @@
     btnRight.disabled = (track.scrollLeft + track.clientWidth) >= (track.scrollWidth - 5);
   }
 
+  function isFirstQuestionNo(lbl) {
+    if (!lbl || !lbl.questions || lbl.questions.length === 0) return false;
+    const firstQ = lbl.questions[0];
+    if (!firstQ) return false;
+    const a = answerStore[firstQ.id];
+    if (!a || a.answer_val === undefined || a.answer_val === null) return false;
+    const valStr = String(a.answer_val).trim().toUpperCase();
+    return valStr === 'FALSE' || valStr === 'NO' || valStr === '0';
+  }
+
+  function isOtherSpecificationQuestion(q, lbl) {
+    if (!q || !lbl || !lbl.questions || lbl.questions.length <= 1) return false;
+    const qIdx = lbl.questions.findIndex(item => item.id === q.id);
+    if (qIdx <= 0) return false;
+    const prevQ = lbl.questions[qIdx - 1];
+
+    // 1. Check if previous question has a dropdown with an 'other' option
+    let prevHasOtherOption = false;
+    if (prevQ && prevQ.input_type === 'dropdown' && prevQ.dropdown_group_name) {
+      const options = dropdownMasterMap[prevQ.dropdown_group_name] || [];
+      prevHasOtherOption = options.some(opt => (opt.value_en && opt.value_en.toLowerCase().includes('other')));
+    }
+
+    // 2. Check if current question text explicitly mentions 'other' specification
+    const qEn = (q.question_en || '').toLowerCase();
+    const isOtherText = qEn.includes('other') && (qEn.includes('specification') || qEn.includes('specify') || qEn.includes('legal form'));
+
+    return prevHasOtherOption || isOtherText;
+  }
+
+  function isParentAnsweredOther(q, lbl) {
+    if (!isOtherSpecificationQuestion(q, lbl)) return true;
+    const qIdx = lbl.questions.findIndex(item => item.id === q.id);
+    if (qIdx <= 0) return true;
+    const prevQ = lbl.questions[qIdx - 1];
+    if (!prevQ) return true;
+    const a = answerStore[prevQ.id];
+    if (!a || a.answer_val === undefined || a.answer_val === null) return false;
+
+    let valStr = '';
+    if (typeof a.answer_val === 'string' && a.answer_val.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(a.answer_val);
+        if (Array.isArray(parsed)) {
+          return parsed.some(it => {
+            const s = typeof it === 'object' && it ? (it.dropdown || it.val || '') : String(it);
+            return s.toLowerCase().includes('other');
+          });
+        }
+      } catch (e) {}
+    } else if (typeof a.answer_val === 'object') {
+      valStr = String(a.answer_val.dropdown || a.answer_val.val || '');
+    } else {
+      valStr = String(a.answer_val);
+    }
+    return valStr.toLowerCase().includes('other');
+  }
+
+  function getQuestionDisplayInfo(q, lbl) {
+    if (!lbl || !lbl.questions || !q) return { numStr: '1', pillStr: 'Q1', isChild: false, parentNumStr: '', parentQIdx: -1 };
+    const targetIdx = lbl.questions.findIndex(item => item.id === q.id);
+    if (targetIdx === -1) return { numStr: '1', pillStr: 'Q1', isChild: false, parentNumStr: '', parentQIdx: -1 };
+
+    let parentCounter = 0;
+    let targetInfo = { numStr: String(targetIdx + 1), pillStr: `Q${targetIdx + 1}`, isChild: false, parentNumStr: '', parentQIdx: -1 };
+
+    for (let i = 0; i < lbl.questions.length; i++) {
+      const curQ = lbl.questions[i];
+      const isChild = isOtherSpecificationQuestion(curQ, lbl);
+
+      if (isChild) {
+        const parentNum = parentCounter; // e.g. 2
+        const numStr = `${parentNum}.1`;
+        const pillStr = `Q${parentNum}.1`;
+        if (i === targetIdx) {
+          targetInfo = { numStr, pillStr, isChild: true, parentNumStr: String(parentNum), parentQIdx: i - 1 };
+          break;
+        }
+      } else {
+        parentCounter++;
+        const numStr = String(parentCounter);
+        const pillStr = `Q${parentCounter}`;
+        if (i === targetIdx) {
+          targetInfo = { numStr, pillStr, isChild: false, parentNumStr: '', parentQIdx: -1 };
+          break;
+        }
+      }
+    }
+    return targetInfo;
+  }
+
+  function isQuestionSkipped(q, lbl) {
+    if (!q || !lbl || !lbl.questions || lbl.questions.length <= 1) return false;
+    const qIdx = lbl.questions.findIndex(item => item.id === q.id);
+    if (qIdx < 0) return false;
+
+    // 1. If Q1 was answered NO/FALSE, all subsequent questions (Q2, Q3...) are skipped
+    if (qIdx > 0 && isFirstQuestionNo(lbl)) return true;
+
+    // 2. If this question is an 'Other' specification / child question of the previous question:
+    if (isOtherSpecificationQuestion(q, lbl)) {
+      return !isParentAnsweredOther(q, lbl);
+    }
+
+    return false;
+  }
+
   function checkLabelCompleted(lbl) {
+    if (!lbl) return true;
     if (classifiedStore[lbl.id]) return true;
     if (!lbl.questions || lbl.questions.length === 0) return true;
-    return lbl.questions.every(q => {
-      const a = answerStore[q.id];
-      return a && a.answer_val && String(a.answer_val).trim() !== '';
-    });
+    if (isFirstQuestionNo(lbl)) return true;
+    return lbl.questions.every(q => isQuestionFilled(q) || isQuestionSkipped(q, lbl));
   }
 
   function renderSlideStage() {
@@ -1176,33 +1699,58 @@
     if (totalQ === 0) {
       html += '<div class="alert alert-secondary py-4 text-center">No questions defined under this section.</div>';
     } else {
-      let answeredInLbl = questions.filter(q => isQuestionFilled(q)).length;
       let currentQ = questions[activeQuestionIndex];
       let isCurrentFilled = isQuestionFilled(currentQ);
+      let isCurrentSkipped = isQuestionSkipped(currentQ, activeLabel);
+      let isQ1No = isFirstQuestionNo(activeLabel);
+      let answeredInLbl = isQ1No ? totalQ : questions.filter(q => isQuestionFilled(q) || isQuestionSkipped(q, activeLabel)).length;
+      let currentDisp = getQuestionDisplayInfo(currentQ, activeLabel);
 
       html += `
         <!-- Question Step Progress Tracker Bar -->
         <div class="vsme-question-tracker-bar">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center gap-2">
-              <span class="badge bg-primary px-3 py-1.5" style="border-radius: 8px;">Question ${activeQuestionIndex + 1} of ${totalQ}</span>
-              <span class="small fw-bold text-muted">(${answeredInLbl}/${totalQ} Answered)</span>
+              <span class="badge ${currentDisp.isChild ? 'bg-purple text-white' : 'bg-primary'} px-3 py-1.5" style="border-radius: 8px;">
+                ${currentDisp.isChild ? `<i class="icofont icofont-sub-listing me-1"></i>Question ${currentDisp.numStr}` : `Question ${currentDisp.numStr}`} of ${totalQ}
+              </span>
+              <span class="small fw-bold text-muted">(${answeredInLbl}/${totalQ} ${isQ1No ? 'Resolved' : 'Answered'})</span>
             </div>
             <div>
-              ${isCurrentFilled ? 
-                '<span class="badge bg-success-subtle text-success border border-success px-2 py-1"><i class="icofont icofont-check-circled me-1"></i> Answered</span>' : 
-                '<span class="badge bg-light text-secondary border px-2 py-1">In Progress</span>'
+              ${isCurrentSkipped ?
+                '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2 py-1"><i class="icofont icofont-ban me-1"></i> Skipped</span>' :
+                (isCurrentFilled ? 
+                  '<span class="badge bg-success-subtle text-success border border-success px-2 py-1"><i class="icofont icofont-check-circled me-1"></i> Answered</span>' : 
+                  '<span class="badge bg-light text-secondary border px-2 py-1">In Progress</span>'
+                )
               }
             </div>
           </div>
           <div class="vsme-q-step-pills">
             ${questions.map((q, idx) => {
               const filled = isQuestionFilled(q);
+              const isSkipped = isQuestionSkipped(q, activeLabel);
               const isActive = idx === activeQuestionIndex;
+              const disp = getQuestionDisplayInfo(q, activeLabel);
+
+              let pillClass = 'vsme-q-pill-btn';
+              if (isActive) pillClass += ' active';
+              if (isSkipped) pillClass += ' skipped';
+              else if (filled) pillClass += ' filled';
+              if (disp.isChild) pillClass += ' vsme-q-pill-child';
+
+              let dotContent = disp.numStr;
+              if (isSkipped) dotContent = '<i class="icofont icofont-ban"></i>';
+              else if (filled) dotContent = '<i class="icofont icofont-check"></i>';
+
+              let pillTitle = `Question ${disp.numStr}`;
+              if (disp.isChild) pillTitle += ` (Follow-up to Q${disp.parentNumStr})`;
+              if (isSkipped) pillTitle += ' (Skipped)';
+
               return `
-                <button type="button" class="vsme-q-pill-btn ${isActive ? 'active' : ''} ${filled ? 'filled' : ''}" onclick="jumpToQuestion(${idx})" title="Jump to Question ${idx + 1}">
-                  <span class="vsme-q-pill-dot">${filled ? '<i class="icofont icofont-check"></i>' : (idx + 1)}</span>
-                  <span>Q${idx + 1}</span>
+                <button type="button" class="${pillClass}" onclick="jumpToQuestion(${idx})" title="${escapeHtml(pillTitle)}">
+                  <span class="vsme-q-pill-dot">${dotContent}</span>
+                  <span>${disp.pillStr}${isSkipped ? ' <small style="opacity: 0.8;">(Skipped)</small>' : ''}</span>
                 </button>
               `;
             }).join('')}
@@ -1226,13 +1774,78 @@
     const qText = getLocalized(q.question_translations, q.question_en || '');
     const currentAnsObj = answerStore[q.id] || {};
     let val = currentAnsObj.answer_val !== undefined && currentAnsObj.answer_val !== null ? currentAnsObj.answer_val : '';
+    const allowMultiple = isMultipleAllowed(q) && q.input_type !== 'table' && q.input_type !== 'calculated';
+    const isSkipped = isQuestionSkipped(q, activeLabel);
+    const disp = getQuestionDisplayInfo(q, activeLabel);
 
     let inputHtml = '';
+    if (allowMultiple) {
+      inputHtml = renderMultipleAnswersInput(q, val);
+    } else {
+      inputHtml = renderSingleAnswerInput(q, val);
+    }
 
+    return `
+      <div class="vsme-q-card ${isSkipped ? 'vsme-q-card-skipped' : ''}" id="qCard_${q.id}" data-qid="${q.id}">
+        ${isSkipped ? `
+          <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-3 border-0 shadow-sm" style="border-radius: 12px; background: #fffbeb; border-left: 4px solid #f59e0b !important;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="icofont icofont-ban text-warning fs-4"></i>
+              <div>
+                <strong class="text-dark d-block">Question Skipped</strong>
+                <small class="text-muted">
+                  ${disp.isChild ?
+                    `This follow-up question is only required if you select <strong>"Other (please specify...)"</strong> in Question ${disp.parentNumStr}.` :
+                    'This question is automatically skipped because Question 1 was answered as <strong>"No"</strong> (FALSE).'
+                  }
+                </small>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-warning fw-bold" onclick="jumpToQuestion(${disp.isChild ? disp.parentQIdx : 0})">
+              <i class="icofont icofont-reply me-1"></i> Edit Question ${disp.isChild ? disp.parentNumStr : 1}
+            </button>
+          </div>
+        ` : ''}
+        <div class="vsme-q-header">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge ${disp.isChild ? 'bg-purple text-white' : 'bg-light text-dark border'}">${disp.numStr}</span>
+            <h6 class="vsme-q-label mb-0">${escapeHtml(qText)}</h6>
+            ${disp.isChild ? `
+              <span class="badge bg-purple-subtle text-purple border border-purple-subtle px-2 py-1 small">
+                <i class="icofont icofont-sub-listing me-1"></i>Follow-up to Q${disp.parentNumStr}
+              </span>
+            ` : ''}
+            ${isSkipped ? `
+              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2 py-1 small">
+                <i class="icofont icofont-ban me-1"></i>Skipped
+              </span>
+            ` : ''}
+            ${allowMultiple && !isSkipped ? `
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                <i class="icofont icofont-plus-circle me-1"></i>Multiple Answers
+              </span>
+            ` : ''}
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            ${q.info_translations ? `
+              <button type="button" class="vsme-q-info-btn" title="View guidance" onclick="showGuidanceDrawer('question', ${q.id})">
+                <i class="icofont icofont-info"></i>
+              </button>
+            ` : ''}
+          </div>
+        </div>
+        <div class="vsme-q-body" style="${isSkipped ? 'opacity: 0.45; pointer-events: none;' : ''}">
+          ${inputHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSingleAnswerInput(q, val) {
     if (q.input_type === 'boolean') {
       const isYes = val === 'true' || val === '1' || val === 'Yes' || val === 'TRUE';
       const isNo = val === 'false' || val === '0' || val === 'No' || val === 'FALSE';
-      inputHtml = `
+      return `
         <div class="vsme-segmented-bool" data-qid="${q.id}">
           <button type="button" class="vsme-seg-btn ${isYes ? 'active-yes' : ''}" onclick="setBoolAnswer(${q.id}, 'TRUE', this)">Yes</button>
           <button type="button" class="vsme-seg-btn ${isNo ? 'active-no' : ''}" onclick="setBoolAnswer(${q.id}, 'FALSE', this)">No</button>
@@ -1246,76 +1859,211 @@
 
       if (q.has_value_input) {
         try {
-          const parsed = JSON.parse(val);
-          selectedOption = parsed.dropdown || '';
-          customVal = parsed.custom || '';
+          const parsed = typeof val === 'string' ? JSON.parse(val) : val;
+          if (parsed && typeof parsed === 'object') {
+            selectedOption = parsed.dropdown || '';
+            customVal = parsed.custom || '';
+          }
         } catch (e) {
           selectedOption = val;
         }
       }
 
-      inputHtml = `
+      return `
         <div class="row g-2">
           <div class="${q.has_value_input ? 'col-md-6' : 'col-12'}">
-            <select class="form-select vsme-input-control" data-qid="${q.id}" onchange="handleDropdownChange(${q.id}, this, ${q.has_value_input})">
+            <select class="form-select vsme-input-control" data-qid="${q.id}" onchange="handleDropdownChange(${q.id}, this, ${q.has_value_input ? 'true' : 'false'})">
               <option value="">-- Select Option --</option>
               ${options.map(opt => `
-                <option value="${opt.value_en}" ${selectedOption === opt.value_en ? 'selected' : ''}>
-                  ${currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en}
+                <option value="${escapeHtml(opt.value_en)}" ${selectedOption === opt.value_en ? 'selected' : ''}>
+                  ${escapeHtml(currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en)}
                 </option>
               `).join('')}
             </select>
           </div>
           ${q.has_value_input ? `
             <div class="col-md-6">
-              <input type="text" class="form-control vsme-input-control" id="customInput_${q.id}" placeholder="Enter specific value..." value="${customVal}" oninput="handleCustomValChange(${q.id}, this)">
+              <input type="text" class="form-control vsme-input-control" id="customInput_${q.id}" placeholder="Enter specific value..." value="${escapeHtml(customVal)}" oninput="handleCustomValChange(${q.id}, this)">
             </div>
           ` : ''}
         </div>
       `;
     } else if (q.input_type === 'date') {
-      inputHtml = `
+      return `
         <div class="input-group">
           <span class="input-group-text bg-light"><i class="icofont icofont-ui-calendar text-primary"></i></span>
-          <input type="date" class="form-control vsme-input-control" data-qid="${q.id}" value="${val}" onchange="handleInputChange(${q.id}, this.value)">
+          <input type="date" class="form-control vsme-input-control" data-qid="${q.id}" value="${escapeHtml(val)}" onchange="handleInputChange(${q.id}, this.value)">
         </div>
       `;
     } else if (q.input_type === 'calculated') {
-      inputHtml = `
+      return `
         <div class="vsme-calc-box">
           <span class="vsme-calc-val" id="calcDisplay_${q.id}">0.00</span>
           <span class="vsme-calc-formula"><i class="icofont icofont-calculator-alt me-1"></i> Auto-Calculated</span>
         </div>
       `;
     } else if (q.input_type === 'table') {
-      inputHtml = renderTableQuestion(q, val);
+      return renderTableQuestion(q, val);
     } else if (q.input_type === 'number') {
-      inputHtml = `
-        <input type="number" step="any" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="Enter numeric value..." value="${val}" oninput="handleInputChange(${q.id}, this.value)">
+      return `
+        <input type="number" step="any" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="Enter numeric value..." value="${escapeHtml(val)}" oninput="handleInputChange(${q.id}, this.value)">
+      `;
+    } else if (q.input_type === 'email') {
+      return `
+        <input type="email" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="name@domain.com" value="${escapeHtml(val)}" oninput="handleInputChange(${q.id}, this.value)">
+      `;
+    } else if (q.input_type === 'url') {
+      const isUrlValid = val ? isValidHttpUrl(val) : true;
+      const hasVal = Boolean(val && String(val).trim() !== '');
+      const validityClass = hasVal ? (isUrlValid ? 'is-valid' : 'is-invalid') : '';
+      return `
+        <div class="vsme-url-input-wrap">
+          <div class="input-group">
+            <span class="input-group-text bg-light text-primary"><i class="icofont icofont-link"></i></span>
+            <input type="url" class="form-control vsme-input-control ${validityClass}" data-qid="${q.id}" placeholder="https://example.com" value="${escapeHtml(val)}" oninput="handleUrlInputChange(${q.id}, this)" onblur="handleUrlBlur(${q.id}, this)">
+          </div>
+          <div class="invalid-feedback ${hasVal && !isUrlValid ? 'd-block' : 'd-none'} text-danger small mt-1" id="urlErr_${q.id}">
+            <i class="icofont icofont-warning-alt me-1"></i> Please enter a valid URL (e.g., https://example.com)
+          </div>
+          <small class="text-muted d-block mt-1"><i class="icofont icofont-info-circle me-1"></i> Must be a valid web link starting with http:// or https://</small>
+        </div>
       `;
     } else {
-      inputHtml = `
-        <input type="text" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="Type answer here..." value="${val}" oninput="handleInputChange(${q.id}, this.value)">
+      return `
+        <input type="text" class="form-control vsme-input-control" data-qid="${q.id}" placeholder="Type answer here..." value="${escapeHtml(val)}" oninput="handleInputChange(${q.id}, this.value)">
       `;
     }
+  }
 
-    return `
-      <div class="vsme-q-card" id="qCard_${q.id}" data-qid="${q.id}">
-        <div class="vsme-q-header">
-          <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-light text-dark border">${qIdx + 1}</span>
-            <h6 class="vsme-q-label">${qText}</h6>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            ${q.info_translations ? `
-              <button type="button" class="vsme-q-info-btn" title="View guidance" onclick="showGuidanceDrawer('question', ${q.id})">
-                <i class="icofont icofont-info"></i>
-              </button>
+  function renderMultipleAnswersInput(q, val) {
+    const multiAnswers = parseMultipleAnswers(val, q.input_type, q.has_value_input);
+    const options = (q.input_type === 'dropdown' && q.dropdown_group_name) ? (dropdownMasterMap[q.dropdown_group_name] || []) : [];
+
+    let rowsHtml = multiAnswers.map((item, rIdx) => {
+      let fieldHtml = '';
+
+      if (q.input_type === 'dropdown') {
+        let selectedOption = '';
+        let customVal = '';
+
+        if (q.has_value_input) {
+          if (typeof item === 'object' && item !== null) {
+            selectedOption = item.dropdown || '';
+            customVal = item.custom || '';
+          } else {
+            selectedOption = String(item || '');
+          }
+        } else {
+          selectedOption = typeof item === 'object' && item !== null ? (item.dropdown || '') : String(item || '');
+        }
+
+        // Values selected in other rows
+        const selectedInOtherRows = multiAnswers
+          .filter((_, idx) => idx !== rIdx)
+          .map(it => typeof it === 'object' && it !== null ? (it.dropdown || '') : String(it || ''))
+          .filter(v => v !== '');
+
+        fieldHtml = `
+          <div class="row g-2 flex-grow-1">
+            <div class="${q.has_value_input ? 'col-md-6' : 'col-12'}">
+              <select class="form-select vsme-input-control" data-qid="${q.id}" data-row-idx="${rIdx}" onchange="handleMultiDropdownChange(${q.id}, ${rIdx}, this, ${q.has_value_input ? 'true' : 'false'})">
+                <option value="">-- Select Option --</option>
+                ${options.map(opt => {
+                  const isSelected = selectedOption === opt.value_en;
+                  const isAlreadySelectedElsewhere = !isSelected && selectedInOtherRows.includes(opt.value_en);
+                  const optLabel = currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en;
+                  return `
+                    <option value="${escapeHtml(opt.value_en)}" ${isSelected ? 'selected' : ''} ${isAlreadySelectedElsewhere ? 'disabled style="color: #94a3b8; background-color: #f1f5f9;"' : ''}>
+                      ${escapeHtml(optLabel)}${isAlreadySelectedElsewhere ? ' (Already Selected)' : ''}
+                    </option>
+                  `;
+                }).join('')}
+              </select>
+            </div>
+            ${q.has_value_input ? `
+              <div class="col-md-6">
+                <input type="text" class="form-control vsme-input-control" placeholder="Enter specific value..." value="${escapeHtml(customVal)}" oninput="handleMultiCustomValChange(${q.id}, ${rIdx}, this)">
+              </div>
             ` : ''}
           </div>
+        `;
+      } else if (q.input_type === 'boolean') {
+        const itemStr = String(item || '');
+        const isYes = itemStr === 'true' || itemStr === '1' || itemStr === 'Yes' || itemStr === 'TRUE';
+        const isNo = itemStr === 'false' || itemStr === '0' || itemStr === 'No' || itemStr === 'FALSE';
+        fieldHtml = `
+          <div class="vsme-segmented-bool flex-grow-1" data-qid="${q.id}" data-row-idx="${rIdx}">
+            <button type="button" class="vsme-seg-btn ${isYes ? 'active-yes' : ''}" onclick="setMultiBoolAnswer(${q.id}, ${rIdx}, 'TRUE', this)">Yes</button>
+            <button type="button" class="vsme-seg-btn ${isNo ? 'active-no' : ''}" onclick="setMultiBoolAnswer(${q.id}, ${rIdx}, 'FALSE', this)">No</button>
+            <button type="button" class="vsme-seg-btn ${itemStr === 'N/A' ? 'active-no' : ''}" onclick="setMultiBoolAnswer(${q.id}, ${rIdx}, 'N/A', this)">N/A</button>
+          </div>
+        `;
+      } else if (q.input_type === 'date') {
+        fieldHtml = `
+          <div class="input-group flex-grow-1">
+            <span class="input-group-text bg-light"><i class="icofont icofont-ui-calendar text-primary"></i></span>
+            <input type="date" class="form-control vsme-input-control" data-qid="${q.id}" data-row-idx="${rIdx}" value="${escapeHtml(item)}" onchange="handleMultiInputChange(${q.id}, ${rIdx}, this.value)">
+          </div>
+        `;
+      } else if (q.input_type === 'number') {
+        fieldHtml = `
+          <input type="number" step="any" class="form-control vsme-input-control flex-grow-1" data-qid="${q.id}" data-row-idx="${rIdx}" placeholder="Enter numeric value #${rIdx + 1}..." value="${escapeHtml(item)}" oninput="handleMultiInputChange(${q.id}, ${rIdx}, this.value)">
+        `;
+      } else if (q.input_type === 'email') {
+        fieldHtml = `
+          <input type="email" class="form-control vsme-input-control flex-grow-1" data-qid="${q.id}" data-row-idx="${rIdx}" placeholder="name@domain.com (Answer #${rIdx + 1})" value="${escapeHtml(item)}" oninput="handleMultiInputChange(${q.id}, ${rIdx}, this.value)">
+        `;
+      } else if (q.input_type === 'url') {
+        const itemStr = String(item || '').trim();
+        const isUrlValid = itemStr ? isValidHttpUrl(itemStr) : true;
+        const hasVal = Boolean(itemStr !== '');
+        const validityClass = hasVal ? (isUrlValid ? 'is-valid' : 'is-invalid') : '';
+        fieldHtml = `
+          <div class="vsme-url-input-wrap flex-grow-1">
+            <div class="input-group">
+              <span class="input-group-text bg-light text-primary"><i class="icofont icofont-link"></i></span>
+              <input type="url" class="form-control vsme-input-control ${validityClass}" data-qid="${q.id}" data-row-idx="${rIdx}" placeholder="https://example.com (Answer #${rIdx + 1})" value="${escapeHtml(item)}" oninput="handleMultiUrlInputChange(${q.id}, ${rIdx}, this)" onblur="handleMultiUrlBlur(${q.id}, ${rIdx}, this)">
+            </div>
+            <div class="invalid-feedback ${hasVal && !isUrlValid ? 'd-block' : 'd-none'} text-danger small mt-1" id="urlErr_${q.id}_${rIdx}">
+              <i class="icofont icofont-warning-alt me-1"></i> Please enter a valid URL (e.g., https://example.com)
+            </div>
+          </div>
+        `;
+      } else {
+        fieldHtml = `
+          <input type="text" class="form-control vsme-input-control flex-grow-1" data-qid="${q.id}" data-row-idx="${rIdx}" placeholder="Type answer #${rIdx + 1}..." value="${escapeHtml(item)}" oninput="handleMultiInputChange(${q.id}, ${rIdx}, this.value)">
+        `;
+      }
+
+      return `
+        <div class="vsme-multi-ans-row d-flex align-items-center gap-2 mb-2" data-row-idx="${rIdx}">
+          <span class="vsme-multi-row-badge">${rIdx + 1}</span>
+          ${fieldHtml}
+          ${multiAnswers.length > 1 ? `
+            <button type="button" class="btn btn-outline-danger btn-sm vsme-multi-del-btn" onclick="removeMultiAnswerRow(${q.id}, ${rIdx})" title="Remove this answer">
+              <i class="icofont icofont-trash"></i>
+            </button>
+          ` : `
+            <button type="button" class="btn btn-outline-secondary btn-sm vsme-multi-del-btn disabled" style="opacity: 0.25; cursor: not-allowed;" title="Minimum 1 answer row">
+              <i class="icofont icofont-trash"></i>
+            </button>
+          `}
         </div>
-        <div class="vsme-q-body">
-          ${inputHtml}
+      `;
+    }).join('');
+
+    return `
+      <div class="vsme-multi-ans-wrap" id="multiAnsWrap_${q.id}">
+        <div class="vsme-multi-rows-list" id="multiRowsList_${q.id}">
+          ${rowsHtml}
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+          <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 vsme-add-ans-btn" onclick="addMultiAnswerRow(${q.id})">
+            <i class="icofont icofont-plus-circle me-1"></i> Add Another Answer (+)
+          </button>
+          <span class="small text-muted fw-bold" id="multiAnsCount_${q.id}">
+            Total: ${multiAnswers.length} ${multiAnswers.length === 1 ? 'Answer' : 'Answers'}
+          </span>
         </div>
       </div>
     `;
@@ -1469,69 +2217,48 @@
 
   // Answer Handlers
   function handleInputChange(qId, val) {
+    const qObj = findQuestionById(qId);
     answerStore[qId] = {
       ...answerStore[qId],
       question_id: qId,
+      excel_cell_ref: qObj ? (qObj.excel_cell_ref || '') : '',
       answer_val: val,
-      category_id: activeCategory.id,
-      label_id: activeLabel.id,
-      sheet_name: activeCategory.sheet_name
+      category_id: activeCategory ? activeCategory.id : 0,
+      label_id: activeLabel ? activeLabel.id : 0,
+      sheet_name: activeCategory ? (activeCategory.sheet_name || '') : ''
     };
+
+    let contextChanged = false;
+    if (qObj) {
+      const qEn = (qObj.question_en || '').toLowerCase();
+      if (qObj.id === 396 || qEn.includes('reporting period start') || qEn.includes('start date')) {
+        globalReportingFromDate = val ? String(val).trim() : '';
+        const topFrom = document.getElementById('topFromDate');
+        if (topFrom) topFrom.value = globalReportingFromDate;
+        contextChanged = true;
+      }
+      if (qObj.id === 397 || qEn.includes('reporting period end') || qEn.includes('end date')) {
+        globalReportingToDate = val ? String(val).trim() : '';
+        const topTo = document.getElementById('topToDate');
+        if (topTo) topTo.value = globalReportingToDate;
+        contextChanged = true;
+      }
+      if (qObj.id === 395 || qObj.dropdown_group_name === 'currency' || qEn.includes('currency of the monetary')) {
+        globalReportingCurrency = val ? String(val).trim() : '';
+        const topCurrSel = document.getElementById('topCurrencySelect');
+        if (topCurrSel) topCurrSel.value = globalReportingCurrency;
+        contextChanged = true;
+      }
+    }
+
     markDirty();
     evaluateFormulas();
     evaluateVisibility();
     updateOverallProgress();
     updateLiveTrackerPills();
-  }
 
-  function updateLiveTrackerPills() {
-    const questions = activeLabel ? (activeLabel.questions || []) : [];
-    const totalQ = questions.length;
-    let answeredInLbl = 0;
-
-    questions.forEach((q, idx) => {
-      const filled = isQuestionFilled(q);
-      if (filled) answeredInLbl++;
-      const pill = document.querySelectorAll('.vsme-q-pill-btn')[idx];
-      if (pill) {
-        if (filled) {
-          pill.classList.add('filled');
-          const dot = pill.querySelector('.vsme-q-pill-dot');
-          if (dot) dot.innerHTML = '<i class="icofont icofont-check"></i>';
-        } else {
-          pill.classList.remove('filled');
-          const dot = pill.querySelector('.vsme-q-pill-dot');
-          if (dot) dot.innerText = idx + 1;
-        }
-      }
-    });
-
-    const isCurrentFilled = isQuestionFilled(questions[activeQuestionIndex]);
-    const trackerStats = document.querySelector('.vsme-question-tracker-bar');
-    if (trackerStats) {
-      const countEl = trackerStats.querySelector('.small.fw-bold.text-muted');
-      if (countEl) countEl.innerText = `(${answeredInLbl}/${totalQ} Answered)`;
-      const badgeContainer = trackerStats.querySelector('.d-flex.align-items-center.justify-content-between > div:last-child');
-      if (badgeContainer) {
-        badgeContainer.innerHTML = isCurrentFilled ? 
-          '<span class="badge bg-success-subtle text-success border border-success px-2 py-1"><i class="icofont icofont-check-circled me-1"></i> Answered</span>' : 
-          '<span class="badge bg-light text-secondary border px-2 py-1">In Progress</span>';
-      }
-    }
-
-    // Update section stepper item
-    const isCompleted = checkLabelCompleted(activeLabel);
-    const stepEl = document.getElementById(`hStepItem_${activeLabelIndex}`);
-    if (stepEl) {
-      if (isCompleted) {
-        stepEl.classList.add('completed');
-        const numEl = stepEl.querySelector('.vsme-h-step-num');
-        if (numEl) numEl.innerHTML = '<i class="icofont icofont-check"></i>';
-      } else {
-        stepEl.classList.remove('completed');
-        const numEl = stepEl.querySelector('.vsme-h-step-num');
-        if (numEl) numEl.innerText = activeLabelIndex + 1;
-      }
+    if (contextChanged) {
+      refreshAllDynamicLabels();
     }
   }
 
@@ -1540,10 +2267,24 @@
     parent.querySelectorAll('.vsme-seg-btn').forEach(b => {
       b.classList.remove('active-yes', 'active-no');
     });
-    if (val === 'TRUE') btnElem.classList.add('active-yes');
-    else btnElem.classList.add('active-no');
+    if (val === 'TRUE') {
+      btnElem.classList.add('active-yes');
+    } else {
+      btnElem.classList.add('active-no');
+    }
 
     handleInputChange(qId, val);
+
+    // If Question 1 is answered "FALSE" or "NO", automatically skip Q2 & Q3 and proceed to next section
+    const isNo = (val === 'FALSE' || val === '0' || val === 'No');
+    const isQ1 = (activeLabel && activeLabel.questions && activeLabel.questions.length > 0 && activeLabel.questions[0].id === qId);
+
+    if (isNo && isQ1 && activeLabel.questions.length > 1) {
+      showToastNotification('Question 1 answered "No". Q2 and Q3 are skipped. Moving to next section...', 'info');
+      setTimeout(() => {
+        advanceNextSection();
+      }, 400);
+    }
   }
 
   function handleDropdownChange(qId, selectElem, hasCustom) {
@@ -1564,6 +2305,361 @@
     const dropdownVal = selectElem ? selectElem.value : '';
     const combo = JSON.stringify({ dropdown: dropdownVal, custom: customElem.value });
     handleInputChange(qId, combo);
+  }
+
+  function handleUrlInputChange(qId, inputElem) {
+    const rawVal = inputElem.value;
+    const feedbackEl = document.getElementById(`urlErr_${qId}`);
+    
+    if (!rawVal || rawVal.trim() === '') {
+      inputElem.classList.remove('is-invalid', 'is-valid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      }
+      handleInputChange(qId, '');
+      return;
+    }
+
+    const trimmed = rawVal.trim();
+    if (isValidHttpUrl(trimmed)) {
+      inputElem.classList.remove('is-invalid');
+      inputElem.classList.add('is-valid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      }
+    } else {
+      inputElem.classList.remove('is-valid');
+      inputElem.classList.add('is-invalid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-block text-danger small mt-1';
+        feedbackEl.innerHTML = '<i class="icofont icofont-warning-alt me-1"></i> Please enter a valid URL (e.g., https://example.com)';
+      }
+    }
+    handleInputChange(qId, trimmed);
+  }
+
+  function handleUrlBlur(qId, inputElem) {
+    let rawVal = inputElem.value;
+    const feedbackEl = document.getElementById(`urlErr_${qId}`);
+    
+    if (!rawVal || rawVal.trim() === '') {
+      inputElem.classList.remove('is-invalid', 'is-valid');
+      if (feedbackEl) feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      handleInputChange(qId, '');
+      return;
+    }
+
+    let normalized = normalizeUrlString(rawVal);
+    inputElem.value = normalized;
+
+    if (isValidHttpUrl(normalized)) {
+      inputElem.classList.remove('is-invalid');
+      inputElem.classList.add('is-valid');
+      if (feedbackEl) feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      handleInputChange(qId, normalized);
+    } else {
+      inputElem.classList.remove('is-valid');
+      inputElem.classList.add('is-invalid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-block text-danger small mt-1';
+        feedbackEl.innerHTML = '<i class="icofont icofont-warning-alt me-1"></i> Invalid URL format. Please enter a valid web link (e.g., https://example.com)';
+      }
+      handleInputChange(qId, normalized);
+    }
+  }
+
+  // Multi-Answer Handlers
+  function handleMultiInputChange(qId, rIdx, val) {
+    const qObj = findQuestionById(qId);
+    const currentVal = answerStore[qId] ? answerStore[qId].answer_val : '';
+    let multiArr = parseMultipleAnswers(currentVal, qObj ? qObj.input_type : 'string', qObj ? qObj.has_value_input : false);
+
+    while (multiArr.length <= rIdx) {
+      multiArr.push('');
+    }
+    multiArr[rIdx] = val;
+
+    handleInputChange(qId, JSON.stringify(multiArr));
+  }
+
+  function handleMultiDropdownChange(qId, rIdx, selectElem, hasCustom) {
+    const qObj = findQuestionById(qId);
+    const dropdownVal = selectElem.value;
+    const currentVal = answerStore[qId] ? answerStore[qId].answer_val : '';
+    let multiArr = parseMultipleAnswers(currentVal, 'dropdown', hasCustom);
+
+    // Duplicate Check: ensure no other row in this question already selected this value
+    if (dropdownVal && dropdownVal.trim() !== '') {
+      const isDuplicate = multiArr.some((item, idx) => {
+        if (idx === rIdx) return false;
+        const itemVal = typeof item === 'object' && item !== null ? (item.dropdown || '') : String(item || '');
+        return itemVal.toLowerCase() === dropdownVal.toLowerCase();
+      });
+
+      if (isDuplicate) {
+        showToastNotification(`"${dropdownVal}" is already selected in another row. Duplicate options are not allowed.`, 'warning');
+        selectElem.value = '';
+        if (hasCustom) {
+          multiArr[rIdx] = { dropdown: '', custom: (multiArr[rIdx] && typeof multiArr[rIdx] === 'object' ? multiArr[rIdx].custom : '') };
+        } else {
+          multiArr[rIdx] = '';
+        }
+        handleInputChange(qId, JSON.stringify(multiArr));
+        refreshMultiDropdownOptions(qId);
+        return;
+      }
+    }
+
+    while (multiArr.length <= rIdx) {
+      multiArr.push(hasCustom ? { dropdown: '', custom: '' } : '');
+    }
+
+    if (hasCustom) {
+      const prevCustom = (multiArr[rIdx] && typeof multiArr[rIdx] === 'object') ? (multiArr[rIdx].custom || '') : '';
+      multiArr[rIdx] = { dropdown: dropdownVal, custom: prevCustom };
+    } else {
+      multiArr[rIdx] = dropdownVal;
+    }
+
+    handleInputChange(qId, JSON.stringify(multiArr));
+    refreshMultiDropdownOptions(qId);
+  }
+
+  function refreshMultiDropdownOptions(qId) {
+    const wrap = document.getElementById(`multiAnsWrap_${qId}`);
+    if (!wrap) return;
+    const selects = wrap.querySelectorAll(`select[data-qid="${qId}"]`);
+    if (!selects || selects.length === 0) return;
+
+    // Collect all selected values across the rows
+    const rowSelections = [];
+    selects.forEach((sel, idx) => {
+      rowSelections.push({ idx, val: sel.value || '' });
+    });
+
+    selects.forEach((sel, selIdx) => {
+      const currentVal = sel.value;
+      const otherSelected = rowSelections
+        .filter(r => r.idx !== selIdx && r.val !== '')
+        .map(r => r.val);
+
+      Array.from(sel.options).forEach(opt => {
+        if (!opt.value) return; // Skip placeholder
+        const isSelectedElsewhere = otherSelected.includes(opt.value);
+        if (isSelectedElsewhere) {
+          opt.disabled = true;
+          opt.style.color = '#94a3b8';
+          opt.style.backgroundColor = '#f1f5f9';
+          if (!opt.text.includes('(Already Selected)')) {
+            opt.setAttribute('data-base-text', opt.getAttribute('data-base-text') || opt.text);
+            opt.text = `${opt.getAttribute('data-base-text')} (Already Selected)`;
+          }
+        } else {
+          opt.disabled = false;
+          opt.style.color = '';
+          opt.style.backgroundColor = '';
+          const baseText = opt.getAttribute('data-base-text');
+          if (baseText) {
+            opt.text = baseText;
+            opt.removeAttribute('data-base-text');
+          }
+        }
+      });
+    });
+  }
+
+  function showToastNotification(message, type = 'info') {
+    let container = document.getElementById('vsmeToastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'vsmeToastContainer';
+      container.style.cssText = 'position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    const bgClass = type === 'warning' ? 'bg-warning text-dark' : (type === 'danger' ? 'bg-danger text-white' : 'bg-primary text-white');
+    const iconClass = type === 'warning' ? 'icofont-warning' : (type === 'danger' ? 'icofont-close-circled' : 'icofont-info-circle');
+
+    toast.className = `p-3 rounded-3 shadow-lg d-flex align-items-center gap-2 ${bgClass}`;
+    toast.style.cssText = 'min-width: 300px; max-width: 440px; pointer-events: auto; animation: slideInRight 0.3s ease; font-size: 0.88rem; font-weight: 600;';
+    toast.innerHTML = `
+      <i class="icofont ${iconClass} fs-5"></i>
+      <span class="flex-grow-1">${escapeHtml(message)}</span>
+      <button type="button" class="btn-close ${type !== 'warning' ? 'btn-close-white' : ''} btn-sm ms-2" onclick="this.parentElement.remove()"></button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      if (toast && toast.parentElement) {
+        toast.style.animation = 'fadeOut 0.4s ease';
+        setTimeout(() => toast.remove(), 400);
+      }
+    }, 3500);
+  }
+
+  function handleMultiCustomValChange(qId, rIdx, customElem) {
+    const qObj = findQuestionById(qId);
+    const customVal = customElem.value;
+    const currentVal = answerStore[qId] ? answerStore[qId].answer_val : '';
+    let multiArr = parseMultipleAnswers(currentVal, 'dropdown', true);
+
+    while (multiArr.length <= rIdx) {
+      multiArr.push({ dropdown: '', custom: '' });
+    }
+
+    const prevDropdown = (multiArr[rIdx] && typeof multiArr[rIdx] === 'object') ? (multiArr[rIdx].dropdown || '') : '';
+    multiArr[rIdx] = { dropdown: prevDropdown, custom: customVal };
+
+    handleInputChange(qId, JSON.stringify(multiArr));
+  }
+
+  function handleMultiUrlInputChange(qId, rIdx, inputElem) {
+    const rawVal = inputElem.value;
+    const feedbackEl = document.getElementById(`urlErr_${qId}_${rIdx}`);
+    
+    if (!rawVal || rawVal.trim() === '') {
+      inputElem.classList.remove('is-invalid', 'is-valid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      }
+      handleMultiInputChange(qId, rIdx, '');
+      return;
+    }
+
+    const trimmed = rawVal.trim();
+    if (isValidHttpUrl(trimmed)) {
+      inputElem.classList.remove('is-invalid');
+      inputElem.classList.add('is-valid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      }
+    } else {
+      inputElem.classList.remove('is-valid');
+      inputElem.classList.add('is-invalid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-block text-danger small mt-1';
+        feedbackEl.innerHTML = '<i class="icofont icofont-warning-alt me-1"></i> Please enter a valid URL (e.g., https://example.com)';
+      }
+    }
+    handleMultiInputChange(qId, rIdx, trimmed);
+  }
+
+  function handleMultiUrlBlur(qId, rIdx, inputElem) {
+    let rawVal = inputElem.value;
+    const feedbackEl = document.getElementById(`urlErr_${qId}_${rIdx}`);
+    
+    if (!rawVal || rawVal.trim() === '') {
+      inputElem.classList.remove('is-invalid', 'is-valid');
+      if (feedbackEl) feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      handleMultiInputChange(qId, rIdx, '');
+      return;
+    }
+
+    let normalized = normalizeUrlString(rawVal);
+    inputElem.value = normalized;
+
+    if (isValidHttpUrl(normalized)) {
+      inputElem.classList.remove('is-invalid');
+      inputElem.classList.add('is-valid');
+      if (feedbackEl) feedbackEl.className = 'invalid-feedback d-none text-danger small mt-1';
+      handleMultiInputChange(qId, rIdx, normalized);
+    } else {
+      inputElem.classList.remove('is-valid');
+      inputElem.classList.add('is-invalid');
+      if (feedbackEl) {
+        feedbackEl.className = 'invalid-feedback d-block text-danger small mt-1';
+        feedbackEl.innerHTML = '<i class="icofont icofont-warning-alt me-1"></i> Invalid URL format. Please enter a valid web link (e.g., https://example.com)';
+      }
+      handleMultiInputChange(qId, rIdx, normalized);
+    }
+  }
+
+  function setMultiBoolAnswer(qId, rIdx, val, btnElem) {
+    const parent = btnElem.parentElement;
+    parent.querySelectorAll('.vsme-seg-btn').forEach(b => {
+      b.classList.remove('active-yes', 'active-no');
+    });
+    if (val === 'TRUE') btnElem.classList.add('active-yes');
+    else btnElem.classList.add('active-no');
+
+    handleMultiInputChange(qId, rIdx, val);
+
+    const isNo = (val === 'FALSE' || val === '0' || val === 'No');
+    const isQ1 = (activeLabel && activeLabel.questions && activeLabel.questions.length > 0 && activeLabel.questions[0].id === qId);
+
+    if (isNo && isQ1 && activeLabel.questions.length > 1 && rIdx === 0) {
+      showToastNotification('Question 1 answered "No". Q2 and Q3 are skipped. Moving to next section...', 'info');
+      setTimeout(() => {
+        advanceNextSection();
+      }, 400);
+    }
+  }
+
+  function addMultiAnswerRow(qId) {
+    const qObj = findQuestionById(qId);
+    if (!qObj) return;
+    const currentVal = answerStore[qId] ? answerStore[qId].answer_val : '';
+    const isDropdownCustom = qObj.input_type === 'dropdown' && qObj.has_value_input;
+    let multiArr = parseMultipleAnswers(currentVal, qObj.input_type, qObj.has_value_input);
+
+    if (isDropdownCustom) {
+      multiArr.push({ dropdown: '', custom: '' });
+    } else {
+      multiArr.push('');
+    }
+
+    answerStore[qId] = {
+      ...answerStore[qId],
+      question_id: qId,
+      excel_cell_ref: qObj.excel_cell_ref || '',
+      answer_val: JSON.stringify(multiArr),
+      category_id: activeCategory ? activeCategory.id : 0,
+      label_id: activeLabel ? activeLabel.id : 0,
+      sheet_name: activeCategory ? (activeCategory.sheet_name || '') : ''
+    };
+
+    markDirty();
+    renderSlideStage();
+    updateOverallProgress();
+    updateLiveTrackerPills();
+
+    // Focus on newly added input
+    setTimeout(() => {
+      const rows = document.querySelectorAll(`#multiRowsList_${qId} .vsme-multi-ans-row`);
+      if (rows && rows.length > 0) {
+        const lastRow = rows[rows.length - 1];
+        const input = lastRow.querySelector('input, select');
+        if (input) input.focus();
+      }
+    }, 60);
+  }
+
+  function removeMultiAnswerRow(qId, rIdx) {
+    const qObj = findQuestionById(qId);
+    if (!qObj) return;
+    const currentVal = answerStore[qId] ? answerStore[qId].answer_val : '';
+    let multiArr = parseMultipleAnswers(currentVal, qObj.input_type, qObj.has_value_input);
+
+    if (multiArr.length <= 1) return; // Keep at least one row
+
+    multiArr.splice(rIdx, 1);
+
+    answerStore[qId] = {
+      ...answerStore[qId],
+      question_id: qId,
+      excel_cell_ref: qObj.excel_cell_ref || '',
+      answer_val: JSON.stringify(multiArr),
+      category_id: activeCategory ? activeCategory.id : 0,
+      label_id: activeLabel ? activeLabel.id : 0,
+      sheet_name: activeCategory ? (activeCategory.sheet_name || '') : ''
+    };
+
+    markDirty();
+    renderSlideStage();
+    updateOverallProgress();
+    updateLiveTrackerPills();
   }
 
   function handleTableInput(qId) {
@@ -1732,14 +2828,24 @@
       (c.labels || []).forEach(l => {
         (l.questions || []).forEach(q => {
           if (q.input_type === 'calculated' && q.formula_config) {
-            const op = q.formula_config.operation || 'sum';
+            const op = q.formula_config.formula_type || q.formula_config.operation || 'sum';
             const sourceCells = q.formula_config.source_cells || [];
             let result = 0;
 
             const values = sourceCells.map(cellRef => {
               const srcQ = findQuestionByCell(cellRef);
-              if (srcQ && answerStore[srcQ.id]) {
-                const num = parseFloat(answerStore[srcQ.id].answer_val);
+              if (srcQ && answerStore[srcQ.id] && answerStore[srcQ.id].answer_val) {
+                const ansRaw = answerStore[srcQ.id].answer_val;
+                if (typeof ansRaw === 'string' && ansRaw.startsWith('[')) {
+                  try {
+                    const parsed = JSON.parse(ansRaw);
+                    if (Array.isArray(parsed)) {
+                      const numArr = parsed.map(v => parseFloat(v)).filter(n => !isNaN(n));
+                      return numArr.length > 0 ? numArr.reduce((a, b) => a + b, 0) : 0;
+                    }
+                  } catch (e) {}
+                }
+                const num = parseFloat(ansRaw);
                 return isNaN(num) ? 0 : num;
               }
               return 0;
@@ -1762,10 +2868,12 @@
             answerStore[q.id] = {
               ...answerStore[q.id],
               question_id: q.id,
+              excel_cell_ref: q.excel_cell_ref || '',
               answer_val: String(result),
               calculated_val: String(result),
               category_id: c.id,
-              label_id: l.id
+              label_id: l.id,
+              sheet_name: c.sheet_name || ''
             };
           }
         });
@@ -1795,15 +2903,33 @@
             const triggerQ = findQuestionByCell(q.visibility_condition.depends_on_cell);
             const card = document.getElementById(`qCard_${q.id}`);
             if (triggerQ && card) {
-              const triggerVal = answerStore[triggerQ.id] ? String(answerStore[triggerQ.id].answer_val) : '';
-              const targetVal = String(q.visibility_condition.target_value);
+              const rawTrigger = answerStore[triggerQ.id] ? answerStore[triggerQ.id].answer_val : '';
+              let triggerVals = [String(rawTrigger || '')];
+              if (typeof rawTrigger === 'string' && rawTrigger.startsWith('[')) {
+                try {
+                  const parsed = JSON.parse(rawTrigger);
+                  if (Array.isArray(parsed)) {
+                    triggerVals = parsed.map(it => typeof it === 'object' && it ? (it.dropdown || it.val || '') : String(it));
+                  }
+                } catch (e) {}
+              }
+              const targetVal = String(q.visibility_condition.value || q.visibility_condition.target_value || '').toLowerCase();
               const op = q.visibility_condition.operator || 'equals';
               let matches = false;
 
-              if (op === 'equals') matches = triggerVal.toLowerCase() === targetVal.toLowerCase();
-              else if (op === 'not_equals') matches = triggerVal.toLowerCase() !== targetVal.toLowerCase();
-              else if (op === 'is_true') matches = triggerVal === 'TRUE' || triggerVal === '1' || triggerVal === 'Yes';
-              else if (op === 'is_false') matches = triggerVal === 'FALSE' || triggerVal === '0' || triggerVal === 'No';
+              if (op === 'equals') {
+                matches = triggerVals.some(v => v.toLowerCase() === targetVal);
+              } else if (op === 'not_equals') {
+                matches = triggerVals.every(v => v.toLowerCase() !== targetVal);
+              } else if (op === 'is_true') {
+                matches = triggerVals.some(v => v === 'TRUE' || v === '1' || v.toLowerCase() === 'yes' || v.toLowerCase() === 'true');
+              } else if (op === 'is_false') {
+                matches = triggerVals.some(v => v === 'FALSE' || v === '0' || v.toLowerCase() === 'no' || v.toLowerCase() === 'false');
+              } else if (op === 'gt') {
+                matches = triggerVals.some(v => parseFloat(v) > parseFloat(targetVal));
+              } else if (op === 'lt') {
+                matches = triggerVals.some(v => parseFloat(v) < parseFloat(targetVal));
+              }
 
               if (q.visibility_condition.action === 'show') {
                 card.style.display = matches ? 'block' : 'none';
@@ -1827,6 +2953,48 @@
     }
   }
 
+  function updateLiveTrackerPills() {
+    if (!activeLabel || !activeLabel.questions) return;
+    const pills = document.querySelectorAll('.vsme-q-pill-btn');
+    
+    activeLabel.questions.forEach((q, idx) => {
+      const pill = pills[idx];
+      if (!pill) return;
+      
+      const filled = isQuestionFilled(q);
+      const isSkipped = isQuestionSkipped(q, activeLabel);
+      const isActive = (idx === activeQuestionIndex);
+      const disp = getQuestionDisplayInfo(q, activeLabel);
+      
+      let pillClass = 'vsme-q-pill-btn';
+      if (isActive) pillClass += ' active';
+      if (isSkipped) pillClass += ' skipped';
+      else if (filled) pillClass += ' filled';
+      if (disp.isChild) pillClass += ' vsme-q-pill-child';
+      pill.className = pillClass;
+      
+      const dot = pill.querySelector('.vsme-q-pill-dot');
+      if (dot) {
+        if (isSkipped) {
+          dot.innerHTML = '<i class="icofont icofont-ban"></i>';
+        } else if (filled) {
+          dot.innerHTML = '<i class="icofont icofont-check"></i>';
+        } else {
+          dot.innerHTML = disp.numStr;
+        }
+      }
+
+      const span = pill.querySelector('span:not(.vsme-q-pill-dot)');
+      if (span) {
+        span.innerHTML = `${disp.pillStr}${isSkipped ? ' <small style="opacity: 0.8;">(Skipped)</small>' : ''}`;
+      }
+    });
+
+    renderHorizontalStepper();
+    updateOverallProgress();
+    updateNavButtons();
+  }
+
   function advanceNextSlide() {
     advanceNextQuestion();
   }
@@ -1837,8 +3005,52 @@
 
   function advanceNextQuestion() {
     const questions = activeLabel ? (activeLabel.questions || []) : [];
-    if (activeQuestionIndex < questions.length - 1) {
-      activeQuestionIndex++;
+    if (questions.length === 0) {
+      advanceNextSection();
+      return;
+    }
+
+    // Validate current question if it is a URL input and has a value
+    const currentQ = questions[activeQuestionIndex];
+    if (currentQ && currentQ.input_type === 'url' && !isQuestionSkipped(currentQ, activeLabel)) {
+      const a = answerStore[currentQ.id];
+      if (a && a.answer_val) {
+        if (isMultipleAllowed(currentQ)) {
+          const multiArr = parseMultipleAnswers(a.answer_val, 'url', false);
+          const hasInvalid = multiArr.some(item => item && String(item).trim() !== '' && !isValidHttpUrl(String(item).trim()));
+          if (hasInvalid) {
+            showToastNotification('Please enter a valid URL format (e.g., https://example.com) before proceeding.', 'warning');
+            return;
+          }
+        } else {
+          const raw = String(a.answer_val).trim();
+          if (raw !== '' && !isValidHttpUrl(raw)) {
+            showToastNotification('Please enter a valid URL format (e.g., https://example.com) before proceeding.', 'warning');
+            const inputEl = document.querySelector(`input[data-qid="${currentQ.id}"]`);
+            if (inputEl) {
+              inputEl.classList.add('is-invalid');
+              inputEl.focus();
+            }
+            return;
+          }
+        }
+      }
+    }
+
+    // If Q1 was answered No, skip Q2 & Q3 and proceed directly to next section
+    if (isFirstQuestionNo(activeLabel) && activeQuestionIndex === 0) {
+      advanceNextSection();
+      return;
+    }
+
+    // Find next non-skipped question index in this section
+    let nextIdx = activeQuestionIndex + 1;
+    while (nextIdx < questions.length && isQuestionSkipped(questions[nextIdx], activeLabel)) {
+      nextIdx++;
+    }
+
+    if (nextIdx < questions.length) {
+      activeQuestionIndex = nextIdx;
       renderSlideStage();
       updateNavButtons();
     } else {
@@ -1866,8 +3078,15 @@
   }
 
   function advancePrevQuestion() {
-    if (activeQuestionIndex > 0) {
-      activeQuestionIndex--;
+    const questions = activeLabel ? (activeLabel.questions || []) : [];
+    let prevIdx = activeQuestionIndex - 1;
+
+    while (prevIdx >= 0 && isQuestionSkipped(questions[prevIdx], activeLabel)) {
+      prevIdx--;
+    }
+
+    if (prevIdx >= 0) {
+      activeQuestionIndex = prevIdx;
       renderSlideStage();
       updateNavButtons();
     } else {
@@ -1879,14 +3098,33 @@
     if (activeLabelIndex > 0) {
       activeLabelIndex--;
       const prevLbl = activeCategory.labels[activeLabelIndex];
-      activeQuestionIndex = Math.max(0, (prevLbl.questions || []).length - 1);
+      const prevQuestions = prevLbl ? (prevLbl.questions || []) : [];
+      if (isFirstQuestionNo(prevLbl)) {
+        activeQuestionIndex = 0; // Land on Q1 since Q2/Q3 were skipped
+      } else {
+        // Land on the last non-skipped question in the previous section
+        let lastValidIdx = prevQuestions.length - 1;
+        while (lastValidIdx > 0 && isQuestionSkipped(prevQuestions[lastValidIdx], prevLbl)) {
+          lastValidIdx--;
+        }
+        activeQuestionIndex = Math.max(0, lastValidIdx);
+      }
       renderActiveSlide();
     } else if (activeCatIndex > 0) {
       activeCatIndex--;
       const prevCat = rawTemplate.categories[activeCatIndex];
       activeLabelIndex = Math.max(0, (prevCat.labels || []).length - 1);
       const prevLbl = prevCat.labels[activeLabelIndex];
-      activeQuestionIndex = Math.max(0, (prevLbl.questions || []).length - 1);
+      const prevQuestions = prevLbl ? (prevLbl.questions || []) : [];
+      if (isFirstQuestionNo(prevLbl)) {
+        activeQuestionIndex = 0;
+      } else {
+        let lastValidIdx = prevQuestions.length - 1;
+        while (lastValidIdx > 0 && isQuestionSkipped(prevQuestions[lastValidIdx], prevLbl)) {
+          lastValidIdx--;
+        }
+        activeQuestionIndex = Math.max(0, lastValidIdx);
+      }
       updateCategoryTabActive();
       renderActiveSlide();
     }
@@ -1903,9 +3141,21 @@
     const questions = activeLabel ? (activeLabel.questions || []) : [];
     const totalQ = questions.length;
     const lblTitle = getLocalized(activeLabel.name_translations, activeLabel.name_en || '');
+    const currentQ = questions[activeQuestionIndex];
+    const isSkipped = isQuestionSkipped(currentQ, activeLabel);
+    const isQ1No = isFirstQuestionNo(activeLabel);
+    const currentDisp = getQuestionDisplayInfo(currentQ, activeLabel);
 
     if (totalQ > 0) {
-      slideCounterText.innerText = `Question ${activeQuestionIndex + 1} of ${totalQ} in ${lblTitle}`;
+      if (isSkipped) {
+        slideCounterText.innerText = `Question ${currentDisp.numStr} of ${totalQ} (Skipped) in ${lblTitle}`;
+      } else if (isQ1No && activeQuestionIndex === 0 && totalQ > 1) {
+        slideCounterText.innerText = `Question 1 of ${totalQ} in ${lblTitle} (Q2 & Q3 Skipped)`;
+      } else if (currentDisp.isChild) {
+        slideCounterText.innerText = `Question ${currentDisp.numStr} (Follow-up to Q${currentDisp.parentNumStr}) in ${lblTitle}`;
+      } else {
+        slideCounterText.innerText = `Question ${currentDisp.numStr} of ${totalQ} in ${lblTitle}`;
+      }
     } else {
       slideCounterText.innerText = `${lblTitle}`;
     }
@@ -1913,7 +3163,17 @@
     btnPrev.disabled = (activeCatIndex === 0 && activeLabelIndex === 0 && activeQuestionIndex === 0);
 
     const isLastLabel = (activeCatIndex === rawTemplate.categories.length - 1 && activeLabelIndex === (activeCategory.labels || []).length - 1);
-    const isLastQ = (activeQuestionIndex >= totalQ - 1);
+
+    // Check if there are any remaining non-skipped questions after activeQuestionIndex in this label
+    let hasNextNonSkippedInLabel = false;
+    for (let k = activeQuestionIndex + 1; k < totalQ; k++) {
+      if (!isQuestionSkipped(questions[k], activeLabel)) {
+        hasNextNonSkippedInLabel = true;
+        break;
+      }
+    }
+
+    const isLastQ = !hasNextNonSkippedInLabel || (isQ1No && activeQuestionIndex === 0);
 
     if (isLastLabel && isLastQ) {
       btnNext.innerHTML = 'Review & Submit <i class="icofont icofont-check-circled ms-1"></i>';
@@ -1948,10 +3208,11 @@
       let catAns = 0;
       (c.labels || []).forEach(l => {
         const isClassified = classifiedStore[l.id];
+        const isQ1No = isFirstQuestionNo(l);
         (l.questions || []).forEach(q => {
           totalQuestions++;
           catQ++;
-          if (isClassified || (answerStore[q.id] && answerStore[q.id].answer_val && String(answerStore[q.id].answer_val).trim() !== '')) {
+          if (isClassified || isQ1No || isQuestionFilled(q) || isQuestionSkipped(q, l)) {
             totalAnswered++;
             catAns++;
           }
@@ -2068,6 +3329,41 @@
   }
 
   async function submitFinalAjax() {
+    // Validate all URL questions across the template
+    for (let c of (rawTemplate.categories || [])) {
+      for (let l of (c.labels || [])) {
+        if (classifiedStore[l.id] || isFirstQuestionNo(l)) continue;
+        for (let q of (l.questions || [])) {
+          if (q.input_type === 'url' && answerStore[q.id] && answerStore[q.id].answer_val) {
+            if (isMultipleAllowed(q)) {
+              const multiArr = parseMultipleAnswers(answerStore[q.id].answer_val, 'url', false);
+              const hasInvalid = multiArr.some(item => item && String(item).trim() !== '' && !isValidHttpUrl(String(item).trim()));
+              if (hasInvalid) {
+                const modalElem = document.getElementById('submitModal');
+                if (modalElem) {
+                  const modal = bootstrap.Modal.getInstance(modalElem);
+                  if (modal) modal.hide();
+                }
+                showToastNotification(`Invalid URL format in question: "${getLocalized(q.question_translations, q.question_en)}". Please fix it before submitting.`, 'danger');
+                return;
+              }
+            } else {
+              const val = String(answerStore[q.id].answer_val).trim();
+              if (val !== '' && !isValidHttpUrl(val)) {
+                const modalElem = document.getElementById('submitModal');
+                if (modalElem) {
+                  const modal = bootstrap.Modal.getInstance(modalElem);
+                  if (modal) modal.hide();
+                }
+                showToastNotification(`Invalid URL format in question: "${getLocalized(q.question_translations, q.question_en)}". Please fix it before submitting.`, 'danger');
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+
     const btn = document.getElementById('btnConfirmSubmit');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Submitting...';
@@ -2077,6 +3373,7 @@
         template_id: rawTemplate.id,
         project_id: projectId,
         selected_language: currentLanguage,
+        flag: '<%= typeof flag !== "undefined" ? flag : "RVY%3D" %>',
         answers: answerStore,
         classified_sections: classifiedStore
       };
@@ -2164,9 +3461,20 @@
       track.addEventListener('scroll', updateStripNavArrows, { passive: true });
     }
 
-    // Enter key inside single input fields to advance
+    // Enter key inside input fields
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey && e.target && e.target.classList && e.target.classList.contains('vsme-input-control') && e.target.tagName !== 'TEXTAREA') {
+        const qIdAttr = e.target.getAttribute('data-qid');
+        const isMultiRow = e.target.hasAttribute('data-row-idx');
+        if (isMultiRow && qIdAttr) {
+          const qIdNum = parseInt(qIdAttr, 10);
+          const qObj = findQuestionById(qIdNum);
+          if (qObj && isMultipleAllowed(qObj)) {
+            e.preventDefault();
+            addMultiAnswerRow(qIdNum);
+            return;
+          }
+        }
         e.preventDefault();
         advanceNextQuestion();
       } else if (e.altKey && e.key === 'ArrowRight') {
