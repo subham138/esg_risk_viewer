@@ -937,13 +937,16 @@
       </div>
     </div>
 
-    <!-- Right Action Buttons: Back to Projects, Save Draft & Final Submit -->
+    <!-- Right Action Buttons: Back to Projects, Save Draft, Export Excel & Final Submit -->
     <div class="d-flex align-items-center gap-2">
       <a href="<%= (typeof header_url !== 'undefined' && header_url) ? header_url : '/my_project?flag=RVY%3D' %>" class="btn btn-outline-secondary btn-sm" title="Back">
         <i class="icofont icofont-arrow-left me-1"></i><%= (typeof is_admin !== 'undefined' && is_admin) ? 'Back to Templates' : 'Back to Projects' %>
       </a>
       <button type="button" class="btn btn-outline-secondary btn-sm" id="btnManualDraftSave">
         <i class="icofont icofont-save me-1"></i> Save Draft
+      </button>
+      <button type="button" class="btn btn-outline-primary btn-sm" id="btnExportExcel" title="Generate and Download Populated VSME Excel Template" style="display:none">
+        <i class="icofont icofont-file-excel me-1 text-success"></i> Export Excel
       </button>
       <button type="button" class="btn btn-success btn-sm" id="btnFinalSubmit">
         <i class="icofont icofont-check-circled me-1"></i> Final Save & Submit
@@ -3400,6 +3403,52 @@
     }
   }
 
+  async function exportExcelAjax() {
+    const btn = document.getElementById('btnExportExcel');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1 text-success"></span> Exporting...';
+    }
+
+    try {
+      const payload = {
+        template_id: rawTemplate.id,
+        project_id: projectId,
+        selected_language: currentLanguage,
+        answers: answerStore,
+        classified_sections: classifiedStore
+      };
+
+      const response = await fetch('/vsme/generate-excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const res = await response.json();
+      if (res.success) {
+        showToastNotification(`Excel template populated successfully (${res.totalPopulated} values populated). Starting download...`, 'success');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = `/vsme/export-excel?template_id=${rawTemplate.id}&project_id=${projectId}`;
+        downloadLink.download = res.fileName || 'VSME_Report.xlsx';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } else {
+        showToastNotification(res.message || 'Error exporting Excel template', 'danger');
+      }
+    } catch (err) {
+      console.error('Error in exportExcelAjax:', err);
+      showToastNotification('Server error while generating Excel file.', 'danger');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+  }
+
   function setupEventListeners() {
     // Nav buttons
     document.getElementById('btnNextSlide').addEventListener('click', advanceNextQuestion);
@@ -3409,8 +3458,12 @@
       btnSkip.addEventListener('click', skipCurrentQuestion);
     }
 
-    // Save buttons
+    // Save & Export buttons
     document.getElementById('btnManualDraftSave').addEventListener('click', () => saveDraftAjax(false));
+    const btnExport = document.getElementById('btnExportExcel');
+    if (btnExport) {
+      btnExport.addEventListener('click', exportExcelAjax);
+    }
     document.getElementById('btnFinalSubmit').addEventListener('click', () => {
       const modal = new bootstrap.Modal(document.getElementById('submitModal'));
       modal.show();

@@ -1,0 +1,259 @@
+<%- include('../templates/header.ejs', {header: 'XBRL Preview', header_url: back_url, sub_header: `${project_name} — iXBRL Report Preview`, show_br: true}) %>
+
+<style>
+  .xbrl-preview-container {
+    min-height: 60vh;
+  }
+  .xbrl-generate-card {
+    max-width: 640px;
+    margin: 60px auto;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    box-shadow: 0 8px 32px rgba(67, 97, 238, 0.08);
+    overflow: hidden;
+  }
+  .xbrl-generate-card .card-body {
+    padding: 48px 40px;
+    text-align: center;
+  }
+  .xbrl-generate-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 6px 24px rgba(67, 97, 238, 0.25);
+  }
+  .xbrl-generate-icon i {
+    font-size: 36px;
+    color: #fff;
+  }
+  .xbrl-generate-card h4 {
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 12px;
+  }
+  .xbrl-generate-card p {
+    color: #6c757d;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .btn-generate-xbrl {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    color: #fff;
+    border: none;
+    padding: 12px 36px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(67, 97, 238, 0.3);
+  }
+  .btn-generate-xbrl:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(67, 97, 238, 0.4);
+    color: #fff;
+  }
+  .btn-generate-xbrl:disabled {
+    opacity: 0.7;
+    transform: none;
+  }
+  .btn-regenerate-xbrl {
+    background: transparent;
+    color: #4361ee;
+    border: 1.5px solid #4361ee;
+    padding: 8px 24px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-regenerate-xbrl:hover {
+    background: #4361ee;
+    color: #fff;
+  }
+  .xbrl-iframe-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    background: #fff;
+  }
+  .xbrl-iframe-wrapper iframe {
+    width: 100%;
+    min-height: 80vh;
+    border: none;
+  }
+  .xbrl-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .xbrl-toolbar .badge {
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+  .generating-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .generating-overlay.active {
+    display: flex;
+  }
+  .generating-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 48px 56px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    max-width: 440px;
+  }
+  .generating-box .spinner-grow {
+    width: 3rem;
+    height: 3rem;
+    color: #4361ee;
+  }
+  .generating-box h5 {
+    margin-top: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .generating-box p {
+    color: #6c757d;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+</style>
+
+<div class="container-fluid xbrl-preview-container">
+  <div class="row">
+    <div class="col-sm-12">
+
+      <% if (xbrl_file_path) { %>
+        <!-- XBRL PREVIEW MODE -->
+        <div class="xbrl-iframe-wrapper">
+          <div class="xbrl-toolbar">
+            <div>
+              <span class="badge bg-success"><i class="icofont icofont-check-circled me-1"></i> iXBRL Report Generated</span>
+              <span class="text-muted ms-2 small"><%= project_name %></span>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="<%= xbrl_file_path %>" target="_blank" class="btn btn-outline-primary btn-sm">
+                <i class="icofont icofont-external-link me-1"></i> Open in New Tab
+              </a>
+              <a href="<%= xbrl_file_path %>" download class="btn btn-outline-secondary btn-sm">
+                <i class="icofont icofont-download me-1"></i> Download HTML
+              </a>
+              <button type="button" class="btn btn-regenerate-xbrl btn-sm" id="btnRegenerateXbrl">
+                <i class="icofont icofont-refresh me-1"></i> Regenerate
+              </button>
+            </div>
+          </div>
+          <iframe id="xbrlFrame" src="<%= xbrl_file_path %>"></iframe>
+        </div>
+
+      <% } else { %>
+        <!-- GENERATE XBRL MODE -->
+        <div class="card xbrl-generate-card">
+          <div class="card-body">
+            <div class="xbrl-generate-icon">
+              <i class="icofont icofont-code-alt"></i>
+            </div>
+            <h4>Generate iXBRL Report</h4>
+            <p>
+              No iXBRL report has been generated for this project yet.<br>
+              Click the button below to generate the XBRL-tagged HTML report from your submitted questionnaire data.
+            </p>
+            <button type="button" class="btn btn-generate-xbrl" id="btnGenerateXbrl">
+              <i class="icofont icofont-flash me-1"></i> Generate XBRL Report
+            </button>
+          </div>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+</div>
+
+<!-- GENERATING OVERLAY -->
+<div class="generating-overlay" id="generatingOverlay">
+  <div class="generating-box">
+    <div class="spinner-grow" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <h5>Generating iXBRL Report</h5>
+    <p>Processing questionnaire data, populating Excel template, and converting to iXBRL format. This may take a moment...</p>
+  </div>
+</div>
+
+<script>
+  const projectId = '<%= project_id %>';
+  const flag = '<%= flag %>';
+
+  function showOverlay() {
+    document.getElementById('generatingOverlay').classList.add('active');
+  }
+  function hideOverlay() {
+    document.getElementById('generatingOverlay').classList.remove('active');
+  }
+
+  async function generateXbrl() {
+    showOverlay();
+    try {
+      const response = await fetch('/vsme/generate-xbrl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_id: projectId })
+      });
+      const res = await response.json();
+      if (res.success) {
+        // Reload page to show the preview
+        window.location.reload();
+      } else {
+        hideOverlay();
+        alert(res.message || 'Failed to generate XBRL report. Please try again.');
+      }
+    } catch (err) {
+      hideOverlay();
+      console.error('Error generating XBRL:', err);
+      alert('Server error while generating XBRL report. Please try again.');
+    }
+  }
+
+  // Generate button
+  const btnGenerate = document.getElementById('btnGenerateXbrl');
+  if (btnGenerate) {
+    btnGenerate.addEventListener('click', generateXbrl);
+  }
+
+  // Regenerate button
+  const btnRegenerate = document.getElementById('btnRegenerateXbrl');
+  if (btnRegenerate) {
+    btnRegenerate.addEventListener('click', () => {
+      if (confirm('Are you sure you want to regenerate the iXBRL report? This will overwrite the existing report.')) {
+        generateXbrl();
+      }
+    });
+  }
+</script>
+
+<%- include('../templates/footer.ejs') %>

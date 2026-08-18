@@ -1,6 +1,9 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const { execSync } = require('child_process');
 const VsmeRouter = express.Router();
-const { db_Select } = require('../modules/MasterModule');
+const { db_Select, db_Insert } = require('../modules/MasterModule');
 const {
   getTemplateList,
   getDropdownGroupNames,
@@ -10,7 +13,8 @@ const {
   updateTemplateHierarchy,
   getVsmeClientQuestionnaire,
   saveVsmeDraftResponses,
-  submitVsmeFinalResponses
+  submitVsmeFinalResponses,
+  generatePopulatedVsmeExcel
 } = require('../modules/VsmeTemplateModule');
 
 /**
@@ -247,7 +251,7 @@ VsmeRouter.post('/vsme/auto-save', async (req, res) => {
 
 /**
  * POST /vsme/submit
- * Final submission endpoint (validates and locks submission)
+ * Final submission endpoint (validates and locks submission and generates Excel)
  */
 VsmeRouter.post('/vsme/submit', async (req, res) => {
   try {
@@ -271,7 +275,9 @@ VsmeRouter.post('/vsme/submit', async (req, res) => {
       return res.json({
         success: true,
         redirect: redirectUrl,
-        message: 'VSME Questionnaire successfully submitted!'
+        message: 'VSME Questionnaire successfully submitted!',
+        excel_file: submitRes.excel_file || null,
+        download_url: submitRes.download_url || null
       });
     } else {
       return res.status(400).json({ success: false, message: submitRes.msg || 'Failed to submit questionnaire' });
@@ -282,5 +288,322 @@ VsmeRouter.post('/vsme/submit', async (req, res) => {
   }
 });
 
-module.exports = VsmeRouter;
+/**
+ * GET /vsme/export-excel
+ * Generate / retrieve populated VSME Digital Excel file and trigger direct download
+ */
+VsmeRouter.get('/vsme/export-excel', async (req, res) => {
+  try {
+    const templateId = parseInt(req.query.template_id || 0, 10);
+    const projectId = parseInt(req.query.project_id || 0, 10);
+    const userId = req.session.user ? req.session.user.id || req.session.user.user_id || 0 : 0;
+    const clientId = req.session.user ? req.session.user.client_id || '0' : (req.query.client_id || '0');
 
+    if (!templateId) {
+      return res.status(400).send('Invalid template ID for Excel export');
+    }
+
+    const excelRes = await generatePopulatedVsmeExcel({
+      templateId,
+      userId,
+      clientId,
+      projectId
+    });
+
+    if (excelRes.suc > 0 && excelRes.filePath && fs.existsSync(excelRes.filePath)) {
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.json({
+          success: true,
+          fileName: excelRes.fileName,
+          filePath: excelRes.filePath,
+          downloadUrl: excelRes.relativePath,
+          totalPopulated: excelRes.totalPopulated
+        });
+      }
+      return res.download(excelRes.filePath, excelRes.fileName);
+    } else {
+      console.error('Excel generation error:', excelRes.msg);
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.status(500).json({ success: false, message: excelRes.msg || 'Failed to generate Excel file' });
+      }
+      return res.status(500).send(excelRes.msg || 'Error generating populated Excel file');
+    }
+  } catch (err) {
+    console.error('Error in export-excel endpoint:', err);
+    if (req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(500).json({ success: false, message: 'Server error generating Excel file' });
+    }
+    return res.status(500).send('Server error while exporting Excel file');
+  }
+});
+
+/**
+ * POST /vsme/generate-excel
+ * On-demand generation from current form state with live answers payload
+ */
+VsmeRouter.post('/vsme/generate-excel', async (req, res) => {
+  try {
+    const payload = req.body;
+    const templateId = parseInt(payload.template_id || 0, 10);
+    const projectId = parseInt(payload.project_id || 0, 10);
+    const userId = req.session.user ? req.session.user.id || req.session.user.user_id || 0 : 0;
+    const clientId = req.session.user ? req.session.user.client_id || '0' : '0';
+
+    if (!templateId) {
+      return res.status(400).json({ success: false, message: 'Invalid template ID.' });
+    }
+
+    // If answers provided in payload, first save draft so DB and session are up to date
+    if (payload.answers && Object.keys(payload.answers).length > 0) {
+      const userName = (req.session.user && req.session.user.user_name) ? req.session.user.user_name : 'Client User';
+      await saveVsmeDraftResponses(payload, userId, clientId, userName);
+    }
+
+    const excelRes = await generatePopulatedVsmeExcel({
+      templateId,
+      userId,
+      clientId,
+      projectId,
+      overrideAnswers: payload.answers || null,
+      classifiedSections: payload.classified_sections || {}
+    });
+
+    if (excelRes.suc > 0) {
+      return res.json({
+        success: true,
+        fileName: excelRes.fileName,
+        downloadUrl: excelRes.relativePath,
+        directUrl: `/vsme/export-excel?template_id=${templateId}&project_id=${projectId}`,
+        totalPopulated: excelRes.totalPopulated,
+        message: 'VSME Digital Excel file generated successfully!'
+      });
+    } else {
+      return res.status(500).json({ success: false, message: excelRes.msg || 'Failed to generate Excel file' });
+    }
+  } catch (err) {
+    console.error('Error in generate-excel controller:', err);
+    return res.status(500).json({ success: false, message: 'Server error generating Excel file' });
+  }
+});
+
+/**
+ * POST /vsme/generate-xbrl
+ * Full pipeline: Generate populated Excel → run Python parse-and-ixbrl.py → store HTML → update DB
+ */
+VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
+  try {
+    const projectId = parseInt(req.body.project_id || 0, 10);
+    if (!projectId) {
+      return res.status(400).json({ success: false, message: 'Invalid project ID.' });
+    }
+
+    const userId = req.session.user ? req.session.user.id || req.session.user.user_id || 0 : 0;
+    const clientId = req.session.user ? req.session.user.client_id || '0' : '0';
+
+    // 1. Find the template_id for this project from td_vsme_submissions
+    const subRes = await db_Select(
+      'template_id',
+      'td_vsme_submissions',
+      `project_id = ${projectId} AND client_id = '${clientId}'`,
+      'ORDER BY updated_at DESC LIMIT 1'
+    );
+
+    let templateId = 0;
+    if (subRes.suc > 0 && subRes.msg.length > 0) {
+      templateId = subRes.msg[0].template_id;
+    }
+
+    // Fallback: get latest published or active template if no submission found
+    if (!templateId) {
+      const tmplRes = await db_Select(
+        'id',
+        'md_vsme_templates',
+        null,
+        'ORDER BY is_published DESC, id DESC LIMIT 1'
+      );
+      if (tmplRes.suc > 0 && tmplRes.msg.length > 0) {
+        templateId = tmplRes.msg[0].id;
+      }
+    }
+
+    if (!templateId) {
+      return res.status(400).json({ success: false, message: 'No VSME template found for this project.' });
+    }
+
+    // 2. Generate the populated Excel file
+    const excelRes = await generatePopulatedVsmeExcel({
+      templateId,
+      userId,
+      clientId,
+      projectId
+    });
+
+    if (excelRes.suc === 0 || !excelRes.filePath) {
+      return res.status(500).json({
+        success: false,
+        message: excelRes.msg || 'Failed to generate populated Excel file.'
+      });
+    }
+
+    console.log(`[XBRL] Excel generated: ${excelRes.filePath}`);
+
+    // 3. Run the Python parse-and-ixbrl.py script
+    const xbrlConverterPath = process.env.XBRL_CONVERTER_PATH;
+    const pythonExe = process.env.XBRL_PYTHON_EXE;
+
+    if (!xbrlConverterPath || !pythonExe) {
+      return res.status(500).json({
+        success: false,
+        message: 'XBRL converter path not configured in .env (XBRL_CONVERTER_PATH / XBRL_PYTHON_EXE).'
+      });
+    }
+
+    if (!fs.existsSync(pythonExe)) {
+      return res.status(500).json({
+        success: false,
+        message: `Python executable not found at: ${pythonExe}`
+      });
+    }
+
+    const scriptPath = path.join(xbrlConverterPath, 'scripts', 'parse-and-ixbrl.py');
+    if (!fs.existsSync(scriptPath)) {
+      return res.status(500).json({
+        success: false,
+        message: `XBRL conversion script not found at: ${scriptPath}`
+      });
+    }
+
+    // Output HTML filename
+    const timestamp = Date.now();
+    const outputFileName = `xbrl_project_${projectId}_${timestamp}.html`;
+    const xbrlDir = path.join(__dirname, '..', 'assets', 'uploads', 'xbrl');
+
+    // Ensure directory exists
+    if (!fs.existsSync(xbrlDir)) {
+      fs.mkdirSync(xbrlDir, { recursive: true });
+    }
+
+    const outputFilePath = path.join(xbrlDir, outputFileName);
+
+    // Build the command
+    const cmd = `"${pythonExe}" "${scriptPath}" "${excelRes.filePath}" "${outputFilePath}"`;
+    console.log(`[XBRL] Running command: ${cmd}`);
+
+    try {
+      const stdout = execSync(cmd, {
+        cwd: xbrlConverterPath,
+        timeout: 300000, // 5 minute timeout for Arelle validation
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+      console.log(`[XBRL] Script output: ${stdout}`);
+    } catch (execErr) {
+      console.error('[XBRL] Script execution error:', execErr.message);
+      console.error('[XBRL] stderr:', execErr.stderr);
+      return res.status(500).json({
+        success: false,
+        message: `XBRL conversion failed: ${execErr.stderr || execErr.message}`
+      });
+    }
+
+    // 4. Verify output file exists
+    if (!fs.existsSync(outputFilePath)) {
+      return res.status(500).json({
+        success: false,
+        message: 'XBRL conversion completed but output HTML file was not created.'
+      });
+    }
+
+    // 5. Update td_project with the xbrl_file_path
+    const relativePath = `/uploads/xbrl/${outputFileName}`;
+    const updateRes = await db_Insert(
+      'td_project',
+      `xbrl_file_path = '${relativePath}'`,
+      null,
+      `id = ${projectId}`,
+      1
+    );
+
+    if (updateRes.suc === 0) {
+      console.error('[XBRL] Failed to update td_project:', updateRes.msg);
+    }
+
+    console.log(`[XBRL] Successfully generated and stored: ${relativePath}`);
+
+    return res.json({
+      success: true,
+      message: 'iXBRL report generated successfully!',
+      xbrl_path: relativePath,
+      fileName: outputFileName
+    });
+
+  } catch (err) {
+    console.error('Error in generate-xbrl endpoint:', err);
+    return res.status(500).json({
+      success: false,
+      message: `Server error: ${err.message}`
+    });
+  }
+});
+
+/**
+ * GET /vsme/xbrl-preview
+ * Render the XBRL preview page (shows iframe with generated HTML or generate button)
+ */
+VsmeRouter.get('/vsme/xbrl-preview', async (req, res) => {
+  try {
+    const projectId = parseInt(req.query.project_id || 0, 10);
+    const flag = req.query.flag || 'RVY%3D';
+
+    if (!projectId) {
+      req.session.message = { type: 'danger', message: 'Invalid project ID.' };
+      return res.redirect(`/my_project?flag=${flag}`);
+    }
+
+    // Fetch project details including xbrl_file_path
+    const projRes = await db_Select(
+      'id, project_name, xbrl_file_path',
+      'td_project',
+      `id = ${projectId}`,
+      null
+    );
+
+    if (projRes.suc === 0 || projRes.msg.length === 0) {
+      req.session.message = { type: 'danger', message: 'Project not found.' };
+      return res.redirect(`/my_project?flag=${flag}`);
+    }
+
+    const project = projRes.msg[0];
+    const safeFlag = flag.includes('%') ? flag : encodeURIComponent(flag);
+
+    // Verify the XBRL file actually exists on disk
+    let xbrlFilePath = project.xbrl_file_path || null;
+    if (xbrlFilePath) {
+      const fullPath = path.join(__dirname, '..', 'assets', xbrlFilePath);
+      if (!fs.existsSync(fullPath)) {
+        console.warn(`[XBRL] File path in DB but file missing on disk: ${fullPath}`);
+        xbrlFilePath = null;
+      }
+    }
+
+    const viewData = {
+      header: 'iXBRL Report Preview',
+      sub_header: `${project.project_name} — iXBRL Report Preview`,
+      header_url: `/my_project?flag=${safeFlag}`,
+      back_url: `/my_project?flag=${safeFlag}`,
+      project_id: projectId,
+      project_name: project.project_name,
+      xbrl_file_path: xbrlFilePath,
+      flag: flag
+    };
+
+    res.render('vsme_templates/xbrl_preview', viewData);
+  } catch (err) {
+    console.error('Error in xbrl-preview endpoint:', err);
+    req.session.message = { type: 'danger', message: 'Error loading XBRL preview.' };
+    const flag = req.query.flag || 'RVY%3D';
+    res.redirect(`/my_project?flag=${flag}`);
+  }
+});
+
+module.exports = VsmeRouter;

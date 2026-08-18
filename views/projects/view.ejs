@@ -174,6 +174,12 @@
                     return;
                 }
 
+                // VSME Preview button → XBRL preview page
+                if (isVsme && (route === 'report_full_view' || route === 'cal_report_full_view')) {
+                    window.location.href = `/vsme/xbrl-preview?project_id=${id}&flag=${encodeURIComponent(encFlag)}`;
+                    return;
+                }
+
                 if (sec_id > 0 && ind_id > 0) {
                     window.location.href = `/${route}?enc_data=${window.btoa(JSON.stringify({ sec_id: sec_id, ind_id: ind_id, top_id: 0, proj_id: id, proj_name: proj_name, repo_type: '<%= flag == "I" ? "ifrs" : (flag == "E" ? "esrs" : (flag == "G" ? "gri" : "gri-f")) %>', flag: '<%= flag %>', dec_flag: '<%= dec_flag %>' }))}`
                 } else {

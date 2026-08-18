@@ -662,8 +662,10 @@ const saveVsmeDraftResponses = async (payload, userId = 0, clientId = '0', userN
   }
 };
 
+const { generatePopulatedVsmeExcel } = require('./VsmeExcelService');
+
 /**
- * Submit final responses (validates completion and marks status as submitted)
+ * Submit final responses (validates completion, marks status as submitted, and generates populated Excel file)
  */
 const submitVsmeFinalResponses = async (payload, userId = 0, clientId = '0', userName = 'User') => {
   const promiseDb = db.promise();
@@ -718,11 +720,28 @@ const submitVsmeFinalResponses = async (payload, userId = 0, clientId = '0', use
       );
     }
 
+    // 4. Automatically generate the populated VSME Excel template copy in uploads/
+    let excelResult = null;
+    try {
+      excelResult = await generatePopulatedVsmeExcel({
+        templateId,
+        userId,
+        clientId: effectiveClientId,
+        projectId,
+        overrideAnswers: payload.answers || null,
+        classifiedSections: payload.classified_sections || {}
+      });
+    } catch (excelErr) {
+      console.error('Error generating populated VSME Excel file during submission:', excelErr);
+    }
+
     return {
       suc: 1,
-      msg: 'VSME Questionnaire submitted successfully!',
+      msg: 'VSME Questionnaire submitted and Excel template successfully generated!',
       template_id: templateId,
-      project_id: projectId
+      project_id: projectId,
+      excel_file: excelResult && excelResult.suc > 0 ? excelResult.fileName : null,
+      download_url: excelResult && excelResult.suc > 0 ? excelResult.relativePath : null
     };
   } catch (err) {
     console.error('Error in submitVsmeFinalResponses:', err);
@@ -741,6 +760,7 @@ module.exports = {
   updateTemplateHierarchy,
   getVsmeClientQuestionnaire,
   saveVsmeDraftResponses,
-  submitVsmeFinalResponses
+  submitVsmeFinalResponses,
+  generatePopulatedVsmeExcel
 };
 
