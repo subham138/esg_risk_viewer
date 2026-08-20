@@ -486,7 +486,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
     const outputFilePath = path.join(xbrlDir, outputFileName);
 
     // Build the command
-    const cmd = `"${pythonExe}" "${scriptPath}" "${excelRes.filePath}" "${outputFilePath}"`;
+    const cmd = `"${pythonExe}" "${scriptPath}" "${excelRes.filePath}" "${outputFilePath}" --viewer`;
     console.log(`[XBRL] Running command: ${cmd}`);
 
     try {

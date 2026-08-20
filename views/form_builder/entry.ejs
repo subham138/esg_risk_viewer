@@ -392,173 +392,213 @@
   <!-- Container-fluid Ends-->
 
 <script>
-    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'},{key: '&#9776;', label: 'short_text'},{key: '&#128270;', label:'act'},{key: '&#127787;', label:'emi_type'},{key: '&#128207;', label:'emi_unit'},{key: '&#128197;', label:'mode'}]
+    var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'},{key: '&#9776;', label: 'short_text'},{key: '&#128270;', label:'act'},{key: '&#127787;', label:'emi_type'},{key: '&#128207;', label:'emi_unit'},{key: '&#128197;', label:'mode'}];
+
     function editLabel(elm) {
         var jelm = $(elm);
         var htmlElm = jelm[0];
         $(htmlElm).hide();
         $(htmlElm).siblings('.edit').show();
-        $(htmlElm).siblings('.edit').focus()
+        $(htmlElm).siblings('.edit').focus();
         var initial_text = $(htmlElm).text();
         $(htmlElm).siblings('.edit').focusout(function () {
             var editedInput = $(htmlElm).siblings('.edit').val();
             $(htmlElm).siblings('.edit').hide();
             if (editedInput != '') {
                 $(htmlElm).show().text(editedInput);
-            }
-            else {
+            } else {
                 $(htmlElm).show().text(initial_text);
             }
         });
     }
+
     function addOption(elm, key){
         var jelm = $(elm);
-        var cardId = $(jelm[0]).parent().closest('.card').attr('id')
-        
-        createOptions(cardId, key, true)
-        // $(jelm[0]).parent().closest('.dynamic-form-value-entry')
+        var cardId = $(jelm[0]).closest('.entry-card').attr('id');
+        createOptions(cardId, key, true);
     }
 
     function removeOption(elm){
         var jelm = $(elm);
-        $(jelm[0]).parent().detach();
+        $(jelm[0]).closest('.form-group.row').remove();
     }
 
     function delFrmCard(e){
-        var elm = $(e);
-        $(elm[0]).parent().closest('.card').detach();
+        if ($('.entry-card').length <= 1) {
+            alert('At least one question card is required.');
+            return;
+        }
+        if (confirm('Are you sure you want to delete this question?')) {
+            var elm = $(e);
+            elm.closest('.entry-card').remove();
+            reindexCards();
+        }
     }
 
     function checkChange(e){
         var elm = $(e);
-        console.log($(elm[0]).attr('checked'));
-        if($(elm[0]).attr('checked')){
-            $(elm[0]).removeAttr('checked')
-            $(elm[0]).parent().closest('.btn-card-footer').children().closest('.is-parent').show()
-        }else{
-            $(elm[0]).attr('checked', true)
-            $(elm[0]).parent().closest('.btn-card-footer').children().closest('.is-parent').hide()
+        if(elm.is(':checked')){
+            elm.closest('.btn-card-footer').find('.is-parent').hide();
+        } else {
+            elm.closest('.btn-card-footer').find('.is-parent').show();
         }
-        
     }
 
     function checkSubChange(e){
         var elm = $(e);
-        console.log($(elm[0]).closest('.is-sub-parent').children());
-        if($(elm[0]).attr('checked')){
-            $(elm[0]).removeAttr('checked')
-            $(elm[0]).parent().closest('.media').next().show()
-        }else{
-            $(elm[0]).attr('checked', true)
-            $(elm[0]).parent().closest('.media').next().hide()
+        if(elm.is(':checked')){
+            elm.closest('.media').next('.is-parent').hide();
+        } else {
+            elm.closest('.media').next('.is-parent').show();
         }
     }
     
     function dynamicOptionChange(e){
-        console.log(e);
-        
-        var card_id = $(e).attr('card-id')
-        // console.log($(this));
-        var symbol = optionList.filter(dt => dt.label == $(e).val())
-        $(`#${card_id} .dynamic-form-value-entry`).empty()
-        // var selected_text = 
-        // var opCount = $(`#${card_id} .dynamic-form-value-entry`).length
+        var card = $(e).closest('.entry-card');
+        var card_id = card.attr('id');
+        var symbol = optionList.filter(dt => dt.label == $(e).val());
+        var valueContainer = card.find('.dynamic-form-value-entry');
+        valueContainer.empty();
+
         if(['radio', 'check', 'drop'].includes($(e).val())){
-            createOptions(card_id, symbol[0].key)
+            createOptions(card_id, symbol.length > 0 ? symbol[0].key : '&#9673;');
         }
         if(['act', 'emi_type', 'emi_unit', 'mode'].includes($(e).val())){
-            $(`#${card_id} .dynamic-form-value-entry`).append(`
+            valueContainer.append(`
             <div class="form-group">
                 <select class="form-select" disabled><option selected>User Select</option></select>
             </div>
-            `)
+            `);
         }
         if(['short_text'].includes($(e).val())){
-           $(`#${card_id} .dynamic-form-value-entry`).append(`
+           valueContainer.append(`
             <div class="form-group">
                 <input class="form-control" placeholder="User Input" type="text" disabled="true">
             </div>
-            `)
+            `);
         }
     }
 
     function createOptions(card_id, key, minus = false){
-        var opCount = $(`#${card_id} .dynamic-form-value-entry`).length,
-        cardId = card_id.split('-')[1];
-        $(`#${card_id} .dynamic-form-value-entry`).append(`
+        var card = $(`#${card_id}`);
+        var cardIdNum = card_id.replace('card-', '');
+        var opContainer = card.find('.dynamic-form-value-entry');
+        var opCount = opContainer.find('.form-group.row').length + 1;
+        
+        opContainer.append(`
         <div class="form-group row">
             <div class="col-md-1 op-key"><span>${key}</span></div>
             <div class="col-md-9">
-                <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
-                <input type="text" value="" name="q_s_${cardId}" class="edit form-control" id="q_s_${opCount + 1}" style="display: none;">
+                <h6 class="label-view input-label" onclick="editLabel(this)">Entry Option</h6>
+                <input type="text" value="" name="q_s_${cardIdNum}" class="edit form-control" id="q_s_${cardIdNum}_${opCount}" style="display: none;">
             </div>
             <div class="col-md-1 op-btn-p" onclick="addOption(this, '${key}')"><i class="icofont icofont-plus text-success"></i></div>
             ${minus ? `<div class="col-md-1 op-btn-m" onclick="removeOption(this)"><i class="icofont icofont-minus text-danger"></i></div>` : ''}
         </div>
-        `)
+        `);
+    }
+
+    function reindexCards() {
+        $('.entry-card').each(function(index) {
+            var newIdx = index + 1;
+            var card = $(this);
+            var newCardId = 'card-' + newIdx;
+            
+            card.attr('id', newCardId);
+
+            // Heading
+            card.find('input[name^="hed_"]').attr('name', 'hed_' + newIdx).attr('id', 'hed_' + newIdx);
+            
+            // Question
+            card.find('input[name^="q_"]').not('[name^="q_s_"]').attr('name', 'q_' + newIdx).attr('id', 'q_' + newIdx);
+            
+            // Options
+            card.find('input[name^="q_s_"]').attr('name', 'q_s_' + newIdx);
+            card.find('.dynamic-option').attr('name', 'option_' + newIdx).attr('card-id', newCardId);
+            
+            // Card hidden identifier
+            var cardMarker = card.find('input[name="cards"]');
+            if (cardMarker.length > 0) {
+                cardMarker.val(newIdx);
+            } else {
+                card.find('.dynamic-option').parent().append(`<input type="hidden" name="cards" value="${newIdx}">`);
+            }
+
+            // Sequence
+            var seqInput = card.find('input[name^="s_"]').attr('name', 's_' + newIdx).attr('id', 's_' + newIdx);
+            var seqSpan = seqInput.siblings('span');
+            var currVal = seqInput.val();
+            if (!currVal || currVal === '' || seqSpan.text() === 'Sequence' || /^\d+$/.test(seqSpan.text())) {
+                seqInput.val(newIdx);
+                seqSpan.text(newIdx);
+            }
+
+            // Parent & Sub-parent
+            card.find('input[id^="gri_flag_"]').attr('id', 'gri_flag_' + newIdx);
+            card.find('input[name^="p_c_"]').attr('name', 'p_c_' + newIdx).attr('id', 'p_c_' + newIdx);
+            card.find('input[id^="gr_sub_flag_"]').attr('id', 'gr_sub_flag_' + newIdx);
+            card.find('input[name^="p_s_c_"]').attr('name', 'p_s_c_' + newIdx).attr('id', 'p_s_c_' + newIdx);
+        });
     }
 
     function addNewCard(){
-        var tot_card = $('.entry-card').length
+        var nextIdx = $('.entry-card').length + 1;
         $('#add-card').append(`
-            <div class="card w-75 entry-card" id="card-${tot_card + 1}">
+            <div class="card w-75 entry-card" id="card-${nextIdx}">
                 <div class="card-body b-l-success border-3">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group mb-0">
                                 <h6 class="label-view" onclick="editLabel(this)">Entry Heading/Sub-heading</h6>
-                                <input type="text" value="" name="hed_${tot_card + 1}" class="edit mb-2 form-control" id="hed_${tot_card + 1}" style="display: none;">
+                                <input type="text" value="" name="hed_${nextIdx}" class="edit mb-2 form-control" id="hed_${nextIdx}" style="display: none;">
                             </div>
                         </div>
                         <div class="col-md-8">
-                        <div class="form-group mb-0">
-                            <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
-                            <input type="text" value="" name="q_${tot_card + 1}" class="edit form-control" id="q_${tot_card + 1}" style="display: none;">
-                        </div>
-                        <div class="dynamic-form-value-entry">
-                            <div class="form-group row">
-                                <div class="col-md-1 op-key"><span>&#9673;</span></div>
-                                <div class="col-md-9">
-                                    <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
-                                    <input type="text" value="" name="q_s_${tot_card + 1}" class="edit form-control" id="q_s_${tot_card + 1}" style="display: none;">
+                            <div class="form-group mb-0">
+                                <h6 class="label-view" onclick="editLabel(this)">Entry Question</h6>
+                                <input type="text" value="" name="q_${nextIdx}" class="edit form-control" id="q_${nextIdx}" style="display: none;">
+                            </div>
+                            <div class="dynamic-form-value-entry">
+                                <div class="form-group row">
+                                    <div class="col-md-1 op-key"><span>&#9673;</span></div>
+                                    <div class="col-md-9">
+                                        <h6 class="label-view input-label" onclick="editLabel(this)">Entry Option</h6>
+                                        <input type="text" value="" name="q_s_${nextIdx}" class="edit form-control" id="q_s_${nextIdx}_1" style="display: none;">
+                                    </div>
+                                    <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
                                 </div>
-                                <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
                             </div>
                         </div>
-                        </div>
                         <div class="col-md-4">
-                        <div class="form-group">
-                            <select class="form-select dynamic-option" name="option_${tot_card + 1}" onchange="dynamicOptionChange(this)" card-id="card-${tot_card + 1}">
-                                <option value="radio">&#9673; | Radio</option>
-                                <option value="check">&#9635; | Checkbox</option>
-                                <option value="drop">&#9661; | Select Dropdown</option>
-                                <option value="short_text">&#9776; | Short Answer</option>
-                                <option value="act">&#128270; | Activity</option>
-                                <option value="emi_type">&#127787; | Emission Type</option>
-                                <option value="emi_unit">&#128207; | Unit</option>
-                                <option value="mode">&#128197; | Mode</option>
-                            </select>
-                            <input type="hidden" name="cards" value="${tot_card + 1}">
-                        </div>
+                            <div class="form-group">
+                                <select class="form-select dynamic-option" name="option_${nextIdx}" onchange="dynamicOptionChange(this)" card-id="card-${nextIdx}">
+                                    <option value="radio">&#9673; | Radio</option>
+                                    <option value="check">&#9635; | Checkbox</option>
+                                    <option value="drop">&#9661; | Select Dropdown</option>
+                                    <option value="short_text">&#9776; | Short Answer</option>
+                                    <option value="act">&#128270; | Activity</option>
+                                    <option value="emi_type">&#127787; | Emission Type</option>
+                                    <option value="emi_unit">&#128207; | Unit</option>
+                                    <option value="mode">&#128197; | Mode</option>
+                                </select>
+                                <input type="hidden" name="cards" value="${nextIdx}">
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer p-2">
                     <div class="btn-card-footer">
-                        <!-- <div class="vl"></div> -->
-                        <!-- <div class="vl"></div>
-                        <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
                         <div class="vl"></div>
                         <div class="m-r-10">
-                            <span onclick="editLabel(this)">Sequence</span>
-                            <input type="text" value="" name="s_${tot_card + 1}" class="edit form-control" id="s_${tot_card + 1}" style="display: none;">
+                            <span onclick="editLabel(this)">${nextIdx}</span>
+                            <input type="text" value="${nextIdx}" name="s_${nextIdx}" class="edit form-control" id="s_${nextIdx}" style="display: none;">
                         </div>
                         <div class="vl"></div>
                         <div class="media m-r-10">
                             <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
                             <div class="media-body text-end icon-state switch-outline">
                                 <label class="switch">
-                                    <input type="checkbox" id="gri_flag_${tot_card + 1}" checked onchange="checkChange(this)">
+                                    <input type="checkbox" id="gri_flag_${nextIdx}" checked onchange="checkChange(this)">
                                     <span class="switch-state bg-primary"></span>
                                 </label>
                             </div>
@@ -567,14 +607,14 @@
                             <div class="vl"></div>
                             <div class="m-r-10">
                                 <span onclick="editLabel(this)">Parent Sequence</span>
-                                <input type="text" value="" name="p_c_${tot_card + 1}" class="edit form-control" id="p_c_${tot_card + 1}" style="display: none;">
+                                <input type="text" value="" name="p_c_${nextIdx}" class="edit form-control" id="p_c_${nextIdx}" style="display: none;">
                             </div>
                             <div class="vl"></div>
                             <div class="media m-r-10">
                                 <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
                                 <div class="media-body text-end icon-state switch-outline">
                                     <label class="switch">
-                                        <input type="checkbox" id="gr_sub_flag_${tot_card + 1}" checked onchange="checkSubChange(this)">
+                                        <input type="checkbox" id="gr_sub_flag_${nextIdx}" checked onchange="checkSubChange(this)">
                                         <span class="switch-state bg-primary"></span>
                                     </label>
                                 </div>
@@ -583,7 +623,7 @@
                                 <div class="vl"></div>
                                 <div class="m-r-10">
                                     <span onclick="editLabel(this)">Sub-Parent Sequence</span>
-                                    <input type="text" value="" name="p_s_c_${tot_card + 1}" class="edit form-control" id="p_s_c_${tot_card + 1}" style="display: none;">
+                                    <input type="text" value="" name="p_s_c_${nextIdx}" class="edit form-control" id="p_s_c_${nextIdx}" style="display: none;">
                                 </div>
                             </div>
                         </div>
@@ -595,8 +635,13 @@
                     <a onclick="delFrmCard(this)" title="Delete row"><i class="fa fa-minus-square-o text-danger"></i></a>
                 </div>
             </div>
-        `)
+        `);
+        reindexCards();
     }
+
+    $(document).ready(function() {
+        reindexCards();
+    });
 
     $('#scope_id').on('change', function(){
         $.ajax({
@@ -609,7 +654,6 @@
             },
             success: function(result){
                 var res = JSON.parse(result);
-                // console.log(res);
                 $('#sec_id').empty();
                 $('#sec_id').append($('<option>', {value: '', text: 'Select Type'}));
                 if(res.suc > 0 && res.msg.length > 0){

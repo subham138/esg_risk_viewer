@@ -105,7 +105,7 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
     flag = data.flag ? Buffer.from(data.flag, 'base64').toString() : 'E',
     sec_list = await db_Select('id, scope_id, sec_name', 'md_cal_sec_type', data.scope > 0 ? `lang_flag = '${flag}' AND scope_id = ${data.scope}` : `lang_flag = '${flag}'`, null);
     if(data.scope > 0 && data.type_id > 0){
-        var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag = '${flag}'`, 'ORDER BY id asc')
+        var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag = '${flag}'`, 'ORDER BY sequence asc, id asc')
         if(resDt.suc > 0){
             var headerFilterDt = resDt.msg.filter(dt => dt.header_flag != 'N')
             var questFilterData = resDt.msg.filter(dt => dt.header_flag != 'Y')
@@ -126,55 +126,89 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
 })
 
 FBRouter.post('/form_builder_post', async (req, res) => {
-    var data = req.body,
-    user_name = req.session.user.user_name,
-    datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-    resDt = {};
-    // res.send(data)
-    
-    if(data.cards.length > 0){
-        var scopeDt = await db_Select('count(*) tot_row', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}'`, null)
-        if(scopeDt.suc > 0){
-            if(scopeDt.msg[0].tot_row > 0){
-                // await db_Delete('md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}'`)
-                await db_Delete('md_cal_form_builder_option', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id}`)
+    try {
+        var data = req.body,
+        user_name = (req.session.user && req.session.user.user_name) ? req.session.user.user_name : 'Admin',
+        datetime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+
+        const safeStr = (val) => {
+            if (val === undefined || val === null) return '';
+            if (Array.isArray(val)) val = val[0] || '';
+            return String(val).split("'").join("\\'");
+        };
+
+        const rawCards = data.cards !== undefined && data.cards !== null ? (Array.isArray(data.cards) ? data.cards : [data.cards]) : [];
+        const cardList = [...new Set(rawCards.map(c => String(c).trim()).filter(c => c.length > 0))];
+
+        if(cardList.length > 0 && data.scope_id > 0 && data.sec_id > 0){
+            // 1. Delete previous questions and options for this scope/sec/lang to cleanly remove deleted cards
+            var oldRows = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}'`, null);
+            if(oldRows.suc > 0 && oldRows.msg.length > 0){
+                var oldIds = oldRows.msg.map(dt => dt.id).join(',');
+                if (oldIds.length > 0) {
+                    await db_Delete('md_cal_form_builder_option', `builder_id IN (${oldIds}) OR (scope_id = ${data.scope_id} AND sec_id = ${data.sec_id})`);
+                }
+                await db_Delete('md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}'`);
             }
-        }
-        var head_chk_dt = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}' AND header_flag="Y" AND input_type IS NULL`, null)
 
-        var table_name = 'md_cal_form_builder',
-        fields = head_chk_dt.suc > 0 && head_chk_dt.msg.length > 0 ? `lang_flag = '${data.lang_flag}', scope_id = ${data.scope_id}, sec_id = ${data.sec_id}, input_label = '${data[`header`].split("'").join("\\'")}', modified_by = '${user_name}', modified_dt = '${datetime}'` : `(lang_flag, scope_id, sec_id, input_label, header_flag, created_by, created_dt)`,
-        values = `('${data.lang_flag}', ${data.scope_id}, ${data.sec_id}, '${data[`header`].split("'").join("\\'")}', 'Y', '${user_name}', '${datetime}')`,
-        whr= head_chk_dt.suc > 0 && head_chk_dt.msg.length > 0 ? `id=${head_chk_dt.msg[0].id}` : null,
-        flag = head_chk_dt.suc > 0 && head_chk_dt.msg.length > 0 ? 1 : 0;
-        resDt = await db_Insert(table_name, fields, values, whr, flag)
-        for(let id of data.cards){
-            var chkDt = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}' AND header_flag="N" AND sequence = '${data[`s_${id}`]}' AND is_parent = '${data[`p_c_${id}`] > 0 ? 'N': (data[`p_s_c_${id}`] > 0 ? 'N' : 'Y')}' AND parent_id = '${data[`p_c_${id}`] > 0 ? data[`p_c_${id}`] : 0}' AND is_sub_parent = '${data[`p_s_c_${id}`] > 0 ? 'N': 'Y'}' AND sub_parent_id = '${data[`p_s_c_${id}`] > 0 ? data[`p_s_c_${id}`] : 0}'`, null)
-            
+            // 2. Insert Header row
+            var headerText = safeStr(data.header);
+            var headFields = `(lang_flag, scope_id, sec_id, input_label, header_flag, created_by, created_dt)`;
+            var headValues = `('${data.lang_flag}', ${data.scope_id}, ${data.sec_id}, '${headerText}', 'Y', '${user_name}', '${datetime}')`;
+            await db_Insert('md_cal_form_builder', headFields, headValues, null, 0);
 
-            var table_name = 'md_cal_form_builder',
-            fields = chkDt.suc > 0 && chkDt.msg.length > 0 ? `scope_id = ${data.scope_id}, sec_id = ${data.sec_id}, input_type = '${INPUT_TYPE_LIST[data[`option_${id}`]]}', input_label = '${data[`q_${id}`].split("'").join("\\'")}', input_heading = '${data[`hed_${id}`]}', sequence = '${data[`s_${id}`]}', is_parent = '${data[`p_c_${id}`] > 0 ? 'N': (data[`p_s_c_${id}`] > 0 ? 'N' : 'Y')}', parent_id = '${data[`p_c_${id}`] > 0 ? data[`p_c_${id}`] : 0}', is_sub_parent = '${data[`p_s_c_${id}`] > 0 ? 'N': 'Y'}', sub_parent_id = '${data[`p_s_c_${id}`] > 0 ? data[`p_s_c_${id}`] : 0}', modified_by = '${user_name}', modified_dt = '${datetime}'` : `(lang_flag, scope_id, sec_id, input_type, input_label, input_heading, sequence, is_parent, parent_id, is_sub_parent, sub_parent_id, created_by, created_dt)`,
-            values = `('${data.lang_flag}', ${data.scope_id}, ${data.sec_id}, '${INPUT_TYPE_LIST[data[`option_${id}`]]}', '${data[`q_${id}`].split("'").join("\\'")}', '${data[`hed_${id}`]}', '${data[`s_${id}`]}', '${data[`p_c_${id}`] > 0 ? 'N': (data[`p_s_c_${id}`] > 0 ? 'N' : 'Y')}', '${data[`p_c_${id}`] > 0 ? data[`p_c_${id}`] : 0}', '${data[`p_s_c_${id}`] > 0 ? 'N': 'Y'}', '${data[`p_s_c_${id}`] > 0 ? data[`p_s_c_${id}`] : 0}', '${user_name}', '${datetime}')`,
-            whr= chkDt.suc > 0 && chkDt.msg.length > 0 ? `id=${chkDt.msg[0].id}` : null,
-            flag = chkDt.suc > 0 && chkDt.msg.length > 0 ? 1 : 0;
-            resDt = await db_Insert(table_name, fields, values, whr, flag)
+            // 3. Insert each Question card in sequence
+            for(let i = 0; i < cardList.length; i++){
+                let id = cardList[i];
+                let optionKey = data[`option_${id}`] ? (Array.isArray(data[`option_${id}`]) ? data[`option_${id}`][0] : data[`option_${id}`]) : 'short_text';
+                let inputType = INPUT_TYPE_LIST[optionKey] || 'I';
+                let qLabel = safeStr(data[`q_${id}`]);
+                let qHeading = safeStr(data[`hed_${id}`]);
+                let seq = parseInt(data[`s_${id}`]) || (i + 1);
+                let pVal = parseInt(data[`p_c_${id}`]) || 0;
+                let psVal = parseInt(data[`p_s_c_${id}`]) || 0;
+                let isParent = (pVal > 0 || psVal > 0) ? 'N' : 'Y';
+                let isSubParent = (psVal > 0) ? 'N' : 'Y';
 
-            var builder_id = chkDt.suc > 0 && chkDt.msg.length > 0 ? chkDt.msg[0].id : (resDt.suc > 0 ? resDt.lastId.insertId : 0)
+                let fields = `(lang_flag, scope_id, sec_id, input_type, input_label, input_heading, sequence, is_parent, parent_id, is_sub_parent, sub_parent_id, header_flag, created_by, created_dt)`;
+                let values = `('${data.lang_flag}', ${data.scope_id}, ${data.sec_id}, '${inputType}', '${qLabel}', '${qHeading}', '${seq}', '${isParent}', '${pVal}', '${isSubParent}', '${psVal}', 'N', '${user_name}', '${datetime}')`;
+                
+                let resDt = await db_Insert('md_cal_form_builder', fields, values, null, 0);
+                let builder_id = (resDt.suc > 0 && resDt.lastId) ? resDt.lastId.insertId : 0;
 
-            if(['radio', 'check', 'drop'].includes(data[`option_${id}`]) && builder_id > 0){
-                for(let opt of data[`q_s_${id}`]){
-                    var table_name = 'md_cal_form_builder_option',
-                    fields = `(scope_id, sec_id, builder_id, option_name, created_by, created_dt)`,
-                    values = `(${data.scope_id}, ${data.sec_id}, ${builder_id}, '${opt}', '${user_name}', '${datetime}')`,
-                    whr= null,
-                    flag = 0;
-                    await db_Insert(table_name, fields, values, whr, flag)
+                if(['radio', 'check', 'drop'].includes(optionKey) && builder_id > 0){
+                    let rawOpts = data[`q_s_${id}`];
+                    let optList = Array.isArray(rawOpts) ? rawOpts : (rawOpts !== undefined && rawOpts !== null ? [rawOpts] : []);
+                    for(let opt of optList){
+                        let optName = safeStr(opt).trim();
+                        if (optName.length > 0) {
+                            let optFields = `(scope_id, sec_id, builder_id, option_name, created_by, created_dt)`;
+                            let optValues = `(${data.scope_id}, ${data.sec_id}, ${builder_id}, '${optName}', '${user_name}', '${datetime}')`;
+                            await db_Insert('md_cal_form_builder_option', optFields, optValues, null, 0);
+                        }
+                    }
                 }
             }
+
+            req.session.message = {
+                type: "success",
+                message: "Template questions saved successfully!",
+            };
+        } else {
+            req.session.message = {
+                type: "warning",
+                message: "No question cards found to save.",
+            };
         }
+    } catch (err) {
+        console.error('Error saving form builder template:', err);
+        req.session.message = {
+            type: "danger",
+            message: "Error saving template questions: " + err.message,
+        };
     }
-    res.redirect(`/build_logic?scope=${data.scope_id}&type_id=${data.sec_id}`)
-})
+    res.redirect(`/build_logic?scope=${data.scope_id}&type_id=${data.sec_id}`);
+});
 
 FBRouter.get('/form_builder_del', async (req, res) => {
     var data = req.query
