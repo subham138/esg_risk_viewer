@@ -439,7 +439,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
     });
 
     if (excelRes.suc === 0 || !excelRes.filePath) {
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: excelRes.msg || 'Failed to generate populated Excel file.'
       });
@@ -452,14 +452,14 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
     const pythonExe = process.env.XBRL_PYTHON_EXE;
 
     if (!xbrlConverterPath || !pythonExe) {
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: 'XBRL converter path not configured in .env (XBRL_CONVERTER_PATH / XBRL_PYTHON_EXE).'
       });
     }
 
     if (!fs.existsSync(pythonExe)) {
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: `Python executable not found at: ${pythonExe}`
       });
@@ -467,7 +467,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
 
     const scriptPath = path.join(xbrlConverterPath, 'scripts', 'parse-and-ixbrl.py');
     if (!fs.existsSync(scriptPath)) {
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: `XBRL conversion script not found at: ${scriptPath}`
       });
@@ -500,7 +500,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
     } catch (execErr) {
       console.error('[XBRL] Script execution error:', execErr.message);
       console.error('[XBRL] stderr:', execErr.stderr);
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: `XBRL conversion failed: ${execErr.stderr || execErr.message}`
       });
@@ -508,7 +508,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
 
     // 4. Verify output file exists
     if (!fs.existsSync(outputFilePath)) {
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: 'XBRL conversion completed but output HTML file was not created.'
       });
@@ -539,7 +539,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
 
   } catch (err) {
     console.error('Error in generate-xbrl endpoint:', err);
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: `Server error: ${err.message}`
     });
