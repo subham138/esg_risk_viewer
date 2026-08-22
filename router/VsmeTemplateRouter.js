@@ -77,7 +77,7 @@ VsmeRouter.post('/admin/vsme-templates/store', async (req, res) => {
       };
       return res.json({ success: true, redirect: '/admin/vsme-templates', message: 'VSME Template created successfully!' });
     } else {
-      return res.status(400).json({ success: false, message: saveRes.msg || 'Failed to create template' });
+      return res.json({ success: false, message: saveRes.msg || 'Failed to create template' });
     }
   } catch (err) {
     console.error('Error in store template controller:', err);
@@ -134,7 +134,7 @@ VsmeRouter.post('/admin/vsme-templates/update/:id', async (req, res) => {
       };
       return res.json({ success: true, redirect: '/admin/vsme-templates', message: updateRes.msg });
     } else {
-      return res.status(400).json({ success: false, message: updateRes.msg || 'Failed to update template' });
+      return res.json({ success: false, message: updateRes.msg || 'Failed to update template' });
     }
   } catch (err) {
     console.error('Error in update template controller:', err);
@@ -222,7 +222,7 @@ VsmeRouter.post('/vsme/save-draft', async (req, res) => {
     if (saveRes.suc > 0) {
       return res.json({ success: true, ...saveRes });
     } else {
-      return res.status(400).json({ success: false, message: saveRes.msg || 'Failed to save draft' });
+      return res.json({ success: false, message: saveRes.msg || 'Failed to save draft' });
     }
   } catch (err) {
     console.error('Error in save-draft controller:', err);
@@ -280,7 +280,7 @@ VsmeRouter.post('/vsme/submit', async (req, res) => {
         download_url: submitRes.download_url || null
       });
     } else {
-      return res.status(400).json({ success: false, message: submitRes.msg || 'Failed to submit questionnaire' });
+      return res.json({ success: false, message: submitRes.msg || 'Failed to submit questionnaire' });
     }
   } catch (err) {
     console.error('Error in submit controller:', err);
@@ -300,7 +300,7 @@ VsmeRouter.get('/vsme/export-excel', async (req, res) => {
     const clientId = req.session.user ? req.session.user.client_id || '0' : (req.query.client_id || '0');
 
     if (!templateId) {
-      return res.status(400).send('Invalid template ID for Excel export');
+      return res.send('Invalid template ID for Excel export');
     }
 
     const excelRes = await generatePopulatedVsmeExcel({
@@ -350,7 +350,7 @@ VsmeRouter.post('/vsme/generate-excel', async (req, res) => {
     const clientId = req.session.user ? req.session.user.client_id || '0' : '0';
 
     if (!templateId) {
-      return res.status(400).json({ success: false, message: 'Invalid template ID.' });
+      return res.json({ success: false, message: 'Invalid template ID.' });
     }
 
     // If answers provided in payload, first save draft so DB and session are up to date
@@ -394,7 +394,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
   try {
     const projectId = parseInt(req.body.project_id || 0, 10);
     if (!projectId) {
-      return res.status(400).json({ success: false, message: 'Invalid project ID.' });
+      return res.json({ success: false, message: 'Invalid project ID.' });
     }
 
     const userId = req.session.user ? req.session.user.id || req.session.user.user_id || 0 : 0;
@@ -427,7 +427,7 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
     }
 
     if (!templateId) {
-      return res.status(400).json({ success: false, message: 'No VSME template found for this project.' });
+      return res.json({ success: false, message: 'No VSME template found for this project.' });
     }
 
     // 2. Generate the populated Excel file
