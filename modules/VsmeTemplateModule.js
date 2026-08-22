@@ -118,6 +118,9 @@ const getTemplateHierarchy = async (templateId) => {
           q.visibility_condition = parseJsonField(q.visibility_condition, null);
           q.formula_config = parseJsonField(q.formula_config, null);
           q.validation_rules = parseJsonField(q.validation_rules, null);
+          if (q.formula_config && q.formula_config.copy_config) {
+            q.copy_config = q.formula_config.copy_config;
+          }
         }
         lbl.questions = questions;
       }
@@ -201,7 +204,11 @@ const saveTemplateHierarchy = async (templateData, createdBy = 'Admin') => {
                 const qInfoTrans = q.info_translations ? JSON.stringify(q.info_translations) : null;
                 const tableConfigStr = q.table_config ? JSON.stringify(q.table_config) : null;
                 const visCondStr = q.visibility_condition ? JSON.stringify(q.visibility_condition) : null;
-                const formulaConfigStr = q.formula_config ? JSON.stringify(q.formula_config) : null;
+                const combinedFormulaObj = (q.formula_config || q.copy_config) ? {
+                  ...(q.formula_config || {}),
+                  ...(q.copy_config ? { copy_config: q.copy_config } : {})
+                } : null;
+                const formulaConfigStr = combinedFormulaObj ? JSON.stringify(combinedFormulaObj) : null;
                 const valRulesStr = q.validation_rules ? JSON.stringify(q.validation_rules) : null;
 
                 await connection.query(
@@ -329,7 +336,11 @@ const updateTemplateHierarchy = async (templateId, templateData, updatedBy = 'Ad
                 const qInfoTrans = q.info_translations ? JSON.stringify(q.info_translations) : null;
                 const tableConfigStr = q.table_config ? JSON.stringify(q.table_config) : null;
                 const visCondStr = q.visibility_condition ? JSON.stringify(q.visibility_condition) : null;
-                const formulaConfigStr = q.formula_config ? JSON.stringify(q.formula_config) : null;
+                const combinedFormulaObj = (q.formula_config || q.copy_config) ? {
+                  ...(q.formula_config || {}),
+                  ...(q.copy_config ? { copy_config: q.copy_config } : {})
+                } : null;
+                const formulaConfigStr = combinedFormulaObj ? JSON.stringify(combinedFormulaObj) : null;
                 const valRulesStr = q.validation_rules ? JSON.stringify(q.validation_rules) : null;
 
                 await connection.query(

@@ -47,12 +47,13 @@
     padding: 10px 15px;
   }
   .info-text-box {
-    background-color: #fdfbf7;
-    border: 1px solid #fef3c7;
-    border-left: 3px solid #f59e0b;
-    border-radius: 4px;
-    padding: 10px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #0284c7;
+    border-radius: 8px;
+    padding: 12px 14px;
     margin-top: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
   .vsme-floating-bar {
     position: fixed;
@@ -416,7 +417,7 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-warning fw-bold" onclick="$('#cat_info_wrapper_${catId}').toggleClass('d-none')">
+          <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold shadow-2x" onclick="$('#cat_info_wrapper_${catId}').toggleClass('d-none')">
             <i class="icofont icofont-info-circle me-1"></i> Add Category Guidance Description (+)
           </button>
           <div class="form-check form-switch mb-0">
@@ -425,6 +426,10 @@
           </div>
         </div>
         <div class="info-text-box ${infoTrans && Object.keys(infoTrans).length > 0 ? '' : 'd-none'} mb-3" id="cat_info_wrapper_${catId}">
+          <div class="d-flex align-items-center gap-2 mb-2 pb-1 border-bottom">
+            <i class="icofont icofont-light-bulb text-warning"></i>
+            <span class="fw-bold text-dark small">Category Guidance Description (Shown in Questionnaire Preview)</span>
+          </div>
           <div class="row g-2">
             ${infoFieldsHtml}
           </div>
@@ -518,7 +523,7 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-between mb-2">
-          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-info fw-bold small" onclick="$('#lbl_info_wrapper_${lblId}').toggleClass('d-none')">
+          <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-bold shadow-2x" onclick="$('#lbl_info_wrapper_${lblId}').toggleClass('d-none')">
             <i class="icofont icofont-info-circle me-1"></i> Add Label Guidance Description (+)
           </button>
           <div class="form-check form-switch mb-0">
@@ -527,6 +532,10 @@
           </div>
         </div>
         <div class="info-text-box ${infoTrans && Object.keys(infoTrans).length > 0 ? '' : 'd-none'} mb-2" id="lbl_info_wrapper_${lblId}">
+          <div class="d-flex align-items-center gap-2 mb-2 pb-1 border-bottom">
+            <i class="icofont icofont-light-bulb text-info"></i>
+            <span class="fw-bold text-dark small">Label / Section Guidance Description (Shown in Questionnaire Preview)</span>
+          </div>
           <div class="row g-2">
             ${infoFieldsHtml}
           </div>
@@ -582,6 +591,7 @@
     const hasValueInput = qData ? (qData.has_value_input === 1 || qData.has_value_input === true) : false;
     const dropdownGroup = qData ? qData.dropdown_group_name : '';
     const tableConfig = qData ? qData.table_config : null;
+    const copyConfig = qData ? (qData.copy_config || (qData.formula_config && qData.formula_config.copy_config ? qData.formula_config.copy_config : null)) : null;
 
     let textFieldsHtml = '';
     let infoFieldsHtml = '';
@@ -635,10 +645,14 @@
 
         <!-- Optional Information Guidance ("i" Tooltip) Section -->
         <div class="mb-3">
-          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-success fw-bold small" onclick="$('#q_info_wrapper_${qId}').toggleClass('d-none')">
-            <i class="icofont icofont-info-circle me-1"></i> Add Information / Description ("i" Hover Tooltip) (+)
+          <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-2x mb-2" onclick="$('#q_info_wrapper_${qId}').toggleClass('d-none')">
+            <i class="icofont icofont-light-bulb me-1"></i> Add Information / Guidance Description (+)
           </button>
           <div class="info-text-box ${infoTrans && Object.keys(infoTrans).length > 0 ? '' : 'd-none'}" id="q_info_wrapper_${qId}">
+            <div class="d-flex align-items-center gap-2 mb-2 pb-1 border-bottom">
+              <i class="icofont icofont-light-bulb text-success"></i>
+              <span class="fw-bold text-dark small">Question Disclosure Guidance (Displayed in Question Preview Card)</span>
+            </div>
             <div class="row g-2">
               ${infoFieldsHtml}
             </div>
@@ -718,6 +732,31 @@
               <label class="form-label small fw-bold text-secondary">Source Cell References</label>
               <input type="text" class="form-control form-control-sm q-formula-sources" value="${qData && qData.formula_config ? (qData.formula_config.source_cells || []).join(', ') : ''}" placeholder="e.g. D22, D23 or D303, D310">
               <small class="text-muted" style="font-size: 0.65rem;">Comma-separated cells used in calculation</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cell Auto-Copy / Prefill Logic Panel -->
+        <div class="mt-2">
+          <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-bold small" onclick="$('#copy_wrapper_${qId}').toggleClass('d-none')">
+            <i class="icofont icofont-copy me-1"></i> Add Cell Value Auto-Copy / Prefill Logic (+)
+          </button>
+          <div class="border rounded p-2 bg-primary-subtle border-primary-subtle mt-1 ${copyConfig ? '' : 'd-none'}" id="copy_wrapper_${qId}">
+            <small class="fw-bold text-primary mb-2 d-block"><i class="icofont icofont-link me-1"></i>Parent Cell Value Auto-Prefill & Access Logic</small>
+            <div class="row g-2 align-items-center">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">Parent Source Cell Ref</label>
+                <input type="text" class="form-control form-control-sm q-copy-parent-cell" value="${copyConfig ? escapeHtml(copyConfig.parent_cell_ref || '') : ''}" placeholder="e.g. D22 or Sheet4!D3 or B1-General!D3">
+                <small class="text-muted" style="font-size: 0.65rem;">When user enters parent cell value, it auto-copies to this cell. Use <code>SheetName!CellRef</code> (e.g. <code>Sheet4!D3</code>) for cross-sheet parent values.</small>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">Access Mode (Entry vs Non-Entry)</label>
+                <select class="form-select form-select-sm q-copy-access-mode">
+                  <option value="readonly" ${copyConfig && copyConfig.access_mode === 'readonly' ? 'selected' : ''}>Read-Only / Non-Entry (Locked Prefill)</option>
+                  <option value="editable" ${copyConfig && copyConfig.access_mode === 'editable' ? 'selected' : ''}>Editable / Entry (User Can Override)</option>
+                </select>
+                <small class="text-muted" style="font-size: 0.65rem;">Read-only locks field; Editable pre-fills but permits edits.</small>
+              </div>
             </div>
           </div>
         </div>
@@ -1310,6 +1349,17 @@
             };
           }
 
+          // Cell Auto-Copy Assembly
+          let copyConfigObj = null;
+          const copyParentCell = qEl.find('.q-copy-parent-cell').val().trim();
+          const copyAccessMode = qEl.find('.q-copy-access-mode').val();
+          if (copyParentCell) {
+            copyConfigObj = {
+              parent_cell_ref: copyParentCell,
+              access_mode: copyAccessMode || 'readonly'
+            };
+          }
+
           questions.push({
             question_translations: qTextTrans,
             info_translations: Object.keys(qInfoTrans).length > 0 ? qInfoTrans : null,
@@ -1321,6 +1371,7 @@
             has_value_input: inputType === 'dropdown' ? hasValueInput : false,
             table_config: tableConfigObj,
             formula_config: formulaConfigObj,
+            copy_config: copyConfigObj,
             visibility_condition: visCondObj,
             validation_rules: valRulesObj,
             allow_multiple: allowMultiple,

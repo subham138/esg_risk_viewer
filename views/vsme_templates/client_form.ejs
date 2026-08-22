@@ -401,11 +401,152 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.2s;
   }
 
   .vsme-q-info-btn:hover {
     transform: scale(1.12);
+    background: #dbeafe;
+  }
+
+  /* Enhanced Question Information & Guidance Section */
+  .vsme-q-info-pill-btn {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 5px rgba(29, 78, 216, 0.08);
+  }
+
+  .vsme-q-info-pill-btn:hover {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(29, 78, 216, 0.15);
+  }
+
+  .vsme-q-info-pill-btn .vsme-info-chevron {
+    font-size: 0.7rem;
+    transition: transform 0.25s ease;
+  }
+
+  .vsme-q-info-pill-btn.active .vsme-info-chevron {
+    transform: rotate(180deg);
+  }
+
+  .vsme-q-info-box {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-left: 4px solid #0284c7;
+    border-radius: 12px;
+    margin: 10px 0 16px 0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.07);
+  }
+
+  .vsme-q-info-box-header {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.65);
+    border-bottom: 1px solid rgba(186, 230, 253, 0.6);
+  }
+
+  .vsme-q-info-icon-badge {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+    flex-shrink: 0;
+  }
+
+  .vsme-q-info-box-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0369a1;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .vsme-q-info-box-subtitle {
+    font-size: 0.72rem;
+    color: #0284c7;
+    font-weight: 500;
+  }
+
+  .vsme-q-info-drawer-btn {
+    background: #ffffff;
+    color: #0284c7;
+    border: 1px solid #7dd3fc;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .vsme-q-info-drawer-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .vsme-q-info-box-content {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  .vsme-q-info-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #1e293b;
+    font-weight: 450;
+    white-space: pre-line;
+    margin: 0;
+  }
+
+  .vsme-guidance-drawer {
+    width: 450px !important;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .vsme-guidance-drawer .offcanvas-header {
+    background: linear-gradient(135deg, #1e5bb8 0%, #3b82f6 100%);
+    color: #ffffff;
+    padding: 16px 20px;
+  }
+
+  .vsme-guidance-drawer .offcanvas-title {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .vsme-drawer-guidance-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   }
 
   /* Form Inputs Styling */
@@ -1078,11 +1219,11 @@
 
 <!-- OFFCANVAS GUIDANCE DRAWER -->
 <div class="offcanvas offcanvas-end vsme-guidance-drawer" tabindex="-1" id="guidanceDrawer" aria-labelledby="guidanceDrawerLabel">
-  <div class="offcanvas-header bg-light border-bottom">
+  <div class="offcanvas-header">
     <h5 class="offcanvas-title vsme-guidance-title" id="guidanceDrawerLabel">
-      <i class="icofont icofont-info-circle text-primary me-2"></i> Disclosure Guidance
+      <i class="icofont icofont-light-bulb me-2 text-warning"></i> Disclosure Guidance
     </h5>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body p-4" id="guidanceDrawerBody">
     <p class="text-muted">No specific guidance for this disclosure.</p>
@@ -1781,6 +1922,13 @@
     const isSkipped = isQuestionSkipped(q, activeLabel);
     const disp = getQuestionDisplayInfo(q, activeLabel);
 
+    const copyCfg = q.copy_config || (q.formula_config ? q.formula_config.copy_config : null);
+    const isCopyReadOnly = copyCfg && copyCfg.parent_cell_ref && copyCfg.access_mode === 'readonly';
+    const isCopyEditable = copyCfg && copyCfg.parent_cell_ref && copyCfg.access_mode === 'editable';
+
+    const qInfoText = q.info_translations ? getLocalized(q.info_translations, '') : '';
+    const hasInfo = qInfoText && qInfoText.trim().length > 0;
+
     let inputHtml = '';
     if (allowMultiple) {
       inputHtml = renderMultipleAnswersInput(q, val);
@@ -1839,6 +1987,16 @@
         </div>
         <div class="vsme-q-body" style="${isSkipped ? 'opacity: 0.45; pointer-events: none;' : ''}">
           ${inputHtml}
+          ${isCopyReadOnly ? `
+            <small class="text-primary fw-bold mt-1.5 d-block" style="font-size: 0.78rem;">
+              <i class="icofont icofont-lock me-1"></i>Auto-copied from Parent Cell <code>${escapeHtml(copyCfg.parent_cell_ref)}</code> (Non-Entry / Read-only)
+            </small>
+          ` : ''}
+          ${isCopyEditable ? `
+            <small class="text-info fw-bold mt-1.5 d-block" style="font-size: 0.78rem;">
+              <i class="icofont icofont-link me-1"></i>Auto-prefilled from Parent Cell <code>${escapeHtml(copyCfg.parent_cell_ref)}</code> (Editable / Entry)
+            </small>
+          ` : ''}
         </div>
       </div>
     `;
@@ -2825,6 +2983,7 @@
 
   // Real-time Formula Evaluation Engine
   function evaluateFormulas() {
+    evaluateCellCopying();
     if (!rawTemplate.categories) return;
 
     rawTemplate.categories.forEach(c => {
@@ -2884,14 +3043,127 @@
     });
   }
 
-  function findQuestionByCell(cellRef) {
+  // Real-time Cell Value Auto-Copy & Sync Engine
+  function evaluateCellCopying() {
+    if (!rawTemplate.categories) return;
+
+    rawTemplate.categories.forEach(c => {
+      (c.labels || []).forEach(l => {
+        (l.questions || []).forEach(q => {
+          const copyCfg = q.copy_config || (q.formula_config ? q.formula_config.copy_config : null);
+          if (copyCfg && copyCfg.parent_cell_ref) {
+            const parentCell = copyCfg.parent_cell_ref.trim();
+            const parentQ = findQuestionByCell(parentCell);
+            if (parentQ && answerStore[parentQ.id] && answerStore[parentQ.id].answer_val !== undefined) {
+              const parentVal = answerStore[parentQ.id].answer_val;
+              const currentChildVal = answerStore[q.id] ? answerStore[q.id].answer_val : '';
+              const isReadOnly = copyCfg.access_mode === 'readonly';
+
+              if (parentVal !== null && parentVal !== undefined && parentVal !== '') {
+                if (isReadOnly || !currentChildVal || q.last_auto_copied_val === currentChildVal) {
+                  if (currentChildVal !== parentVal) {
+                    q.last_auto_copied_val = parentVal;
+                    answerStore[q.id] = {
+                      ...answerStore[q.id],
+                      question_id: q.id,
+                      excel_cell_ref: q.excel_cell_ref || '',
+                      answer_val: parentVal,
+                      category_id: c.id,
+                      label_id: l.id,
+                      sheet_name: c.sheet_name || ''
+                    };
+
+                    updateQuestionDomInput(q, parentVal, isReadOnly);
+                  }
+                }
+              }
+            }
+          }
+        });
+      });
+    });
+  }
+
+  function updateQuestionDomInput(q, value, isReadOnly) {
+    const inputEls = document.querySelectorAll(`[name="q_${q.id}"], #input_${q.id}, [data-qid="${q.id}"] input, [data-qid="${q.id}"] select, [data-qid="${q.id}"] textarea`);
+    inputEls.forEach(inputEl => {
+      if (inputEl.type === 'checkbox') {
+        inputEl.checked = (value === 'true' || value === '1' || value === 'Yes' || value === 'TRUE');
+      } else {
+        inputEl.value = value;
+      }
+      if (isReadOnly) {
+        inputEl.readOnly = true;
+        if (inputEl.tagName === 'SELECT') inputEl.disabled = true;
+        inputEl.classList.add('bg-light');
+      }
+    });
+
+    if (q.input_type === 'boolean') {
+      const boolContainer = document.querySelector(`.vsme-segmented-bool[data-qid="${q.id}"]`);
+      if (boolContainer) {
+        const btns = boolContainer.querySelectorAll('.vsme-seg-btn');
+        btns.forEach(btn => {
+          btn.classList.remove('active-yes', 'active-no');
+          if ((value === 'TRUE' || value === 'true' || value === 'Yes') && btn.innerText.trim() === 'Yes') btn.classList.add('active-yes');
+          if ((value === 'FALSE' || value === 'false' || value === 'No') && btn.innerText.trim() === 'No') btn.classList.add('active-no');
+          if (value === 'N/A' && btn.innerText.trim() === 'N/A') btn.classList.add('active-no');
+          if (isReadOnly) btn.style.pointerEvents = 'none';
+        });
+      }
+    }
+  }
+
+  function findQuestionByCell(rawCellRef) {
+    if (!rawCellRef) return null;
+    let targetSheet = null;
+    let targetCell = String(rawCellRef).trim();
+
+    // Check if reference includes a sheet specification e.g. Sheet4!D3 or 'Sheet4'!D3
+    if (targetCell.includes('!')) {
+      const parts = targetCell.split('!');
+      targetSheet = parts[0].trim().replace(/^'|'$/g, '').toLowerCase();
+      targetCell = parts[1].trim();
+    }
+
+    const cleanTargetCell = targetCell.toUpperCase();
+
+    // First pass: match with targetSheet filter if provided
     for (let c of (rawTemplate.categories || [])) {
+      if (targetSheet) {
+        const catSheetName = (c.sheet_name || '').trim().toLowerCase();
+        const catName = (c.name_en || '').trim().toLowerCase();
+        if (catSheetName !== targetSheet && catName !== targetSheet) {
+          continue;
+        }
+      }
+
       for (let l of (c.labels || [])) {
         for (let q of (l.questions || [])) {
-          if (q.excel_cell_ref && q.excel_cell_ref.includes(cellRef)) return q;
+          if (q.excel_cell_ref) {
+            const cellRefsArr = q.excel_cell_ref.split(',').map(r => r.trim().toUpperCase());
+            if (cellRefsArr.includes(cleanTargetCell)) {
+              return q;
+            }
+          }
         }
       }
     }
+
+    // Fallback pass: search across all categories if sheet match wasn't specified or exact sheet match failed
+    for (let c of (rawTemplate.categories || [])) {
+      for (let l of (c.labels || [])) {
+        for (let q of (l.questions || [])) {
+          if (q.excel_cell_ref) {
+            const cellRefsArr = q.excel_cell_ref.split(',').map(r => r.trim().toUpperCase());
+            if (cellRefsArr.includes(cleanTargetCell)) {
+              return q;
+            }
+          }
+        }
+      }
+    }
+
     return null;
   }
 
@@ -3230,6 +3502,21 @@
     progressStatsText.innerText = `${percent}% Completed (${totalAnswered}/${totalQuestions} Answered)`;
   }
 
+  // Toggle Question Inline Guidance Box
+  function toggleQuestionInlineInfo(qId) {
+    const banner = document.getElementById(`qInfoBanner_${qId}`);
+    const pillBtn = document.getElementById(`infoPillBtn_${qId}`);
+    if (banner) {
+      if (banner.style.display === 'none') {
+        banner.style.display = 'block';
+        if (pillBtn) pillBtn.classList.add('active');
+      } else {
+        banner.style.display = 'none';
+        if (pillBtn) pillBtn.classList.remove('active');
+      }
+    }
+  }
+
   // Guidance Drawer Trigger
   function showGuidanceDrawer(type, id) {
     const drawerLabel = document.getElementById('guidanceDrawerLabel');
@@ -3251,12 +3538,22 @@
       }
     }
 
-    drawerLabel.innerHTML = `<i class="icofont icofont-info-circle text-primary me-2"></i> ${title}`;
+    drawerLabel.innerHTML = `<i class="icofont icofont-light-bulb me-2 text-warning"></i> ${escapeHtml(title)}`;
     const desc = getLocalized(infoObj, 'No detailed guidance description has been configured for this item.');
     drawerBody.innerHTML = `
-      <div class="card p-3 bg-light border-0 mb-3" style="border-radius: 12px;">
-        <h6 class="fw-bold text-dark mb-2">ESRS / VSME Standard Instructions</h6>
-        <p class="text-secondary mb-0" style="line-height: 1.6; white-space: pre-line;">${desc}</p>
+      <div class="vsme-drawer-guidance-card p-4 mb-3">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+          <div class="vsme-q-info-icon-badge">
+            <i class="icofont icofont-info-circle"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-dark mb-0">ESRS / VSME Standard Instructions</h6>
+            <small class="text-muted">Admin-specified requirements & disclosure context</small>
+          </div>
+        </div>
+        <div class="vsme-drawer-guidance-content">
+          <p class="text-dark mb-0" style="line-height: 1.7; font-size: 0.93rem; white-space: pre-line;">${escapeHtml(desc)}</p>
+        </div>
       </div>
     `;
 
