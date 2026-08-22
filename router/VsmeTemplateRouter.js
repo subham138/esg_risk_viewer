@@ -81,7 +81,7 @@ VsmeRouter.post('/admin/vsme-templates/store', async (req, res) => {
     }
   } catch (err) {
     console.error('Error in store template controller:', err);
-    return res.status(500).json({ success: false, message: 'Server error while creating template' });
+    return res.json({ success: false, message: 'Server error while creating template' });
   }
 });
 
@@ -138,7 +138,7 @@ VsmeRouter.post('/admin/vsme-templates/update/:id', async (req, res) => {
     }
   } catch (err) {
     console.error('Error in update template controller:', err);
-    return res.status(500).json({ success: false, message: 'Server error while updating template' });
+    return res.json({ success: false, message: 'Server error while updating template' });
   }
 });
 
@@ -226,7 +226,7 @@ VsmeRouter.post('/vsme/save-draft', async (req, res) => {
     }
   } catch (err) {
     console.error('Error in save-draft controller:', err);
-    return res.status(500).json({ success: false, message: 'Server error while saving draft' });
+    return res.json({ success: false, message: 'Server error while saving draft' });
   }
 });
 
@@ -284,7 +284,7 @@ VsmeRouter.post('/vsme/submit', async (req, res) => {
     }
   } catch (err) {
     console.error('Error in submit controller:', err);
-    return res.status(500).json({ success: false, message: 'Server error while submitting questionnaire' });
+    return res.json({ success: false, message: 'Server error while submitting questionnaire' });
   }
 });
 
@@ -324,16 +324,16 @@ VsmeRouter.get('/vsme/export-excel', async (req, res) => {
     } else {
       console.error('Excel generation error:', excelRes.msg);
       if (req.xhr || req.headers.accept?.includes('application/json')) {
-        return res.status(500).json({ success: false, message: excelRes.msg || 'Failed to generate Excel file' });
+        return res.json({ success: false, message: excelRes.msg || 'Failed to generate Excel file' });
       }
-      return res.status(500).send(excelRes.msg || 'Error generating populated Excel file');
+      return res.send(excelRes.msg || 'Error generating populated Excel file');
     }
   } catch (err) {
     console.error('Error in export-excel endpoint:', err);
     if (req.xhr || req.headers.accept?.includes('application/json')) {
-      return res.status(500).json({ success: false, message: 'Server error generating Excel file' });
+      return res.json({ success: false, message: 'Server error generating Excel file' });
     }
-    return res.status(500).send('Server error while exporting Excel file');
+    return res.send('Server error while exporting Excel file');
   }
 });
 
@@ -378,11 +378,11 @@ VsmeRouter.post('/vsme/generate-excel', async (req, res) => {
         message: 'VSME Digital Excel file generated successfully!'
       });
     } else {
-      return res.status(500).json({ success: false, message: excelRes.msg || 'Failed to generate Excel file' });
+      return res.json({ success: false, message: excelRes.msg || 'Failed to generate Excel file' });
     }
   } catch (err) {
     console.error('Error in generate-excel controller:', err);
-    return res.status(500).json({ success: false, message: 'Server error generating Excel file' });
+    return res.json({ success: false, message: 'Server error generating Excel file' });
   }
 });
 
