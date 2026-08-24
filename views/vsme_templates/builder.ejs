@@ -745,9 +745,9 @@
             <small class="fw-bold text-primary mb-2 d-block"><i class="icofont icofont-link me-1"></i>Parent Cell Value Auto-Prefill & Access Logic</small>
             <div class="row g-2 align-items-center">
               <div class="col-md-6">
-                <label class="form-label small fw-bold text-secondary">Parent Source Cell Ref</label>
+                <label class="form-label small fw-bold text-secondary">Parent Source Cell Ref / Number (Copies FROM)</label>
                 <input type="text" class="form-control form-control-sm q-copy-parent-cell" value="${copyConfig ? escapeHtml(copyConfig.parent_cell_ref || '') : ''}" placeholder="e.g. D22 or Sheet4!D3 or B1-General!D3">
-                <small class="text-muted" style="font-size: 0.65rem;">When user enters parent cell value, it auto-copies to this cell. Use <code>SheetName!CellRef</code> (e.g. <code>Sheet4!D3</code>) for cross-sheet parent values.</small>
+                <small class="text-muted" style="font-size: 0.65rem;">Auto-copies value from parent cell number into this question's Excel cell ref (Child Cell Ref).</small>
               </div>
               <div class="col-md-6">
                 <label class="form-label small fw-bold text-secondary">Access Mode (Entry vs Non-Entry)</label>
@@ -845,8 +845,7 @@
           </div>
 
           <!-- Table Columns List -->
-          <div class="border rounded p-2 bg-white mb-3">
-            <small class="fw-bold text-secondary mb-2 d-block">Table Columns Definition</small>
+          <div class="mb-3">
             <div class="table-cols-list" id="table_cols_list_${qId}"></div>
           </div>
 
@@ -908,6 +907,7 @@
     const dropdownGrp = colData ? colData.dropdown_group : '';
     const excelCell = colData ? colData.excel_cell : '';
     const titleTrans = colData ? colData.title : {};
+    const copyConfig = colData ? colData.copy_config : null;
 
     let titleInputsHtml = '';
     ALL_LANGUAGES.forEach(lang => {
@@ -928,29 +928,50 @@
     });
 
     const colHtml = `
-      <div class="row g-2 align-items-center mb-2 p-2 border-bottom tcol-item" data-col-id="${colId}">
-        <div class="col-md-1">
-          <span class="badge bg-purple text-white">${colId}</span>
-        </div>
-        ${titleInputsHtml}
-        <div class="col-md-2">
-          <select class="form-select form-select-sm tcol-type" onchange="toggleTableColDropdownSelect(this)">
-            <option value="row_id" ${colType === 'row_id' ? 'selected' : ''}>Row ID (Auto)</option>
-            <option value="string" ${colType === 'string' ? 'selected' : ''}>Text (String)</option>
-            <option value="number" ${colType === 'number' ? 'selected' : ''}>Numeric (Number)</option>
-            <option value="dropdown" ${colType === 'dropdown' ? 'selected' : ''}>Dropdown Select</option>
-          </select>
-        </div>
-        <div class="col-md-2 tcol-dd-wrapper ${colType === 'dropdown' ? '' : 'd-none'}">
-          <select class="form-select form-select-sm tcol-dropdown-group">
-            ${dropdownOptionsHtml}
-          </select>
-        </div>
-        <div class="col-md-2">
-          <input type="text" class="form-control form-control-sm tcol-excel-cell" value="${escapeHtml(excelCell)}" placeholder="Cell Range e.g. D23:D25">
-        </div>
-        <div class="col-md-1 text-end">
-          <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="$(this).closest('.tcol-item').remove()"><i class="icofont icofont-trash"></i></button>
+      <div class="card p-2.5 mb-2 border tcol-item bg-light-subtle shadow-2x" data-col-id="${colId}">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-1">
+            <span class="badge bg-purple text-white px-2 py-1">${colId}</span>
+          </div>
+          ${titleInputsHtml}
+          <div class="col-md-2">
+            <select class="form-select form-select-sm tcol-type" onchange="toggleTableColDropdownSelect(this)">
+              <option value="row_id" ${colType === 'row_id' ? 'selected' : ''}>Row ID (Auto)</option>
+              <option value="string" ${colType === 'string' ? 'selected' : ''}>Text (String)</option>
+              <option value="number" ${colType === 'number' ? 'selected' : ''}>Numeric (Number)</option>
+              <option value="dropdown" ${colType === 'dropdown' ? 'selected' : ''}>Dropdown Select</option>
+            </select>
+            <div class="tcol-dd-wrapper mt-1 ${colType === 'dropdown' ? '' : 'd-none'}">
+              <select class="form-select form-select-sm tcol-dropdown-group">
+                ${dropdownOptionsHtml}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control form-control-sm tcol-excel-cell" value="${escapeHtml(excelCell)}" placeholder="Child Cell e.g. D23:D25" title="Child Target Cell Ref / Number">
+            <small class="text-muted d-block" style="font-size: 0.65rem;">Child / Target Cell Ref *</small>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check form-switch mt-1">
+              <input class="form-check-input tcol-is-child-toggle" type="checkbox" ${copyConfig && copyConfig.parent_cell_ref ? 'checked' : ''} onchange="$(this).closest('.tcol-item').find('.tcol-parent-wrapper').toggleClass('d-none', !this.checked)">
+              <label class="form-check-label small fw-bold text-primary" style="font-size: 0.72rem;">Is Child Column? (Auto-Copy)</label>
+            </div>
+            <div class="tcol-parent-wrapper mt-1 ${copyConfig && copyConfig.parent_cell_ref ? '' : 'd-none'}">
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control form-control-sm tcol-copy-parent-cell" value="${copyConfig ? escapeHtml(copyConfig.parent_cell_ref || '') : ''}" placeholder="Parent Cell Ref e.g. D22 or D23:D25">
+                <select class="form-select form-select-sm tcol-copy-access-mode" style="max-width: 100px;">
+                  <option value="readonly" ${copyConfig && copyConfig.access_mode === 'readonly' ? 'selected' : ''}>Locked</option>
+                  <option value="editable" ${copyConfig && copyConfig.access_mode === 'editable' ? 'selected' : ''}>Editable</option>
+                </select>
+              </div>
+              <small class="text-muted d-block" style="font-size: 0.65rem;">Parent Cell Ref (Source) & Access Mode</small>
+            </div>
+          </div>
+          <div class="col-md-1 text-end">
+            <button type="button" class="btn btn-outline-danger btn-sm py-1 px-2 rounded-2" onclick="$(this).closest('.tcol-item').remove()" title="Delete Column">
+              <i class="icofont icofont-trash"></i>
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -1265,6 +1286,9 @@
               const colType = colEl.find('.tcol-type').val();
               const colDdGrp = colEl.find('.tcol-dropdown-group').val();
               const colCell = colEl.find('.tcol-excel-cell').val().trim();
+              const isChild = colEl.find('.tcol-is-child-toggle').is(':checked');
+              const copyParentCell = isChild ? colEl.find('.tcol-copy-parent-cell').val().trim() : '';
+              const copyAccessMode = colEl.find('.tcol-copy-access-mode').val();
               const colTitleTrans = {};
 
               activeLangs.forEach(lang => {
@@ -1272,12 +1296,21 @@
                 if (tVal) colTitleTrans[lang] = tVal;
               });
 
+              let copyConfigObj = null;
+              if (isChild && copyParentCell) {
+                copyConfigObj = {
+                  parent_cell_ref: copyParentCell,
+                  access_mode: copyAccessMode || 'readonly'
+                };
+              }
+
               tableCols.push({
                 col_id: colId,
                 title: colTitleTrans,
                 type: colType,
                 dropdown_group: colType === 'dropdown' ? colDdGrp : null,
-                excel_cell: colCell
+                excel_cell: colCell,
+                copy_config: copyConfigObj
               });
             });
 

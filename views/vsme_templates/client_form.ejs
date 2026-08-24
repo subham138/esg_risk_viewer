@@ -1692,13 +1692,55 @@
   }
 
   function isFirstQuestionNo(lbl) {
-    if (!lbl || !lbl.questions || lbl.questions.length === 0) return false;
-    const firstQ = lbl.questions[0];
-    if (!firstQ) return false;
-    const a = answerStore[firstQ.id];
-    if (!a || a.answer_val === undefined || a.answer_val === null) return false;
-    const valStr = String(a.answer_val).trim().toUpperCase();
-    return valStr === 'FALSE' || valStr === 'NO' || valStr === '0';
+    return false;
+  }
+
+  function isQuestionHiddenByCondition(q) {
+    if (!q || !q.visibility_condition || !q.visibility_condition.depends_on_cell) {
+      return false;
+    }
+    const triggerQ = findQuestionByCell(q.visibility_condition.depends_on_cell);
+    if (!triggerQ) return false;
+
+    const rawTrigger = answerStore[triggerQ.id] ? answerStore[triggerQ.id].answer_val : '';
+
+    if (rawTrigger === undefined || rawTrigger === null || String(rawTrigger).trim() === '') {
+      return q.visibility_condition.action === 'show';
+    }
+
+    let triggerVals = [String(rawTrigger || '')];
+    if (typeof rawTrigger === 'string' && rawTrigger.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(rawTrigger);
+        if (Array.isArray(parsed)) {
+          triggerVals = parsed.map(it => typeof it === 'object' && it ? (it.dropdown || it.val || '') : String(it));
+        }
+      } catch (e) {}
+    }
+
+    const targetVal = String(q.visibility_condition.value || q.visibility_condition.target_value || '').toLowerCase();
+    const op = q.visibility_condition.operator || 'equals';
+    let matches = false;
+
+    if (op === 'equals') {
+      matches = triggerVals.some(v => v.toLowerCase() === targetVal);
+    } else if (op === 'not_equals') {
+      matches = triggerVals.every(v => v.toLowerCase() !== targetVal);
+    } else if (op === 'is_true') {
+      matches = triggerVals.some(v => v === 'TRUE' || v === '1' || v.toLowerCase() === 'yes' || v.toLowerCase() === 'true');
+    } else if (op === 'is_false') {
+      matches = triggerVals.some(v => v === 'FALSE' || v === '0' || v.toLowerCase() === 'no' || v.toLowerCase() === 'false');
+    } else if (op === 'gt') {
+      matches = triggerVals.some(v => parseFloat(v) > parseFloat(targetVal));
+    } else if (op === 'lt') {
+      matches = triggerVals.some(v => parseFloat(v) < parseFloat(targetVal));
+    }
+
+    if (q.visibility_condition.action === 'show') {
+      return !matches;
+    } else {
+      return matches;
+    }
   }
 
   function isOtherSpecificationQuestion(q, lbl) {
@@ -1707,14 +1749,12 @@
     if (qIdx <= 0) return false;
     const prevQ = lbl.questions[qIdx - 1];
 
-    // 1. Check if previous question has a dropdown with an 'other' option
     let prevHasOtherOption = false;
     if (prevQ && prevQ.input_type === 'dropdown' && prevQ.dropdown_group_name) {
       const options = dropdownMasterMap[prevQ.dropdown_group_name] || [];
       prevHasOtherOption = options.some(opt => (opt.value_en && opt.value_en.toLowerCase().includes('other')));
     }
 
-    // 2. Check if current question text explicitly mentions 'other' specification
     const qEn = (q.question_en || '').toLowerCase();
     const isOtherText = qEn.includes('other') && (qEn.includes('specification') || qEn.includes('specify') || qEn.includes('legal form'));
 
@@ -1762,7 +1802,7 @@
       const isChild = isOtherSpecificationQuestion(curQ, lbl);
 
       if (isChild) {
-        const parentNum = parentCounter; // e.g. 2
+        const parentNum = parentCounter;
         const numStr = `${parentNum}.1`;
         const pillStr = `Q${parentNum}.1`;
         if (i === targetIdx) {
@@ -1783,15 +1823,15 @@
   }
 
   function isQuestionSkipped(q, lbl) {
-    if (!q || !lbl || !lbl.questions || lbl.questions.length <= 1) return false;
-    const qIdx = lbl.questions.findIndex(item => item.id === q.id);
-    if (qIdx < 0) return false;
+    if (!q) return false;
 
-    // 1. If Q1 was answered NO/FALSE, all subsequent questions (Q2, Q3...) are skipped
-    if (qIdx > 0 && isFirstQuestionNo(lbl)) return true;
+    // 1. Dynamic visibility condition set by admin in Template Builder (Show/Hide Logic)
+    if (isQuestionHiddenByCondition(q)) {
+      return true;
+    }
 
-    // 2. If this question is an 'Other' specification / child question of the previous question:
-    if (isOtherSpecificationQuestion(q, lbl)) {
+    // 2. Check if this question is an 'Other' specification / child question of the previous question
+    if (lbl && isOtherSpecificationQuestion(q, lbl)) {
       return !isParentAnsweredOther(q, lbl);
     }
 
@@ -1802,7 +1842,6 @@
     if (!lbl) return true;
     if (classifiedStore[lbl.id]) return true;
     if (!lbl.questions || lbl.questions.length === 0) return true;
-    if (isFirstQuestionNo(lbl)) return true;
     return lbl.questions.every(q => isQuestionFilled(q) || isQuestionSkipped(q, lbl));
   }
 
@@ -1938,25 +1977,20 @@
 
     return `
       <div class="vsme-q-card ${isSkipped ? 'vsme-q-card-skipped' : ''}" id="qCard_${q.id}" data-qid="${q.id}">
-        ${isSkipped ? `
-          <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-3 border-0 shadow-sm" style="border-radius: 12px; background: #fffbeb; border-left: 4px solid #f59e0b !important;">
-            <div class="d-flex align-items-center gap-2">
-              <i class="icofont icofont-ban text-warning fs-4"></i>
-              <div>
-                <strong class="text-dark d-block">Question Skipped</strong>
-                <small class="text-muted">
-                  ${disp.isChild ?
-                    `This follow-up question is only required if you select <strong>"Other (please specify...)"</strong> in Question ${disp.parentNumStr}.` :
-                    'This question is automatically skipped because Question 1 was answered as <strong>"No"</strong> (FALSE).'
-                  }
-                </small>
-              </div>
+        <div class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-3 border-0 shadow-sm vsme-skip-banner ${isSkipped ? '' : 'd-none'}" id="skipBanner_${q.id}" style="border-radius: 12px; background: #fffbeb; border-left: 4px solid #f59e0b !important;">
+          <div class="d-flex align-items-center gap-2">
+            <i class="icofont icofont-ban text-warning fs-4"></i>
+            <div>
+              <strong class="text-dark d-block">Question Skipped / Disabled (Non-Entry)</strong>
+              <small class="text-muted" id="skipText_${q.id}">
+                ${q.visibility_condition && q.visibility_condition.depends_on_cell ?
+                  `This question is skipped based on condition set on cell <strong>${escapeHtml(q.visibility_condition.depends_on_cell)}</strong>.` :
+                  (disp.isChild ? `This follow-up question is only required if you select <strong>"Other (please specify...)"</strong> in Question ${disp.parentNumStr}.` : 'This question is currently disabled based on trigger condition.')
+                }
+              </small>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-warning fw-bold" onclick="jumpToQuestion(${disp.isChild ? disp.parentQIdx : 0})">
-              <i class="icofont icofont-reply me-1"></i> Edit Question ${disp.isChild ? disp.parentNumStr : 1}
-            </button>
           </div>
-        ` : ''}
+        </div>
         <div class="vsme-q-header">
           <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="badge ${disp.isChild ? 'bg-purple text-white' : 'bg-light text-dark border'}">${disp.numStr}</span>
@@ -1966,13 +2000,11 @@
                 <i class="icofont icofont-sub-listing me-1"></i>Follow-up to Q${disp.parentNumStr}
               </span>
             ` : ''}
-            ${isSkipped ? `
-              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2 py-1 small">
-                <i class="icofont icofont-ban me-1"></i>Skipped
-              </span>
-            ` : ''}
-            ${allowMultiple && !isSkipped ? `
-              <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-2 py-1 small vsme-skip-badge ${isSkipped ? '' : 'd-none'}" id="skipBadge_${q.id}">
+              <i class="icofont icofont-ban me-1"></i>Skipped (Disabled)
+            </span>
+            ${allowMultiple ? `
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small vsme-multi-badge ${isSkipped ? 'd-none' : ''}" id="multiBadge_${q.id}">
                 <i class="icofont icofont-plus-circle me-1"></i>Multiple Answers
               </span>
             ` : ''}
@@ -1985,7 +2017,7 @@
             ` : ''}
           </div>
         </div>
-        <div class="vsme-q-body" style="${isSkipped ? 'opacity: 0.45; pointer-events: none;' : ''}">
+        <div class="vsme-q-body" id="qBody_${q.id}" style="${isSkipped ? 'opacity: 0.45; pointer-events: none;' : ''}">
           ${inputHtml}
           ${isCopyReadOnly ? `
             <small class="text-primary fw-bold mt-1.5 d-block" style="font-size: 0.78rem;">
@@ -2288,10 +2320,22 @@
               <th style="width: 55px; min-width: 55px;" class="text-center vsme-sticky-col">#</th>
               ${cols.map((c, cIdx) => {
                 const headerText = getColumnHeader(c, cIdx);
+                const colCopyCfg = c.copy_config;
+                let copyBadgeHtml = '';
+                if (colCopyCfg && colCopyCfg.parent_cell_ref) {
+                  const isReadOnly = colCopyCfg.access_mode === 'readonly';
+                  const iconClass = isReadOnly ? 'icofont-lock' : 'icofont-link';
+                  const titleText = isReadOnly ? `Auto-copied from ${colCopyCfg.parent_cell_ref} (Read-only)` : `Auto-prefilled from ${colCopyCfg.parent_cell_ref} (Editable)`;
+                  copyBadgeHtml = `
+                    <span class="badge bg-light text-primary border ms-1 fw-normal" style="font-size: 0.65rem;" title="${escapeHtml(titleText)}">
+                      <i class="icofont ${iconClass} me-1"></i>${escapeHtml(colCopyCfg.parent_cell_ref)}
+                    </span>
+                  `;
+                }
                 let colMinWidth = 220;
                 if (c.type === 'number') colMinWidth = 180;
                 else if (headerText.length > 25) colMinWidth = Math.min(380, Math.max(260, headerText.length * 7.5));
-                return `<th style="min-width: ${colMinWidth}px;">${headerText}</th>`;
+                return `<th style="min-width: ${colMinWidth}px;">${headerText}${copyBadgeHtml}</th>`;
               }).join('')}
               ${allowAddRows ? `<th style="width: 70px; min-width: 70px;" class="text-center">Action</th>` : ''}
             </tr>
@@ -2303,11 +2347,12 @@
                 ${cols.map((c, cIdx) => {
                   const colKey = getColumnKey(c, cIdx);
                   const cellVal = row[colKey] !== undefined && row[colKey] !== null ? row[colKey] : '';
+                  const isReadOnly = c.copy_config && c.copy_config.parent_cell_ref && c.copy_config.access_mode === 'readonly';
                   if (c.type === 'dropdown') {
                     const options = dropdownMasterMap[c.dropdown_group] || [];
                     return `
                       <td>
-                        <select class="form-select table-cell-input" data-col-id="${colKey}" onchange="handleTableInput(${q.id})">
+                        <select class="form-select table-cell-input ${isReadOnly ? 'bg-light' : ''}" data-col-id="${colKey}" onchange="handleTableInput(${q.id})" ${isReadOnly ? 'disabled' : ''}>
                           <option value="">-- Select --</option>
                           ${options.map(opt => `
                             <option value="${opt.value_en}" ${cellVal === opt.value_en ? 'selected' : ''}>
@@ -2320,13 +2365,13 @@
                   } else if (c.type === 'number') {
                     return `
                       <td>
-                        <input type="number" step="any" class="form-control table-cell-input" data-col-id="${colKey}" placeholder="0.00" value="${cellVal}" oninput="handleTableInput(${q.id})">
+                        <input type="number" step="any" class="form-control table-cell-input ${isReadOnly ? 'bg-light' : ''}" data-col-id="${colKey}" placeholder="0.00" value="${cellVal}" oninput="handleTableInput(${q.id})" ${isReadOnly ? 'readonly' : ''}>
                       </td>
                     `;
                   } else {
                     return `
                       <td>
-                        <input type="text" class="form-control table-cell-input" data-col-id="${colKey}" placeholder="Enter text..." value="${cellVal}" oninput="handleTableInput(${q.id})">
+                        <input type="text" class="form-control table-cell-input ${isReadOnly ? 'bg-light' : ''}" data-col-id="${colKey}" placeholder="Enter text..." value="${cellVal}" oninput="handleTableInput(${q.id})" ${isReadOnly ? 'readonly' : ''}>
                       </td>
                     `;
                   }
@@ -2435,17 +2480,6 @@
     }
 
     handleInputChange(qId, val);
-
-    // If Question 1 is answered "FALSE" or "NO", automatically skip Q2 & Q3 and proceed to next section
-    const isNo = (val === 'FALSE' || val === '0' || val === 'No');
-    const isQ1 = (activeLabel && activeLabel.questions && activeLabel.questions.length > 0 && activeLabel.questions[0].id === qId);
-
-    if (isNo && isQ1 && activeLabel.questions.length > 1) {
-      showToastNotification('Question 1 answered "No". Q2 and Q3 are skipped. Moving to next section...', 'info');
-      setTimeout(() => {
-        advanceNextSection();
-      }, 400);
-    }
   }
 
   function handleDropdownChange(qId, selectElem, hasCustom) {
@@ -2746,16 +2780,6 @@
     else btnElem.classList.add('active-no');
 
     handleMultiInputChange(qId, rIdx, val);
-
-    const isNo = (val === 'FALSE' || val === '0' || val === 'No');
-    const isQ1 = (activeLabel && activeLabel.questions && activeLabel.questions.length > 0 && activeLabel.questions[0].id === qId);
-
-    if (isNo && isQ1 && activeLabel.questions.length > 1 && rIdx === 0) {
-      showToastNotification('Question 1 answered "No". Q2 and Q3 are skipped. Moving to next section...', 'info');
-      setTimeout(() => {
-        advanceNextSection();
-      }, 400);
-    }
   }
 
   function addMultiAnswerRow(qId) {
@@ -2907,11 +2931,12 @@
       <td class="text-center fw-bold text-muted">${newIdx + 1}</td>
       ${cols.map((c, cIdx) => {
         const colKey = getColumnKey(c, cIdx);
+        const isReadOnly = c.copy_config && c.copy_config.parent_cell_ref && c.copy_config.access_mode === 'readonly';
         if (c.type === 'dropdown') {
           const options = dropdownMasterMap[c.dropdown_group] || [];
           return `
             <td>
-              <select class="form-select form-select-sm table-cell-input" data-col-id="${colKey}" onchange="handleTableInput(${qId})">
+              <select class="form-select form-select-sm table-cell-input ${isReadOnly ? 'bg-light' : ''}" data-col-id="${colKey}" onchange="handleTableInput(${qId})" ${isReadOnly ? 'disabled' : ''}>
                 <option value="">-- Select --</option>
                 ${options.map(opt => `
                   <option value="${opt.value_en}">
@@ -2924,13 +2949,13 @@
         } else if (c.type === 'number') {
           return `
             <td>
-              <input type="number" step="any" class="form-control form-control-sm table-cell-input" data-col-id="${colKey}" value="" oninput="handleTableInput(${qId})">
+              <input type="number" step="any" class="form-control form-control-sm table-cell-input ${isReadOnly ? 'bg-light' : ''}" data-col-id="${colKey}" value="" oninput="handleTableInput(${qId})" ${isReadOnly ? 'readonly' : ''}>
             </td>
           `;
         } else {
           return `
             <td>
-              <input type="text" class="form-control form-control-sm table-cell-input" data-col-id="${colKey}" value="" oninput="handleTableInput(${qId})">
+              <input type="text" class="form-control form-control-sm table-cell-input ${isReadOnly ? 'bg-light' : ''}" data-col-id="${colKey}" value="" oninput="handleTableInput(${qId})" ${isReadOnly ? 'readonly' : ''}>
             </td>
           `;
         }
@@ -2941,6 +2966,7 @@
     `;
     tbody.appendChild(tr);
     handleTableInput(qId);
+    evaluateCellCopying();
   }
 
   function removeTableRow(qId, rIdx) {
@@ -3050,6 +3076,7 @@
     rawTemplate.categories.forEach(c => {
       (c.labels || []).forEach(l => {
         (l.questions || []).forEach(q => {
+          // Single Question Copy Evaluation
           const copyCfg = q.copy_config || (q.formula_config ? q.formula_config.copy_config : null);
           if (copyCfg && copyCfg.parent_cell_ref) {
             const parentCell = copyCfg.parent_cell_ref.trim();
@@ -3079,9 +3106,169 @@
               }
             }
           }
+
+          // Dynamic Grid / Table Question Column Copy Evaluation
+          if (q.input_type === 'table' && q.table_config && Array.isArray(q.table_config.columns)) {
+            let tableRowsData = [];
+            let isTableModified = false;
+            const currentTableRaw = answerStore[q.id] ? answerStore[q.id].answer_val : '';
+            try {
+              tableRowsData = typeof currentTableRaw === 'string' && currentTableRaw ? JSON.parse(currentTableRaw) : (Array.isArray(currentTableRaw) ? currentTableRaw : []);
+            } catch (e) {
+              tableRowsData = [];
+            }
+
+            const initialRowCount = q.table_config.initial_rows && q.table_config.initial_rows > 0 ? q.table_config.initial_rows : 1;
+            if (tableRowsData.length === 0) {
+              for (let r = 0; r < initialRowCount; r++) tableRowsData.push({});
+            }
+
+            q.table_config.columns.forEach((col, colIdx) => {
+              const colCopyCfg = col.copy_config;
+              if (!colCopyCfg || !colCopyCfg.parent_cell_ref) return;
+
+              const parentRef = colCopyCfg.parent_cell_ref.trim();
+              const isReadOnly = colCopyCfg.access_mode === 'readonly';
+              const colKey = getColumnKey(col, colIdx);
+
+              const cellList = expandCellReferencePattern(parentRef);
+
+              tableRowsData.forEach((rowObj, rIdx) => {
+                const targetRef = cellList.length > 0 ? (cellList[rIdx] || cellList[cellList.length - 1]) : parentRef;
+                const parentVal = fetchCellValueByReference(targetRef, rIdx);
+
+                if (parentVal !== null && parentVal !== undefined && parentVal !== '') {
+                  const currentCellVal = rowObj[colKey] !== undefined && rowObj[colKey] !== null ? String(rowObj[colKey]) : '';
+                  const lastCopiedKey = `last_copied_${colKey}_${rIdx}`;
+                  const lastCopiedVal = q[lastCopiedKey];
+
+                  if (isReadOnly || !currentCellVal || lastCopiedVal === currentCellVal) {
+                    if (currentCellVal !== parentVal) {
+                      rowObj[colKey] = parentVal;
+                      q[lastCopiedKey] = parentVal;
+                      isTableModified = true;
+
+                      updateTableCellDomInput(q.id, rIdx, colKey, parentVal, isReadOnly);
+                    }
+                  }
+                }
+              });
+            });
+
+            if (isTableModified) {
+              answerStore[q.id] = {
+                ...answerStore[q.id],
+                question_id: q.id,
+                excel_cell_ref: q.excel_cell_ref || '',
+                answer_val: JSON.stringify(tableRowsData),
+                category_id: c.id,
+                label_id: l.id,
+                sheet_name: c.sheet_name || ''
+              };
+
+              evaluateTableSummaries(q.id);
+            }
+          }
         });
       });
     });
+  }
+
+  function expandCellReferencePattern(rawRef) {
+    if (!rawRef) return [];
+    let clean = String(rawRef).trim();
+    if (clean.includes('!')) {
+      const parts = clean.split('!');
+      clean = parts[1].trim();
+    }
+    const rangeMatch = clean.match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i);
+    if (rangeMatch) {
+      const colLetter1 = rangeMatch[1].toUpperCase();
+      const startRow = parseInt(rangeMatch[2], 10);
+      const colLetter2 = rangeMatch[3].toUpperCase();
+      const endRow = parseInt(rangeMatch[4], 10);
+      if (colLetter1 === colLetter2 && !isNaN(startRow) && !isNaN(endRow) && startRow <= endRow) {
+        const result = [];
+        for (let r = startRow; r <= endRow; r++) {
+          result.push(`${colLetter1}${r}`);
+        }
+        return result;
+      }
+    }
+    if (clean.includes(',')) {
+      return clean.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    }
+    return [rawRef.trim()];
+  }
+
+  function fetchCellValueByReference(targetCellRef, rIdx) {
+    if (!targetCellRef) return null;
+    const parentQ = findQuestionByCell(targetCellRef);
+    if (!parentQ || !answerStore[parentQ.id] || answerStore[parentQ.id].answer_val === undefined) {
+      return null;
+    }
+
+    const rawVal = answerStore[parentQ.id].answer_val;
+    if (rawVal === null || rawVal === undefined || rawVal === '') return '';
+
+    if (parentQ.input_type === 'table') {
+      try {
+        const parentTableRows = typeof rawVal === 'string' ? JSON.parse(rawVal) : rawVal;
+        if (Array.isArray(parentTableRows) && parentTableRows[rIdx]) {
+          const parentRow = parentTableRows[rIdx];
+          const cleanRef = targetCellRef.includes('!') ? targetCellRef.split('!')[1].trim().toUpperCase() : targetCellRef.trim().toUpperCase();
+          if (parentQ.table_config && Array.isArray(parentQ.table_config.columns)) {
+            for (let pIdx = 0; pIdx < parentQ.table_config.columns.length; pIdx++) {
+              const pCol = parentQ.table_config.columns[pIdx];
+              const pColKey = getColumnKey(pCol, pIdx);
+              if (pCol.excel_cell) {
+                const pCells = expandCellReferencePattern(pCol.excel_cell);
+                if (pCells.map(c => c.toUpperCase()).includes(cleanRef) || pCol.excel_cell.toUpperCase().includes(cleanRef)) {
+                  return parentRow[pColKey] !== undefined ? String(parentRow[pColKey]) : '';
+                }
+              }
+            }
+            const firstDataCol = parentQ.table_config.columns.find(c => c.type !== 'row_id');
+            if (firstDataCol) {
+              const fColKey = getColumnKey(firstDataCol, 0);
+              return parentRow[fColKey] !== undefined ? String(parentRow[fColKey]) : '';
+            }
+          }
+        }
+      } catch (e) {}
+      return '';
+    }
+
+    if (typeof rawVal === 'string' && rawVal.startsWith('[')) {
+      try {
+        const parsedArr = JSON.parse(rawVal);
+        if (Array.isArray(parsedArr) && parsedArr.length > 0) {
+          const item = parsedArr[rIdx] !== undefined ? parsedArr[rIdx] : parsedArr[0];
+          return typeof item === 'object' && item !== null ? (item.dropdown || item.val || '') : String(item || '');
+        }
+      } catch (e) {}
+    }
+
+    return String(rawVal);
+  }
+
+  function updateTableCellDomInput(qId, rIdx, colKey, value, isReadOnly) {
+    const tbody = document.getElementById(`tableBody_${qId}`);
+    if (!tbody) return;
+    const rowEl = tbody.querySelector(`tr[data-row-idx="${rIdx}"]`);
+    if (!rowEl) return;
+    const inputEl = rowEl.querySelector(`[data-col-id="${colKey}"]`);
+    if (!inputEl) return;
+
+    if (inputEl.value !== value) {
+      inputEl.value = value;
+    }
+
+    if (isReadOnly) {
+      inputEl.readOnly = true;
+      if (inputEl.tagName === 'SELECT') inputEl.disabled = true;
+      inputEl.classList.add('bg-light');
+    }
   }
 
   function updateQuestionDomInput(q, value, isReadOnly) {
@@ -3168,49 +3355,63 @@
   }
 
   // Conditional Visibility Engine
+  // Conditional Visibility & Skip Logic Engine
   function evaluateVisibility() {
     if (!rawTemplate.categories) return;
 
     rawTemplate.categories.forEach(c => {
       (c.labels || []).forEach(l => {
         (l.questions || []).forEach(q => {
-          if (q.visibility_condition && q.visibility_condition.depends_on_cell) {
-            const triggerQ = findQuestionByCell(q.visibility_condition.depends_on_cell);
-            const card = document.getElementById(`qCard_${q.id}`);
-            if (triggerQ && card) {
-              const rawTrigger = answerStore[triggerQ.id] ? answerStore[triggerQ.id].answer_val : '';
-              let triggerVals = [String(rawTrigger || '')];
-              if (typeof rawTrigger === 'string' && rawTrigger.startsWith('[')) {
-                try {
-                  const parsed = JSON.parse(rawTrigger);
-                  if (Array.isArray(parsed)) {
-                    triggerVals = parsed.map(it => typeof it === 'object' && it ? (it.dropdown || it.val || '') : String(it));
+          const card = document.getElementById(`qCard_${q.id}`);
+          if (!card) return;
+
+          const isSkipped = isQuestionSkipped(q, l);
+          const skipBanner = document.getElementById(`skipBanner_${q.id}`);
+          const skipBadge = document.getElementById(`skipBadge_${q.id}`);
+          const multiBadge = document.getElementById(`multiBadge_${q.id}`);
+          const qBody = document.getElementById(`qBody_${q.id}`);
+
+          // Keep question card VISIBLE so user can see skipped questions
+          card.style.display = 'block';
+
+          if (isSkipped) {
+            card.classList.add('vsme-q-card-skipped');
+            if (skipBanner) skipBanner.classList.remove('d-none');
+            if (skipBadge) skipBadge.classList.remove('d-none');
+            if (multiBadge) multiBadge.classList.add('d-none');
+            if (qBody) qBody.style.cssText = 'opacity: 0.45; pointer-events: none;';
+
+            // Disable all inputs inside skipped question card
+            card.querySelectorAll('input, select, textarea, button').forEach(el => {
+              if (el.classList.contains('vsme-q-info-btn')) return;
+              el.disabled = true;
+              if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.readOnly = true;
+            });
+          } else {
+            card.classList.remove('vsme-q-card-skipped');
+            if (skipBanner) skipBanner.classList.add('d-none');
+            if (skipBadge) skipBadge.classList.add('d-none');
+            if (multiBadge) multiBadge.classList.remove('d-none');
+
+            const copyCfg = q.copy_config || (q.formula_config ? q.formula_config.copy_config : null);
+            const isCopyReadOnly = copyCfg && copyCfg.parent_cell_ref && copyCfg.access_mode === 'readonly';
+
+            if (!isCopyReadOnly) {
+              if (qBody) qBody.style.cssText = 'opacity: 1; pointer-events: auto;';
+              card.querySelectorAll('input, select, textarea, button').forEach(el => {
+                if (el.classList.contains('vsme-q-info-btn')) return;
+                if (el.classList.contains('table-cell-input')) {
+                  const colKey = el.getAttribute('data-col-id');
+                  if (colKey && q.table_config && Array.isArray(q.table_config.columns)) {
+                    const colObj = q.table_config.columns.find((col, cIdx) => getColumnKey(col, cIdx) === colKey);
+                    if (colObj && colObj.copy_config && colObj.copy_config.parent_cell_ref && colObj.copy_config.access_mode === 'readonly') {
+                      return;
+                    }
                   }
-                } catch (e) {}
-              }
-              const targetVal = String(q.visibility_condition.value || q.visibility_condition.target_value || '').toLowerCase();
-              const op = q.visibility_condition.operator || 'equals';
-              let matches = false;
-
-              if (op === 'equals') {
-                matches = triggerVals.some(v => v.toLowerCase() === targetVal);
-              } else if (op === 'not_equals') {
-                matches = triggerVals.every(v => v.toLowerCase() !== targetVal);
-              } else if (op === 'is_true') {
-                matches = triggerVals.some(v => v === 'TRUE' || v === '1' || v.toLowerCase() === 'yes' || v.toLowerCase() === 'true');
-              } else if (op === 'is_false') {
-                matches = triggerVals.some(v => v === 'FALSE' || v === '0' || v.toLowerCase() === 'no' || v.toLowerCase() === 'false');
-              } else if (op === 'gt') {
-                matches = triggerVals.some(v => parseFloat(v) > parseFloat(targetVal));
-              } else if (op === 'lt') {
-                matches = triggerVals.some(v => parseFloat(v) < parseFloat(targetVal));
-              }
-
-              if (q.visibility_condition.action === 'show') {
-                card.style.display = matches ? 'block' : 'none';
-              } else {
-                card.style.display = matches ? 'none' : 'block';
-              }
+                }
+                el.disabled = false;
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.readOnly = false;
+              });
             }
           }
         });
