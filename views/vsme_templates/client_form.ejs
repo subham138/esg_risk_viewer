@@ -1799,10 +1799,10 @@
 
     for (let i = 0; i < lbl.questions.length; i++) {
       const curQ = lbl.questions[i];
-      const isChild = isOtherSpecificationQuestion(curQ, lbl);
+      const isChild = Boolean(curQ && curQ.visibility_condition && curQ.visibility_condition.depends_on_cell);
 
       if (isChild) {
-        const parentNum = parentCounter;
+        const parentNum = parentCounter > 0 ? parentCounter : 1;
         const numStr = `${parentNum}.1`;
         const pillStr = `Q${parentNum}.1`;
         if (i === targetIdx) {
@@ -1825,17 +1825,8 @@
   function isQuestionSkipped(q, lbl) {
     if (!q) return false;
 
-    // 1. Dynamic visibility condition set by admin in Template Builder (Show/Hide Logic)
-    if (isQuestionHiddenByCondition(q)) {
-      return true;
-    }
-
-    // 2. Check if this question is an 'Other' specification / child question of the previous question
-    if (lbl && isOtherSpecificationQuestion(q, lbl)) {
-      return !isParentAnsweredOther(q, lbl);
-    }
-
-    return false;
+    // Rely strictly on dynamic visibility condition set by admin in Template Builder (Show/Hide Logic)
+    return isQuestionHiddenByCondition(q);
   }
 
   function checkLabelCompleted(lbl) {

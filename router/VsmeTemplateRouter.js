@@ -506,12 +506,37 @@ VsmeRouter.post('/vsme/generate-xbrl', async (req, res) => {
       });
     }
 
-    // 4. Verify output file exists
+    // 4. Verify output file exists & post-process HTML styles for hidden facts visibility
     if (!fs.existsSync(outputFilePath)) {
       return res.json({
         success: false,
         message: 'XBRL conversion completed but output HTML file was not created.'
       });
+    }
+
+    try {
+      let htmlContent = fs.readFileSync(outputFilePath, 'utf-8');
+      const customStyle = `\n<style>
+        span[style*="-ix-hidden"], span[style*="hidden"] {
+          display: inline !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        dt.fact-value span {
+          display: inline-block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+      </style>\n`;
+
+      if (htmlContent.includes('</head>')) {
+        htmlContent = htmlContent.replace('</head>', `${customStyle}</head>`);
+      } else {
+        htmlContent = customStyle + htmlContent;
+      }
+      fs.writeFileSync(outputFilePath, htmlContent, 'utf-8');
+    } catch (styleErr) {
+      console.warn('[XBRL] Failed to inject custom style into generated XBRL report HTML:', styleErr.message);
     }
 
     // 5. Update td_project with the xbrl_file_path

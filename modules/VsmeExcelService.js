@@ -29,14 +29,37 @@ const parseDateParts = (dateStr) => {
     };
   }
   const str = String(dateStr).trim();
-  const match = str.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if (match) {
+
+  // YYYY-MM-DD or YYYY/MM/DD or YYYY.MM.DD
+  const matchISO = str.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (matchISO) {
     return {
-      year: parseInt(match[1], 10),
-      month: parseInt(match[2], 10),
-      day: parseInt(match[3], 10)
+      year: parseInt(matchISO[1], 10),
+      month: parseInt(matchISO[2], 10),
+      day: parseInt(matchISO[3], 10)
     };
   }
+
+  // DD/MM/YYYY or DD-MM-YYYY
+  const matchDMY = str.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
+  if (matchDMY) {
+    return {
+      year: parseInt(matchDMY[3], 10),
+      month: parseInt(matchDMY[2], 10),
+      day: parseInt(matchDMY[1], 10)
+    };
+  }
+
+  // 4-digit Year only e.g. "2024"
+  const matchYear = str.match(/^(\d{4})$/);
+  if (matchYear) {
+    return {
+      year: parseInt(matchYear[1], 10),
+      month: 1,
+      day: 1
+    };
+  }
+
   const d = new Date(str);
   if (!isNaN(d.getTime())) {
     return {
@@ -167,6 +190,33 @@ const findWorksheet = (workbook, sheetName, categoryNameEn = '') => {
 };
 
 /**
+ * Attempt to convert a numeric string (e.g. '50000', '1,000', '12.34', '-50') to Number if valid.
+ * Avoid converting strings with leading zeros (e.g. '012345' phone/codes) unless it's '0' or '0.xx'.
+ */
+const tryParseNumber = (strVal) => {
+  if (typeof strVal === 'number') return strVal;
+  if (!strVal || typeof strVal !== 'string') return strVal;
+  const s = strVal.trim();
+  if (s === '') return strVal;
+
+  // Preserve leading zeros for postal/phone/ID codes like "07000" or "01234" (except "0" or "0.123")
+  if (/^0\d+/.test(s)) {
+    return strVal;
+  }
+
+  // Remove formatting commas e.g. "50,000" -> "50000"
+  const cleanStr = s.replace(/,/g, '');
+  if (/^-?\d+(\.\d+)?$/.test(cleanStr)) {
+    const num = Number(cleanStr);
+    if (!isNaN(num)) {
+      return num;
+    }
+  }
+
+  return strVal;
+};
+
+/**
  * Set cell value safely while handling booleans, numbers, and strings
  */
 const setCellValueSafe = (worksheet, cellRef, rawValue, inputType = 'string') => {
@@ -179,8 +229,12 @@ const setCellValueSafe = (worksheet, cellRef, rawValue, inputType = 'string') =>
       return;
     }
 
-    // Check if value is boolean type or string boolean representation
     if (typeof rawValue === 'boolean') {
+      cell.value = rawValue;
+      return;
+    }
+
+    if (typeof rawValue === 'number') {
       cell.value = rawValue;
       return;
     }
@@ -202,24 +256,24 @@ const setCellValueSafe = (worksheet, cellRef, rawValue, inputType = 'string') =>
       } else if (boolStr === 'false' || boolStr === '0' || boolStr === 'no') {
         cell.value = false;
       } else {
-        cell.value = rawValue;
+        cell.value = tryParseNumber(strVal);
       }
       return;
     }
 
-    if (inputType === 'number') {
+    if (inputType === 'number' || inputType === 'integer' || inputType === 'float') {
       const numStr = strVal.replace(/,/g, '');
       const num = Number(numStr);
       if (!isNaN(num) && numStr !== '') {
         cell.value = num;
       } else {
-        cell.value = rawValue;
+        cell.value = strVal;
       }
       return;
     }
 
-    // String / URL / Dropdown
-    cell.value = strVal;
+    // Auto-detect numeric string values even if inputType is 'string' or default
+    cell.value = tryParseNumber(strVal);
   } catch (err) {
     console.error(`Error setting cell ${cellRef}:`, err.message);
   }
@@ -557,28 +611,186 @@ const generatePopulatedVsmeExcel = async ({
     // 7c. Clean all formula cells to prevent ExcelJS from writing <v>NaN</v> or Invalid Date in XML
     const genWs = workbook.getWorksheet('General Information') || findWorksheet(workbook, 'General Information');
     if (genWs) {
-      const computeDateCell = (yearCell, monthCell, dayCell, targetCell) => {
+      const computeDateCell = (yearCell, monthCell, dayCell, targetCell, defaultMonth = 1, defaultDay = 1) => {
         try {
-          const y = genWs.getCell(yearCell).value;
-          const m = genWs.getCell(monthCell).value;
-          const d = genWs.getCell(dayCell).value;
+          let y = genWs.getCell(yearCell).value;
+          let m = genWs.getCell(monthCell).value;
+          let d = genWs.getCell(dayCell).value;
           const target = genWs.getCell(targetCell);
           const formula = (target.value && typeof target.value === 'object' && target.value.formula) ? target.value.formula : undefined;
-          if (y && m && d && !isNaN(Number(y)) && !isNaN(Number(m)) && !isNaN(Number(d))) {
-            const formatted = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            target.value = formula ? { formula, result: formatted } : formatted;
-          } else if (formula) {
-            target.value = { formula, result: '-' };
-          }
+
+          // Parse numeric values
+          const numY = y && !isNaN(Number(y)) ? parseInt(y, 10) : null;
+          const numM = m && !isNaN(Number(m)) ? parseInt(m, 10) : null;
+          const numD = d && !isNaN(Number(d)) ? parseInt(d, 10) : null;
+
+          const currentYear = new Date().getFullYear();
+          const finalY = numY || currentYear;
+          const finalM = numM || defaultMonth;
+          const finalD = numD || defaultDay;
+
+          // Ensure D6/D7/D8 or D10/D11/D12 contain valid numbers
+          genWs.getCell(yearCell).value = finalY;
+          genWs.getCell(monthCell).value = finalM;
+          genWs.getCell(dayCell).value = finalD;
+
+          // Formatted ISO date string YYYY-MM-DD
+          const formatted = `${finalY}-${String(finalM).padStart(2, '0')}-${String(finalD).padStart(2, '0')}`;
+          target.value = formula ? { formula, result: formatted } : formatted;
         } catch (e) {
           console.warn(`Error computing ${targetCell}:`, e.message);
         }
       };
 
-      computeDateCell('D6', 'D7', 'D8', 'D9');
-      computeDateCell('E6', 'E7', 'E8', 'E9');
-      computeDateCell('D10', 'D11', 'D12', 'D13');
-      computeDateCell('E10', 'E11', 'E12', 'E13');
+      // D9: Reporting period start date (default Jan 1)
+      computeDateCell('D6', 'D7', 'D8', 'D9', 1, 1);
+      // D13: Reporting period end date (default Dec 31)
+      computeDateCell('D10', 'D11', 'D12', 'D13', 12, 31);
+
+      // Comparative period (only set if comparative year is specified)
+      const compY = genWs.getCell('E6').value;
+      if (compY && !isNaN(Number(compY))) {
+        computeDateCell('E6', 'E7', 'E8', 'E9', 1, 1);
+        computeDateCell('E10', 'E11', 'E12', 'E13', 12, 31);
+      }
+    }
+
+    // 7d. Process Classified / Sensitive / Omitted Disclosures
+    try {
+      const [templateLabels] = await promiseDb.query(
+        `SELECT l.id, l.name_en, l.category_id, c.name_en AS cat_name_en
+         FROM md_vsme_lables l
+         JOIN md_vsme_categories c ON l.category_id = c.id
+         WHERE c.template_id = ?`,
+        [targetTemplateId]
+      );
+
+      const omittedLabelsList = [];
+      (templateLabels || []).forEach(lbl => {
+        if (classifiedSections[lbl.id] || classifiedSections[String(lbl.id)]) {
+          omittedLabelsList.push(lbl);
+        }
+      });
+
+      const wsToc = workbook.getWorksheet('Table of Contents & Validation');
+      const wsTech = workbook.getWorksheet('Technical Sheet');
+      const wsGen = workbook.getWorksheet('General Information') || findWorksheet(workbook, 'General Information');
+
+      if (omittedLabelsList.length > 0) {
+        let omittedCount = 0;
+        const matchedOmittedTitles = [];
+
+        // 1. Update Table of Contents & Validation sheet and Technical Sheet
+        if (wsToc) {
+          for (let r = 5; r <= 70; r++) {
+            const bCell = wsToc.getCell(`B${r}`);
+            const bVal = bCell.value;
+            const bTitle = String(typeof bVal === 'object' && bVal ? (bVal.result || bVal.formula || '') : (bVal || '')).trim();
+            const bStr = bTitle.toLowerCase();
+            if (!bStr) continue;
+
+            const matchedLabel = omittedLabelsList.find(lbl => {
+              const rawName = String(lbl.name_en || '');
+              const cleanName = rawName
+                .replace(/from\s*\{from date\}.*/i, '')
+                .replace(/\{from date\}/gi, '')
+                .replace(/\{to date\}/gi, '')
+                .replace(/\[if applicable\]/gi, '')
+                .trim()
+                .toLowerCase();
+              if (!cleanName) return false;
+              return bStr.includes(cleanName) || cleanName.includes(bStr);
+            });
+
+            if (matchedLabel) {
+              omittedCount++;
+              matchedOmittedTitles.push(bTitle);
+              wsToc.getCell(`D${r}`).value = true;
+
+              const cVal = wsToc.getCell(`C${r}`).value;
+              const eVal = wsToc.getCell(`E${r}`).value;
+              const cText = "Information on sensitive information before converting";
+              const eText = "This disclosure has been omitted as it contains confidential or sensitive information.";
+
+              wsToc.getCell(`C${r}`).value = (cVal && typeof cVal === 'object' && cVal.formula) ? { formula: cVal.formula, result: cText } : cText;
+              wsToc.getCell(`E${r}`).value = (eVal && typeof eVal === 'object' && eVal.formula) ? { formula: eVal.formula, result: eText } : eText;
+
+              // Update corresponding row in Technical Sheet (row r + 188)
+              if (wsTech) {
+                const techRow = r + 188;
+                const techCell = wsTech.getCell(`E${techRow}`);
+                const techForm = (techCell.value && typeof techCell.value === 'object' && techCell.value.formula) ? techCell.value.formula : undefined;
+                wsTech.getCell(`E${techRow}`).value = techForm ? { formula: techForm, result: omittedCount } : omittedCount;
+              }
+            }
+          }
+        }
+
+        // Update Technical Sheet E259 formula count result with actual matched omitted count
+        if (wsTech) {
+          const e259Cell = wsTech.getCell('E259');
+          const e259Form = (e259Cell.value && typeof e259Cell.value === 'object' && e259Cell.value.formula) ? e259Cell.value.formula : 'SUM(E193:E258)';
+          wsTech.getCell('E259').value = { formula: e259Form, result: omittedCount };
+        }
+
+        // 2. Populate General Information sheet cells E126:E132
+        if (wsGen) {
+          for (let i = 0; i < 7; i++) {
+            const rowNum = 126 + i;
+            const eCell = wsGen.getCell(`E${rowNum}`);
+            const eForm = (eCell.value && typeof eCell.value === 'object' && eCell.value.formula) ? eCell.value.formula :
+              (i === 0 ? `IF('Technical Sheet'!E259=0,"None",_xlfn.XLOOKUP('Technical Sheet'!A120, 'Technical Sheet'!E193:$E$258, 'Table of Contents & Validation'!B5:$B$70, ""))` :
+              `_xlfn.XLOOKUP('Technical Sheet'!A${120 + i}, 'Technical Sheet'!E${193 + i}:$E$258, 'Table of Contents & Validation'!B${5 + i}:$B$70, "")`);
+
+            if (i < matchedOmittedTitles.length) {
+              const labelName = matchedOmittedTitles[i];
+
+              const cCell = wsGen.getCell(`C${rowNum}`);
+              const dCell = wsGen.getCell(`D${rowNum}`);
+              const cForm = (cCell.value && typeof cCell.value === 'object' && cCell.value.formula) ? cCell.value.formula : undefined;
+              const dForm = (dCell.value && typeof dCell.value === 'object' && dCell.value.formula) ? dCell.value.formula : undefined;
+
+              if (cForm) cCell.value = { formula: cForm, result: labelName };
+              else cCell.value = labelName;
+
+              if (dForm) dCell.value = { formula: dForm, result: labelName };
+              else dCell.value = labelName;
+
+              eCell.value = { formula: eForm, result: labelName };
+              populatedCellRefs.add(`E${rowNum}`);
+              populatedCellsCount++;
+            } else {
+              if (i === 0) {
+                eCell.value = { formula: eForm, result: "None" };
+              } else {
+                eCell.value = { formula: eForm, result: "" };
+              }
+            }
+          }
+        }
+      } else {
+        // No omitted labels: ensure E259 is 0, E126 is "None", and E127-E132 are ""
+        if (wsTech) {
+          const e259Cell = wsTech.getCell('E259');
+          const e259Form = (e259Cell.value && typeof e259Cell.value === 'object' && e259Cell.value.formula) ? e259Cell.value.formula : 'SUM(E193:E258)';
+          wsTech.getCell('E259').value = { formula: e259Form, result: 0 };
+        }
+        if (wsGen) {
+          const e126 = wsGen.getCell('E126');
+          const f126 = (e126.value && typeof e126.value === 'object' && e126.value.formula) ? e126.value.formula : 'IF(\'Technical Sheet\'!E259=0,"None",_xlfn.XLOOKUP(\'Technical Sheet\'!A120, \'Technical Sheet\'!E193:$E$258, \'Table of Contents & Validation\'!B5:$B$70, ""))';
+          e126.value = { formula: f126, result: "None" };
+
+          for (let i = 1; i < 7; i++) {
+            const rowNum = 126 + i;
+            const eCell = wsGen.getCell(`E${rowNum}`);
+            const f = (eCell.value && typeof eCell.value === 'object' && eCell.value.formula) ? eCell.value.formula : undefined;
+            if (f) eCell.value = { formula: f, result: "" };
+            else eCell.value = "";
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Error processing classified disclosures in ExcelService:', e.message);
     }
 
     // Sanitize all formula cell results across all worksheets
