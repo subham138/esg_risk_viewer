@@ -61,6 +61,65 @@ const parseCellAddress = (cellRef) => {
 };
 
 /**
+ * Extract column letter and starting row number for table column mapping
+ */
+const extractColumnCellInfo = (colExcelCell, questionCellRefRaw, colIdx) => {
+  let colLetter = '';
+  let startRow = null;
+
+  if (colExcelCell && typeof colExcelCell === 'string') {
+    const cleanColCell = colExcelCell.trim().toUpperCase();
+    const singleMatch = cleanColCell.match(/^([A-Z]+)(\d+)$/);
+    if (singleMatch) {
+      colLetter = singleMatch[1];
+      startRow = parseInt(singleMatch[2], 10);
+    } else {
+      const rangeMatch = cleanColCell.match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/);
+      if (rangeMatch) {
+        colLetter = rangeMatch[1];
+        startRow = parseInt(rangeMatch[2], 10);
+      } else {
+        const listMatch = cleanColCell.match(/^([A-Z]+)(\d+)/);
+        if (listMatch) {
+          colLetter = listMatch[1];
+          startRow = parseInt(listMatch[2], 10);
+        }
+      }
+    }
+  }
+
+  // Fallback to question level excel cell ref (e.g. "D292:F292" or "D292")
+  if (!startRow || !colLetter) {
+    if (questionCellRefRaw && typeof questionCellRefRaw === 'string') {
+      const qClean = questionCellRefRaw.trim().toUpperCase();
+      const qRangeMatch = qClean.match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/);
+      if (qRangeMatch) {
+        const qStartColLetter = qRangeMatch[1];
+        const qStartRow = parseInt(qRangeMatch[2], 10);
+        if (!startRow) startRow = qStartRow;
+        if (!colLetter) {
+          const colCode = qStartColLetter.charCodeAt(0) + colIdx;
+          colLetter = String.fromCharCode(colCode);
+        }
+      } else {
+        const qSingleMatch = qClean.match(/^([A-Z]+)(\d+)$/);
+        if (qSingleMatch) {
+          const qStartColLetter = qSingleMatch[1];
+          const qStartRow = parseInt(qSingleMatch[2], 10);
+          if (!startRow) startRow = qStartRow;
+          if (!colLetter) {
+            const colCode = qStartColLetter.charCodeAt(0) + colIdx;
+            colLetter = String.fromCharCode(colCode);
+          }
+        }
+      }
+    }
+  }
+
+  return { colLetter: colLetter || '', startRow: startRow || 1 };
+};
+
+/**
  * Smart worksheet resolver matching sheet_name, name_en, or common aliases
  */
 const findWorksheet = (workbook, sheetName, categoryNameEn = '') => {
@@ -328,50 +387,35 @@ const generatePopulatedVsmeExcel = async ({
         const tableConfig = safeParseJson(q.table_config, {});
         const columns = tableConfig.columns || [];
 
-        if (Array.isArray(tableData) && tableData.length > 0) {
-          // Check range like "C292:E292" or "C406:H406" or "C512:O512"
-          let startRow = 1;
-          const rangeMatch = cellRefRaw.match(/^[A-Z]+(\d+):[A-Z]+(\d+)$/i);
-          if (rangeMatch) {
-            startRow = parseInt(rangeMatch[1], 10);
-          } else {
-            const singleMatch = parseCellAddress(cellRefRaw);
-            if (singleMatch) startRow = singleMatch.row;
-          }
+        // Mark question level cell reference as populated to prevent raw JSON array dumping in fallback
+        if (cellRefRaw) populatedCellRefs.add(cellRefRaw);
+        if (q.excel_cell_ref) populatedCellRefs.add(q.excel_cell_ref.trim());
 
+        if (Array.isArray(tableData) && tableData.length > 0) {
           tableData.forEach((rowObj, rowIdx) => {
             if (!rowObj || typeof rowObj !== 'object') return;
-            const currentRowNum = startRow + rowIdx;
 
             columns.forEach((col, colIdx) => {
-              const colId = col.col_id || `col_${colIdx}`;
-              const colVal = rowObj[colId] !== undefined ? rowObj[colId] : (rowObj[col.title ? (col.title.en || col.title) : '']);
+              const colId = col.col_id || col.id || `col_${colIdx + 1}`;
+
+              let colVal = rowObj[colId];
+              if (colVal === undefined && col.col_id) colVal = rowObj[col.col_id];
+              if (colVal === undefined) colVal = rowObj[`col_${colIdx + 1}`];
+              if (colVal === undefined && col.title) {
+                const titleKey = typeof col.title === 'object' ? (col.title.en || Object.values(col.title)[0]) : col.title;
+                colVal = rowObj[titleKey];
+              }
+
               if (colVal === undefined || colVal === null || colVal === '') return;
 
-              // Determine target cell
-              let targetColLetter = '';
-              if (col.excel_cell) {
-                const colAddr = parseCellAddress(col.excel_cell);
-                if (colAddr) {
-                  targetColLetter = colAddr.col;
-                }
-              }
+              const { colLetter, startRow } = extractColumnCellInfo(col.excel_cell, cellRefRaw, colIdx);
 
-              // Fallback column letter derivation
-              if (!targetColLetter) {
-                if (cellRefRaw.startsWith('C292')) {
-                  targetColLetter = colIdx === 0 ? 'D' : (colIdx === 1 ? 'E' : 'F');
-                } else if (cellRefRaw.startsWith('C406')) {
-                  const letters = ['D', 'E', 'F', 'G', 'H'];
-                  targetColLetter = letters[colIdx] || 'D';
-                } else if (cellRefRaw.startsWith('C512')) {
-                  targetColLetter = String.fromCharCode(67 + colIdx); // 67 is 'C'
-                }
-              }
-
-              if (targetColLetter) {
-                const targetCell = `${targetColLetter}${currentRowNum}`;
+              if (colLetter && startRow > 0) {
+                // Row 0 -> startRow, Row 1 -> startRow + 1, Row 2 -> startRow + 2, etc.
+                const currentRowNum = startRow + rowIdx;
+                const targetCell = `${colLetter}${currentRowNum}`;
                 const colType = col.type || 'string';
+
                 setCellValueSafe(worksheet, targetCell, colVal, colType);
                 populatedCellRefs.add(targetCell);
                 populatedCellsCount++;
@@ -499,6 +543,11 @@ const generatePopulatedVsmeExcel = async ({
           }
         }
       } else if (!populatedCellRefs.has(cellRefRaw)) {
+        // Safety check: Never dump raw JSON table strings or arrays into single cells during fallback
+        const strVal = String(rawAnswer).trim();
+        if (strVal.startsWith('[') || strVal.startsWith('{')) {
+          continue;
+        }
         setCellValueSafe(worksheet, cellRefRaw, rawAnswer, 'string');
         populatedCellRefs.add(cellRefRaw);
         populatedCellsCount++;
