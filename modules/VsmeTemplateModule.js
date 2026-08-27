@@ -69,6 +69,9 @@ const getDropdownGroupNames = async () => {
     db.query(sql, (err, results) => {
       if (err) return resolve({ suc: 0, msg: err.message, data: [] });
       const groupNames = results.map(r => r.list_group_name);
+      if (!groupNames.includes('b1_sites_list')) {
+        groupNames.push('b1_sites_list');
+      }
       return resolve({ suc: 1, msg: 'Success', data: groupNames });
     });
   });

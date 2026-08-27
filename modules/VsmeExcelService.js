@@ -468,7 +468,7 @@ const generatePopulatedVsmeExcel = async ({
                 // Row 0 -> startRow, Row 1 -> startRow + 1, Row 2 -> startRow + 2, etc.
                 const currentRowNum = startRow + rowIdx;
                 const targetCell = `${colLetter}${currentRowNum}`;
-                const colType = col.type || 'string';
+                const colType = (col.type === 'calculated' || col.type === 'number') ? 'number' : (col.type || 'string');
 
                 setCellValueSafe(worksheet, targetCell, colVal, colType);
                 populatedCellRefs.add(targetCell);

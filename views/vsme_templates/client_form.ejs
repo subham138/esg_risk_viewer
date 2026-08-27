@@ -1,7 +1,8 @@
 <%- include('../templates/header.ejs', {
   header: header || 'VSME Sustainability Questionnaire',
   sub_header: sub_header || 'Interactive XBRL Disclosure Data Capture',
-  header_url: header_url || '/admin/vsme-templates'
+  header_url: header_url || '/admin/vsme-templates',
+  show_br: true
 }) %>
 
 <!-- Custom Presentation & Slide CSS -->
@@ -35,14 +36,14 @@
     background: #ffffff;
     border: 1px solid var(--vsme-gray-200);
     border-radius: 12px;
-    padding: 10px 18px;
+    padding: 10px 10px;
     margin-bottom: 6px;
     box-shadow: var(--vsme-card-shadow);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     position: relative;
     z-index: 5;
   }
@@ -1025,26 +1026,6 @@
 
   <!-- TOP CONTROL BAR: Language, Version, Progress, Auto-Save -->
   <div class="vsme-top-control-bar">
-    <div class="vsme-header-brand">
-      <div class="vsme-brand-icon">
-        <i class="icofont icofont-presentation"></i>
-      </div>
-      <div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <h4 class="vsme-brand-title mb-0" id="tplTitleText"><%= formData.template.template_name %></h4>
-          <% if (typeof project_name !== 'undefined' && project_name) { %>
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 fw-bold" style="border-radius: 8px;">
-              <i class="icofont icofont-folder me-1"></i><%= project_name %>
-            </span>
-          <% } %>
-        </div>
-        <p class="vsme-brand-subtitle mt-1 mb-0">
-          <span class="badge bg-primary">v<%= formData.template.version_number %>.0</span>
-          • XBRL Data Capture Mode
-        </p>
-      </div>
-    </div>
-
     <!-- Center Control Badges: Language & Auto-Save -->
     <div class="d-flex align-items-center gap-3">
       <!-- Language Switcher Dropdown/Pills -->
@@ -1080,17 +1061,17 @@
 
     <!-- Right Action Buttons: Back to Projects, Save Draft, Export Excel & Final Submit -->
     <div class="d-flex align-items-center gap-2">
-      <a href="<%= (typeof header_url !== 'undefined' && header_url) ? header_url : '/my_project?flag=RVY%3D' %>" class="btn btn-outline-secondary btn-sm" title="Back">
+      <a href="<%= (typeof header_url !== 'undefined' && header_url) ? header_url : '/my_project?flag=RVY%3D' %>" class="btn btn-custom btn-sm" title="Back">
         <i class="icofont icofont-arrow-left me-1"></i><%= (typeof is_admin !== 'undefined' && is_admin) ? 'Back to Templates' : 'Back to Projects' %>
       </a>
-      <button type="button" class="btn btn-outline-secondary btn-sm" id="btnManualDraftSave">
+      <button type="button" class="btn btn-custom btn-sm" id="btnManualDraftSave">
         <i class="icofont icofont-save me-1"></i> Save Draft
       </button>
       <button type="button" class="btn btn-outline-primary btn-sm" id="btnExportExcel" title="Generate and Download Populated VSME Excel Template" style="display:none">
         <i class="icofont icofont-file-excel me-1 text-success"></i> Export Excel
       </button>
       <button type="button" class="btn btn-success btn-sm" id="btnFinalSubmit">
-        <i class="icofont icofont-check-circled me-1"></i> Final Save & Submit
+        <i class="icofont icofont-check-circled me-1"></i> Submit
       </button>
     </div>
   </div>
@@ -1098,8 +1079,8 @@
   <!-- PROGRESS METER -->
   <div class="card p-3 mb-2 shadow-sm border-0" style="border-radius: 14px;">
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <span class="fw-bold text-muted small text-uppercase">Questionnaire Progress</span>
-      <span class="fw-bold text-primary" id="progressStatsText">0% Completed (0/0 Answered)</span>
+      <span class="fw-bold text-muted small text-uppercase">Progress</span>
+      <span class="fw-bold text-primary" id="progressStatsText">0% Completed</span>
     </div>
     <div class="progress" style="height: 8px; border-radius: 6px;">
       <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="progressBarFill" role="progressbar" style="width: 0%;"></div>
@@ -1113,24 +1094,21 @@
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 fw-bold" style="border-radius: 8px;">
           <i class="icofont icofont-calendar me-1"></i>Reporting Context
         </span>
-        <span class="small text-muted fw-bold d-none d-lg-inline">
-          Dates &amp; Currency dynamically update all labels ({FROM DATE}, {TO DATE}, {CURRENCY}) in real-time
-        </span>
       </div>
       <div class="d-flex align-items-center flex-wrap gap-3">
         <!-- From Date -->
         <div class="d-flex align-items-center gap-1.5">
-          <label for="topFromDate" class="small fw-bold text-secondary mb-0"><i class="icofont icofont-calendar text-primary me-1"></i>From Date:</label>
+          <label for="topFromDate" class="small fw-bold text-secondary mb-0 me-2"><i class="icofont icofont-calendar text-primary me-1"></i>From:</label>
           <input type="date" class="form-control form-control-sm" id="topFromDate" style="width: 145px; border-radius: 8px;" onchange="handleGlobalFromDateChange(this.value)">
         </div>
         <!-- To Date -->
         <div class="d-flex align-items-center gap-1.5">
-          <label for="topToDate" class="small fw-bold text-secondary mb-0"><i class="icofont icofont-calendar text-primary me-1"></i>To Date:</label>
+          <label for="topToDate" class="small fw-bold text-secondary mb-0 me-2"><i class="icofont icofont-calendar text-primary me-1"></i>To:</label>
           <input type="date" class="form-control form-control-sm" id="topToDate" style="width: 145px; border-radius: 8px;" onchange="handleGlobalToDateChange(this.value)">
         </div>
         <!-- Currency Select -->
         <div class="d-flex align-items-center gap-1.5">
-          <label for="topCurrencySelect" class="small fw-bold text-secondary mb-0"><i class="icofont icofont-cur-dollar text-success me-1"></i>Currency:</label>
+          <label for="topCurrencySelect" class="small fw-bold text-secondary mb-0 me-2"><i class="icofont icofont-cur-dollar text-success me-1"></i>Currency:</label>
           <select class="form-select form-select-sm" id="topCurrencySelect" style="width: 140px; border-radius: 8px;" onchange="handleGlobalCurrencyChange(this.value)">
             <option value="">-- Currency --</option>
           </select>
@@ -1885,10 +1863,6 @@
         <div class="vsme-question-tracker-bar">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center gap-2">
-              <span class="badge ${currentDisp.isChild ? 'bg-purple text-white' : 'bg-primary'} px-3 py-1.5" style="border-radius: 8px;">
-                ${currentDisp.isChild ? `<i class="icofont icofont-sub-listing me-1"></i>Question ${currentDisp.numStr}` : `Question ${currentDisp.numStr}`} of ${totalQ}
-              </span>
-              <span class="small fw-bold text-muted">(${answeredInLbl}/${totalQ} ${isQ1No ? 'Resolved' : 'Answered'})</span>
             </div>
             <div>
               ${isCurrentSkipped ?
@@ -2025,6 +1999,104 @@
     `;
   }
 
+  // Dynamic Option Resolver: Resolves Master Dropdown lists or Dynamic Table Row references (e.g. B1 Sites -> B5 Dropdown)
+  function resolveQuestionDropdownOptions(q) {
+    if (!q) return [];
+
+    const cellRef = (q.excel_cell_ref || '').trim().toUpperCase();
+    const grpName = (q.dropdown_group_name || '').trim().toLowerCase();
+
+    // Check if question is the B5 Related Site dropdown or configured for b1_sites_list / ListOfSitesTable
+    const isDynamicSiteDropdown = 
+      grpName === 'b1_sites_list' ||
+      grpName === 'sites_list' ||
+      grpName === 'listofsitestable' ||
+      cellRef === 'C188' ||
+      cellRef.startsWith('C188:') ||
+      cellRef.startsWith('C188,') ||
+      cellRef.includes('C188');
+
+    if (isDynamicSiteDropdown) {
+      // 1. Locate the B1 Table question from template hierarchy
+      let b1TableQ = null;
+      if (rawTemplate && rawTemplate.categories) {
+        for (const cat of rawTemplate.categories) {
+          for (const lbl of (cat.labels || [])) {
+            for (const quest of (lbl.questions || [])) {
+              if (quest.input_type === 'table') {
+                const qCell = (quest.excel_cell_ref || '').trim().toUpperCase();
+                const catSheet = (cat.sheet_name || '').trim().toLowerCase();
+                const lblName = (lbl.name_en || '').trim().toLowerCase();
+                if (
+                  qCell.includes('C406') || qCell.includes('D406') ||
+                  catSheet.includes('general') || catSheet.includes('sheet2') ||
+                  lblName.startsWith('b1')
+                ) {
+                  b1TableQ = quest;
+                  break;
+                }
+              }
+            }
+            if (b1TableQ) break;
+          }
+          if (b1TableQ) break;
+        }
+      }
+
+      if (b1TableQ && answerStore[b1TableQ.id]) {
+        const rawVal = answerStore[b1TableQ.id].answer_val;
+        let rows = [];
+        try {
+          rows = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
+        } catch (e) {
+          rows = [];
+        }
+
+        if (Array.isArray(rows) && rows.length > 0) {
+          const dynamicOptions = [];
+          rows.forEach((r, idx) => {
+            if (!r || typeof r !== 'object') return;
+            // Column mapping extraction
+            const serialId = r.col_1 || r.id || r.row_id || (idx + 1);
+            const address = r.col_2 || r.address || r.street || '';
+            const postal = r.col_3 || r.postal_code || r.pincode || '';
+            const city = r.col_4 || r.city || '';
+            const country = r.col_5 || r.country || '';
+
+            // Format label: "Country + City + Address" (matching Sheet2!G406 + Sheet2!F406 + Sheet2!D406)
+            const parts = [country, city, address].map(s => String(s || '').trim()).filter(Boolean);
+            const label = parts.length > 0 ? parts.join(' ') : `Site #${serialId}`;
+
+            if (parts.length > 0 || Object.values(r).some(v => v && String(v).trim() !== '')) {
+              dynamicOptions.push({
+                value_en: String(serialId),
+                value_fr: String(serialId),
+                display_label: label,
+                address_preview: [country, city, address].filter(Boolean).join(' ')
+              });
+            }
+          });
+
+          if (dynamicOptions.length > 0) {
+            return dynamicOptions;
+          }
+        }
+      }
+
+      return [
+        {
+          value_en: '',
+          value_fr: '',
+          display_label: '-- No operational sites entered in Section B1 table yet (Please fill B1 first) --',
+          disabled: true
+        }
+      ];
+    }
+
+    // Standard static master dropdown
+    return (q.dropdown_group_name && dropdownMasterMap[q.dropdown_group_name]) ? dropdownMasterMap[q.dropdown_group_name] : [];
+  }
+
   function renderSingleAnswerInput(q, val) {
     if (q.input_type === 'boolean') {
       const isYes = val === 'true' || val === '1' || val === 'Yes' || val === 'TRUE';
@@ -2037,7 +2109,8 @@
         </div>
       `;
     } else if (q.input_type === 'dropdown') {
-      const options = dropdownMasterMap[q.dropdown_group_name] || [];
+      const options = resolveQuestionDropdownOptions(q);
+      const isDynamicSite = (q.dropdown_group_name === 'b1_sites_list' || q.dropdown_group_name === 'sites_list' || (q.excel_cell_ref && q.excel_cell_ref.includes('C188')));
       let customVal = '';
       let selectedOption = val;
 
@@ -2053,17 +2126,34 @@
         }
       }
 
+      const selectedOptObj = options.find(opt => String(opt.value_en) === String(selectedOption));
+      const selectedPreview = selectedOptObj ? (selectedOptObj.display_label || selectedOptObj.value_en) : '';
+
       return `
         <div class="row g-2">
           <div class="${q.has_value_input ? 'col-md-6' : 'col-12'}">
             <select class="form-select vsme-input-control" data-qid="${q.id}" onchange="handleDropdownChange(${q.id}, this, ${q.has_value_input ? 'true' : 'false'})">
               <option value="">-- Select Option --</option>
-              ${options.map(opt => `
-                <option value="${escapeHtml(opt.value_en)}" ${selectedOption === opt.value_en ? 'selected' : ''}>
-                  ${escapeHtml(currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en)}
-                </option>
-              `).join('')}
+              ${options.map(opt => {
+                const optVal = opt.value_en;
+                const optText = opt.display_label || (currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en);
+                const isSelected = String(selectedOption) === String(optVal) && optVal !== '';
+                return `
+                  <option value="${escapeHtml(optVal)}" ${isSelected ? 'selected' : ''} ${opt.disabled ? 'disabled' : ''}>
+                    ${escapeHtml(optText)}
+                  </option>
+                `;
+              }).join('')}
             </select>
+            ${isDynamicSite && selectedOption ? `
+              <div class="mt-2 p-2 bg-success-subtle border border-success-subtle rounded-2 small text-success-emphasis d-flex align-items-center gap-2 shadow-2xs">
+                <i class="icofont icofont-location-pin fs-5 text-success"></i>
+                <div>
+                  <strong>Selected Site (Auto-mapped to D188):</strong>
+                  <span class="d-block">${escapeHtml(selectedPreview)}</span>
+                </div>
+              </div>
+            ` : ''}
           </div>
           ${q.has_value_input ? `
             <div class="col-md-6">
@@ -2080,10 +2170,18 @@
         </div>
       `;
     } else if (q.input_type === 'calculated') {
+      const customExpr = q.formula_config ? (q.formula_config.custom_formula || q.formula_config.expression || '') : '';
       return `
         <div class="vsme-calc-box">
-          <span class="vsme-calc-val" id="calcDisplay_${q.id}">0.00</span>
-          <span class="vsme-calc-formula"><i class="icofont icofont-calculator-alt me-1"></i> Auto-Calculated</span>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="vsme-calc-val" id="calcDisplay_${q.id}">${val ? (parseFloat(String(val).replace(/,/g, '')) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</span>
+            <span class="vsme-calc-formula"><i class="icofont icofont-calculator-alt me-1"></i> Auto-Calculated</span>
+          </div>
+          ${customExpr ? `
+            <small class="text-muted d-block mt-1 font-monospace" style="font-size: 0.75rem;">
+              <i class="icofont icofont-code-alt text-primary me-1"></i>Formula: <span id="calcFormulaSub_${q.id}">${escapeHtml(customExpr)}</span>
+            </small>
+          ` : ''}
         </div>
       `;
     } else if (q.input_type === 'table') {
@@ -2121,7 +2219,8 @@
 
   function renderMultipleAnswersInput(q, val) {
     const multiAnswers = parseMultipleAnswers(val, q.input_type, q.has_value_input);
-    const options = (q.input_type === 'dropdown' && q.dropdown_group_name) ? (dropdownMasterMap[q.dropdown_group_name] || []) : [];
+    const options = resolveQuestionDropdownOptions(q);
+    const isDynamicSite = (q.dropdown_group_name === 'b1_sites_list' || q.dropdown_group_name === 'sites_list' || (q.excel_cell_ref && q.excel_cell_ref.includes('C188')));
 
     let rowsHtml = multiAnswers.map((item, rIdx) => {
       let fieldHtml = '';
@@ -2147,22 +2246,32 @@
           .map(it => typeof it === 'object' && it !== null ? (it.dropdown || '') : String(it || ''))
           .filter(v => v !== '');
 
+        const selectedOptObj = options.find(opt => String(opt.value_en) === String(selectedOption));
+        const selectedPreview = selectedOptObj ? (selectedOptObj.display_label || selectedOptObj.value_en) : '';
+
         fieldHtml = `
           <div class="row g-2 flex-grow-1">
             <div class="${q.has_value_input ? 'col-md-6' : 'col-12'}">
               <select class="form-select vsme-input-control" data-qid="${q.id}" data-row-idx="${rIdx}" onchange="handleMultiDropdownChange(${q.id}, ${rIdx}, this, ${q.has_value_input ? 'true' : 'false'})">
                 <option value="">-- Select Option --</option>
                 ${options.map(opt => {
-                  const isSelected = selectedOption === opt.value_en;
-                  const isAlreadySelectedElsewhere = !isSelected && selectedInOtherRows.includes(opt.value_en);
-                  const optLabel = currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en;
+                  const optVal = opt.value_en;
+                  const optText = opt.display_label || (currentLanguage === 'fr' ? (opt.value_fr || opt.value_en) : opt.value_en);
+                  const isSelected = String(selectedOption) === String(optVal) && optVal !== '';
+                  const isAlreadySelectedElsewhere = !isSelected && selectedInOtherRows.includes(optVal) && optVal !== '';
                   return `
-                    <option value="${escapeHtml(opt.value_en)}" ${isSelected ? 'selected' : ''} ${isAlreadySelectedElsewhere ? 'disabled style="color: #94a3b8; background-color: #f1f5f9;"' : ''}>
-                      ${escapeHtml(optLabel)}${isAlreadySelectedElsewhere ? ' (Already Selected)' : ''}
+                    <option value="${escapeHtml(optVal)}" ${isSelected ? 'selected' : ''} ${opt.disabled ? 'disabled' : ''} ${isAlreadySelectedElsewhere ? 'disabled style="color: #94a3b8; background-color: #f1f5f9;"' : ''}>
+                      ${escapeHtml(optText)}${isAlreadySelectedElsewhere ? ' (Already Selected)' : ''}
                     </option>
                   `;
                 }).join('')}
               </select>
+              ${isDynamicSite && selectedOption ? `
+                <div class="mt-1 p-1.5 bg-success-subtle border border-success-subtle rounded small text-success-emphasis d-flex align-items-center gap-1.5">
+                  <i class="icofont icofont-location-pin text-success"></i>
+                  <span>${escapeHtml(selectedPreview)}</span>
+                </div>
+              ` : ''}
             </div>
             ${q.has_value_input ? `
               <div class="col-md-6">
@@ -2323,10 +2432,18 @@
                     </span>
                   `;
                 }
+                let calcBadgeHtml = '';
+                if (c.type === 'calculated' && (c.formula || c.custom_formula)) {
+                  calcBadgeHtml = `
+                    <span class="badge bg-info-subtle text-info border border-info-subtle ms-1 fw-normal font-monospace" style="font-size: 0.65rem;" title="Formula: ${escapeHtml(c.formula || c.custom_formula)}">
+                      <i class="icofont icofont-calculator me-1"></i>fx
+                    </span>
+                  `;
+                }
                 let colMinWidth = 220;
-                if (c.type === 'number') colMinWidth = 180;
+                if (c.type === 'number' || c.type === 'calculated') colMinWidth = 180;
                 else if (headerText.length > 25) colMinWidth = Math.min(380, Math.max(260, headerText.length * 7.5));
-                return `<th style="min-width: ${colMinWidth}px;">${headerText}${copyBadgeHtml}</th>`;
+                return `<th style="min-width: ${colMinWidth}px;">${headerText}${copyBadgeHtml}${calcBadgeHtml}</th>`;
               }).join('')}
               ${allowAddRows ? `<th style="width: 70px; min-width: 70px;" class="text-center">Action</th>` : ''}
             </tr>
@@ -2351,6 +2468,16 @@
                             </option>
                           `).join('')}
                         </select>
+                      </td>
+                    `;
+                  } else if (c.type === 'calculated') {
+                    const formulaAttr = escapeHtml(c.formula || c.custom_formula || '');
+                    const formatted = (cellVal !== undefined && cellVal !== null && cellVal !== '') 
+                      ? (parseFloat(String(cellVal).replace(/,/g, '')) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+                      : '0.00';
+                    return `
+                      <td>
+                        <input type="text" class="form-control table-cell-input table-cell-calc bg-light text-end fw-bold border-info-subtle" data-col-id="${colKey}" value="${formatted}" readonly title="Calculated: ${formulaAttr}">
                       </td>
                     `;
                   } else if (c.type === 'number') {
@@ -2474,6 +2601,7 @@
   }
 
   function handleDropdownChange(qId, selectElem, hasCustom) {
+    const qObj = findQuestionById(qId);
     const dropdownVal = selectElem.value;
     if (hasCustom) {
       const customInput = document.getElementById(`customInput_${qId}`);
@@ -2482,6 +2610,11 @@
       handleInputChange(qId, combo);
     } else {
       handleInputChange(qId, dropdownVal);
+    }
+
+    const isDynamicSite = qObj && (qObj.dropdown_group_name === 'b1_sites_list' || qObj.dropdown_group_name === 'sites_list' || (qObj.excel_cell_ref && qObj.excel_cell_ref.includes('C188')));
+    if (isDynamicSite) {
+      renderSlideStage();
     }
   }
 
@@ -2838,6 +2971,80 @@
     updateLiveTrackerPills();
   }
 
+  function evaluateTableCalculatedColumns(qId) {
+    const qObj = findQuestionById(qId);
+    if (!qObj || !qObj.table_config || !Array.isArray(qObj.table_config.columns)) return;
+
+    const calcCols = qObj.table_config.columns.filter(c => c.type === 'calculated' && (c.formula || c.custom_formula));
+    if (calcCols.length === 0) return;
+
+    let rowsData = [];
+    if (answerStore[qId] && answerStore[qId].answer_val) {
+      try {
+        rowsData = typeof answerStore[qId].answer_val === 'string' ? JSON.parse(answerStore[qId].answer_val) : answerStore[qId].answer_val;
+      } catch (e) {
+        rowsData = [];
+      }
+    }
+    if (!Array.isArray(rowsData) || rowsData.length === 0) return;
+
+    let isModified = false;
+    const tbody = document.getElementById(`tableBody_${qId}`);
+
+    rowsData.forEach((row, rIdx) => {
+      calcCols.forEach(col => {
+        const colKey = getColumnKey(col);
+        const formulaStr = col.formula || col.custom_formula;
+        if (!formulaStr) return;
+
+        // 1. Substitute column references in this row: e.g. col_1, col_2, col_3
+        let expr = String(formulaStr).trim();
+        if (expr.startsWith('=')) expr = expr.substring(1).trim();
+
+        // Replace column tokens with numeric value from this row
+        expr = expr.replace(/\b(col_\d+)\b/gi, (match) => {
+          const key = match.toLowerCase();
+          const val = row[key];
+          const num = parseFloat(String(val || '').replace(/,/g, ''));
+          return `(${!isNaN(num) ? num : 0})`;
+        });
+
+        // 2. Evaluate expression (which handles cross-sheet and external cell references as well)
+        const computedVal = evaluateDynamicMathExpression(expr, activeCategory);
+        const formattedDisplay = typeof computedVal === 'number' && !isNaN(computedVal)
+          ? computedVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '0.00';
+
+        if (row[colKey] !== computedVal) {
+          row[colKey] = computedVal;
+          isModified = true;
+        }
+
+        if (tbody) {
+          const rowEl = tbody.querySelector(`tr[data-row-idx="${rIdx}"]`);
+          if (rowEl) {
+            const inputEl = rowEl.querySelector(`[data-col-id="${colKey}"]`);
+            if (inputEl) {
+              inputEl.value = formattedDisplay;
+            }
+          }
+        }
+      });
+    });
+
+    if (isModified) {
+      answerStore[qId] = {
+        ...answerStore[qId],
+        question_id: qId,
+        excel_cell_ref: qObj.excel_cell_ref || '',
+        answer_val: JSON.stringify(rowsData),
+        category_id: activeCategory ? activeCategory.id : 0,
+        label_id: activeLabel ? activeLabel.id : 0,
+        sheet_name: activeCategory ? (activeCategory.sheet_name || '') : ''
+      };
+    }
+  }
+
   function handleTableInput(qId) {
     const tbody = document.getElementById(`tableBody_${qId}`);
     if (!tbody) return;
@@ -2857,6 +3064,10 @@
     const summarySpan = document.getElementById(`tableSummary_${qId}`);
     if (summarySpan) summarySpan.innerText = `Total Rows: ${tableData.length}`;
 
+    // 1. Evaluate row-level calculated columns
+    evaluateTableCalculatedColumns(qId);
+
+    // 2. Evaluate summary calculation rows
     evaluateTableSummaries(qId);
   }
 
@@ -2998,6 +3209,114 @@
     return null;
   }
 
+  // Safe Dynamic Math & Cross-Sheet Formula Evaluator
+  function evaluateDynamicMathExpression(expression, currentCat = null) {
+    if (!expression || typeof expression !== 'string') return 0;
+
+    let expr = String(expression).trim();
+    if (!expr) return 0;
+
+    // Remove leading '=' if present
+    if (expr.startsWith('=')) {
+      expr = expr.substring(1).trim();
+    }
+
+    // 1. Resolve Excel range aggregates if present e.g. SUM(D10:D14) or AVERAGE(D10:D14)
+    expr = expr.replace(/\b(SUM|AVERAGE|AVG|MIN|MAX)\s*\(\s*([A-Za-z]+)(\d+)\s*:\s*([A-Za-z]+)(\d+)\s*\)/gi, (m, fn, col1, r1, col2, r2) => {
+      const rowStart = parseInt(r1, 10);
+      const rowEnd = parseInt(r2, 10);
+      const funcName = fn.toUpperCase();
+      if (col1.toUpperCase() === col2.toUpperCase() && !isNaN(rowStart) && !isNaN(rowEnd) && rowStart <= rowEnd) {
+        const cellList = [];
+        for (let r = rowStart; r <= rowEnd; r++) {
+          cellList.push(`${col1.toUpperCase()}${r}`);
+        }
+        if (funcName === 'SUM') return `(${cellList.join(' + ')})`;
+        if (funcName === 'AVERAGE' || funcName === 'AVG') return `((${cellList.join(' + ')}) / ${cellList.length})`;
+        if (funcName === 'MIN') return `Math.min(${cellList.join(', ')})`;
+        if (funcName === 'MAX') return `Math.max(${cellList.join(', ')})`;
+      }
+      return m;
+    });
+
+    // 2. Resolve Multi-argument Excel functions e.g. SUM(a, b, c), AVERAGE(a, b), MIN(a, b), MAX(a, b), IF(c, t, f)
+    expr = expr.replace(/\bSUM\s*\(([^()]+)\)/gi, (m, args) => `(${args.split(',').map(s => s.trim()).join(' + ')})`);
+    expr = expr.replace(/\b(?:AVERAGE|AVG)\s*\(([^()]+)\)/gi, (m, args) => {
+      const parts = args.split(',').map(s => s.trim());
+      return `((${parts.join(' + ')}) / ${parts.length})`;
+    });
+    expr = expr.replace(/\bMIN\s*\(([^()]+)\)/gi, (m, args) => `Math.min(${args})`);
+    expr = expr.replace(/\bMAX\s*\(([^()]+)\)/gi, (m, args) => `Math.max(${args})`);
+    expr = expr.replace(/\bIF\s*\(([^,]+),([^,]+),([^)]+)\)/gi, (m, cond, tVal, fVal) => `((${cond}) ? (${tVal}) : (${fVal}))`);
+
+    // 3. Extract and replace all cell references (including cross-sheet references e.g. Sheet2!D12 or 'General Information'!D12 or D134)
+    const cellRefRegex = /(?:(?:'([^']+)'|([A-Za-z0-9_\s-]+))!)?([A-Za-z]+[0-9]+)/g;
+    expr = expr.replace(cellRefRegex, (fullMatch, quotedSheet, unquotedSheet, cellCoordinate) => {
+      const sheetName = quotedSheet || unquotedSheet || (currentCat ? (currentCat.sheet_name || currentCat.name_en) : null);
+      const fullCellRef = sheetName ? `${sheetName}!${cellCoordinate.toUpperCase()}` : cellCoordinate.toUpperCase();
+
+      // Find question
+      let srcQ = findQuestionByCell(fullCellRef);
+      if (!srcQ) {
+        srcQ = findQuestionByCell(cellCoordinate.toUpperCase());
+      }
+
+      let numVal = 0;
+      if (srcQ && answerStore[srcQ.id]) {
+        const rawAns = answerStore[srcQ.id].answer_val !== undefined && answerStore[srcQ.id].answer_val !== null 
+          ? answerStore[srcQ.id].answer_val 
+          : (answerStore[srcQ.id].calculated_val || '');
+
+        if (typeof rawAns === 'number') {
+          numVal = rawAns;
+        } else if (typeof rawAns === 'string') {
+          const s = rawAns.trim();
+          if (s.startsWith('[')) {
+            try {
+              const parsed = JSON.parse(s);
+              if (Array.isArray(parsed)) {
+                const numArr = parsed.map(v => parseFloat(String(v).replace(/,/g, ''))).filter(n => !isNaN(n));
+                numVal = numArr.length > 0 ? numArr.reduce((a, b) => a + b, 0) : 0;
+              }
+            } catch (e) {
+              numVal = 0;
+            }
+          } else {
+            const cleanStr = s.replace(/,/g, '');
+            const parsedNum = parseFloat(cleanStr);
+            numVal = !isNaN(parsedNum) ? parsedNum : 0;
+          }
+        }
+      }
+
+      return `(${numVal})`;
+    });
+
+    // 4. Replace power operator ^ with **
+    expr = expr.replace(/\^/g, '**');
+
+    // 5. Sanitize and safely evaluate
+    const cleanForEval = expr.replace(/Math\.(min|max|sqrt|pow|abs|round|floor|ceil)/g, '');
+    const isSafe = /^[\d\s.+\-*/%()?:><=!&|]+$/.test(cleanForEval);
+
+    if (!isSafe) {
+      console.warn('Formula expression contains invalid characters:', expr);
+      return 0;
+    }
+
+    try {
+      // Safe execution scoped in strict sandbox
+      const fn = new Function('Math', `"use strict"; return (${expr});`);
+      const res = fn(Math);
+      if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+        return res;
+      }
+      return 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   // Real-time Formula Evaluation Engine
   function evaluateFormulas() {
     evaluateCellCopying();
@@ -3007,43 +3326,60 @@
       (c.labels || []).forEach(l => {
         (l.questions || []).forEach(q => {
           if (q.input_type === 'calculated' && q.formula_config) {
-            const op = q.formula_config.formula_type || q.formula_config.operation || 'sum';
-            const sourceCells = q.formula_config.source_cells || [];
+            const cfg = q.formula_config;
+            const customExpr = cfg.custom_formula || cfg.expression || cfg.formula_expression;
+            const op = cfg.formula_type || cfg.operation || (customExpr ? 'custom' : 'sum');
             let result = 0;
 
-            const values = sourceCells.map(cellRef => {
-              const srcQ = findQuestionByCell(cellRef);
-              if (srcQ && answerStore[srcQ.id] && answerStore[srcQ.id].answer_val) {
-                const ansRaw = answerStore[srcQ.id].answer_val;
-                if (typeof ansRaw === 'string' && ansRaw.startsWith('[')) {
-                  try {
-                    const parsed = JSON.parse(ansRaw);
-                    if (Array.isArray(parsed)) {
-                      const numArr = parsed.map(v => parseFloat(v)).filter(n => !isNaN(n));
-                      return numArr.length > 0 ? numArr.reduce((a, b) => a + b, 0) : 0;
-                    }
-                  } catch (e) {}
+            if (customExpr || op === 'custom' || op === 'expression') {
+              result = evaluateDynamicMathExpression(customExpr || (cfg.source_cells || []).join(' + '), c);
+            } else {
+              const sourceCells = cfg.source_cells || [];
+              const values = sourceCells.map(cellRef => {
+                const srcQ = findQuestionByCell(cellRef);
+                if (srcQ && answerStore[srcQ.id] && answerStore[srcQ.id].answer_val) {
+                  const ansRaw = answerStore[srcQ.id].answer_val;
+                  if (typeof ansRaw === 'string' && ansRaw.startsWith('[')) {
+                    try {
+                      const parsed = JSON.parse(ansRaw);
+                      if (Array.isArray(parsed)) {
+                        const numArr = parsed.map(v => parseFloat(String(v).replace(/,/g, ''))).filter(n => !isNaN(n));
+                        return numArr.length > 0 ? numArr.reduce((a, b) => a + b, 0) : 0;
+                      }
+                    } catch (e) {}
+                  }
+                  const num = parseFloat(String(ansRaw).replace(/,/g, ''));
+                  return isNaN(num) ? 0 : num;
                 }
-                const num = parseFloat(ansRaw);
-                return isNaN(num) ? 0 : num;
-              }
-              return 0;
-            });
+                return 0;
+              });
 
-            if (op === 'sum') {
-              result = values.reduce((acc, v) => acc + v, 0);
-            } else if (op === 'subtract') {
-              result = values.length > 0 ? values.reduce((acc, v, i) => i === 0 ? v : acc - v, values[0]) : 0;
-            } else if (op === 'multiply') {
-              result = values.reduce((acc, v) => acc * v, 1);
-            } else if (op === 'divide') {
-              result = values[1] && values[1] !== 0 ? (values[0] / values[1]) : 0;
+              if (op === 'sum') {
+                result = values.reduce((acc, v) => acc + v, 0);
+              } else if (op === 'subtract') {
+                result = values.length > 0 ? values.reduce((acc, v, i) => i === 0 ? v : acc - v, values[0]) : 0;
+              } else if (op === 'multiply') {
+                result = values.reduce((acc, v) => acc * v, 1);
+              } else if (op === 'divide') {
+                result = values[1] && values[1] !== 0 ? (values[0] / values[1]) : 0;
+              } else if (op === 'concat') {
+                result = values.join(' ');
+              }
             }
 
             const calcDisplay = document.getElementById(`calcDisplay_${q.id}`);
             if (calcDisplay) {
-              calcDisplay.innerText = result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              const formatted = typeof result === 'number' 
+                ? result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : String(result);
+              calcDisplay.innerText = formatted;
             }
+
+            const formulaSubText = document.getElementById(`calcFormulaSub_${q.id}`);
+            if (formulaSubText && customExpr) {
+              formulaSubText.innerText = customExpr;
+            }
+
             answerStore[q.id] = {
               ...answerStore[q.id],
               question_id: q.id,
@@ -3054,6 +3390,9 @@
               label_id: l.id,
               sheet_name: c.sheet_name || ''
             };
+          } else if (q.input_type === 'table') {
+            evaluateTableCalculatedColumns(q.id);
+            evaluateTableSummaries(q.id);
           }
         });
       });
@@ -3691,7 +4030,8 @@
 
     const percent = Math.min(100, Math.round((totalAnswered / Math.max(1, totalQuestions)) * 100));
     progressBarFill.style.width = `${percent}%`;
-    progressStatsText.innerText = `${percent}% Completed (${totalAnswered}/${totalQuestions} Answered)`;
+    // progressStatsText.innerText = `${percent}% Completed (${totalAnswered}/${totalQuestions} Answered)`;
+    progressStatsText.innerText = `${percent}% Completed`;
   }
 
   // Toggle Question Inline Guidance Box

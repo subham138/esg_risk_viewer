@@ -622,7 +622,11 @@
     let dropdownOptionsHtml = `<option value="">-- Select Master List Group --</option>`;
     dropdownGroupOptions.forEach(grp => {
       const selected = (dropdownGroup === grp) ? 'selected' : '';
-      dropdownOptionsHtml += `<option value="${grp}" ${selected}>${grp}</option>`;
+      let label = grp;
+      if (grp === 'b1_sites_list' || grp === 'sites_list') {
+        label = `Operational Sites List (Country + City + Address -> Serial ID) [${grp}]`;
+      }
+      dropdownOptionsHtml += `<option value="${grp}" ${selected}>${label}</option>`;
     });
 
     const qHtml = `
@@ -715,12 +719,16 @@
         </div>
 
         <!-- Formula Configurator Card (shown when inputType == 'calculated') -->
-        <div class="formula-config-card p-2 border border-info rounded bg-info-subtle mt-3 mb-2 ${inputType === 'calculated' ? '' : 'd-none'}" id="formula_wrapper_${qId}">
-          <small class="fw-bold text-info mb-2 d-block"><i class="icofont icofont-calculator me-1"></i>Auto-Calculated Formula Field (Read-Only to End-User)</small>
+        <div class="formula-config-card p-2.5 border border-info rounded bg-info-subtle mt-3 mb-2 ${inputType === 'calculated' ? '' : 'd-none'}" id="formula_wrapper_${qId}">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <small class="fw-bold text-info"><i class="icofont icofont-calculator me-1"></i>Auto-Calculated Dynamic Formula Field (Read-Only to End-User)</small>
+            <span class="badge bg-info text-white" style="font-size: 0.7rem;"><i class="icofont icofont-magic me-1"></i>Dynamic Math & Cross-Sheet</span>
+          </div>
           <div class="row g-2 align-items-center">
-            <div class="col-md-3">
-              <label class="form-label small fw-bold text-secondary">Formula Type</label>
-              <select class="form-select form-select-sm q-formula-type">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-secondary mb-1">Formula Calculation Type</label>
+              <select class="form-select form-select-sm q-formula-type" onchange="toggleFormulaTypeInputs('${qId}')">
+                <option value="custom" ${(!qData || !qData.formula_config || qData.formula_config.formula_type === 'custom' || qData.formula_config.formula_type === 'expression' || qData.formula_config.custom_formula) ? 'selected' : ''}>Dynamic Formula Expression (e.g. D12-D10, (D134/((D135+D136)/2)))</option>
                 <option value="sum" ${qData && qData.formula_config && qData.formula_config.formula_type === 'sum' ? 'selected' : ''}>SUM (Total)</option>
                 <option value="subtract" ${qData && qData.formula_config && qData.formula_config.formula_type === 'subtract' ? 'selected' : ''}>Subtract (Difference)</option>
                 <option value="divide" ${qData && qData.formula_config && qData.formula_config.formula_type === 'divide' ? 'selected' : ''}>Divide (Ratio/Percentage)</option>
@@ -728,10 +736,15 @@
                 <option value="concat" ${qData && qData.formula_config && qData.formula_config.formula_type === 'concat' ? 'selected' : ''}>Concat (Text Join)</option>
               </select>
             </div>
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-secondary">Source Cell References</label>
+            <div class="col-md-8 q-custom-formula-wrap" id="custom_formula_wrap_${qId}">
+              <label class="form-label small fw-bold text-secondary mb-1">Dynamic Formula Expression <span class="badge bg-light text-primary border ms-1">Live Evaluated</span></label>
+              <input type="text" class="form-control form-control-sm q-custom-formula font-monospace border-info" value="${qData && qData.formula_config ? escapeHtml(qData.formula_config.custom_formula || qData.formula_config.expression || '') : ''}" placeholder="e.g. D12-D10 or (D134/((D135+D136)/2)) or Sheet2!D12 * D10">
+              <small class="text-muted d-block mt-0.5" style="font-size: 0.68rem;">Supports arithmetic (<code>+ - * / % ^</code>), parentheses, numeric constants, and cell refs across sheets (e.g. <code>D12</code>, <code>Sheet2!D406</code>).</small>
+            </div>
+            <div class="col-md-8 q-source-cells-wrap d-none" id="source_cells_wrap_${qId}">
+              <label class="form-label small fw-bold text-secondary mb-1">Source Cell References</label>
               <input type="text" class="form-control form-control-sm q-formula-sources" value="${qData && qData.formula_config ? (qData.formula_config.source_cells || []).join(', ') : ''}" placeholder="e.g. D22, D23 or D303, D310">
-              <small class="text-muted" style="font-size: 0.65rem;">Comma-separated cells used in calculation</small>
+              <small class="text-muted d-block mt-0.5" style="font-size: 0.65rem;">Comma-separated cells used in calculation</small>
             </div>
           </div>
         </div>
@@ -940,11 +953,16 @@
               <option value="string" ${colType === 'string' ? 'selected' : ''}>Text (String)</option>
               <option value="number" ${colType === 'number' ? 'selected' : ''}>Numeric (Number)</option>
               <option value="dropdown" ${colType === 'dropdown' ? 'selected' : ''}>Dropdown Select</option>
+              <option value="calculated" ${colType === 'calculated' ? 'selected' : ''}>Auto-Calculated (Formula Column)</option>
             </select>
             <div class="tcol-dd-wrapper mt-1 ${colType === 'dropdown' ? '' : 'd-none'}">
               <select class="form-select form-select-sm tcol-dropdown-group">
                 ${dropdownOptionsHtml}
               </select>
+            </div>
+            <div class="tcol-formula-wrapper mt-1 ${colType === 'calculated' ? '' : 'd-none'}">
+              <input type="text" class="form-control form-control-sm tcol-formula font-monospace border-info" value="${escapeHtml(colData ? (colData.formula || colData.custom_formula || '') : '')}" placeholder="Formula e.g. col_2 * col_3 or col_2 * Sheet2!D12" title="Formula expression for this column">
+              <small class="text-muted d-block" style="font-size: 0.62rem;">e.g. <code>col_2 * col_3</code> or <code>col_2 * Sheet2!D12</code></small>
             </div>
           </div>
           <div class="col-md-2">
@@ -981,12 +999,9 @@
 
   function toggleTableColDropdownSelect(selectEl) {
     const val = $(selectEl).val();
-    const wrapper = $(selectEl).closest('.tcol-item').find('.tcol-dd-wrapper');
-    if (val === 'dropdown') {
-      wrapper.removeClass('d-none');
-    } else {
-      wrapper.addClass('d-none');
-    }
+    const item = $(selectEl).closest('.tcol-item');
+    item.find('.tcol-dd-wrapper').toggleClass('d-none', val !== 'dropdown');
+    item.find('.tcol-formula-wrapper').toggleClass('d-none', val !== 'calculated');
   }
 
   function addTableSummaryRow(qId, sumData = null) {
@@ -1064,11 +1079,23 @@
       cellHint.html('3 cells: <b>Year, Month, Day</b>');
     } else if (type === 'calculated') {
       $(`#formula_wrapper_${qId}`).removeClass('d-none');
+      toggleFormulaTypeInputs(qId);
       refInput.attr('placeholder', 'e.g. D25');
       cellHint.text('Output cell for calculated result');
     } else {
       refInput.attr('placeholder', 'e.g. D22');
       cellHint.text('Cell ref under Category sheet');
+    }
+  }
+
+  function toggleFormulaTypeInputs(qId) {
+    const fType = $(`#${qId} .q-formula-type`).val();
+    if (!fType || fType === 'custom' || fType === 'expression') {
+      $(`#custom_formula_wrap_${qId}`).removeClass('d-none');
+      $(`#source_cells_wrap_${qId}`).addClass('d-none');
+    } else {
+      $(`#custom_formula_wrap_${qId}`).addClass('d-none');
+      $(`#source_cells_wrap_${qId}`).removeClass('d-none');
     }
   }
 
@@ -1304,10 +1331,14 @@
                 };
               }
 
+              const colFormula = colType === 'calculated' ? colEl.find('.tcol-formula').val().trim() : null;
+
               tableCols.push({
                 col_id: colId,
                 title: colTitleTrans,
                 type: colType,
+                formula: colFormula,
+                custom_formula: colFormula,
                 dropdown_group: colType === 'dropdown' ? colDdGrp : null,
                 excel_cell: colCell,
                 copy_config: copyConfigObj
@@ -1348,11 +1379,14 @@
           // Formula Config Assembly if inputType == 'calculated'
           let formulaConfigObj = null;
           if (inputType === 'calculated') {
-            const fType = qEl.find('.q-formula-type').val();
+            const fType = qEl.find('.q-formula-type').val() || 'custom';
+            const customFormulaStr = qEl.find('.q-custom-formula').val().trim();
             const fSourcesStr = qEl.find('.q-formula-sources').val().trim();
             const sourceCellsArr = fSourcesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
             formulaConfigObj = {
               formula_type: fType,
+              custom_formula: customFormulaStr,
+              expression: customFormulaStr,
               source_cells: sourceCellsArr
             };
           }
