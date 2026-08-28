@@ -1288,14 +1288,19 @@
             }
           }
 
-          // Duplicate Cell Ref Check
-          const normalizedRef = excelRef.toUpperCase();
-          if (excelCellMap.has(normalizedRef)) {
-            showValidationError(`Duplicate Excel Cell Reference found: "${excelRef}". Each question cell reference must be unique.`);
-            hasError = true;
-            return;
+          // Duplicate Cell Ref Check (per Sheet)
+          const cellParts = excelRef.split(',').map(c => c.trim().toUpperCase()).filter(c => c.length > 0);
+          const normalizedSheet = sheetName.toUpperCase();
+
+          for (const cellRefPart of cellParts) {
+            const cellKey = `${normalizedSheet}::${cellRefPart}`;
+            if (excelCellMap.has(cellKey)) {
+              showValidationError(`Duplicate Excel Cell Reference found: "${cellRefPart}" in sheet "${sheetName}". Question cell references within the same sheet must be unique.`);
+              hasError = true;
+              return;
+            }
+            excelCellMap.set(cellKey, true);
           }
-          excelCellMap.set(normalizedRef, true);
 
           if (inputType === 'dropdown' && !dropdownGrp) {
             showValidationError(`Question "${qTextTrans.en.substring(0, 25)}..." is set to Dropdown but no Master List Group was selected.`);
