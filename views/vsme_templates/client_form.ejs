@@ -1011,6 +1011,10 @@
     box-shadow: 0 4px 10px rgba(30, 91, 184, 0.15);
   }
 
+  .form-control, .form-select{
+    border: 1px solid #e0e4e7;
+  }
+
   @keyframes slideInRight {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
@@ -1051,12 +1055,6 @@
           <% }); %>
         </select>
       <% } %>
-
-      <!-- Live Auto-Save Status Badge -->
-      <div class="vsme-status-badge saved" id="autoSaveBadge">
-        <span class="vsme-status-dot"></span>
-        <span id="autoSaveText">All changes saved</span>
-      </div>
     </div>
 
     <!-- Right Action Buttons: Back to Projects, Save Draft, Export Excel & Final Submit -->
@@ -1073,45 +1071,48 @@
       <button type="button" class="btn btn-success btn-sm" id="btnFinalSubmit">
         <i class="icofont icofont-check-circled me-1"></i> Submit
       </button>
+
+      <!-- Live Auto-Save Status Badge -->
+      <div class="vsme-status-badge saved" id="autoSaveBadge">
+        <span class="vsme-status-dot"></span>
+        <span id="autoSaveText">All changes saved</span>
+      </div>
     </div>
   </div>
 
-  <!-- PROGRESS METER -->
-  <div class="card p-3 mb-2 shadow-sm border-0" style="border-radius: 14px;">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <span class="fw-bold text-muted small text-uppercase">Progress</span>
-      <span class="fw-bold text-primary" id="progressStatsText">0% Completed</span>
-    </div>
-    <div class="progress" style="height: 8px; border-radius: 6px;">
-      <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="progressBarFill" role="progressbar" style="width: 0%;"></div>
-    </div>
-  </div>
-
-  <!-- REPORTING CONTEXT TOOLBAR: FROM DATE, TO DATE, CURRENCY -->
+  <!-- COMBINED TOOLBAR: REPORTING CONTEXT & COMPACT EMBEDDED PROGRESS METER -->
   <div class="card p-2 px-3 mb-2 shadow-sm border-0" style="border-radius: 12px; background: #ffffff;">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-      <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <!-- Reporting Context Controls -->
+      <div class="d-flex align-items-center flex-wrap gap-3">
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 fw-bold" style="border-radius: 8px;">
           <i class="icofont icofont-calendar me-1"></i>Reporting Context
         </span>
-      </div>
-      <div class="d-flex align-items-center flex-wrap gap-3">
         <!-- From Date -->
         <div class="d-flex align-items-center gap-1.5">
-          <label for="topFromDate" class="small fw-bold text-secondary mb-0 me-2"><i class="icofont icofont-calendar text-primary me-1"></i>From:</label>
-          <input type="date" class="form-control form-control-sm" id="topFromDate" style="width: 145px; border-radius: 8px;" onchange="handleGlobalFromDateChange(this.value)">
+          <label for="topFromDate" class="small fw-bold text-secondary mb-0 me-1"><i class="icofont icofont-calendar text-primary me-1"></i>From:</label>
+          <input type="date" class="form-control form-control-sm" id="topFromDate" style="width: 135px; border-radius: 8px;" onchange="handleGlobalFromDateChange(this.value)">
         </div>
         <!-- To Date -->
         <div class="d-flex align-items-center gap-1.5">
-          <label for="topToDate" class="small fw-bold text-secondary mb-0 me-2"><i class="icofont icofont-calendar text-primary me-1"></i>To:</label>
-          <input type="date" class="form-control form-control-sm" id="topToDate" style="width: 145px; border-radius: 8px;" onchange="handleGlobalToDateChange(this.value)">
+          <label for="topToDate" class="small fw-bold text-secondary mb-0 me-1"><i class="icofont icofont-calendar text-primary me-1"></i>To:</label>
+          <input type="date" class="form-control form-control-sm" id="topToDate" style="width: 135px; border-radius: 8px;" onchange="handleGlobalToDateChange(this.value)">
         </div>
         <!-- Currency Select -->
         <div class="d-flex align-items-center gap-1.5">
-          <label for="topCurrencySelect" class="small fw-bold text-secondary mb-0 me-2"><i class="icofont icofont-cur-dollar text-success me-1"></i>Currency:</label>
-          <select class="form-select form-select-sm" id="topCurrencySelect" style="width: 140px; border-radius: 8px;" onchange="handleGlobalCurrencyChange(this.value)">
+          <label for="topCurrencySelect" class="small fw-bold text-secondary mb-0 me-1"><i class="icofont icofont-coins text-success me-1"></i>Currency:</label>
+          <select class="form-select form-select-sm" id="topCurrencySelect" style="width: 130px; border-radius: 8px;" onchange="handleGlobalCurrencyChange(this.value)">
             <option value="">-- Currency --</option>
           </select>
+        </div>
+      </div>
+
+      <!-- Embedded Progress Meter with Percentage Text Inside -->
+      <div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width: 220px; max-width: 320px;">
+        <span class="small fw-bold text-muted text-uppercase me-1" style="font-size: 0.72rem; white-space: nowrap;">Progress:</span>
+        <div class="progress flex-grow-1 position-relative" style="height: 22px; border-radius: 11px; background-color: #e2e8f0; box-shadow: inset 0 1px 2px rgba(0,0,0,0.08); overflow: hidden;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="progressBarFill" role="progressbar" style="width: 0%; height: 100%; transition: width 0.4s ease;"></div>
+          <span class="position-absolute w-100 h-100 top-0 start-0 d-flex align-items-center justify-content-center fw-bold text-dark" id="progressStatsText" style="font-size: 0.75rem; z-index: 2; text-shadow: 0 0 4px #ffffff, 0 0 2px #ffffff; pointer-events: none; white-space: nowrap;">0% Completed</span>
         </div>
       </div>
     </div>
@@ -4030,7 +4031,7 @@
 
     const percent = Math.min(100, Math.round((totalAnswered / Math.max(1, totalQuestions)) * 100));
     progressBarFill.style.width = `${percent}%`;
-    // progressStatsText.innerText = `${percent}% Completed (${totalAnswered}/${totalQuestions} Answered)`;
+    // progressStatsText.innerText = `${percent}% Completed (${totalAnswered}/${totalQuestions})`;
     progressStatsText.innerText = `${percent}% Completed`;
   }
 
