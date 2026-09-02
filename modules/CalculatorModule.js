@@ -160,9 +160,9 @@ module.exports = {
                 order = `ORDER BY sl_no`;
             var cal_sec_dt = await db_Select(select,'md_cal_sec_type', whr, order)
             if(cal_sec_dt.suc > 0 && cal_sec_dt.msg.length > 0){
-                var newData = {}, calNewData = {}, calQuestDt = {};
+                var newData = {}, calNewData = {}, calQuestDt = {}, tabData = {};
                 for(let dt of cal_sec_dt.msg){
-                    var q_select = `a.id, a.scope_id, a.sec_id pro_sec_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
+                    var q_select = `a.id, a.scope_id, a.sec_id pro_sec_id, a.input_type, a.input_label, a.input_heading, a.sequence, a.is_parent, a.parent_id, a.is_sub_parent, a.sub_parent_id, a.hide_child_flag, a.show_info_flag, a.hide_flag, a.belongs_to_tab, a.tab_serial_no, b.id logic_id, b.option_val, b.action_val, b.next_qst_action_val, b.emi_head_opt1, b.emi_head_opt2, b.emi_head_opt3, '' qu_option`,
                     q_whr = `a.id = b.quest_id AND a.lang_flag = '${flag}' AND a.scope_id = ${scope_id} AND a.sec_id = ${dt.id} AND a.header_flag = 'N'`;
                     var qstDtlsAndLogic = await db_Select(q_select, 'md_cal_form_builder a, md_cal_form_build_logic b', q_whr, null)
                     if(qstDtlsAndLogic.suc > 0 && qstDtlsAndLogic.msg.length > 0){
@@ -178,6 +178,14 @@ module.exports = {
                             }
                         }
                     }
+
+                    try{
+                        var tabRes = await db_Select('tab_serial, tab_title', 'md_cal_form_builder_tabs', `scope_id = ${scope_id} AND sec_id = ${dt.id} AND lang_flag = '${flag}'`, 'ORDER BY tab_serial ASC');
+                        tabData[dt.sec_name] = (tabRes.suc > 0 && tabRes.msg.length > 0) ? tabRes.msg : [];
+                    }catch(tErr){
+                        tabData[dt.sec_name] = [];
+                    }
+
                     try{
                         var calSel = `a.id, a.client_id, a.scope, a.project_id, a.quest_id, a.sl_no, a.sec_id, a.act_id, a.emi_type_id, a.repo_period, a.repo_month, a.repo_mode_label, a.emi_type_unit_id, a.cal_val, a.emi_fact_val, a.co_val, c.act_name, d.emi_name, b.sequence, b.parent_id, b.sub_parent_id`,
                         calWhr = `a.quest_id=b.id AND a.act_id=c.id AND a.emi_type_id=d.id AND a.project_id = ${proj_id} AND a.scope = ${scope_id} AND a.client_id = ${client_id} AND a.repo_period='${proj_year}' AND b.sec_id = ${dt.id}`;
@@ -199,7 +207,7 @@ module.exports = {
                     newData[dt.sec_name] = qstDtlsAndLogic.suc > 0 ? qstDtlsAndLogic.msg : []
                 }
                 var q_ans_dt = await db_Select('*', 'td_ghg_quest', `client_id=${client_id} AND scope=${scope_id} AND project_id=${proj_id} AND proj_year='${proj_year}'`)
-                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : [], cal_val: calNewData, quest_ans_sec: calQuestDt}
+                res_dt = {suc: 1, msg: newData, proj_q_ans_dt: q_ans_dt.suc > 0 && q_ans_dt.msg.length > 0 ? q_ans_dt.msg : [], cal_val: calNewData, quest_ans_sec: calQuestDt, tabs: tabData};
             }else{
                 res_dt = cal_sec_dt
             }

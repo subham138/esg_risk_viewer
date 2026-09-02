@@ -1,4 +1,219 @@
 <link rel="stylesheet" href="/css/ppt-forms.css">
+<style>
+.dyn-tab-pills-bar {
+    margin-bottom: 20px;
+}
+.dyn-tab-btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 10px 22px !important;
+    font-size: 15px !important;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+.dyn-tab-btn.active {
+    background-color: #75309c !important;
+    color: #ffffff !important;
+    border: 2px solid #75309c !important;
+    box-shadow: 0 4px 10px rgba(117, 48, 156, 0.25);
+}
+.dyn-tab-btn.inactive {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    border: 2px solid #222222 !important;
+}
+.dyn-tab-btn.inactive:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Animated Physical Sync Model Banner Styles */
+.auto-updated-physical-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9f5fc 60%, #f0e6f7 100%);
+    border: 1.5px solid rgba(117, 48, 156, 0.2);
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(117, 48, 156, 0.07);
+    padding: 30px !important;
+    transition: all 0.3s ease;
+}
+.auto-updated-physical-card:hover {
+    box-shadow: 0 12px 35px rgba(117, 48, 156, 0.12);
+    border-color: rgba(117, 48, 156, 0.35);
+}
+
+.live-sync-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(40, 167, 69, 0.25);
+}
+
+.sync-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    animation: syncPulse 1.8s infinite;
+}
+
+@keyframes syncPulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(40, 167, 69, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+.auto-updated-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a2e;
+    letter-spacing: -0.3px;
+}
+
+.auto-updated-desc {
+    font-size: 16px;
+    color: #555566;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.more-details-link {
+    color: #75309c;
+    font-weight: 700;
+    text-decoration: underline;
+    font-style: italic;
+    transition: color 0.2s ease;
+}
+.more-details-link:hover {
+    color: #521d72;
+    text-decoration: underline;
+}
+
+/* Physical Model 3D Widget Animation */
+.physical-model-widget {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px dashed rgba(117, 48, 156, 0.3);
+}
+
+.orbit-1 {
+    width: 110px;
+    height: 110px;
+    top: 5px;
+    left: 5px;
+    animation: rotateOrbit 12s linear infinite;
+}
+
+.orbit-2 {
+    width: 80px;
+    height: 80px;
+    top: 20px;
+    left: 20px;
+    border-color: rgba(117, 48, 156, 0.5);
+    animation: rotateOrbit 7s linear infinite reverse;
+}
+
+@keyframes rotateOrbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.center-core {
+    position: absolute;
+    top: 33px;
+    left: 33px;
+    width: 54px;
+    height: 54px;
+    background: linear-gradient(135deg, #75309c 0%, #9b4bc2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(117, 48, 156, 0.4);
+    animation: coreFloat 3s ease-in-out infinite alternate;
+    z-index: 2;
+}
+
+.spin-icon {
+    font-size: 24px;
+    animation: iconSpin 4s linear infinite;
+}
+
+@keyframes iconSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes coreFloat {
+    0% { transform: translateY(-4px) scale(1); }
+    100% { transform: translateY(4px) scale(1.05); }
+}
+
+.floating-particle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #75309c;
+    opacity: 0.6;
+}
+
+.p-1 {
+    width: 8px;
+    height: 8px;
+    top: 15px;
+    left: 20px;
+    animation: float1 4s ease-in-out infinite alternate;
+}
+
+.floating-particle.p-2 {
+    width: 10px;
+    height: 10px;
+    bottom: 20px;
+    right: 15px;
+    animation: float2 5s ease-in-out infinite alternate;
+}
+
+.p-3 {
+    width: 6px;
+    height: 6px;
+    top: 50px;
+    right: 25px;
+    animation: float3 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes float1 {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(10px, -12px); }
+}
+@keyframes float2 {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-12px, 8px); }
+}
+@keyframes float3 {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(8px, 10px); }
+}
+</style>
 <ul class="nav nav-tabs border-tab" id="sope-tab" role="tablist">
     <% var i=0; scope_list.forEach(dt=> { %>
         <li class="nav-item" scope-id="<%= dt.id %>">
@@ -26,4 +241,5 @@
         <% j++; }) %>
 </div>
 
+<input type="hidden" id="enc_data_val" value="<%= typeof enc_data !== 'undefined' ? enc_data : '' %>">
 <script src="/js/calculator_project/quest_entry.js"></script>

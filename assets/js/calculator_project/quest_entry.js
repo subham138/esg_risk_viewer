@@ -274,11 +274,12 @@ const QuestHandler = {
         const scope_id = $el.parent('.nav-item').attr('scope-id');
         const proj_id = $('#proj_id').val();
         const sel_year = $('#sel_year_quest').val();
+        const enc_data = $('#enc_data_val').val() || '';
 
         $.ajax({
             method: 'POST',
             url: '/get_question_list_by_scope_user_ajax',
-            data: { scope_id, proj_id, sel_year, flag },
+            data: { scope_id, proj_id, sel_year, flag, enc_data },
             dataType: 'html',
             beforeSend: () => $('.loader-wrapper').show(),
             success: (result) => {
@@ -302,8 +303,63 @@ const QuestHandler = {
     },
 
     /**
+     * Switch active dynamic tab pill inside a section pane.
+     */
+    switchDynamicTab: function (btn, cleanId) {
+        const $btn = $(btn);
+        const tabSerial = $btn.attr('data-tab-serial');
+        const $parentBar = $btn.closest('.dyn-tab-pills-bar');
+
+        $parentBar.find('.dyn-tab-btn').removeClass('active').addClass('inactive');
+        $btn.removeClass('inactive').addClass('active');
+
+        const $pane = $btn.closest('.tab-pane');
+        $pane.find('.dyn-tab-content-pane').hide();
+        $pane.find(`#${cleanId}_dyn_tab_${tabSerial}`).show();
+    },
+
+    /**
+     * Helper to render Auto-Updated Banner with Physical Animated Model.
+     */
+    renderAutoUpdatedBanner: function (title, res) {
+        const encData = (res && res.enc_data) ? res.enc_data : ($('#enc_data_val').val() || '');
+        const reportUrl = `/cal_report_full_view?enc_data=${encodeURIComponent(encData)}`;
+
+        return `
+        <div class="auto-updated-physical-card my-4 p-4 rounded-4 position-relative overflow-hidden">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
+                <div class="auto-updated-text-content" style="max-width: 550px;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="live-sync-badge">
+                            <span class="sync-dot"></span> Live Auto-Sync
+                        </span>
+                    </div>
+                    <h3 class="auto-updated-title mb-2">Auto updated</h3>
+                    <p class="auto-updated-desc mb-0">
+                        This.......... 
+                        <a href="${reportUrl}" class="more-details-link" target="_blank">
+                            More details in report “preview” <i class="icofont icofont-arrow-right"></i>
+                        </a>
+                    </p>
+                </div>
+                
+                <!-- Animated Physical Model Widget -->
+                <div class="physical-model-widget position-relative d-flex align-items-center justify-content-center">
+                    <div class="orbit-ring orbit-1"></div>
+                    <div class="orbit-ring orbit-2"></div>
+                    <div class="center-core">
+                        <i class="icofont icofont-refresh spin-icon"></i>
+                    </div>
+                    <div class="floating-particle p-1"></div>
+                    <div class="floating-particle p-2"></div>
+                    <div class="floating-particle p-3"></div>
+                </div>
+            </div>
+        </div>`;
+    },
+
+    /**
      * DOM Rendering: Builds the question UI.
-     * Uses granular chunked rendering (5 questions at a time) to keep the browser responsive.
      */
     renderQuestions: function (tabId, res, scope_id, flag) {
         if (Object.keys(res.msg).length === 0) return;
@@ -311,7 +367,6 @@ const QuestHandler = {
         const titles = Object.keys(res.msg);
         const $container = $(tabId).children('.quest-tab-context').empty();
 
-        // Phase 1: Build & inject Navigation and Tab shells immediately
         let navPills = '<div class="col-sm-3 tabs-responsive-side"><div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">';
         let tabShells = '<div class="col-sm-9"><div class="tab-content" id="v-pills-tabContent">';
 
@@ -325,15 +380,12 @@ const QuestHandler = {
         tabShells += '</div></div>';
         $container.append(navPills + tabShells);
 
-        // Phase 2: Start the background rendering queue
         const self = this;
-        $('.loader-wrapper').show(); // Show loader immediately
+        $('.loader-wrapper').show();
 
-        const renderQueue = titles.slice();
-        
         const processNextTab = (tabIndex) => {
             if (tabIndex >= titles.length) {
-                $('.loader-wrapper').hide(); // Finally hide loader when all tabs are done
+                $('.loader-wrapper').hide();
                 return;
             }
 
@@ -348,40 +400,99 @@ const QuestHandler = {
                 return;
             }
 
+            const sectionTabs = (res.tabs && res.tabs[title] && res.tabs[title].length > 0) ? res.tabs[title] : [];
             const parentQuests = questions.filter(q => q.is_parent === 'Y' && q.parent_id === 0);
-            let batchIndex = 0;
-            const batchSize = 5;
 
-            const renderBatch = () => {
-                if (batchIndex >= parentQuests.length) {
-                    processNextTab(tabIndex + 1);
-                    return;
-                }
+            if (sectionTabs.length > 0) {
+                // Build top Dynamic Tab Pills bar
+                let tabPillsHtml = '<div class="dyn-tab-pills-bar d-flex gap-3 mb-4 flex-wrap">';
+                let tabPanesHtml = '';
 
-                const batch = parentQuests.slice(batchIndex, batchIndex + batchSize);
-                let batchHtml = '';
+                sectionTabs.forEach((tb, idx) => {
+                    tabPillsHtml += `
+                        <button type="button" class="btn dyn-tab-btn ${idx === 0 ? 'active' : 'inactive'}" 
+                            data-tab-serial="${tb.tab_serial}" 
+                            onclick="QuestHandler.switchDynamicTab(this, '${cleanId}')">
+                            ${tb.tab_title}
+                        </button>
+                    `;
+                    tabPanesHtml += `<div class="dyn-tab-content-pane" id="${cleanId}_dyn_tab_${tb.tab_serial}" style="display: ${idx === 0 ? 'block' : 'none'};"></div>`;
+                });
+                tabPillsHtml += '</div>';
 
-                batch.forEach(parent => {
-                    batchHtml += self.renderSingleParentBatch(parent, questions, res, scope_id, flag, title);
+                $pane.html(tabPillsHtml + tabPanesHtml);
+
+                // Populate each dynamic tab pane
+                sectionTabs.forEach(tb => {
+                    const $tabPane = $pane.find(`#${cleanId}_dyn_tab_${tb.tab_serial}`);
+                    let tabHtml = '';
+
+                    parentQuests.forEach(parent => {
+                        if (parent.hide_child_flag === 'Y') {
+                            tabHtml += self.renderAutoUpdatedBanner(title, res);
+                        } else {
+                            const subParents = questions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y' && q.sub_parent_id === 0 && q.parent_id === parent.sequence);
+                            
+                            const tabSubParents = subParents.filter(sub => {
+                                if (sub.belongs_to_tab === 'Y') {
+                                    return sub.tab_serial_no == tb.tab_serial;
+                                } else {
+                                    return tb.tab_serial == 1;
+                                }
+                            });
+
+                            const visibleSubParents = tabSubParents.filter(sub => sub.hide_flag !== 'Y');
+
+                            if (tabSubParents.length > 0 && visibleSubParents.length === 0) {
+                                tabHtml += self.renderAutoUpdatedBanner(title, res);
+                            } else if (visibleSubParents.length > 0) {
+                                tabHtml += self.renderParentAndSubParentsHtml(parent, visibleSubParents, questions, res, scope_id, flag, title);
+                            } else if (parentQuests.length === 1) {
+                                tabHtml += self.renderAutoUpdatedBanner(title, res);
+                            }
+                        }
+                    });
+
+                    if (tabHtml === '') {
+                        tabHtml = self.renderAutoUpdatedBanner(title, res);
+                    }
+                    $tabPane.html(tabHtml);
                 });
 
-                $pane.append(batchHtml);
-                self.initPlugins($pane); // Target only current pane for efficiency
+            } else {
+                // No dynamic tabs configured: render standard view with hide controls
+                let secHtml = '';
+                parentQuests.forEach(parent => {
+                    if (parent.hide_child_flag === 'Y') {
+                        secHtml += self.renderAutoUpdatedBanner(title, res);
+                    } else {
+                        const subParents = questions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y' && q.sub_parent_id === 0 && q.parent_id === parent.sequence);
+                        const visibleSubParents = subParents.filter(sub => sub.hide_flag !== 'Y');
 
-                batchIndex += batchSize;
-                setTimeout(renderBatch, 0); // Yield browser thread
-            };
+                        if (subParents.length > 0 && visibleSubParents.length === 0) {
+                            secHtml += self.renderAutoUpdatedBanner(title, res);
+                        } else {
+                            secHtml += self.renderParentAndSubParentsHtml(parent, visibleSubParents, questions, res, scope_id, flag, title);
+                        }
+                    }
+                });
+                if (secHtml === '') {
+                    secHtml = self.renderAutoUpdatedBanner(title, res);
+                }
+                $pane.html(secHtml);
+            }
 
-            renderBatch();
+            self.initPlugins($pane);
+            processNextTab(tabIndex + 1);
         };
 
         setTimeout(() => processNextTab(0), 0);
     },
 
     /**
-     * Helper to render a single parent question's HTML structure.
+     * Helper to render parent + visible sub-parents
      */
-    renderSingleParentBatch: function (parent, allQuestions, res, scope_id, flag, title) {
+    renderParentAndSubParentsHtml: function (parent, visibleSubParents, allQuestions, res, scope_id, flag, title) {
         const qAns = res.proj_q_ans_dt.filter(a => a.quest_id === parent.id && a.end_flag !== 'Y');
         const hasAns = qAns.length > 0;
         const qSeq = `${parent.sequence}.`;
@@ -397,8 +508,7 @@ const QuestHandler = {
             </div>
         </div>`;
 
-        const subParents = allQuestions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y' && q.sub_parent_id === 0 && q.parent_id === parent.sequence);
-        subParents.forEach(sub => {
+        visibleSubParents.forEach(sub => {
             html += this.buildSubParentHtml(sub, allQuestions, res, scope_id, flag, parent, title);
         });
 

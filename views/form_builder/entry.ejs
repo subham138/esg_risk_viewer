@@ -30,6 +30,7 @@
         flex-direction: row;
         align-items: center;
         justify-content: end;
+        flex-wrap: wrap;
     }
     .media {
         align-items: center !important;
@@ -96,11 +97,9 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10" type="button" title="Build your logic"> <span class="m-r-5">&#402;</span> Build Logic</button>
-                                <!-- <button type="button" class="btn btn-success float-end" onclick="addNewCard()">Add New</button> -->
                             </div>
                             <div class="col-md-6">
                                 <button class="btn btn-pill btn-outline-light btn-air-light txt-dark m-r-10" type="submit" title="Build your logic"> <span class="m-r-5"><i class="icofont icofont-save"></i></span>Save</button>
-                                <!-- <button type="button" class="btn btn-success float-end">Save</button> -->
                             </div>
                         </div>
                     </div>
@@ -126,7 +125,7 @@
                             <div class="col-md-6">
                                 <select class="form-select" id="sec_id" name="sec_id" required>
                                     <option>Select Calculator Section Type</option>
-                                    <% console.log(sec_list); sec_list.forEach(dt => {
+                                    <% sec_list.forEach(dt => {
                                         var _selected = ''
                                         if(dt.id == sec_id) _selected = 'selected'
                                         %>
@@ -143,12 +142,36 @@
                             </div>
                           </div>
                       </div>
+
+                      <!-- Dynamic Tab Configuration Section -->
+                      <hr class="mt-4 mb-3">
+                      <div class="row align-items-center">
+                          <div class="col-md-6">
+                              <div class="form-group mb-0">
+                                  <label class="col-form-label font-weight-bold text-dark mb-1">Total Number of Tabs</label>
+                                  <input type="number" min="0" max="20" class="form-control" id="tot_tabs" name="tot_tabs" placeholder="Enter total tabs (e.g. 2)" value="<%= typeof tabs_dt !== 'undefined' && tabs_dt ? tabs_dt.length : 0 %>" oninput="renderTabInputs(this.value)">
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row mt-3" id="tab-titles-container">
+                          <% if(typeof tabs_dt !== 'undefined' && tabs_dt && tabs_dt.length > 0){ 
+                              tabs_dt.forEach((tb) => { %>
+                              <div class="col-md-6 mb-3 tab-input-group">
+                                  <div class="form-group mb-0">
+                                      <label class="col-form-label font-weight-bold text-dark mb-1">Tab <%= tb.tab_serial %> Title</label>
+                                      <input type="text" class="form-control" name="tab_titles" placeholder="Enter title for Tab <%= tb.tab_serial %>" value="<%= tb.tab_title %>" required>
+                                  </div>
+                              </div>
+                          <% }) } %>
+                      </div>
+
                     </div>
                 </div>
                 <% if(qr_dt.length > 0){
                     var i = 1
                     qr_dt.forEach(dt => { %>
                         <div class="card w-75 entry-card" id="card-<%= i %>">
+                            <input type="hidden" name="qid_<%= i %>" id="qid_<%= i %>" value="<%= dt.id %>">
                             <div class="card-body b-l-success border-3">
                               <div class="row">
                                 <div class="col-md-12">
@@ -172,6 +195,7 @@
                                             <div class="col-md-1 op-key"><span><%- option_symbol[dt.input_type] %></span></div>
                                             <div class="col-md-9">
                                                 <h6 class="label-view" class="input-label" onclick="editLabel(this)"><%= odt.option_name != '' ? odt.option_name : 'Entry Option' %></h6>
+                                                <input type="hidden" name="op_id_<%= i %>" value="<%= odt.id %>">
                                                 <input type="text" value="<%= odt.option_name != '' ? odt.option_name : '' %>" name="q_s_<%= i %>" class="edit form-control" id="q_s_<%= j %>" style="display: none;">
                                             </div>
                                             <div class="col-md-1 op-btn-p" onclick="addOption(this, '<%= option_symbol[dt.input_type] %>')"><i class="icofont icofont-plus text-success"></i></div>
@@ -182,6 +206,7 @@
                                             <div class="col-md-1 op-key"><span>&#9673;</span></div>
                                             <div class="col-md-9">
                                                 <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                                                <input type="hidden" name="op_id_<%= i %>" value="0">
                                                 <input type="text" value="" name="q_s_<%= i %>" class="edit form-control" id="q_s_1" style="display: none;">
                                             </div>
                                             <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
@@ -216,28 +241,6 @@
                             </div>
                             <div class="card-footer p-2">
                                 <div class="btn-card-footer">
-                                    <!-- <div class="vl"></div>
-                                    <div class="m-r-10">
-                                        <span onclick="editLabel(this)"><%= dt.sequence > 0 ? dt.sequence : 'Sequence' %></span>
-                                        <input type="text" value="<%= dt.sequence > 0 ? dt.sequence : '' %>" name="s_<%= i %>" class="edit form-control" id="s_<%= i %>" style="display: none;">
-                                    </div>
-                                    <div class="vl"></div>
-                                    <div class="media m-r-10">
-                                        <label class="col-form-label mb-0 mt-0 m-r-10">Is Parent</label>
-                                        <div class="media-body text-end icon-state switch-outline">
-                                            <label class="switch">
-                                                <input type="checkbox" id="gri_flag" <%= dt.is_parent != 'Y' ? '' : 'checked' %> onchange="checkChange(this)">
-                                                <span class="switch-state bg-primary"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="is-parent" style="display: <%= dt.is_parent != 'Y' ? 'flex' : 'none' %>;">
-                                        <div class="vl"></div>
-                                        <div class="m-r-10">
-                                            <span onclick="editLabel(this)"><%= dt.parent_id > 0 ? dt.parent_id : 'Parent Sequence' %></span>
-                                            <input type="text" value="<%= dt.parent_id > 0 ? dt.parent_id : '' %>" name="p_c_<%= i %>" class="edit form-control" id="p_c_<%= i %>" style="display: none;">
-                                        </div>
-                                    </div> -->
                                     <div class="vl"></div>
                                     <div class="m-r-10">
                                         <span onclick="editLabel(this)"><%= dt.sequence > 0 ? dt.sequence : 'Sequence' %></span>
@@ -253,7 +256,32 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="is-parent" style="display: <%= dt.is_parent != 'Y' ? 'flex' : 'none' %>;">
+
+                                    <!-- 2. Parent Question Controls -->
+                                    <div class="parent-controls-div media-wrapper" style="display: <%= dt.is_parent == 'Y' ? 'flex' : 'none' %>; align-items: center;">
+                                        <div class="vl"></div>
+                                        <div class="media m-r-10">
+                                            <label class="col-form-label mb-0 mt-0 m-r-10">Hide/Show All Child Questions</label>
+                                            <div class="media-body text-end icon-state switch-outline">
+                                                <label class="switch">
+                                                    <input type="checkbox" name="hide_child_<%= i %>" id="hide_child_<%= i %>" value="Y" <%= dt.hide_child_flag == 'Y' ? 'checked' : '' %> onchange="toggleAllChildHide(this)">
+                                                    <span class="switch-state bg-warning"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="vl"></div>
+                                        <div class="media m-r-10">
+                                            <label class="col-form-label mb-0 mt-0 m-r-10">Show Info</label>
+                                            <div class="media-body text-end icon-state switch-outline">
+                                                <label class="switch">
+                                                    <input type="checkbox" name="show_info_<%= i %>" id="show_info_<%= i %>" value="Y" <%= dt.show_info_flag == 'Y' ? 'checked' : '' %>>
+                                                    <span class="switch-state bg-info"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="is-parent" style="display: <%= dt.is_parent != 'Y' ? 'flex' : 'none' %>; align-items: center;">
                                         <div class="vl"></div>
                                         <div class="m-r-10">
                                             <span onclick="editLabel(this)"><%= dt.parent_id > 0 ? dt.parent_id : 'Parent Sequence' %></span>
@@ -264,12 +292,44 @@
                                             <label class="col-form-label mb-0 mt-0 m-r-10">Is Sub-Parent</label>
                                             <div class="media-body text-end icon-state switch-outline">
                                                 <label class="switch">
-                                                    <input type="checkbox" id="gr_sub_flag_<%= i %>" <%= dt.sub_parent_id != 'Y' ? '' : 'checked' %> onchange="checkSubChange(this)">
+                                                    <input type="checkbox" id="gr_sub_flag_<%= i %>" <%= dt.is_sub_parent != 'Y' ? '' : 'checked' %> onchange="checkSubChange(this)">
                                                     <span class="switch-state bg-primary"></span>
                                                 </label>
                                             </div>
                                         </div>
-                                        <div class="is-parent" style="display: <%= dt.is_sub_parent != 'Y' ? 'flex' : 'none' %>;">
+
+                                        <!-- 3. Sub-Parent Controls & Tab Mapping -->
+                                        <div class="sub-parent-controls-div media-wrapper" style="display: <%= (dt.is_parent != 'Y' && dt.is_sub_parent == 'Y') ? 'flex' : 'none' %>; align-items: center;">
+                                            <div class="vl"></div>
+                                            <div class="media m-r-10">
+                                                <label class="col-form-label mb-0 mt-0 m-r-10">Hide/Show</label>
+                                                <div class="media-body text-end icon-state switch-outline">
+                                                    <label class="switch">
+                                                        <input type="checkbox" name="hide_ques_<%= i %>" id="hide_ques_<%= i %>" value="Y" <%= dt.hide_flag == 'Y' ? 'checked' : '' %>>
+                                                        <span class="switch-state bg-secondary"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="vl"></div>
+                                            <div class="media m-r-10">
+                                                <label class="col-form-label mb-0 mt-0 m-r-10">Belongs to a Tab</label>
+                                                <div class="media-body text-end icon-state switch-outline">
+                                                    <label class="switch">
+                                                        <input type="checkbox" name="belongs_to_tab_<%= i %>" id="belongs_to_tab_<%= i %>" value="Y" <%= dt.belongs_to_tab == 'Y' ? 'checked' : '' %> onchange="checkTabMappingChange(this)">
+                                                        <span class="switch-state bg-success"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="tab-mapping-input m-r-10" style="display: <%= dt.belongs_to_tab == 'Y' ? 'flex' : 'none' %>; align-items: center;">
+                                                <div class="vl"></div>
+                                                <div class="m-r-10">
+                                                    <span onclick="editLabel(this)"><%= (dt.tab_serial_no > 0) ? dt.tab_serial_no : 'Tab Serial No' %></span>
+                                                    <input type="number" min="1" value="<%= (dt.tab_serial_no > 0) ? dt.tab_serial_no : '' %>" name="tab_serial_<%= i %>" class="edit form-control" id="tab_serial_<%= i %>" style="display: none;" placeholder="Tab No.">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="is-sub-parent-section" style="display: <%= (dt.is_parent != 'Y' && dt.is_sub_parent != 'Y') ? 'flex' : 'none' %>; align-items: center;">
                                             <div class="vl"></div>
                                             <div class="m-r-10">
                                                 <span onclick="editLabel(this)"><%= dt.sub_parent_id > 0 ? dt.sub_parent_id : 'Sub-Parent Sequence' %></span>
@@ -288,6 +348,7 @@
                     <% i++ })
                 }else{ %>
                 <div class="card w-75 entry-card" id="card-1">
+                    <input type="hidden" name="qid_1" id="qid_1" value="0">
                     <div class="card-body b-l-success border-3">
                       <div class="row">
                         <div class="col-md-12">
@@ -306,6 +367,7 @@
                                     <div class="col-md-1 op-key"><span>&#9673;</span></div>
                                     <div class="col-md-9">
                                         <h6 class="label-view" class="input-label" onclick="editLabel(this)">Entry Option</h6>
+                                        <input type="hidden" name="op_id_1" value="0">
                                         <input type="text" value="" name="q_s_1" class="edit form-control" id="q_s_1" style="display: none;">
                                     </div>
                                     <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
@@ -331,11 +393,6 @@
                     </div>
                     <div class="card-footer p-2">
                         <div class="btn-card-footer">
-                            <!-- <button class=""></button> -->
-                            <!-- <div class="vl"></div> -->
-                            
-                            <!-- <div class="vl"></div>
-                            <a class="m-r-10" onclick="delFrmCard(this)"><i class="icofont icofont-trash text-danger delete-btn-form"></i></a> -->
                             <div class="vl"></div>
                             <div class="m-r-10">
                                 <span onclick="editLabel(this)">Sequence</span>
@@ -351,7 +408,32 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="is-parent" style="display: none;">
+
+                            <!-- Parent Controls for Card 1 -->
+                            <div class="parent-controls-div media-wrapper" style="display: flex; align-items: center;">
+                                <div class="vl"></div>
+                                <div class="media m-r-10">
+                                    <label class="col-form-label mb-0 mt-0 m-r-10">Hide/Show All Child Questions</label>
+                                    <div class="media-body text-end icon-state switch-outline">
+                                        <label class="switch">
+                                            <input type="checkbox" name="hide_child_1" id="hide_child_1" value="Y" onchange="toggleAllChildHide(this)">
+                                            <span class="switch-state bg-warning"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="vl"></div>
+                                <div class="media m-r-10">
+                                    <label class="col-form-label mb-0 mt-0 m-r-10">Show Info</label>
+                                    <div class="media-body text-end icon-state switch-outline">
+                                        <label class="switch">
+                                            <input type="checkbox" name="show_info_1" id="show_info_1" value="Y">
+                                            <span class="switch-state bg-info"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="is-parent" style="display: none; align-items: center;">
                                 <div class="vl"></div>
                                 <div class="m-r-10">
                                     <span onclick="editLabel(this)">Parent Sequence</span>
@@ -367,7 +449,39 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="is-parent" style="display: none;">
+
+                                <!-- Sub-parent Controls for Card 1 -->
+                                <div class="sub-parent-controls-div media-wrapper" style="display: none; align-items: center;">
+                                    <div class="vl"></div>
+                                    <div class="media m-r-10">
+                                        <label class="col-form-label mb-0 mt-0 m-r-10">Hide/Show</label>
+                                        <div class="media-body text-end icon-state switch-outline">
+                                            <label class="switch">
+                                                <input type="checkbox" name="hide_ques_1" id="hide_ques_1" value="Y">
+                                                <span class="switch-state bg-secondary"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="vl"></div>
+                                    <div class="media m-r-10">
+                                        <label class="col-form-label mb-0 mt-0 m-r-10">Belongs to a Tab</label>
+                                        <div class="media-body text-end icon-state switch-outline">
+                                            <label class="switch">
+                                                <input type="checkbox" name="belongs_to_tab_1" id="belongs_to_tab_1" value="Y" onchange="checkTabMappingChange(this)">
+                                                <span class="switch-state bg-success"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="tab-mapping-input m-r-10" style="display: none; align-items: center;">
+                                        <div class="vl"></div>
+                                        <div class="m-r-10">
+                                            <span onclick="editLabel(this)">Tab Serial No</span>
+                                            <input type="number" min="1" value="" name="tab_serial_1" class="edit form-control" id="tab_serial_1" style="display: none;" placeholder="Tab No.">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="is-sub-parent-section" style="display: none; align-items: center;">
                                     <div class="vl"></div>
                                     <div class="m-r-10">
                                         <span onclick="editLabel(this)">Sub-Parent Sequence</span>
@@ -393,6 +507,27 @@
 
 <script>
     var optionList = [{key: '&#9673;', label:'radio'},{key: '&#9635;', label:'check'},{key: '&#9661;', label:'drop'},{key: '&#127898;', label:'slider'},{key: '&#9776;', label: 'short_text'},{key: '&#128270;', label:'act'},{key: '&#127787;', label:'emi_type'},{key: '&#128207;', label:'emi_unit'},{key: '&#128197;', label:'mode'}];
+
+    function renderTabInputs(count) {
+        var num = parseInt(count) || 0;
+        var container = $('#tab-titles-container');
+        var existingTitles = [];
+        container.find('input[name="tab_titles"]').each(function() {
+            existingTitles.push($(this).val());
+        });
+        container.empty();
+        for (var i = 1; i <= num; i++) {
+            var val = existingTitles[i - 1] || '';
+            container.append(`
+                <div class="col-md-6 mb-3 tab-input-group">
+                    <div class="form-group mb-0">
+                        <label class="col-form-label font-weight-bold text-dark mb-1">Tab ${i} Title</label>
+                        <input type="text" class="form-control" name="tab_titles" placeholder="Enter title for Tab ${i}" value="${val}" required>
+                    </div>
+                </div>
+            `);
+        }
+    }
 
     function editLabel(elm) {
         var jelm = $(elm);
@@ -437,20 +572,56 @@
 
     function checkChange(e){
         var elm = $(e);
+        var cardFooter = elm.closest('.btn-card-footer');
         if(elm.is(':checked')){
-            elm.closest('.btn-card-footer').find('.is-parent').hide();
+            cardFooter.find('.is-parent').hide();
+            cardFooter.find('.parent-controls-div').css('display', 'flex');
         } else {
-            elm.closest('.btn-card-footer').find('.is-parent').show();
+            cardFooter.find('.is-parent').css('display', 'flex');
+            cardFooter.find('.parent-controls-div').hide();
         }
     }
 
     function checkSubChange(e){
         var elm = $(e);
+        var cardFooter = elm.closest('.btn-card-footer');
         if(elm.is(':checked')){
-            elm.closest('.media').next('.is-parent').hide();
+            cardFooter.find('.sub-parent-controls-div').css('display', 'flex');
+            cardFooter.find('.is-sub-parent-section').hide();
         } else {
-            elm.closest('.media').next('.is-parent').show();
+            cardFooter.find('.sub-parent-controls-div').hide();
+            cardFooter.find('.is-sub-parent-section').css('display', 'flex');
         }
+    }
+
+    function checkTabMappingChange(e){
+        var elm = $(e);
+        var parentDiv = elm.closest('.sub-parent-controls-div');
+        if(elm.is(':checked')){
+            parentDiv.find('.tab-mapping-input').css('display', 'flex');
+        } else {
+            parentDiv.find('.tab-mapping-input').hide();
+        }
+    }
+
+    function toggleAllChildHide(e) {
+        var elm = $(e);
+        var parentCard = elm.closest('.entry-card');
+        var parentSeq = parentCard.find('input[name^="s_"]').val();
+        var isChecked = elm.is(':checked');
+
+        if (!parentSeq || parentSeq === '') return;
+
+        $('.entry-card').each(function() {
+            var card = $(this);
+            var childParentSeqInput = card.find('input[name^="p_c_"]');
+            if (childParentSeqInput.length > 0 && childParentSeqInput.val() == parentSeq) {
+                var hideQuesInput = card.find('input[name^="hide_ques_"]');
+                if (hideQuesInput.length > 0) {
+                    hideQuesInput.prop('checked', isChecked);
+                }
+            }
+        });
     }
     
     function dynamicOptionChange(e){
@@ -490,6 +661,7 @@
             <div class="col-md-1 op-key"><span>${key}</span></div>
             <div class="col-md-9">
                 <h6 class="label-view input-label" onclick="editLabel(this)">Entry Option</h6>
+                <input type="hidden" name="op_id_${cardIdNum}" value="0">
                 <input type="text" value="" name="q_s_${cardIdNum}" class="edit form-control" id="q_s_${cardIdNum}_${opCount}" style="display: none;">
             </div>
             <div class="col-md-1 op-btn-p" onclick="addOption(this, '${key}')"><i class="icofont icofont-plus text-success"></i></div>
@@ -514,6 +686,7 @@
             
             // Options
             card.find('input[name^="q_s_"]').attr('name', 'q_s_' + newIdx);
+            card.find('input[name^="op_id_"]').attr('name', 'op_id_' + newIdx);
             card.find('.dynamic-option').attr('name', 'option_' + newIdx).attr('card-id', newCardId);
             
             // Card hidden identifier
@@ -538,6 +711,16 @@
             card.find('input[name^="p_c_"]').attr('name', 'p_c_' + newIdx).attr('id', 'p_c_' + newIdx);
             card.find('input[id^="gr_sub_flag_"]').attr('id', 'gr_sub_flag_' + newIdx);
             card.find('input[name^="p_s_c_"]').attr('name', 'p_s_c_' + newIdx).attr('id', 'p_s_c_' + newIdx);
+
+            // QID Primary Key Hidden Input
+            card.find('input[name^="qid_"]').attr('name', 'qid_' + newIdx).attr('id', 'qid_' + newIdx);
+
+            // Controls re-indexing
+            card.find('input[name^="hide_child_"]').attr('name', 'hide_child_' + newIdx).attr('id', 'hide_child_' + newIdx);
+            card.find('input[name^="show_info_"]').attr('name', 'show_info_' + newIdx).attr('id', 'show_info_' + newIdx);
+            card.find('input[name^="hide_ques_"]').attr('name', 'hide_ques_' + newIdx).attr('id', 'hide_ques_' + newIdx);
+            card.find('input[name^="belongs_to_tab_"]').attr('name', 'belongs_to_tab_' + newIdx).attr('id', 'belongs_to_tab_' + newIdx);
+            card.find('input[name^="tab_serial_"]').attr('name', 'tab_serial_' + newIdx).attr('id', 'tab_serial_' + newIdx);
         });
     }
 
@@ -545,6 +728,7 @@
         var nextIdx = $('.entry-card').length + 1;
         $('#add-card').append(`
             <div class="card w-75 entry-card" id="card-${nextIdx}">
+                <input type="hidden" name="qid_${nextIdx}" id="qid_${nextIdx}" value="0">
                 <div class="card-body b-l-success border-3">
                     <div class="row">
                         <div class="col-md-12">
@@ -563,6 +747,7 @@
                                     <div class="col-md-1 op-key"><span>&#9673;</span></div>
                                     <div class="col-md-9">
                                         <h6 class="label-view input-label" onclick="editLabel(this)">Entry Option</h6>
+                                        <input type="hidden" name="op_id_${nextIdx}" value="0">
                                         <input type="text" value="" name="q_s_${nextIdx}" class="edit form-control" id="q_s_${nextIdx}_1" style="display: none;">
                                     </div>
                                     <div class="col-md-1 op-btn-p" onclick="addOption(this, '&#9673;')"><i class="icofont icofont-plus text-success"></i></div>
@@ -603,7 +788,32 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="is-parent" style="display: none;">
+
+                        <!-- Parent Controls for New Card -->
+                        <div class="parent-controls-div media-wrapper" style="display: flex; align-items: center;">
+                            <div class="vl"></div>
+                            <div class="media m-r-10">
+                                <label class="col-form-label mb-0 mt-0 m-r-10">Hide/Show All Child Questions</label>
+                                <div class="media-body text-end icon-state switch-outline">
+                                    <label class="switch">
+                                        <input type="checkbox" name="hide_child_${nextIdx}" id="hide_child_${nextIdx}" value="Y" onchange="toggleAllChildHide(this)">
+                                        <span class="switch-state bg-warning"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="vl"></div>
+                            <div class="media m-r-10">
+                                <label class="col-form-label mb-0 mt-0 m-r-10">Show Info</label>
+                                <div class="media-body text-end icon-state switch-outline">
+                                    <label class="switch">
+                                        <input type="checkbox" name="show_info_${nextIdx}" id="show_info_${nextIdx}" value="Y">
+                                        <span class="switch-state bg-info"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="is-parent" style="display: none; align-items: center;">
                             <div class="vl"></div>
                             <div class="m-r-10">
                                 <span onclick="editLabel(this)">Parent Sequence</span>
@@ -619,7 +829,39 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="is-parent" style="display: none;">
+
+                            <!-- Sub-parent Controls for New Card -->
+                            <div class="sub-parent-controls-div media-wrapper" style="display: none; align-items: center;">
+                                <div class="vl"></div>
+                                <div class="media m-r-10">
+                                    <label class="col-form-label mb-0 mt-0 m-r-10">Hide/Show</label>
+                                    <div class="media-body text-end icon-state switch-outline">
+                                        <label class="switch">
+                                            <input type="checkbox" name="hide_ques_${nextIdx}" id="hide_ques_${nextIdx}" value="Y">
+                                            <span class="switch-state bg-secondary"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="vl"></div>
+                                <div class="media m-r-10">
+                                    <label class="col-form-label mb-0 mt-0 m-r-10">Belongs to a Tab</label>
+                                    <div class="media-body text-end icon-state switch-outline">
+                                        <label class="switch">
+                                            <input type="checkbox" name="belongs_to_tab_${nextIdx}" id="belongs_to_tab_${nextIdx}" value="Y" onchange="checkTabMappingChange(this)">
+                                            <span class="switch-state bg-success"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="tab-mapping-input m-r-10" style="display: none; align-items: center;">
+                                    <div class="vl"></div>
+                                    <div class="m-r-10">
+                                        <span onclick="editLabel(this)">Tab Serial No</span>
+                                        <input type="number" min="1" value="" name="tab_serial_${nextIdx}" class="edit form-control" id="tab_serial_${nextIdx}" style="display: none;" placeholder="Tab No.">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="is-sub-parent-section" style="display: none; align-items: center;">
                                 <div class="vl"></div>
                                 <div class="m-r-10">
                                     <span onclick="editLabel(this)">Sub-Parent Sequence</span>
@@ -669,4 +911,4 @@
     })
 </script>
 
-<%- include('../templates/footer.ejs') %>
+<%- include('../templates/footer.ejs') %>

@@ -101,7 +101,7 @@ FBRouter.get('/form_builder', async (req, res) => {
 })
 
 FBRouter.get('/form_builder_edit', async (req, res) => {
-    var scope_dt = SCOPE_LIST, data = req.query, qr_dt = {}, q_header = '',
+    var scope_dt = SCOPE_LIST, data = req.query, qr_dt = {}, q_header = '', tabs_dt = [],
     flag = data.flag ? Buffer.from(data.flag, 'base64').toString() : 'E',
     sec_list = await db_Select('id, scope_id, sec_name', 'md_cal_sec_type', data.scope > 0 ? `lang_flag = '${flag}' AND scope_id = ${data.scope}` : `lang_flag = '${flag}'`, null);
     if(data.scope > 0 && data.type_id > 0){
@@ -110,8 +110,7 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
             var headerFilterDt = resDt.msg.filter(dt => dt.header_flag != 'N')
             var questFilterData = resDt.msg.filter(dt => dt.header_flag != 'Y')
             qr_dt = questFilterData
-            // console.log(headerFilterDt);
-            q_header = headerFilterDt[0].input_label
+            if(headerFilterDt.length > 0) q_header = headerFilterDt[0].input_label
             for(let dt of questFilterData){
                 if(dt.input_type != 'I'){
                     var opDt = await db_Select('id, builder_id, option_name', 'md_cal_form_builder_option', `builder_id=${dt.id} AND sec_id=${data.type_id}`, 'ORDER BY id asc')
@@ -119,10 +118,13 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
                 }
             }
         }
+        var tabsRes = await db_Select('*', 'md_cal_form_builder_tabs', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag = '${flag}'`, 'ORDER BY tab_serial asc');
+        if(tabsRes.suc > 0){
+            tabs_dt = tabsRes.msg;
+        }
     }
-    // console.log(qr_dt);
     
-    res.render('form_builder/entry', {scope: scope_dt, qr_dt, q_header, scope_id: data.scope, sec_id: data.type_id, sec_list: sec_list.suc > 0 ? sec_list.msg : [], flag})
+    res.render('form_builder/entry', {scope: scope_dt, qr_dt, q_header, tabs_dt, scope_id: data.scope, sec_id: data.type_id, sec_list: sec_list.suc > 0 ? sec_list.msg : [], flag})
 })
 
 FBRouter.post('/form_builder_post', async (req, res) => {
@@ -141,25 +143,60 @@ FBRouter.post('/form_builder_post', async (req, res) => {
         const cardList = [...new Set(rawCards.map(c => String(c).trim()).filter(c => c.length > 0))];
 
         if(cardList.length > 0 && data.scope_id > 0 && data.sec_id > 0){
-            // 1. Delete previous questions and options for this scope/sec/lang to cleanly remove deleted cards
-            var oldRows = await db_Select('id', 'md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}'`, null);
-            if(oldRows.suc > 0 && oldRows.msg.length > 0){
-                var oldIds = oldRows.msg.map(dt => dt.id).join(',');
-                if (oldIds.length > 0) {
-                    await db_Delete('md_cal_form_builder_option', `builder_id IN (${oldIds}) OR (scope_id = ${data.scope_id} AND sec_id = ${data.sec_id})`);
+            var scopeId = parseInt(data.scope_id);
+            var secId = parseInt(data.sec_id);
+            var langFlag = safeStr(data.lang_flag) || 'E';
+
+            // 1. Manage Dynamic Tabs (Re-sync tabs for this section)
+            await db_Delete('md_cal_form_builder_tabs', `scope_id = ${scopeId} AND sec_id = ${secId} AND lang_flag = '${langFlag}'`);
+            var rawTabs = data.tab_titles !== undefined && data.tab_titles !== null ? (Array.isArray(data.tab_titles) ? data.tab_titles : [data.tab_titles]) : [];
+            for(let t = 0; t < rawTabs.length; t++){
+                let tTitle = safeStr(rawTabs[t]).trim();
+                if(tTitle.length > 0){
+                    let tabFields = `(lang_flag, scope_id, sec_id, tab_serial, tab_title, created_by, created_dt)`;
+                    let tabValues = `('${langFlag}', ${scopeId}, ${secId}, ${t + 1}, '${tTitle}', '${user_name}', '${datetime}')`;
+                    await db_Insert('md_cal_form_builder_tabs', tabFields, tabValues, null, 0);
                 }
-                await db_Delete('md_cal_form_builder', `scope_id = ${data.scope_id} AND sec_id = ${data.sec_id} AND lang_flag = '${data.lang_flag}'`);
             }
 
-            // 2. Insert Header row
+            // 2. Manage Header Row (UPDATE if exists, else INSERT)
             var headerText = safeStr(data.header);
-            var headFields = `(lang_flag, scope_id, sec_id, input_label, header_flag, created_by, created_dt)`;
-            var headValues = `('${data.lang_flag}', ${data.scope_id}, ${data.sec_id}, '${headerText}', 'Y', '${user_name}', '${datetime}')`;
-            await db_Insert('md_cal_form_builder', headFields, headValues, null, 0);
+            var chkHeader = await db_Select('id', 'md_cal_form_builder', `scope_id = ${scopeId} AND sec_id = ${secId} AND lang_flag = '${langFlag}' AND header_flag = 'Y'`, null);
+            if(chkHeader.suc > 0 && chkHeader.msg.length > 0){
+                let headId = chkHeader.msg[0].id;
+                await db_Insert('md_cal_form_builder', `input_label = '${headerText}', modified_by = '${user_name}', modified_dt = '${datetime}'`, null, `id = ${headId}`, 1);
+            } else {
+                let headFields = `(lang_flag, scope_id, sec_id, input_label, header_flag, created_by, created_dt)`;
+                let headValues = `('${langFlag}', ${scopeId}, ${secId}, '${headerText}', 'Y', '${user_name}', '${datetime}')`;
+                await db_Insert('md_cal_form_builder', headFields, headValues, null, 0);
+            }
 
-            // 3. Insert each Question card in sequence
+            // 3. Pre-fetch existing question IDs (header_flag = 'N') to detect deleted cards
+            var existingRowsRes = await db_Select('id', 'md_cal_form_builder', `scope_id = ${scopeId} AND sec_id = ${secId} AND lang_flag = '${langFlag}' AND header_flag = 'N'`, null);
+            var existingQuestionIds = (existingRowsRes.suc > 0 && existingRowsRes.msg.length > 0) ? existingRowsRes.msg.map(r => r.id) : [];
+
+            // 4. Pre-process parent sequences for auto-hiding child questions logic
+            const hiddenParentSeqs = new Set();
+            for (let i = 0; i < cardList.length; i++) {
+                let id = cardList[i];
+                let pVal = parseInt(data[`p_c_${id}`]) || 0;
+                let psVal = parseInt(data[`p_s_c_${id}`]) || 0;
+                let isParent = (pVal > 0 || psVal > 0) ? 'N' : 'Y';
+                let hideChildFlag = data[`hide_child_${id}`] === 'Y' ? 'Y' : 'N';
+                let seq = parseInt(data[`s_${id}`]) || (i + 1);
+
+                if (isParent === 'Y' && hideChildFlag === 'Y') {
+                    hiddenParentSeqs.add(seq);
+                }
+            }
+
+            const processedQDbIds = new Set();
+
+            // 5. UPSERT (In-place UPDATE for existing rows, INSERT for new ones)
             for(let i = 0; i < cardList.length; i++){
                 let id = cardList[i];
+                let qDbId = parseInt(data[`qid_${id}`]) || 0;
+
                 let optionKey = data[`option_${id}`] ? (Array.isArray(data[`option_${id}`]) ? data[`option_${id}`][0] : data[`option_${id}`]) : 'short_text';
                 let inputType = INPUT_TYPE_LIST[optionKey] || 'I';
                 let qLabel = safeStr(data[`q_${id}`]);
@@ -170,24 +207,95 @@ FBRouter.post('/form_builder_post', async (req, res) => {
                 let isParent = (pVal > 0 || psVal > 0) ? 'N' : 'Y';
                 let isSubParent = (psVal > 0) ? 'N' : 'Y';
 
-                let fields = `(lang_flag, scope_id, sec_id, input_type, input_label, input_heading, sequence, is_parent, parent_id, is_sub_parent, sub_parent_id, header_flag, created_by, created_dt)`;
-                let values = `('${data.lang_flag}', ${data.scope_id}, ${data.sec_id}, '${inputType}', '${qLabel}', '${qHeading}', '${seq}', '${isParent}', '${pVal}', '${isSubParent}', '${psVal}', 'N', '${user_name}', '${datetime}')`;
+                // Controls for Parent & Sub-Parent
+                let hideChildFlag = data[`hide_child_${id}`] === 'Y' ? 'Y' : 'N';
+                let showInfoFlag = data[`show_info_${id}`] === 'Y' ? 'Y' : 'N';
+                let hideFlag = data[`hide_ques_${id}`] === 'Y' ? 'Y' : 'N';
                 
-                let resDt = await db_Insert('md_cal_form_builder', fields, values, null, 0);
-                let builder_id = (resDt.suc > 0 && resDt.lastId) ? resDt.lastId.insertId : 0;
+                // Logic Enhancement: If parent sequence has hide_child_flag set to 'Y', automatically set child hide_flag to 'Y'
+                if (pVal > 0 && hiddenParentSeqs.has(pVal)) {
+                    hideFlag = 'Y';
+                }
 
-                if(['radio', 'check', 'drop'].includes(optionKey) && builder_id > 0){
-                    let rawOpts = data[`q_s_${id}`];
-                    let optList = Array.isArray(rawOpts) ? rawOpts : (rawOpts !== undefined && rawOpts !== null ? [rawOpts] : []);
-                    for(let opt of optList){
-                        let optName = safeStr(opt).trim();
-                        if (optName.length > 0) {
-                            let optFields = `(scope_id, sec_id, builder_id, option_name, created_by, created_dt)`;
-                            let optValues = `(${data.scope_id}, ${data.sec_id}, ${builder_id}, '${optName}', '${user_name}', '${datetime}')`;
-                            await db_Insert('md_cal_form_builder_option', optFields, optValues, null, 0);
-                        }
+                let belongsToTab = data[`belongs_to_tab_${id}`] === 'Y' ? 'Y' : 'N';
+                let tabSerialNo = parseInt(data[`tab_serial_${id}`]) || 0;
+                let tabSerialVal = (belongsToTab === 'Y' && tabSerialNo > 0) ? tabSerialNo : 'NULL';
+
+                let builder_id = 0;
+
+                if (qDbId > 0 && existingQuestionIds.includes(qDbId)) {
+                    // UPDATE existing question row in place to preserve primary key ID and build logic mapping
+                    let updateFields = `input_type = '${inputType}', input_label = '${qLabel}', input_heading = '${qHeading}', sequence = ${seq}, is_parent = '${isParent}', parent_id = ${pVal}, is_sub_parent = '${isSubParent}', sub_parent_id = ${psVal}, hide_child_flag = '${hideChildFlag}', show_info_flag = '${showInfoFlag}', hide_flag = '${hideFlag}', belongs_to_tab = '${belongsToTab}', tab_serial_no = ${tabSerialVal}, modified_by = '${user_name}', modified_dt = '${datetime}'`;
+                    await db_Insert('md_cal_form_builder', updateFields, null, `id = ${qDbId}`, 1);
+                    builder_id = qDbId;
+                    processedQDbIds.add(qDbId);
+                } else {
+                    // INSERT new question row
+                    let fields = `(lang_flag, scope_id, sec_id, input_type, input_label, input_heading, sequence, is_parent, parent_id, is_sub_parent, sub_parent_id, hide_child_flag, show_info_flag, hide_flag, belongs_to_tab, tab_serial_no, header_flag, created_by, created_dt)`;
+                    let values = `('${langFlag}', ${scopeId}, ${secId}, '${inputType}', '${qLabel}', '${qHeading}', '${seq}', '${isParent}', '${pVal}', '${isSubParent}', '${psVal}', '${hideChildFlag}', '${showInfoFlag}', '${hideFlag}', '${belongsToTab}', ${tabSerialVal}, 'N', '${user_name}', '${datetime}')`;
+                    
+                    let resDt = await db_Insert('md_cal_form_builder', fields, values, null, 0);
+                    builder_id = (resDt.suc > 0 && resDt.lastId) ? resDt.lastId.insertId : 0;
+                    if (builder_id > 0) {
+                        processedQDbIds.add(builder_id);
                     }
                 }
+
+                // 6. Manage Options for this builder_id (UPSERT to preserve option primary keys)
+                if (builder_id > 0) {
+                    if (['radio', 'check', 'drop'].includes(optionKey)) {
+                        let rawOpts = data[`q_s_${id}`];
+                        let optList = Array.isArray(rawOpts) ? rawOpts : (rawOpts !== undefined && rawOpts !== null ? [rawOpts] : []);
+                        
+                        let rawOpIds = data[`op_id_${id}`];
+                        let opIdList = Array.isArray(rawOpIds) ? rawOpIds : (rawOpIds !== undefined && rawOpIds !== null ? [rawOpIds] : []);
+
+                        let existingOptsRes = await db_Select('id', 'md_cal_form_builder_option', `builder_id = ${builder_id}`, null);
+                        let existingOptIds = (existingOptsRes.suc > 0 && existingOptsRes.msg.length > 0) ? existingOptsRes.msg.map(r => r.id) : [];
+
+                        let processedOptIds = new Set();
+
+                        for(let o = 0; o < optList.length; o++){
+                            let optName = safeStr(optList[o]).trim();
+                            let opId = parseInt(opIdList[o]) || 0;
+
+                            if (optName.length > 0) {
+                                if (opId > 0 && existingOptIds.includes(opId)) {
+                                    // UPDATE existing option in place to preserve option primary key ID
+                                    let updateOptFields = `option_name = '${optName}', modified_by = '${user_name}', modified_dt = '${datetime}'`;
+                                    await db_Insert('md_cal_form_builder_option', updateOptFields, null, `id = ${opId}`, 1);
+                                    processedOptIds.add(opId);
+                                } else {
+                                    // INSERT new option
+                                    let optFields = `(scope_id, sec_id, builder_id, option_name, created_by, created_dt)`;
+                                    let optValues = `(${scopeId}, ${secId}, ${builder_id}, '${optName}', '${user_name}', '${datetime}')`;
+                                    let insOptRes = await db_Insert('md_cal_form_builder_option', optFields, optValues, null, 0);
+                                    let newOptId = (insOptRes.suc > 0 && insOptRes.lastId) ? insOptRes.lastId.insertId : 0;
+                                    if (newOptId > 0) processedOptIds.add(newOptId);
+                                }
+                            }
+                        }
+
+                        // Delete ONLY options removed by admin for this builder_id
+                        let deletedOptIds = existingOptIds.filter(oId => !processedOptIds.has(oId));
+                        if (deletedOptIds.length > 0) {
+                            await db_Delete('md_cal_form_builder_option', `id IN (${deletedOptIds.join(',')})`);
+                        }
+                    } else {
+                        // If type changed from option to text/non-option, remove options for this builder_id
+                        await db_Delete('md_cal_form_builder_option', `builder_id = ${builder_id}`);
+                    }
+                }
+            }
+
+            // 7. Delete ONLY questions that were deleted by the admin from the form builder UI
+            let deletedQuestionIds = existingQuestionIds.filter(id => !processedQDbIds.has(id));
+            if (deletedQuestionIds.length > 0) {
+                let delIdsStr = deletedQuestionIds.join(',');
+                await db_Delete('md_cal_form_builder_option', `builder_id IN (${delIdsStr})`);
+                await db_Delete('md_cal_form_build_logic', `quest_id IN (${delIdsStr})`);
+                await db_Delete('md_cal_form_build_map_quest', `p_f_builder_id IN (${delIdsStr}) OR c_f_builder_id IN (${delIdsStr})`);
+                await db_Delete('md_cal_form_builder', `id IN (${delIdsStr})`);
             }
 
             req.session.message = {

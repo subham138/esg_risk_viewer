@@ -28,6 +28,9 @@ CalcUserRouter.get('/cal_fetch_quest', async (req, res) => {
 CalcUserRouter.post('/get_question_list_by_scope_user_ajax', async (req, res) => {
   var data = req.body
   var res_dt = await getCalQuestUserDt(data.scope_id > 0 ? data.scope_id : 1, data.proj_id, req.session.user.client_id, data.sel_year, data.flag)
+  if (res_dt && typeof res_dt === 'object') {
+    res_dt.enc_data = data.enc_data || '';
+  }
   res.send(res_dt)
 })
 
