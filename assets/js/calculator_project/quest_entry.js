@@ -435,26 +435,31 @@ const QuestHandler = {
                             
                             const tabSubParents = subParents.filter(sub => {
                                 if (sub.belongs_to_tab === 'Y') {
-                                    return sub.tab_serial_no == tb.tab_serial;
+                                    return parseInt(sub.tab_serial_no) === parseInt(tb.tab_serial);
                                 } else {
-                                    return tb.tab_serial == 1;
+                                    return parseInt(tb.tab_serial) === 1;
                                 }
                             });
 
                             const visibleSubParents = tabSubParents.filter(sub => sub.hide_flag !== 'Y');
+                            const hiddenSubParents = tabSubParents.filter(sub => sub.hide_flag === 'Y');
 
-                            if (tabSubParents.length > 0 && visibleSubParents.length === 0) {
-                                tabHtml += self.renderAutoUpdatedBanner(title, res);
-                            } else if (visibleSubParents.length > 0) {
+                            if (visibleSubParents.length > 0) {
                                 tabHtml += self.renderParentAndSubParentsHtml(parent, visibleSubParents, questions, res, scope_id, flag, title);
-                            } else if (parentQuests.length === 1) {
+                            } else if (tabSubParents.length > 0 && hiddenSubParents.length > 0) {
                                 tabHtml += self.renderAutoUpdatedBanner(title, res);
                             }
                         }
                     });
 
                     if (tabHtml === '') {
-                        tabHtml = self.renderAutoUpdatedBanner(title, res);
+                        const allSecSubParents = questions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y');
+                        const anyHidden = allSecSubParents.some(q => q.hide_flag === 'Y') || parentQuests.some(p => p.hide_child_flag === 'Y');
+                        if (anyHidden) {
+                            tabHtml = self.renderAutoUpdatedBanner(title, res);
+                        } else {
+                            tabHtml = '<div class="text-center my-4"><strong class="text-muted">No Questions Found For This Tab</strong></div>';
+                        }
                     }
                     $tabPane.html(tabHtml);
                 });
@@ -468,16 +473,23 @@ const QuestHandler = {
                     } else {
                         const subParents = questions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y' && q.sub_parent_id === 0 && q.parent_id === parent.sequence);
                         const visibleSubParents = subParents.filter(sub => sub.hide_flag !== 'Y');
+                        const hiddenSubParents = subParents.filter(sub => sub.hide_flag === 'Y');
 
-                        if (subParents.length > 0 && visibleSubParents.length === 0) {
-                            secHtml += self.renderAutoUpdatedBanner(title, res);
-                        } else {
+                        if (visibleSubParents.length > 0) {
                             secHtml += self.renderParentAndSubParentsHtml(parent, visibleSubParents, questions, res, scope_id, flag, title);
+                        } else if (subParents.length > 0 && hiddenSubParents.length > 0) {
+                            secHtml += self.renderAutoUpdatedBanner(title, res);
                         }
                     }
                 });
                 if (secHtml === '') {
-                    secHtml = self.renderAutoUpdatedBanner(title, res);
+                    const allSecSubParents = questions.filter(q => q.is_parent === 'N' && q.is_sub_parent === 'Y');
+                    const anyHidden = allSecSubParents.some(q => q.hide_flag === 'Y') || parentQuests.some(p => p.hide_child_flag === 'Y');
+                    if (anyHidden) {
+                        secHtml = self.renderAutoUpdatedBanner(title, res);
+                    } else {
+                        secHtml = '<div class="text-center my-4"><strong class="text-muted">No Questions Found</strong></div>';
+                    }
                 }
                 $pane.html(secHtml);
             }

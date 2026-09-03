@@ -533,13 +533,13 @@
         var jelm = $(elm);
         var htmlElm = jelm[0];
         $(htmlElm).hide();
-        $(htmlElm).siblings('.edit').show();
-        $(htmlElm).siblings('.edit').focus();
+        var $edit = $(htmlElm).siblings('.edit');
+        $edit.show().focus();
         var initial_text = $(htmlElm).text();
-        $(htmlElm).siblings('.edit').focusout(function () {
-            var editedInput = $(htmlElm).siblings('.edit').val();
-            $(htmlElm).siblings('.edit').hide();
-            if (editedInput != '') {
+        $edit.off('focusout').on('focusout', function () {
+            var editedInput = $(this).val();
+            $(this).hide();
+            if (editedInput && editedInput.trim() !== '') {
                 $(htmlElm).show().text(editedInput);
             } else {
                 $(htmlElm).show().text(initial_text);
@@ -701,9 +701,10 @@
             var seqInput = card.find('input[name^="s_"]').attr('name', 's_' + newIdx).attr('id', 's_' + newIdx);
             var seqSpan = seqInput.siblings('span');
             var currVal = seqInput.val();
-            if (!currVal || currVal === '' || seqSpan.text() === 'Sequence' || /^\d+$/.test(seqSpan.text())) {
-                seqInput.val(newIdx);
-                seqSpan.text(newIdx);
+            if (currVal !== undefined && currVal !== null && currVal !== '') {
+                seqSpan.text(currVal);
+            } else if (!seqSpan.text() || seqSpan.text() === '' || seqSpan.text() === 'Sequence') {
+                seqSpan.text('Sequence');
             }
 
             // Parent & Sub-parent
@@ -775,8 +776,8 @@
                     <div class="btn-card-footer">
                         <div class="vl"></div>
                         <div class="m-r-10">
-                            <span onclick="editLabel(this)">${nextIdx}</span>
-                            <input type="text" value="${nextIdx}" name="s_${nextIdx}" class="edit form-control" id="s_${nextIdx}" style="display: none;">
+                            <span onclick="editLabel(this)">Sequence</span>
+                            <input type="text" value="" name="s_${nextIdx}" class="edit form-control" id="s_${nextIdx}" style="display: none;" placeholder="Sequence">
                         </div>
                         <div class="vl"></div>
                         <div class="media m-r-10">
