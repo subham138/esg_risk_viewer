@@ -105,7 +105,7 @@ FBRouter.get('/form_builder_edit', async (req, res) => {
     flag = data.flag ? Buffer.from(data.flag, 'base64').toString() : 'E',
     sec_list = await db_Select('id, scope_id, sec_name', 'md_cal_sec_type', data.scope > 0 ? `lang_flag = '${flag}' AND scope_id = ${data.scope}` : `lang_flag = '${flag}'`, null);
     if(data.scope > 0 && data.type_id > 0){
-        var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag = '${flag}'`, 'ORDER BY sequence asc, id asc')
+        var resDt = await db_Select('*', 'md_cal_form_builder', `scope_id=${data.scope} AND sec_id=${data.type_id} AND lang_flag = '${flag}'`, 'ORDER BY id asc')
         if(resDt.suc > 0){
             var headerFilterDt = resDt.msg.filter(dt => dt.header_flag != 'N')
             var questFilterData = resDt.msg.filter(dt => dt.header_flag != 'Y')
