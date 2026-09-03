@@ -69,15 +69,16 @@ const QuestHandler = {
 
             // 3. Update Visibility Logic (Hiding/Showing Children)
             if ($parent.hasClass('parent-quest')) {
+                const $sectionPane = $el.closest('.tab-pane');
                 if (['Yes', 'Oui'].includes(txt)) {
-                    $grandParent.find('.sub-parent-container, .sub-parent-quest').show();
+                    $sectionPane.find('.sub-parent-container, .sub-parent-quest').show();
                 } else {
-                    const $sub = $grandParent.find('.sub-parent-container, .sub-parent-quest');
+                    const $sub = $sectionPane.find('.sub-parent-container, .sub-parent-quest');
                     $sub.hide().find('input').val('');
                     $sub.find('select').val('').trigger('change');
                     $sub.find('.cust-badge-quest').hide().find('.cust-badge-quest-txt').text('');
                     $sub.find('.quest-opt-btn').show();
-                    $grandParent.find('.sub-sub-section').hide().children().hide();
+                    $sectionPane.find('.sub-sub-section').hide().children().hide();
                 }
             }
 
@@ -315,7 +316,14 @@ const QuestHandler = {
 
         const $pane = $btn.closest('.tab-pane');
         $pane.find('.dyn-tab-content-pane').hide();
-        $pane.find(`#${cleanId}_dyn_tab_${tabSerial}`).show();
+        const $targetTabPane = $pane.find(`#${cleanId}_dyn_tab_${tabSerial}`);
+        $targetTabPane.show();
+
+        const isParentAnsweredYes = $pane.find('.parent-quest .cust-badge-quest-txt').toArray().some(el => ['Yes', 'Oui'].includes($(el).text().trim()));
+        const isParentBtnYes = $pane.find('.parent-quest .quest-opt-btn button, .parent-quest .quest-opt-btn input:checked').toArray().some(el => ['Yes', 'Oui'].includes($(el).text().trim() || $(el).val()));
+        if (isParentAnsweredYes || isParentBtnYes) {
+            $targetTabPane.find('.sub-parent-container, .sub-parent-quest').show();
+        }
     },
 
     /**
@@ -538,7 +546,8 @@ const QuestHandler = {
         const qAns = res.proj_q_ans_dt.filter(a => a.quest_id === sub.id && a.end_flag !== 'Y');
         const hasSubAns = qAns.length > 0;
         const parentAns = res.proj_q_ans_dt.find(a => a.quest_id === parent.id && a.end_flag !== 'Y')?.quest_ans;
-        const isParentYes = ['Yes', 'Oui'].includes(parentAns);
+        const hasParentOptions = ['R', 'C', 'S'].includes(parent.input_type) && parent.qu_option && parent.qu_option.length > 0;
+        const isParentYes = hasParentOptions ? ['Yes', 'Oui'].includes(parentAns) : true;
 
         const emiTypeQuest = subSubData.find(q => q.input_type === 'E');
         const unitQuest = subSubData.find(q => q.input_type === 'U');
@@ -568,7 +577,8 @@ const QuestHandler = {
             const subSubSeq = `${parent.sequence}.${sub.sequence}.${ss.sequence}`;
             const isLastEmi = ss.next_qst_action_val === 'E';
             const subParentAns = qAns[0]?.quest_ans;
-            const isSubParentYes = ['Yes', 'Oui'].includes(subParentAns);
+            const hasSubParentOptions = ['R', 'C', 'S'].includes(sub.input_type) && sub.qu_option && sub.qu_option.length > 0;
+            const isSubParentYes = hasSubParentOptions ? ['Yes', 'Oui'].includes(subParentAns) : true;
 
             // Slide navigation logic: Only show the first slide of the sub-sub-section initially
             const isVisible = isSubParentYes && !hasShownFirstSlide;
