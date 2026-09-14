@@ -285,7 +285,7 @@
                                                             filterCalData.forEach(tdt => totEmiCalVal += tdt.co_val )
                                                         %>
                                                         <tr>
-                                                            <td><%= filterCalData.length> 0 ? filterCalData[0].quest_ans : '' %></td>
+                                                            <td><%= (currGhgData.length > 0 && currGhgData[0].quest_ans) ? currGhgData[0].quest_ans : (filterCalData.length > 0 ? filterCalData[0].quest_ans : '') %></td>
                                                             <td><%= filterCalData.length> 0 ? filterCalData[0].act_name : '' %></td>
                                                             <td><%= filterCalData.length> 0 ? filterCalData[0].emi_name : '' %></td>
                                                             <td><%= totEmiCalVal.toFixed(2) %></td>
