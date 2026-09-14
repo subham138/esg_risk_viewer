@@ -438,8 +438,12 @@ CalcUserRouter.post('/delete_ghg_ext_cal_mod_ajax', async (req, res) => {
   client_id = req.session.user.client_id,
   user = req.session.user,
   dateTime = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
-  var data = new Buffer.from(enc_dt, 'base64').toString()
-  data = JSON.parse(data)
+  var data = new Buffer.from(enc_dt, 'base64').toString();
+  try {
+    data = data.startsWith('%') ? JSON.parse(decodeURIComponent(data)) : JSON.parse(data);
+  } catch (e) {
+    data = JSON.parse(decodeURIComponent(data));
+  }
   var res_dt = await db_Delete('td_ghg_quest_cal', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND sl_no = ${data.sl_no} AND sec_id = ${data.sec_id} AND act_id = ${data.act_id}`)
   if(res_dt.suc > 0){
     var cal_quest_del = await db_Delete('td_ghg_quest', `client_id = ${client_id} AND scope = '${data.scope}' AND project_id = ${data.project_id} AND pro_sl_no = ${data.sl_no} AND end_flag = 'Y' AND quest_seq LIKE "${data.parent_id}.${data.sub_parent_id}%"`)

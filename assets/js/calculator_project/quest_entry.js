@@ -633,41 +633,49 @@ const QuestHandler = {
             if (!rejNumArr.includes(sl)){
                 const filtered = calData.filter(c => c.sl_no === sl);
                 const totalCo2 = filtered.reduce((acc, curr) => acc + curr.co_val, 0);
-                // console.log(res.quest_ans_sec[title], 'Quest-----', title);
-                let pattern = /^\d+\.\d+\.1$/;
-                const qAnsSec = res.quest_ans_sec[title].filter(a => a.end_flag !== 'N' && a.pro_sl_no === sl && pattern.test(a.quest_seq));
-                // console.log(qAnsSec, '---------Quest ANS-----------');
-                
-                const q3Ans = qAnsSec[0]?.quest_ans // qAnsSec.find(qa => qa.quest_seq.endsWith('.3') || qa.quest_seq.endsWith('.3.'))?.quest_ans || '';
+                const subParts = String(subParentSeq).split('.');
+                const qAnsDtCal = (res.quest_ans_sec && res.quest_ans_sec[title]) ? res.quest_ans_sec[title].filter(asDt => {
+                    if (asDt.end_flag === 'N' || asDt.pro_sl_no != sl) return false;
+                    if (!asDt.quest_seq) return false;
+                    const parts = asDt.quest_seq.split('.');
+                    const matchesParts = parts.length >= 2 && parts[0] == subParts[0] && parts[1] == subParts[1];
+                    const matchesChar = asDt.quest_seq.length > 2 && subParentSeq.length > 2 && asDt.quest_seq.charAt(2) == subParentSeq.charAt(2);
+                    return matchesParts || matchesChar;
+                }) : [];
 
-                // console.log(q3Ans, subParentSeq, sl, slNos, lastQuest, '------------');
-                
-    
+                let headerQuestAns = '';
+                const firstSubSub = qAnsDtCal.find(a => a.quest_seq === `${subParentSeq}.1`);
+                if (firstSubSub && firstSubSub.quest_ans) {
+                    headerQuestAns = firstSubSub.quest_ans;
+                } else if (qAnsDtCal.length > 1 && qAnsDtCal[0].quest_seq === subParentSeq && qAnsDtCal[1].quest_ans) {
+                    headerQuestAns = qAnsDtCal[1].quest_ans;
+                } else if (qAnsDtCal.length > 0 && qAnsDtCal[0].quest_ans) {
+                    headerQuestAns = qAnsDtCal[0].quest_ans;
+                }
+
                 let prevDataHtml = '<div class="col-md-12">';
                 let isCopied = false;
-    
-                for (const qa of qAnsSec) {
+
+                for (const qa of qAnsDtCal) {
                     if (qa.is_copy === 'Y') { isCopied = true; break; }
-                    if (qa.input_type === 'A') break;
-    
-                    // Extract the sequence number part (e.g., "3" from "1.1.3")
-                    const seqParts = qa.quest_seq.split('.');
-                    const seqNum = parseInt(seqParts[seqParts.length - 1] || seqParts[seqParts.length - 2]);
-                    if (seqNum > 3) break;
-    
-                    if (qa.input_heading) prevDataHtml += `<p class="sub-title">${qa.input_heading}</p>`;
+                    if (['A', 'E', 'U', 'Y'].includes(qa.input_type) || ['A', 'E', 'U', 'Y'].includes(qa.quest_type)) break;
+                    if (qa.quest_seq === subParentSeq) continue;
+
+                    if (qa.input_heading && qa.input_heading.trim() !== '') {
+                        prevDataHtml += `<p class="sub-title">${qa.input_heading}</p>`;
+                    }
                     prevDataHtml += `<div class="figure d-block"><blockquote class="blockquote"><p class="mb-0">${qa.quest_seq} ${qa.input_label}</p></blockquote><div class="blockquote-footer">${qa.quest_ans}</div></div>`;
                 }
                 prevDataHtml += '</div>';
-    
+
                 const firstEntry = filtered[0];
                 const accordionId = `accordionForIndCal${sl}-${lastQuest.id}`;
-    
+
                 accordion += `<div class="accordion custom-span-card" id="${accordionId}">
                     <div class="accordion-item my-3 caruBackCol1">
                         <h2 class="accordion-header" id="clCalHeading${sl}-${lastQuest.id}">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColVal${sl}-${lastQuest.id}">
-                                <p>${q3Ans}</p>
+                                <p>${headerQuestAns}</p>
                                 <div><span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} tCO2e</span></div>
                             </button>
                         </h2>
@@ -677,26 +685,36 @@ const QuestHandler = {
                                 <div class="col-md-12">
                                     <div class="table-responsive mt-3">
                                         <table class="table table-bordered text-center">
-                                            <thead><tr><th></th><th>${lastQuest.emi_head_opt1}</th><th>${lastQuest.emi_head_opt2}</th><th>${lastQuest.emi_head_opt3}</th></tr></thead>
+                                            <thead><tr><th></th><th>${lastQuest.emi_head_opt1 || ''}</th><th>${lastQuest.emi_head_opt2 || ''}</th><th>${lastQuest.emi_head_opt3 || ''}</th></tr></thead>
                                             <tbody>`;
-    
+
                 filtered.forEach(item => {
                     accordion += `<tr><td>${item.repo_mode_label}</td><td>${item.cal_val}</td><td>${item.emi_fact_val}</td><td>${item.co_val}</td></tr>`;
                 });
-    
+
                 accordion += `</tbody><tfoot><tr><td colspan="3">Total:</td><td>${totalCo2.toFixed(2)}</td></tr></tfoot></table></div></div>`;
-    
+
                 if (!isCopied) {
-                    const editData = window.btoa(encodeURIComponent(JSON.stringify({
+                    const lastQuestAns = qAnsDtCal.find(ldt => ldt.quest_type === 'Y');
+                    const repoMode = lastQuestAns ? lastQuestAns.quest_ans : 'Y';
+                    const hd1 = (lastQuest.emi_head_opt1 || '').replace(/'/g, "\\'");
+                    const hd2 = (lastQuest.emi_head_opt2 || '').replace(/'/g, "\\'");
+                    const hd3 = (lastQuest.emi_head_opt3 || '').replace(/'/g, "\\'");
+                    const editTitle = `<span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} kg CO2e </span>&nbsp;<span class="infoCalLeb">since ${firstEntry.repo_period || ''} ${firstEntry.repo_month ? ', ' + firstEntry.repo_month : ''}</span>`;
+
+                    const editObj = {
                         cal_dt: filtered,
-                        repo_mode: qAnsSec.find(q => q.quest_type === 'Y')?.quest_ans || 'Y',
-                        hd1: lastQuest.emi_head_opt1.replace(/'/g, "\\'"),
-                        hd2: lastQuest.emi_head_opt2.replace(/'/g, "\\'"),
-                        hd3: lastQuest.emi_head_opt3.replace(/'/g, "\\'"),
-                        title: `<span class="infoCalLeb">${firstEntry.act_name} - ${firstEntry.emi_name} - </span>&nbsp;<span class="infoCalVal">${totalCo2.toFixed(2)} kg CO2e </span>`
-                    })));
+                        repo_mode: repoMode,
+                        hd1: hd1,
+                        hd2: hd2,
+                        hd3: hd3,
+                        title: editTitle
+                    };
+                    const editData = window.btoa(unescape(encodeURIComponent(JSON.stringify(editObj))));
+                    const delData = window.btoa(unescape(encodeURIComponent(JSON.stringify(firstEntry))));
+
                     accordion += `<div class="col-md-12 mt-3"><div class="float-end">
-                        <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.deleteRecord('${window.btoa(encodeURIComponent(JSON.stringify(firstEntry)))}')"><i class="icofont icofont-trash text-danger"></i></button>
+                        <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.deleteRecord('${delData}')"><i class="icofont icofont-trash text-danger"></i></button>
                         <button type="button" class="btn btn-pill btn-custom" onclick="QuestHandler.editRecord('${editData}')"><i class="icofont icofont-pencil-alt-5 text-success"></i></button>
                     </div></div>`;
                 }
