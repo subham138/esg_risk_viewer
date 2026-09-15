@@ -218,6 +218,7 @@ const tryParseNumber = (strVal) => {
 
 /**
  * Set cell value safely while handling booleans, numbers, and strings
+ * Preserves formulas if they exist, updating the result value
  */
 const setCellValueSafe = (worksheet, cellRef, rawValue, inputType = 'string') => {
   if (!worksheet || !cellRef) return;
@@ -229,51 +230,49 @@ const setCellValueSafe = (worksheet, cellRef, rawValue, inputType = 'string') =>
       return;
     }
 
+    // Check if cell has an existing formula - if so, preserve it and update result
+    const existingFormula = cell.value && typeof cell.value === 'object' && cell.value.formula;
+    let finalValue = null;
+
     if (typeof rawValue === 'boolean') {
-      cell.value = rawValue;
-      return;
-    }
-
-    if (typeof rawValue === 'number') {
-      cell.value = rawValue;
-      return;
-    }
-
-    const strVal = String(rawValue).trim();
-    if (strVal.toUpperCase() === 'TRUE') {
-      cell.value = true;
-      return;
-    }
-    if (strVal.toUpperCase() === 'FALSE') {
-      cell.value = false;
-      return;
-    }
-
-    if (inputType === 'boolean') {
-      const boolStr = strVal.toLowerCase();
-      if (boolStr === 'true' || boolStr === '1' || boolStr === 'yes') {
-        cell.value = true;
-      } else if (boolStr === 'false' || boolStr === '0' || boolStr === 'no') {
-        cell.value = false;
+      finalValue = rawValue;
+    } else if (typeof rawValue === 'number') {
+      finalValue = rawValue;
+    } else {
+      const strVal = String(rawValue).trim();
+      if (strVal.toUpperCase() === 'TRUE') {
+        finalValue = true;
+      } else if (strVal.toUpperCase() === 'FALSE') {
+        finalValue = false;
+      } else if (inputType === 'boolean') {
+        const boolStr = strVal.toLowerCase();
+        if (boolStr === 'true' || boolStr === '1' || boolStr === 'yes') {
+          finalValue = true;
+        } else if (boolStr === 'false' || boolStr === '0' || boolStr === 'no') {
+          finalValue = false;
+        } else {
+          finalValue = tryParseNumber(strVal);
+        }
+      } else if (inputType === 'number' || inputType === 'integer' || inputType === 'float') {
+        const numStr = strVal.replace(/,/g, '');
+        const num = Number(numStr);
+        if (!isNaN(num) && numStr !== '') {
+          finalValue = num;
+        } else {
+          finalValue = strVal;
+        }
       } else {
-        cell.value = tryParseNumber(strVal);
+        // Auto-detect numeric string values even if inputType is 'string' or default
+        finalValue = tryParseNumber(strVal);
       }
-      return;
     }
 
-    if (inputType === 'number' || inputType === 'integer' || inputType === 'float') {
-      const numStr = strVal.replace(/,/g, '');
-      const num = Number(numStr);
-      if (!isNaN(num) && numStr !== '') {
-        cell.value = num;
-      } else {
-        cell.value = strVal;
-      }
-      return;
+    // If cell has formula, preserve it and update result; otherwise just set value
+    if (existingFormula) {
+      cell.value = { formula: existingFormula, result: finalValue };
+    } else {
+      cell.value = finalValue;
     }
-
-    // Auto-detect numeric string values even if inputType is 'string' or default
-    cell.value = tryParseNumber(strVal);
   } catch (err) {
     console.error(`Error setting cell ${cellRef}:`, err.message);
   }
@@ -411,7 +410,10 @@ const generatePopulatedVsmeExcel = async ({
       const resp = answersMap[qId];
       if (!resp) continue;
 
-      const rawAnswer = resp.answer_val;
+      // For calculated fields, prefer calculated_val over answer_val
+      const rawAnswer = (q.input_type === 'calculated' && resp.calculated_val !== undefined && resp.calculated_val !== null && resp.calculated_val !== '')
+        ? resp.calculated_val
+        : resp.answer_val;
       if (rawAnswer === null || rawAnswer === undefined || rawAnswer === '') continue;
 
       // Check if section is classified
@@ -511,6 +513,16 @@ const generatePopulatedVsmeExcel = async ({
         continue;
       }
 
+      // B2. Calculated Input Type - write as numeric value
+      if (inputType === 'calculated') {
+        if (cellRefRaw) {
+          setCellValueSafe(worksheet, cellRefRaw, rawAnswer, 'number');
+          populatedCellRefs.add(cellRefRaw);
+          populatedCellsCount++;
+        }
+        continue;
+      }
+
       // C. Dropdown with Value Input (e.g. 'D4,E4' where D4 is dropdown, E4 is custom text)
       if (hasValueInput && cellRefRaw.includes(',')) {
         const cells = cellRefRaw.split(',').map(s => s.trim()).filter(Boolean);
@@ -577,7 +589,10 @@ const generatePopulatedVsmeExcel = async ({
       const worksheet = findWorksheet(workbook, resp.sheet_name);
       if (!worksheet) continue;
 
-      const rawAnswer = resp.answer_val;
+      // Use calculated_val if available and non-empty, otherwise use answer_val
+      const rawAnswer = (resp.calculated_val !== undefined && resp.calculated_val !== null && resp.calculated_val !== '')
+        ? resp.calculated_val
+        : resp.answer_val;
       if (rawAnswer === null || rawAnswer === undefined || rawAnswer === '') continue;
 
       // Handle split dropdown (e.g. 'D4,E4')
@@ -602,7 +617,7 @@ const generatePopulatedVsmeExcel = async ({
         if (strVal.startsWith('[') || strVal.startsWith('{')) {
           continue;
         }
-        setCellValueSafe(worksheet, cellRefRaw, rawAnswer, 'string');
+        setCellValueSafe(worksheet, cellRefRaw, rawAnswer, 'number');
         populatedCellRefs.add(cellRefRaw);
         populatedCellsCount++;
       }
