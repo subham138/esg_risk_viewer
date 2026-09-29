@@ -76,46 +76,6 @@
           </div>
        
           <div class="nav-right col pull-right right-menu p-0 custTopRightSec">
-            <ul class="proj-type-dropdown">
-              <% var projList = {
-                'ifrs_flag': {name: 'IFRS', code: 'SQ%3D%3D'},
-                'ifrs_fr_flag': {name: 'IFRS - French', code: 'SUY%3D'},
-                'esrs_flag': {name: 'ESRS', code: 'RQ%3D%3D'},
-                'esrs_fr_flag': {name: 'ESRS - French', code: 'RUY%3D'},
-                'esrs_vsme_flag': {name: 'ESRS VSME', code: 'RVY%3D'},
-                'esrs_vsme_fr_flag': {name: 'ESRS VSME - French', code: 'RVZG'},
-                'gri_flag': {name: 'GRI', code: 'Rw%3D%3D'},
-                'gri_fr_flag': {name: 'GRI - French', code: 'Rg%3D%3D'}
-              }
-              
-              if(active == 'my_project'){
-                var encFlag = curr_path.split('?flag=')
-                encFlag = encFlag.length > 1 ? encFlag[1] : ''
-              %>
-              <select class="custTopRightSecSelect form-select" id="top-proj-id">
-                <option value="">Select Framework</option>
-                <% Object.keys(projList).forEach(dt => { 
-                  var _selected = ''
-                  //if(user[dt] != 'Y'){
-                  //  return;
-                  //}
-                  if(encFlag == projList[dt].code) _selected = 'selected'
-                  %>
-                  <option value="<%= projList[dt].code %>" <%= _selected %>><%= projList[dt].name %></option>
-                <% })
-                  if(user.cal_lang_flag != 'F'){ %>
-                    <option value="SUM%3D" <%= encFlag == 'SUM%3D' ? 'selected' : '' %>>
-                      GHG Emissions Module
-                    </option>
-                  <% }else{ %>
-                    <option value="RkM%3D" <%= encFlag == 'RkM%3D' ? 'selected' : '' %>>
-                      GHG Emissions Module - FR
-                    </option>
-                  <% }
-                %>
-              </select>
-              <% } %>
-            </ul>
             <ul class="nav-menus p-b-0 p-t-0">
               <!-- <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i
                     data-feather="maximize"></i></a></li>
@@ -185,42 +145,87 @@
               <li>
                 <div class="mode"><i class="fa fa-moon-o"></i></div>
               </li> -->
-              <li class="onhover-dropdown">
+              <li class="onhover-dropdown user-profile-dropdown">
+                <% 
+                  var userNameParts = user.user_name ? user.user_name.trim().split(/\s+/) : [];
+                  var userInitials = 'U';
+                  if (userNameParts.length > 1) {
+                    userInitials = (Array.from(userNameParts[0])[0] + Array.from(userNameParts[userNameParts.length - 1])[0]).toUpperCase();
+                  } else if (userNameParts.length === 1 && userNameParts[0].length > 0) {
+                    userInitials = Array.from(userNameParts[0])[0].toUpperCase();
+                  }
+                %>
                 <div class="<%= user.plan_is_active != 'N' ? 'profile-ring' : 'circle' %>">
                   <span class="<%= user.plan_is_active != 'N' ? 'profile-initials' : 'initials' %>">
-                    <% var userNameArr = user.user_name ? user.user_name.split(' ') : [];
-                      var userNameAvt = userNameArr.length > 0 ? `${Array.from(userNameArr[0])[0]}${userNameArr.length > 1 ? (Array.from(userNameArr[1])[0] ? Array.from(userNameArr[1])[0] : '')  : ''}` : 'U' %>
-                    <%= userNameAvt.toUpperCase() %>
+                    <%= userInitials %>
                   </span>
                 </div>
-                <ul class="chat-dropdown onhover-show-div proDropDown">
-                  <li>
-                    <div class="ProfCard">
-                      <div class="card-profile mb-2">
+
+                <div class="user-profile-menu onhover-show-div">
+                  <!-- User Profile Info -->
+                  <div class="user-dd-header">
+                    <div class="user-dd-avatar">
+                      <span class="user-dd-avatar-letters"><%= userInitials %></span>
+                    </div>
+                    <div class="user-dd-info">
+                      <div class="user-dd-name-row">
+                        <span class="user-dd-name" title="<%= user.user_name %>"><%= user.user_name %></span>
+                        <span class="user-dd-badge-pro"><%= user.plan_name ? user.plan_name : (user.plan_is_active != 'N' ? 'Pro' : 'Pro') %></span>
                       </div>
-                      <div class="text-center profile-details">
-                        <h4><p class="proNameFld" data-bs-original-title="" title="<%= user.user_name %>">Hi, <%= user.user_name %></p></h4>
-                      </div>
-                      <div class="account-list">
-                        <h5 class="f-w-400">Account settings</h5>
-                        <ul class="simple-list">
-                          <li><a href="/subscription"><i data-feather="credit-card"></i><span class="m-l-10 f-w-400">My subscriptions</span></a></li>
-                          <li><a href="/profile-security"><i data-feather="user"></i><span class="m-l-10 f-w-400">Profile and security</span></a></li>
-                          <li><a href="/message-settings"><i data-feather="mail"></i><span class="m-l-10 f-w-400">Message settings</span></a></li>
-                        </ul>
-                      </div>
-                      <div class="account-list">
-                        <h5 class="f-w-400">Help and support</h5>
-                        <ul class="simple-list">
-                          <li><a href="/faq"><i data-feather="help-circle"></i><span class="m-l-10 f-w-400">FAQs</span></a></li>
-                          <li><a href="/knowledgebase"><i data-feather="book-open"></i><span class="m-l-10 f-w-400">Knowledgebase</span></a></li>
-                          <li><a href="/support"><i data-feather="headphones"></i><span class="m-l-10 f-w-400">Support</span></a></li>
-                        </ul>
+                      <div class="user-dd-email" title="<%= user.user_id %>">
+                        <%= user.user_id && user.user_id.includes('@') ? user.user_id : (user.email_id || user.user_id || 'robert@kt.com') %>
                       </div>
                     </div>
-                  </li>
-                  <li class="text-center"> <a class="f-w-700" href="/log_out"><i data-feather="log-out"></i><label class="m-l-5">Log out</label></a></li>
-                </ul>
+                  </div>
+
+                  <div class="user-dd-divider"></div>
+
+                  <!-- Account settings -->
+                  <div class="user-dd-section">
+                    <div class="user-dd-category">Account settings</div>
+                    <a href="/subscription" class="user-dd-item">
+                      <i data-feather="credit-card" class="user-dd-icon"></i>
+                      <span class="user-dd-text">My subscriptions</span>
+                    </a>
+                    <a href="/profile-security" class="user-dd-item">
+                      <i data-feather="user" class="user-dd-icon"></i>
+                      <span class="user-dd-text">Profile and security</span>
+                    </a>
+                    <a href="/message-settings" class="user-dd-item">
+                      <i data-feather="mail" class="user-dd-icon"></i>
+                      <span class="user-dd-text">Message settings</span>
+                    </a>
+                  </div>
+
+                  <div class="user-dd-divider"></div>
+
+                  <!-- Help and support -->
+                  <div class="user-dd-section">
+                    <div class="user-dd-category">Help and support</div>
+                    <a href="/faq" class="user-dd-item">
+                      <i data-feather="help-circle" class="user-dd-icon"></i>
+                      <span class="user-dd-text">FAQs</span>
+                    </a>
+                    <a href="/knowledgebase" class="user-dd-item">
+                      <i data-feather="book-open" class="user-dd-icon"></i>
+                      <span class="user-dd-text">Knowledgebase</span>
+                    </a>
+                    <a href="/support" class="user-dd-item">
+                      <i data-feather="headphones" class="user-dd-icon"></i>
+                      <span class="user-dd-text">Support</span>
+                    </a>
+                  </div>
+
+                  <div class="user-dd-divider"></div>
+
+                  <!-- Sign Out -->
+                  <div class="user-dd-section">
+                    <a href="/log_out" class="user-dd-item user-dd-signout">
+                      <i data-feather="log-out" class="user-dd-icon"></i>
+                      <span class="user-dd-text">Sign Out</span>
+                    </a>
+                  </div>
+                </div>
               </li>
               <!-- <li class="onhover-dropdown p-0">
                 <button class="btn btn-primary-light" type="button"><a href="/log_out">

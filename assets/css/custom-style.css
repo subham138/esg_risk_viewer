@@ -620,3 +620,1195 @@ td.today.active.start-date.active.end-date.available, .daterangepicker.ltr tr td
 .dataTables_wrapper .dataTables_filter input[type="search"]{
     border: 1px solid #efefef;
 }
+
+/* ==========================================================================
+   Metronic-Style Sidebar Customization (#186671 Theme & #316379 Active State)
+   ========================================================================== */
+
+/* 1. Main Sidebar Base Container (Expanded State) */
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav,
+header.main-nav {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  z-index: 1040 !important;
+  width: 260px !important;
+  height: 100vh !important;
+  background-color: #186671 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08) !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  overflow: visible !important;
+}
+
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav nav,
+header.main-nav nav {
+  flex: 1 !important;
+  overflow: visible !important;
+  padding-bottom: 20px !important;
+}
+
+/* Custom Scrollbar for Sidebar */
+header.main-nav nav::-webkit-scrollbar {
+  width: 4px;
+}
+header.main-nav nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* 2. Sidebar Brand Header & Floating Toggle Arrow */
+.sidebar-brand-header {
+  position: relative !important;
+  height: 65px !important;
+  min-height: 65px !important;
+  padding: 0 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background-color: #186671 !important;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.15) !important;
+  z-index: 1045 !important;
+}
+
+.sidebar-logo-link {
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  overflow: hidden !important;
+}
+
+.sidebar-logo-full {
+  max-height: 40px !important;
+  width: auto !important;
+  max-width: 170px !important;
+  object-fit: contain !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.sidebar-logo-small {
+  display: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  object-fit: contain !important;
+}
+
+/* Floating Toggle Button on Right Border */
+.sidebar-toggle-btn {
+  position: absolute !important;
+  right: -14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 28px !important;
+  height: 28px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d0d7de !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #186671 !important;
+  font-size: 13px !important;
+  z-index: 1055 !important;
+  outline: none !important;
+  padding: 0 !important;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: #f8fafc !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-50%) scale(1.08) !important;
+}
+
+.toggle-icon-collapsed {
+  display: none !important;
+}
+.toggle-icon-expanded {
+  display: inline-block !important;
+}
+
+/* 3. Navigation Menu Lists & Links */
+header.main-nav .main-navbar .nav-menu {
+  padding: 12px 10px !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li {
+  margin-bottom: 4px !important;
+}
+
+/* Base Menu Link Styling */
+header.main-nav .main-navbar .nav-menu > li > a,
+header.main-nav .main-navbar .nav-menu > li > .nav-link {
+  display: flex !important;
+  align-items: center !important;
+  padding: 11px 16px !important;
+  border-radius: 8px !important;
+  color: #a4c4ca !important; /* Muted greyish-teal initial state */
+  text-decoration: none !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease-in-out !important;
+  position: relative !important;
+}
+
+/* Icons */
+header.main-nav .main-navbar .nav-menu > li > a i,
+header.main-nav .main-navbar .nav-menu > li > a .cusINavLink {
+  color: #a4c4ca !important;
+  font-size: 18px !important;
+  width: 24px !important;
+  min-width: 24px !important;
+  text-align: center !important;
+  margin-right: 12px !important;
+  transition: color 0.2s ease !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > a img.icon-img-single,
+header.main-nav .main-navbar .nav-menu > li > a img.icon-img-dual {
+  width: 22px !important;
+  height: 22px !important;
+  margin-right: 12px !important;
+  object-fit: contain !important;
+  filter: brightness(0.85) grayscale(0.2) !important;
+  transition: filter 0.2s ease !important;
+}
+
+/* Label text */
+header.main-nav .main-navbar .nav-menu > li > a span.cusSpanNavLink {
+  color: #a4c4ca !important;
+  font-size: 14px !important;
+  white-space: nowrap !important;
+  transition: color 0.2s ease !important;
+}
+
+/* Submenu Arrow Indicator */
+header.main-nav .main-navbar .nav-menu > li > a .according-menu {
+  margin-left: auto !important;
+  color: #a4c4ca !important;
+  font-size: 12px !important;
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+/* 4. Hover State: Full Bright White Text & Icon */
+header.main-nav .main-navbar .nav-menu > li > a:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > a:hover i,
+header.main-nav .main-navbar .nav-menu > li > a:hover .cusINavLink,
+header.main-nav .main-navbar .nav-menu > li > a:hover span.cusSpanNavLink,
+header.main-nav .main-navbar .nav-menu > li > a:hover .according-menu {
+  color: #ffffff !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > a:hover img {
+  filter: brightness(1) grayscale(0) !important;
+}
+
+/* 5. Selected / Active Menu Item: #316379 Box Background */
+header.main-nav .main-navbar .nav-menu > li > a.active,
+header.main-nav .main-navbar .nav-menu > li > a.cust-active,
+header.main-nav .main-navbar .nav-menu > li.active > a {
+  background-color: #316379 !important; /* Selected menu color preference */
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > a.active i,
+header.main-nav .main-navbar .nav-menu > li > a.cust-active i,
+header.main-nav .main-navbar .nav-menu > li.active > a i,
+header.main-nav .main-navbar .nav-menu > li > a.active .cusINavLink,
+header.main-nav .main-navbar .nav-menu > li > a.cust-active .cusINavLink,
+header.main-nav .main-navbar .nav-menu > li > a.active span.cusSpanNavLink,
+header.main-nav .main-navbar .nav-menu > li > a.cust-active span.cusSpanNavLink,
+header.main-nav .main-navbar .nav-menu > li > a.active .according-menu,
+header.main-nav .main-navbar .nav-menu > li > a.cust-active .according-menu {
+  color: #ffffff !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > a.active img,
+header.main-nav .main-navbar .nav-menu > li > a.cust-active img {
+  filter: brightness(1) grayscale(0) !important;
+}
+
+/* 6. Submenu Links Styling */
+header.main-nav .nav-submenu,
+header.main-nav .menu-content {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important;
+  margin: 4px 0 8px 0 !important;
+  padding: 6px 0 !important;
+  list-style: none !important;
+}
+
+header.main-nav .nav-submenu li a,
+header.main-nav .submenu-content ul li a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 16px 8px 36px !important;
+  color: #a4c4ca !important;
+  font-size: 13.5px !important;
+  text-decoration: none !important;
+  border-radius: 6px !important;
+  margin: 2px 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+header.main-nav .nav-submenu li a:hover,
+header.main-nav .submenu-content ul li a:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+header.main-nav .nav-submenu li a.active,
+header.main-nav .submenu-content ul li a.active {
+  color: #ffffff !important;
+  background-color: #316379 !important;
+  font-weight: 600 !important;
+}
+
+/* Mega menu styling adjustments */
+header.main-nav .mega-menu-container {
+  background-color: #186671 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+  color: #ffffff !important;
+}
+header.main-nav .mega-menu-container h5 {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   7. SQUEEZED / COLLAPSED STATE (.sidebar-icon-only or body.sidebar-icon-only)
+   ========================================================================== */
+
+/* Squeezed Sidebar Width */
+.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav,
+body.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav,
+.sidebar-icon-only header.main-nav,
+body.sidebar-icon-only header.main-nav {
+  width: 70px !important;
+  overflow: visible !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Squeezed Header & Logo */
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-logo-full,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-logo-full {
+  display: none !important;
+}
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-logo-small,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-logo-small {
+  display: block !important;
+  margin: 0 auto !important;
+}
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-brand-header,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-brand-header {
+  padding: 0 !important;
+  justify-content: center !important;
+}
+
+/* Toggle Arrow Icon in Squeezed State */
+.sidebar-icon-only .toggle-icon-expanded,
+body.sidebar-icon-only .toggle-icon-expanded {
+  display: none !important;
+}
+.sidebar-icon-only .toggle-icon-collapsed,
+body.sidebar-icon-only .toggle-icon-collapsed {
+  display: inline-block !important;
+}
+
+/* Squeezed Menu Link Item Layout (Unhovered) */
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a,
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a {
+  justify-content: center !important;
+  padding: 10px 0 !important;
+  margin: 4px auto !important;
+  width: 48px !important;
+  height: 44px !important;
+  border-radius: 8px !important;
+}
+
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a i,
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a i,
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a .cusINavLink,
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a .cusINavLink,
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a img,
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a img {
+  margin-right: 0 !important;
+}
+
+/* Hide text labels & accordion arrows when squeezed (unhovered sidebar) */
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a span.cusSpanNavLink,
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a span.cusSpanNavLink,
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a .according-menu,
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > a .according-menu {
+  display: none !important;
+}
+
+/* Page body & Topbar margin when squeezed */
+.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper .page-body,
+body.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper .page-body,
+.sidebar-icon-only .page-main-header,
+body.sidebar-icon-only .page-main-header,
+.sidebar-icon-only footer,
+body.sidebar-icon-only footer {
+  margin-left: 70px !important;
+  width: calc(100% - 70px) !important;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Default Page body & Topbar margin when expanded */
+.page-wrapper.compact-wrapper .page-body-wrapper .page-body,
+.page-main-header,
+footer {
+  margin-left: 260px !important;
+  width: calc(100% - 260px) !important;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Topbar Header Adjustments */
+.page-main-header {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  z-index: 1030 !important;
+  height: 65px !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+@media (min-width: 992px) {
+  .page-main-header .main-header-left {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   8. HOVER ON SQUEEZED SIDEBAR (Expands Sidebar overlay without moving body)
+   ========================================================================== */
+
+/* Hover expands sidebar overlay to 260px (unless just clicked to collapse) */
+.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav:not(.sidebar-just-collapsed):hover,
+body.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav:not(.sidebar-just-collapsed):hover,
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover {
+  width: 260px !important;
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.35) !important;
+  z-index: 1050 !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease !important;
+}
+
+/* On hover over squeezed sidebar: restore full logo & text */
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-logo-full,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-logo-full {
+  display: block !important;
+}
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-logo-small,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-logo-small {
+  display: none !important;
+}
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-brand-header,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-brand-header {
+  padding: 0 20px !important;
+  justify-content: space-between !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a {
+  justify-content: flex-start !important;
+  padding: 11px 16px !important;
+  margin: 4px 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a i,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a i,
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a .cusINavLink,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a .cusINavLink,
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a img,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a img {
+  margin-right: 12px !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a span.cusSpanNavLink,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a span.cusSpanNavLink {
+  display: inline-block !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a .according-menu,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-navbar .nav-menu > li > a .according-menu {
+  display: inline-flex !important;
+}
+
+/* ==========================================================================
+   9. HORIZONTAL FLYOUT FOR ALL SUB-MENUS (OPENED & COLLAPSED STATES)
+   ========================================================================== */
+
+/* Prevent containers from clipping horizontal flyout menus */
+header.main-nav,
+header.main-nav nav,
+header.main-nav .main-navbar,
+header.main-nav .main-navbar #mainnav,
+header.main-nav .main-navbar .nav-menu {
+  overflow: visible !important;
+}
+
+/* Ensure menu items with sub-menus are positioned relatively */
+header.main-nav .main-navbar .nav-menu > li {
+  position: relative !important;
+}
+
+/* Submenu indicator arrows point right (horizontal flyout) */
+header.main-nav .main-navbar .nav-menu > li > a .according-menu {
+  margin-left: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #a4c4ca !important;
+  font-size: 13px !important;
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li:hover > a .according-menu {
+  color: #ffffff !important;
+  transform: translateX(3px) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > a .according-menu i {
+  transform: none !important;
+}
+
+/* ALL SUBMENUS: Absolute horizontal flyout floating to the right */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu {
+  position: absolute !important;
+  top: 0 !important;
+  right: auto !important;
+  display: block !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 8px 6px !important;
+  min-width: 220px !important;
+  max-width: 330px !important;
+  width: max-content !important;
+  background-color: #111e24 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  z-index: 99999 !important;
+  list-style: none !important;
+  transform: translateX(8px) !important;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s !important;
+}
+
+/* Invisible bridge so mouse hover between menu item and flyout card never drops */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu::before,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu::before,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: -20px !important;
+  width: 20px !important;
+  background: transparent !important;
+}
+
+/* Flyout horizontal position in expanded sidebar (260px) and hover-expanded sidebar */
+body:not(.sidebar-icon-only) header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
+body.sidebar-icon-only header.main-nav:hover .main-navbar .nav-menu > li > ul.nav-submenu,
+.sidebar-icon-only header.main-nav:hover .main-navbar .nav-menu > li > ul.nav-submenu {
+  left: calc(100% + 6px) !important;
+  right: auto !important;
+}
+
+/* Flyout horizontal position in collapsed sidebar (70px unhovered sidebar) */
+body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > ul.nav-submenu,
+.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > ul.nav-submenu {
+  left: 70px !important;
+  right: auto !important;
+}
+
+/* REVEAL FLYOUT ON HOVER (BOTH COLLAPSED AND EXPANDED) */
+header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
+.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+  display: block !important;
+}
+
+/* Submenu items list styling */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li {
+  margin: 2px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+/* Submenu links styling */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 9px 14px !important;
+  margin: 0 !important;
+  color: #a4c4ca !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  text-decoration: none !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  transition: all 0.18s ease-in-out !important;
+  background-color: transparent !important;
+}
+
+/* Single dot bullet for each submenu item (matching Metronic screenshot) */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a::before,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a::before,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a::before {
+  content: '' !important;
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background-color: #5bbec9 !important;
+  margin-right: 11px !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
+}
+
+/* Hide any duplicate dots from HTML spans or base theme ::after */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a .sub-dot,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a .sub-dot,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a .sub-dot,
+.sub-dot,
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a::after,
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Submenu link hover */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:hover,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:hover,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  transform: translateX(2px) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:hover::before,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:hover::before,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a:hover::before {
+  background-color: #ffffff !important;
+  transform: scale(1.3) !important;
+}
+
+/* Submenu active item */
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li.active > a,
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a.active,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li.active > a,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li.active > a {
+  color: #ffffff !important;
+  background-color: #316379 !important;
+  font-weight: 600 !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li.active > a::before,
+header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a.active::before,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li.active > a::before,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu > li > a.active::before {
+  background-color: #ffffff !important;
+}
+
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-submenu{
+  position: absolute !important;
+}
+header.main-nav .main-navbar .nav-menu>li>ul.nav-submenu,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu>li>ul.nav-submenu,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu>li>ul.nav-submenu{
+  display: none !important;
+}
+
+/* ==========================================================================
+   10. PROJECTS MENU: VERTICAL ACCORDION + HORIZONTAL FLYOUT FOR GHG MODULE
+   ========================================================================== */
+
+/* Projects parent dropdown */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown {
+  position: relative !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > a#custActMenuProject {
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Projects vertical submenu container */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu {
+  position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: unset !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 4px 0 6px 14px !important;
+  margin: 0 !important;
+  list-style: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* In collapsed rail resting state (not hovered), hide vertical submenu to keep icons tidy */
+body.sidebar-icon-only header.main-nav:not(:hover) ul.projects-vertical-menu,
+.sidebar-icon-only header.main-nav:not(:hover) ul.projects-vertical-menu {
+  display: none !important;
+}
+
+/* Vertical submenu items */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li {
+  position: relative !important;
+  margin: 2px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+/* Vertical submenu links */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  color: #a4c4ca !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  text-decoration: none !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  transition: all 0.18s ease-in-out !important;
+  background-color: transparent !important;
+}
+
+/* Single bullet dot before vertical submenu items */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a::before {
+  content: '' !important;
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background-color: #5bbec9 !important;
+  margin-right: 11px !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
+}
+
+/* Suppress any secondary dots */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a::after,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a:after {
+  display: none !important;
+  content: none !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  transform: translateX(2px) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a:hover::before {
+  background-color: #ffffff !important;
+  transform: scale(1.3) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li.active > a,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a.active {
+  color: #ffffff !important;
+  background-color: #316379 !important;
+  font-weight: 600 !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li.active > a::before,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a.active::before {
+  background-color: #ffffff !important;
+}
+
+/* Arrow indicator on GHG module indicating horizontal flyout */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown .sub-horizontal-arrow {
+  margin-left: auto !important;
+  font-size: 12px !important;
+  color: #a4c4ca !important;
+  transition: transform 0.2s ease, color 0.2s ease !important;
+  padding-left: 8px !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li.has-horizontal-sub:hover > a .sub-horizontal-arrow,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li.active > a .sub-horizontal-arrow,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li > a.active .sub-horizontal-arrow {
+  color: #ffffff !important;
+  transform: translateX(2px) !important;
+}
+
+/* HORIZONTAL FLYOUT LIST ON HOVER OF GHG EMISSIONS MODULE */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu {
+  position: absolute !important;
+  top: -4px !important;
+  left: calc(100% + 8px) !important;
+  right: auto !important;
+  display: block !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 8px 6px !important;
+  min-width: 220px !important;
+  max-width: 320px !important;
+  width: max-content !important;
+  background-color: #111e24 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  z-index: 999999 !important;
+  list-style: none !important;
+  transform: translateX(8px) !important;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s !important;
+}
+
+/* Invisible bridge so mouse hover doesn't drop */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -10px !important;
+  bottom: -10px !important;
+  left: -20px !important;
+  width: 25px !important;
+  background: transparent !important;
+}
+
+/* REVEAL HORIZONTAL FLYOUT ON HOVER OF GHG EMISSIONS MODULE */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.projects-vertical-menu > li.has-horizontal-sub:hover > ul.horizontal-flyout-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+  display: block !important;
+}
+
+/* Horizontal flyout items */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li {
+  margin: 2px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+/* Horizontal flyout links */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px 14px !important;
+  margin: 0 !important;
+  color: #a4c4ca !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  text-decoration: none !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  transition: all 0.18s ease-in-out !important;
+  background-color: transparent !important;
+}
+
+/* Single bullet dot for horizontal flyout items */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a::before {
+  content: '' !important;
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background-color: #5bbec9 !important;
+  margin-right: 11px !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
+}
+
+/* Suppress any duplicate dots */
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a::after,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a:after {
+  display: none !important;
+  content: none !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  transform: translateX(2px) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a:hover::before {
+  background-color: #ffffff !important;
+  transform: scale(1.3) !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li.active > a,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a.active {
+  color: #ffffff !important;
+  background-color: #316379 !important;
+  font-weight: 600 !important;
+}
+
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li.active > a::before,
+header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu > li > a.active::before {
+  background-color: #ffffff !important;
+}
+
+/* ==========================================================================
+   TOPBAR USER AVATAR DROPDOWN MENU (MODERN SQUIRCLE CARD)
+   ========================================================================== */
+
+/* Topbar avatar trigger container */
+.nav-right .user-profile-dropdown {
+  position: relative !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin-left: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.nav-right .profile-ring,
+.nav-right .circle,
+.topbar-avatar-wrap {
+  cursor: pointer !important;
+}
+
+.topbar-avatar-wrap {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #186671 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.topbar-avatar-letters {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+}
+
+.nav-right .user-profile-dropdown:hover .topbar-avatar-wrap {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* User Profile Dropdown Card */
+.user-profile-menu {
+  position: absolute !important;
+  top: calc(100% + 2px) !important;
+  right: 0 !important;
+  left: auto !important;
+  width: 255px !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  padding: 14px 14px 12px 14px !important;
+  margin: 0 !important;
+  list-style: none !important;
+  z-index: 100000 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(6px) !important;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s !important;
+  pointer-events: none !important;
+}
+
+/* Hover bridge so moving mouse from avatar to menu doesn't drop hover */
+.user-profile-menu::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -14px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 16px !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.user-profile-menu::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Reveal dropdown on hover */
+.nav-right .user-profile-dropdown:hover .user-profile-menu,
+.nav-right li.onhover-dropdown:hover .user-profile-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+/* Header with Avatar, Name, Pro Badge, Email */
+.user-dd-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 2px 2px 6px 2px !important;
+}
+
+.user-dd-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 9px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  background-color: #186671 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(24, 102, 113, 0.25) !important;
+}
+
+.user-dd-avatar-letters {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.user-dd-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+.user-dd-name-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.user-dd-name {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.user-dd-badge-pro {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  padding: 1.5px 6px !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+  line-height: 1.2 !important;
+  flex-shrink: 0 !important;
+}
+
+.user-dd-email {
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  font-weight: 400 !important;
+  margin-top: 3px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Thin Dividers */
+.user-dd-divider {
+  height: 1px !important;
+  background-color: #e2e8f0 !important;
+  margin: 8px 0 !important;
+  border: none !important;
+}
+
+/* Menu Items Section */
+.user-dd-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+}
+
+.user-dd-category {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  padding: 6px 8px 4px 8px !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.user-dd-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding: 7px 8px !important;
+  border-radius: 6px !important;
+  color: #334155 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  text-decoration: none !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+  background: transparent !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  cursor: pointer !important;
+}
+
+.user-dd-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #186671 !important;
+  text-decoration: none !important;
+}
+
+.user-dd-icon,
+.user-dd-item svg {
+  width: 17px !important;
+  height: 17px !important;
+  stroke: #316379 !important;
+  stroke-width: 1.75 !important;
+  flex-shrink: 0 !important;
+  transition: stroke 0.15s ease !important;
+}
+
+.user-dd-item:hover .user-dd-icon,
+.user-dd-item:hover svg {
+  stroke: #186671 !important;
+}
+
+.user-dd-text {
+  font-size: 14px !important;
+  color: inherit !important;
+  white-space: nowrap !important;
+}
+
+/* Sign out link at bottom */
+.user-dd-item.user-dd-signout {
+  color: #e11d48 !important;
+  font-weight: 500 !important;
+}
+
+.user-dd-item.user-dd-signout .user-dd-icon,
+.user-dd-item.user-dd-signout svg {
+  stroke: #e11d48 !important;
+}
+
+.user-dd-item.user-dd-signout:hover {
+  background-color: #fff1f2 !important;
+  color: #be123c !important;
+}
+
+.user-dd-item.user-dd-signout:hover .user-dd-icon,
+.user-dd-item.user-dd-signout:hover svg {
+  stroke: #be123c !important;
+}
+
+/* Dark mode compatibility */
+body.dark-only .user-profile-menu {
+  background: #111e24 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-only .user-dd-name {
+  color: #f8fafc !important;
+}
+
+body.dark-only .user-dd-email {
+  color: #94a3b8 !important;
+}
+
+body.dark-only .user-dd-divider {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-only .user-dd-category {
+  color: #94a3b8 !important;
+}
+
+body.dark-only .user-dd-item {
+  color: #cbd5e1 !important;
+}
+
+body.dark-only .user-dd-icon,
+body.dark-only .user-dd-item svg {
+  stroke: #94a3b8 !important;
+}
+
+body.dark-only .user-dd-item:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #38bdf8 !important;
+}
+
+body.dark-only .user-dd-item:hover .user-dd-icon,
+body.dark-only .user-dd-item:hover svg {
+  stroke: #38bdf8 !important;
+}
+
+body.dark-only .user-dd-item.user-dd-signout {
+  color: #fb7185 !important;
+}
+
+body.dark-only .user-dd-item.user-dd-signout .user-dd-icon,
+body.dark-only .user-dd-item.user-dd-signout svg {
+  stroke: #fb7185 !important;
+}
+
+body.dark-only .user-dd-item.user-dd-signout:hover {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+  color: #fda4af !important;
+}

@@ -7642,7 +7642,7 @@ table tbody .border-bottom-warning td {
 }
 
 .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-submenu>li a {
-  padding-left: 45px !important;
+  /* padding-left: 45px !important; */
   font-weight: 400;
 }
 
@@ -46684,9 +46684,9 @@ nav #mainnav .nav-menu {
   color: #c0cce9;
 }
 
-.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav {
+/* .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav {
   top: 62px !important;
-}
+} */
 
 .cusANavLink {
   font-size: 16px;
@@ -47481,7 +47481,7 @@ a.cust-tab-link:hover {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .custTopRightSecSelect {
