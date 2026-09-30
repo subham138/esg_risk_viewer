@@ -45790,9 +45790,9 @@ span.twitter-typeahead .tt-suggestion:active {
 }
 
 .overview_sec_cus p.lastLog {
-  color: #fff;
+  color: #a5a5a5;
   font-size: 15px;
-  background: #000;
+  /* background: #000; */
   display: inline-block;
   padding: 3px 15px;
   border-radius: 5px;
@@ -47719,6 +47719,10 @@ ul.intro-list li {
   align-items: center;
 }
 
+ul.intro-list li i{
+  color: #202A44;
+}
+
 a.cust-link-btn {
   display: flex;
   flex-direction: row;
@@ -47739,4 +47743,10 @@ a.cust-link-btn {
   to {
     transform: rotate(360deg);
   }
+}
+
+.tabs-responsive-side{
+  overflow-y: auto;
+  height: 60vh;
+  max-height: 60vh;
 }

@@ -129,6 +129,7 @@
     padding-bottom: 4px;
     margin-bottom: 6px;
     scrollbar-width: thin;
+    flex-direction: column;
   }
 
   .vsme-cat-tab-btn {
@@ -1118,82 +1119,88 @@
     </div>
   </div>
 
-  <!-- HORIZONTAL CATEGORY NAVIGATION TABS -->
-  <div class="vsme-category-nav-tabs" id="categoryNavTabs">
-    <% (formData.template.categories || []).forEach((cat, cIdx) => { 
-        let totalQInCat = 0;
-        (cat.labels || []).forEach(l => { totalQInCat += (l.questions || []).length; });
-    %>
-      <button type="button" class="vsme-cat-tab-btn <%= cIdx === 0 ? 'active' : '' %>" data-cat-id="<%= cat.id %>" data-cat-idx="<%= cIdx %>">
-        <i class="icofont icofont-folder me-1"></i>
-        <span class="cat-tab-title" data-en="<%= cat.name_en || '' %>" data-fr="<%= cat.name_fr || '' %>">
-          <%= cat.name_en || 'Category ' + (cIdx + 1) %>
-        </span>
-        <span class="vsme-cat-badge" id="catBadge_<%= cat.id %>">0/<%= totalQInCat %></span>
-      </button>
-    <% }); %>
-  </div>
-
-  <!-- MAIN STAGE: TOP HORIZONTAL SECTION STEPPER RIBBON + FULL WIDTH PPT SLIDE STAGE -->
-  <div class="vsme-full-stage-wrapper" id="fullStageWrapper">
-    
-    <!-- Placeholder element to prevent page jumping when stepper is fixed on scroll -->
-    <div id="hStepperPlaceholder" style="display: none;"></div>
-
-    <!-- TOP: HORIZONTAL SECTION STEPPER RIBBON CARD -->
-    <div class="vsme-h-stepper-card" id="hStepperCard">
-      <div class="vsme-h-stepper-header">
-        <div class="vsme-h-stepper-title">
-          <i class="icofont icofont-navigation-menu text-primary"></i>
-          <span>Sections in <span class="text-primary fw-bold" id="treeCategoryName">General</span></span>
-        </div>
-        <div class="small fw-bold text-muted" id="hStepperStats">
-          Section 1 of 1
-        </div>
-      </div>
-
-      <div class="vsme-h-stepper-ribbon">
-        <!-- Left Scroll Arrow -->
-        <button type="button" class="vsme-strip-nav-btn prev" id="btnStripScrollLeft" title="Previous Sections">
-          <i class="icofont icofont-arrow-left"></i>
-        </button>
-
-        <!-- Horizontal Scrollable Track -->
-        <div class="vsme-horizontal-stepper-track" id="horizontalStepperTrack">
-          <!-- Rendered dynamically by JS -->
-        </div>
-
-        <!-- Right Scroll Arrow -->
-        <button type="button" class="vsme-strip-nav-btn next" id="btnStripScrollRight" title="Next Sections">
-          <i class="icofont icofont-arrow-right"></i>
-        </button>
+  <div class="row">
+    <div class="col-md-3">
+      <!-- HORIZONTAL CATEGORY NAVIGATION TABS -->
+      <div class="vsme-category-nav-tabs" id="categoryNavTabs">
+        <% (formData.template.categories || []).forEach((cat, cIdx)=> {
+          let totalQInCat = 0;
+          (cat.labels || []).forEach(l => { totalQInCat += (l.questions || []).length; });
+          %>
+          <button type="button" class="vsme-cat-tab-btn <%= cIdx === 0 ? 'active' : '' %>" data-cat-id="<%= cat.id %>"
+            data-cat-idx="<%= cIdx %>">
+            <i class="icofont icofont-folder me-1"></i>
+            <span class="cat-tab-title" data-en="<%= cat.name_en || '' %>" data-fr="<%= cat.name_fr || '' %>">
+              <%= cat.name_en || 'Category ' + (cIdx + 1) %>
+            </span>
+            <span class="vsme-cat-badge" id="catBadge_<%= cat.id %>">0/<%= totalQInCat %></span>
+          </button>
+          <% }); %>
       </div>
     </div>
-
-    <!-- FULL WIDTH: THE PRESENTATION SLIDE CARD STAGE -->
-    <div class="vsme-slide-stage" id="slideStageContainer">
-      <!-- Dynamic Slide Contents Rendered by JS -->
-      <div id="slideContentArea"></div>
-
-      <!-- Slide Bottom Control Bar -->
-      <div class="vsme-slide-footer">
-        <button type="button" class="btn btn-outline-secondary vsme-nav-btn" id="btnPrevSlide">
-          <i class="icofont icofont-arrow-left"></i> Previous
-        </button>
-        <span class="fw-bold text-muted small text-center" id="slideCounterText">Question 1 of 1</span>
-        <div class="d-flex align-items-center gap-2">
-          <button type="button" class="btn btn-outline-warning vsme-nav-btn" id="btnSkipQuestion" title="Skip this question for now">
-            Skip Question <i class="icofont icofont-curved-right"></i>
-          </button>
-          <button type="button" class="btn btn-primary vsme-nav-btn" id="btnNextSlide">
-            Next Question <i class="icofont icofont-arrow-right"></i>
-          </button>
+    <div class="col-md-9">
+      <!-- MAIN STAGE: TOP HORIZONTAL SECTION STEPPER RIBBON + FULL WIDTH PPT SLIDE STAGE -->
+      <div class="vsme-full-stage-wrapper" id="fullStageWrapper">
+      
+        <!-- Placeholder element to prevent page jumping when stepper is fixed on scroll -->
+        <div id="hStepperPlaceholder" style="display: none;"></div>
+      
+        <!-- TOP: HORIZONTAL SECTION STEPPER RIBBON CARD -->
+        <div class="vsme-h-stepper-card" id="hStepperCard">
+          <div class="vsme-h-stepper-header">
+            <div class="vsme-h-stepper-title">
+              <i class="icofont icofont-navigation-menu text-primary"></i>
+              <span>Sections in <span class="text-primary fw-bold" id="treeCategoryName">General</span></span>
+            </div>
+            <div class="small fw-bold text-muted" id="hStepperStats">
+              Section 1 of 1
+            </div>
+          </div>
+      
+          <div class="vsme-h-stepper-ribbon">
+            <!-- Left Scroll Arrow -->
+            <button type="button" class="vsme-strip-nav-btn prev" id="btnStripScrollLeft" title="Previous Sections">
+              <i class="icofont icofont-arrow-left"></i>
+            </button>
+      
+            <!-- Horizontal Scrollable Track -->
+            <div class="vsme-horizontal-stepper-track" id="horizontalStepperTrack">
+              <!-- Rendered dynamically by JS -->
+            </div>
+      
+            <!-- Right Scroll Arrow -->
+            <button type="button" class="vsme-strip-nav-btn next" id="btnStripScrollRight" title="Next Sections">
+              <i class="icofont icofont-arrow-right"></i>
+            </button>
+          </div>
         </div>
+      
+        <!-- FULL WIDTH: THE PRESENTATION SLIDE CARD STAGE -->
+        <div class="vsme-slide-stage" id="slideStageContainer">
+          <!-- Dynamic Slide Contents Rendered by JS -->
+          <div id="slideContentArea"></div>
+      
+          <!-- Slide Bottom Control Bar -->
+          <div class="vsme-slide-footer">
+            <button type="button" class="btn btn-outline-secondary vsme-nav-btn" id="btnPrevSlide">
+              <i class="icofont icofont-arrow-left"></i> Previous
+            </button>
+            <span class="fw-bold text-muted small text-center" id="slideCounterText">Question 1 of 1</span>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-outline-warning vsme-nav-btn" id="btnSkipQuestion"
+                title="Skip this question for now">
+                Skip Question <i class="icofont icofont-curved-right"></i>
+              </button>
+              <button type="button" class="btn btn-primary vsme-nav-btn" id="btnNextSlide">
+                Next Question <i class="icofont icofont-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      
       </div>
     </div>
-
   </div>
-
 </div>
 
 <!-- OFFCANVAS GUIDANCE DRAWER -->

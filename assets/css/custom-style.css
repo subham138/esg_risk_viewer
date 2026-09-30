@@ -217,29 +217,53 @@ footer.close_nav {
     overflow-y: auto;
 }
 
-/* USER CALCULATOR QUESTION PART SCROLLBAR */
-.cust-quest-scroll {
-    overflow-y: hidden;
-    height: 60vh;
+/* USER CALCULATOR QUESTION PART SCROLLBAR & INDEPENDENT SIDEBAR */
+.quest-tab-context.cust-quest-scroll,
+.row.cust-quest-scroll {
+    overflow: visible !important;
+    height: auto !important;
 }
 
-.cust-quest-scroll:hover,
-.cust-quest-scroll:active,
-.cust-quest-scroll:focus {
-  overflow-y: scroll;
+.tabs-responsive-side {
+    height: 60vh !important;
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin;
 }
 
+.quest-tab-context > .col-sm-9,
+.quest-tab-context > .col-md-9,
+.cust-quest-scroll:not(.row):not(.quest-tab-context),
+.col-sm-9.cust-quest-scroll,
+.col-md-9.cust-quest-scroll {
+    height: 60vh !important;
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin;
+}
+
+.tabs-responsive-side::-webkit-scrollbar,
+.quest-tab-context > .col-sm-9::-webkit-scrollbar,
+.quest-tab-context > .col-md-9::-webkit-scrollbar,
+.cust-quest-scroll::-webkit-scrollbar {
+    width: 6px;
+    background-color: #F5F5F5;
+}
+
+.tabs-responsive-side::-webkit-scrollbar-track,
+.quest-tab-context > .col-sm-9::-webkit-scrollbar-track,
+.quest-tab-context > .col-md-9::-webkit-scrollbar-track,
 .cust-quest-scroll::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: #F5F5F5;
     border-radius: 10px;
 }
 
-.cust-quest-scroll::-webkit-scrollbar {
-    width: 6px;
-    background-color: #F5F5F5;
-}
-
+.tabs-responsive-side::-webkit-scrollbar-thumb,
+.quest-tab-context > .col-sm-9::-webkit-scrollbar-thumb,
+.quest-tab-context > .col-md-9::-webkit-scrollbar-thumb,
 .cust-quest-scroll::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-image: -webkit-gradient(linear,
@@ -626,8 +650,7 @@ td.today.active.start-date.active.end-date.available, .daterangepicker.ltr tr td
    ========================================================================== */
 
 /* 1. Main Sidebar Base Container (Expanded State) */
-.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav,
-header.main-nav {
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav, header.main-nav {
   position: fixed !important;
   top: 0 !important;
   bottom: 0 !important;
@@ -635,7 +658,7 @@ header.main-nav {
   z-index: 1040 !important;
   width: 260px !important;
   height: 100vh !important;
-  background-color: #186671 !important;
+  background-color: #202A44 !important;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08) !important;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   display: flex !important;
@@ -669,7 +692,7 @@ header.main-nav nav::-webkit-scrollbar-thumb {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  background-color: #186671 !important;
+  background-color: #202A44 !important;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.15) !important;
   z-index: 1045 !important;
 }
@@ -728,9 +751,15 @@ header.main-nav nav::-webkit-scrollbar-thumb {
 
 .toggle-icon-collapsed {
   display: none !important;
+  font-weight: 300;
+  font-size: 10px;
+  color: grey;
 }
 .toggle-icon-expanded {
   display: inline-block !important;
+  font-weight: 300;
+  font-size: 10px;
+  color: grey;
 }
 
 /* 3. Navigation Menu Lists & Links */
@@ -1388,7 +1417,7 @@ body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vert
   top: -4px !important;
   left: calc(100% + 8px) !important;
   right: auto !important;
-  display: block !important;
+  display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -1397,7 +1426,7 @@ body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vert
   min-width: 220px !important;
   max-width: 320px !important;
   width: max-content !important;
-  background-color: #111e24 !important;
+  background-color: #202A44 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 8px !important;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.25) !important;

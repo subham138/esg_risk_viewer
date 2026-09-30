@@ -375,8 +375,8 @@ const QuestHandler = {
         const titles = Object.keys(res.msg);
         const $container = $(tabId).children('.quest-tab-context').empty();
 
-        let navPills = '<div class="col-sm-3 tabs-responsive-side"><div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">';
-        let tabShells = '<div class="col-sm-9"><div class="tab-content" id="v-pills-tabContent">';
+        let navPills = '<div class="col-sm-3 col-md-3 tabs-responsive-side"><div class="nav flex-column nav-pills border-tab nav-left bounceInLeft animated" id="v-pills-tab" role="tablist" aria-orientation="vertical">';
+        let tabShells = '<div class="col-sm-9 col-md-9 cust-quest-scroll"><div class="tab-content" id="v-pills-tabContent">';
 
         titles.forEach((title, i) => {
             const cleanId = title.replace(/[^a-zA-Z0-9]/g, '_');

@@ -393,14 +393,14 @@ $("#left-arrow").click(function () {
 
         if (isGhg) {
             // Rule 3: GHG Emissions Module sub-menu is active
-            var $ghgLi = $vertMenu.find("li").not(".has-horizontal-sub");
-            var $ghgLink = $ghgLi.find("> a.ghg-module-btn");
+            var $ghgLink = $vertMenu.find("a.ghg-module-btn");
+            var $ghgLi = $ghgLink.closest("li");
             $ghgLi.addClass("active");
             $ghgLink.addClass("active");
         } else if (isSus) {
             // Rule 2: Sustainability Module sub-menu is active
-            var $susLi = $vertMenu.find("li.has-horizontal-sub");
-            var $susLink = $susLi.find("> a");
+            var $susLi = $vertMenu.children("li.has-horizontal-sub");
+            var $susLink = $susLi.children("a");
             $susLi.addClass("active");
             $susLink.addClass("active");
 
