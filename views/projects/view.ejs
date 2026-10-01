@@ -42,35 +42,63 @@
                                 <span style="font-size: 20px;">We are working on it. Please contact us or check back later.</span>
                             </div> -->
                         <%# }else{ %>
-                            <div class="card">
-                                <div class="card-body card_body_Cus">
-                                    <div class="row py-3">
-    
-                                        <div class="top_radio_sec">
-                                            <% if(user_type=='A' || user_type=='C' || user_type=='S' ){ %>
-                                                <div class="col-md-12">
-                                                    <% if(canAddNewProject){ %>
-                                                        <a href="/my_project_add?flag=<%= enc_dt %>" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
-                                                            data-bs-placement="left" title="" data-bs-original-title="Edit" id="my_project_add" data-step="1">
-                                                            <%= lang.view.add_btn_name %>
-                                                        </a>
-                                                    <% }else{ %>
-                                                        <button onclick="openNewWindow('P')" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
-                                                            data-bs-placement="left" title="" data-bs-original-title="Edit">
-                                                            <%= lang.view.add_btn_name %>
-                                                        </button>
-                                                    <% } %>
-                                                    
-                                                </div>
-                                            <% } %>
+                            <div class="client-table-card">
+                                <div class="client-dt-header">
+                                    <div class="client-dt-header-left">
+                                        <div class="client-search-wrapper">
+                                            <svg class="client-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                            <input type="text" id="client_search_input" class="client-search-input" placeholder="Search Projects..." autocomplete="off">
                                         </div>
-    
+
+                                        <div class="dropdown d-inline-block">
+                                            <button class="client-btn-secondary dropdown-toggle" type="button" id="sortOrderDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 6h18M6 12h12M10 18h4"></path>
+                                                </svg>
+                                                <span id="sortOrderLabel">Sort Order</span>
+                                            </button>
+                                            <ul class="dropdown-menu shadow-sm" aria-labelledby="sortOrderDropdown">
+                                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="0" data-dir="asc">Default (#)</a></li>
+                                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="1" data-dir="asc">Project Name (A-Z)</a></li>
+                                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="1" data-dir="desc">Project Name (Z-A)</a></li>
+                                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="3" data-dir="desc">Recent Access</a></li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <!-- <div class="table-responsive"> -->
-                                    <table class="table" id="basic-1">
+
+                                    <div class="client-dt-header-right">
+                                        <% if(user_type=='A' || user_type=='C' || user_type=='S' ){ %>
+                                            <% if(canAddNewProject){ %>
+                                                <a href="/my_project_add?flag=<%= enc_dt %>" class="client-btn-primary" data-bs-toggle="tooltip"
+                                                    data-bs-placement="left" title="" data-bs-original-title="Edit" id="my_project_add" data-step="1">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                    </svg>
+                                                    <%= lang.view.add_btn_name %>
+                                                </a>
+                                            <% }else{ %>
+                                                <button onclick="openNewWindow('P')" class="client-btn-primary" data-bs-toggle="tooltip"
+                                                    data-bs-placement="left" title="" data-bs-original-title="Edit">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                    </svg>
+                                                    <%= lang.view.add_btn_name %>
+                                                </button>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <div class="client-table-responsive">
+                                    <table class="table" id="project_table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th style="width: 50px;">#</th>
                                                 <th>
                                                     <%= lang.view.table.head1 %>
                                                 </th>
@@ -90,70 +118,81 @@
                                                     if(i>capacity) isDisable=true %>
                                                 <tr>
                                                     <td>
-                                                        <%= i %>
+                                                        <span class="client-row-index"><%= i %></span>
                                                     </td>
                                                     <td>
-                                                        <%= dt.project_name %>
+                                                        <div class="client-project-cell">
+                                                            <div class="client-project-avatar">
+                                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="client-project-info">
+                                                                <span class="client-project-name"><%= dt.project_name %></span>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td <% if(i==1){ %> id="my_project_td" <% } %>>
+                                                        <div class="client-actions-group">
                                                             <% if(user_type=='A' || user_type=='C' || user_type=='S' ){
                                                                 if(!isDisable){ %>
                                                                     <a href="/my_project_add?id=<%= dt.id %>&flag=<%= enc_dt %>"
-                                                                        class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                        class="client-btn-action" data-bs-toggle="tooltip" data-bs-placement="left"
                                                                         title="" data-bs-original-title="Edit">
                                                                         <i class="icofont icofont-ui-edit"></i>
                                                                         <%= lang.view.edit_btn %>
                                                                     </a>
                                                                 <% }else{ %>
-                                                                    <a
-                                                                        class="btn btn_UR btn-outline-primary btn-air-primary m-r-15" data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                    <a class="client-btn-action" data-bs-toggle="tooltip" data-bs-placement="left"
                                                                         title="" data-bs-original-title="Edit" onclick="openNewWindow('P')">
                                                                         <i class="icofont icofont-ui-edit"></i>
                                                                         <%= lang.view.edit_btn %>
                                                                     </a>
                                                                 <% } %>
+                                                            <% } %>
+                                                            <a class="client-btn-action client-btn-manage"
+                                                                onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_proj_report_view' : 'project_report_view' %>`, '<%= isDisable %>')">
+                                                                <% if(user_type !='V' ){ %>
+                                                                    <i class="icofont icofont-ui-settings"></i>
+                                                                    <%= lang.view.manage_btn %>
+                                                                <% }else{ %>
+                                                                    <i class="icofont icofont-eye-alt"></i>
+                                                                    <%= lang.view.manage_btn %>
                                                                 <% } %>
-                                                                    <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_proj_report_view' : 'project_report_view' %>`, '<%= isDisable %>')">
-                                                                        <% if(user_type !='V' ){ %>
-                                                                            <i class="icofont icofont-ui-settings"></i>
-                                                                            <%= lang.view.manage_btn %>
-                                                                                <% }else{ %>
-                                                                                    <i class="icofont icofont-eye-alt"></i>
-                                                                                    <%= lang.view.manage_btn %>
-                                                                                        <% } %>
-                                                                    </a>
-                                                                    <a class="btn btn_UR btn-outline-primary btn-air-primary m-r-15"
-                                                                        onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_report_full_view' : 'report_full_view' %>`, '<%= isDisable %>')">
-                                                                        <i class="icofont icofont-eye-alt"></i>
-                                                                        <%= lang.view.view_btn %>
-                                                                    </a>
-                                                                    <% if(!isDisable){ %>
-                                                                        <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
-                                                                            <i class="icofont icofont-ui-delete"></i> 
-                                                                            <%= lang.view.delete_btn %>
-                                                                        </a>
-                                                                    <% }else { %>
-                                                                        <a class="btn btn_UR btn-outline-primary btn-air-primary"
-                                                                            data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete"
-                                                                            onclick="openNewWindow('P')">
-                                                                            <i class="icofont icofont-ui-delete"></i>
-                                                                            <%= lang.view.delete_btn %>
-                                                                        </a>
-                                                                    <% } %>
+                                                            </a>
+                                                            <a class="client-btn-action client-btn-view"
+                                                                onclick="redirectToPage('<%= dt.id %>', '<%= dt.sec_id > 0 ? dt.sec_id : 0 %>', '<%= dt.ind_id > 0 ? dt.ind_id : 0 %>', '<%= dt.project_name %>', `<%= ['IC', 'FC'].includes(dec_flag) ? 'cal_report_full_view' : 'report_full_view' %>`, '<%= isDisable %>')">
+                                                                <i class="icofont icofont-eye-alt"></i>
+                                                                <%= lang.view.view_btn %>
+                                                            </a>
+                                                            <% if(!isDisable){ %>
+                                                                <a href="/deactive_project?id=<%= dt.id %>&flag=<%= enc_dt %>" class="client-btn-action client-btn-delete" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete" onclick="return checkDel()">
+                                                                    <i class="icofont icofont-ui-delete"></i> 
+                                                                    <%= lang.view.delete_btn %>
+                                                                </a>
+                                                            <% }else { %>
+                                                                <a class="client-btn-action client-btn-delete"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete"
+                                                                    onclick="openNewWindow('P')">
+                                                                    <i class="icofont icofont-ui-delete"></i>
+                                                                    <%= lang.view.delete_btn %>
+                                                                </a>
+                                                            <% } %>
+                                                        </div>
                                                     </td>
                                                     <td>
-                                                        <%= dt.last_access !='' ? dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss' ) : '' %>
+                                                        <span class="client-date-text">
+                                                            <%= dt.last_access !='' ? dateFormat(dt.last_access, 'dd/mm/yyyy HH:MM:ss' ) : '' %>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                                 <% i++; })}else{ %>
                                                     <tr>
-                                                        <td class="text-center text-danger" colspan="4">No Data Found</td>
+                                                        <td class="text-center text-muted" colspan="4">No Data Found</td>
                                                     </tr>
                                                     <% } %>
                                         </tbody>
                                     </table>
-                                    <!-- </div> -->
                                 </div>
                             </div>
                         <%# } %>
@@ -193,12 +232,49 @@
                 openNewWindow('P')
             }
         }
+
+        var projTable;
         $(document).ready(function () {
+            projTable = $('#project_table').DataTable({
+                dom: 't<"client-dt-footer"<"client-dt-footer-left"l><"client-dt-footer-right"ip>>',
+                paging: true,
+                ordering: true,
+                info: true,
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50],
+                language: {
+                    lengthMenu: "Rows per page _MENU_",
+                    info: "_START_ - _END_ of _TOTAL_",
+                    infoEmpty: "0 - 0 of 0",
+                    infoFiltered: "(filtered from _MAX_)",
+                    paginate: {
+                        previous: '<i class="icofont icofont-rounded-left"></i>',
+                        next: '<i class="icofont icofont-rounded-right"></i>'
+                    }
+                },
+                columnDefs: [
+                    { orderable: false, targets: [2] }
+                ]
+            });
+
+            $('#client_search_input').on('keyup input', function() {
+                projTable.search(this.value).draw();
+            });
+
+            $('.sort-order-opt').on('click', function() {
+                var col = $(this).data('col');
+                var dir = $(this).data('dir');
+                $('.sort-order-opt').removeClass('active');
+                $(this).addClass('active');
+                $('#sortOrderLabel').text($(this).text());
+                projTable.order([col, dir]).draw();
+            });
+
             var element = [document.querySelector('#my_project_add'), document.querySelector('#my_project_td')],
-                text = [`Create a new project under any reporting framework.`, `“Edit” allows you to change project name, assign new users or delete existing users for this project. “Manage” allows you to manage this project. “View” allows you to preview and download the project report.`]
+                text = [`Create a new project under any reporting framework.`, `“Edit” allows you to change project name, assign new users or delete existing users for this project. “Manage” allows you to manage this project. “View” allows you to preview and download the project report.`];
             // setTimeout(() => {
             //     triggerTour(element, text)
             // }, 200);
-        })
+        });
     </script>
     <%- include('../templates/footer.ejs') %>

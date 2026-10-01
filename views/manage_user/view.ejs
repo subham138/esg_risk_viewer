@@ -27,85 +27,131 @@
                     }, 1000);
                 </script>
             <% } %>
-            <div class="card">
-                <div class="card-body card_body_Cus">
-                    <div class="row py-3">
-                        <!-- <div class="col-md-2">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="show_flag" id="show_flag_a" value="A" checked>
-                                <label class="form-check-label" for="show_flag_a">
-                                    All
-                                </label>
-                            </div>
+            <div class="client-table-card">
+                <div class="client-dt-header">
+                    <div class="client-dt-header-left">
+                        <div class="client-search-wrapper">
+                            <svg class="client-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="client_search_input" class="client-search-input" placeholder="Search Users..." autocomplete="off">
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="show_flag" id="show_flag_y" value="Y">
-                                <label class="form-check-label" for="show_flag_y">
-                                    Active users
-                                </label>
-                            </div>
+
+                        <div class="dropdown d-inline-block">
+                            <button class="client-btn-secondary dropdown-toggle" type="button" id="statusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                <span id="statusFilterLabel">Status</span>
+                            </button>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="statusFilterDropdown">
+                                <li><a class="dropdown-item status-filter-opt active" href="javascript:void(0)" data-value="">All Status</a></li>
+                                <li><a class="dropdown-item status-filter-opt" href="javascript:void(0)" data-value="Active">Active</a></li>
+                                <li><a class="dropdown-item status-filter-opt" href="javascript:void(0)" data-value="Expired">Expired</a></li>
+                            </ul>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="show_flag" id="show_flag_n" value="N">
-                                <label class="form-check-label" for="show_flag_n">
-                                    Deactivated users
-                                </label>
-                            </div>
-                        </div> -->
-                        <div class="col-md-12">
-                            <!-- MODIFIED BY VIKASH -->
-                            <!-- <a href="/manage_user_edit" class="btn btn-pill btn-custom float-end"  data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit" id="manage_user_edit">Add New User</a> -->
-                            <% if (canAddNewUser) { %>
-                                <a href="/manage_user_edit" class="btn btn-pill btn-custom float-end" data-bs-toggle="tooltip"
-                                    data-bs-placement="left" title="Edit" id="manage_user_edit">Add New User</a>
-                            <% } else { %>
-                                <button onclick="openNewWindow()" class="btn btn-pill btn-custom float-end">
-                                    Add New User
-                                </button>
-                            <% } %>
-                            <!-- END -->
+
+                        <div class="dropdown d-inline-block">
+                            <button class="client-btn-secondary dropdown-toggle" type="button" id="sortOrderDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18M6 12h12M10 18h4"></path>
+                                </svg>
+                                <span id="sortOrderLabel">Sort Order</span>
+                            </button>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="sortOrderDropdown">
+                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="0" data-dir="asc">Default (#)</a></li>
+                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="1" data-dir="asc">Name (A-Z)</a></li>
+                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="1" data-dir="desc">Name (Z-A)</a></li>
+                                <li><a class="dropdown-item sort-order-opt" href="javascript:void(0)" data-col="2" data-dir="asc">Email (A-Z)</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <!-- <div class="table-responsive"> -->
-                        <table class="table" id="user_table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>User Type</th>
-                                    <th>Status</th> <!-- MODIFIED BY VIKASH -->
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if(user_data.length > 0){
-                                    let i = 1;
-                                user_data.forEach(dt => { %>
-                                <tr>
-                                    <td><%= i %></td>
-                                    <td><%= dt.user_name %></td>
-                                    <td><%= dt.user_id %></td>
-                                    <td><%= user_type_list[dt.user_type] %></td>
-                                    <td><%= dt.checked==true ? 'Active' : 'Expired' %></td> <!-- MODIFIED BY VIKASH -->
-                                    <td><a href="/manage_user_edit?id=<%= dt.id %>" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+
+                    <div class="client-dt-header-right">
+                        <!-- MODIFIED BY VIKASH -->
+                        <% if (canAddNewUser) { %>
+                            <a href="/manage_user_edit" class="client-btn-primary" data-bs-toggle="tooltip"
+                                data-bs-placement="left" title="Edit" id="manage_user_edit">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add New User
+                            </a>
+                        <% } else { %>
+                            <button onclick="openNewWindow()" class="client-btn-primary">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add New User
+                            </button>
+                        <% } %>
+                        <!-- END -->
+                    </div>
+                </div>
+
+                <div class="client-table-responsive">
+                    <table class="table" id="user_table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>User Type</th>
+                                <th>Status</th>
+                                <th style="width: 100px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if(user_data.length > 0){
+                                let i = 1;
+                                user_data.forEach(dt => { 
+                                    var initials = '';
+                                    if (dt.user_name && dt.user_name.trim().length > 0) {
+                                        var nameParts = dt.user_name.trim().split(/\s+/);
+                                        if (nameParts.length > 1) {
+                                            initials = (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+                                        } else {
+                                            initials = dt.user_name.trim().substring(0, 2).toUpperCase();
+                                        }
+                                    } else {
+                                        initials = 'U';
+                                    }
+                            %>
+                            <tr>
+                                <td><span class="client-row-index"><%= i %></span></td>
+                                <td>
+                                    <div class="client-user-cell">
+                                        <div class="client-user-avatar"><%= initials %></div>
+                                        <div class="client-user-info">
+                                            <span class="client-user-name"><%= dt.user_name %></span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="client-user-email"><%= dt.user_id %></span></td>
+                                <td><span class="client-tag-pill"><%= user_type_list[dt.user_type] || dt.user_type %></span></td>
+                                <td>
+                                    <% if(dt.checked==true){ %>
+                                        <span class="client-badge-status client-badge-active"><span class="badge-dot"></span>Active</span>
+                                    <% } else { %>
+                                        <span class="client-badge-status client-badge-expired"><span class="badge-dot"></span>Expired</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <a href="/manage_user_edit?id=<%= dt.id %>" class="client-btn-action" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit">
                                         <i class="icofont icofont-ui-edit"></i> Edit
                                     </a>
-                                    <!-- <a href="" class="btn btn-pill btn-outline-danger btn-air-danger" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Delete">
-                                        <i class="icofont icofont-ui-delete"></i> Delete
-                                    </a> -->
-                                    </td>
-                                </tr>
-                                <% i++; })}else{ %>
-                                <tr>
-                                    <td class="text-center text-danger" colspan="5">No Data Found</td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
-                    <!-- </div> -->
+                                </td>
+                            </tr>
+                            <% i++; })}else{ %>
+                            <tr>
+                                <td class="text-center text-muted" colspan="6">No Data Found</td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -117,13 +163,50 @@
     var table;
     $(document).ready(function(){
         table = $('#user_table').DataTable({
-            "paging":   true,
-            "ordering": true,
-            "info":     false
-        })
-    })
+            dom: 't<"client-dt-footer"<"client-dt-footer-left"l><"client-dt-footer-right"ip>>',
+            paging: true,
+            ordering: true,
+            info: true,
+            pageLength: 5,
+            lengthMenu: [5, 10, 25, 50],
+            language: {
+                lengthMenu: "Rows per page _MENU_",
+                info: "_START_ - _END_ of _TOTAL_",
+                infoEmpty: "0 - 0 of 0",
+                infoFiltered: "(filtered from _MAX_)",
+                paginate: {
+                    previous: '<i class="icofont icofont-rounded-left"></i>',
+                    next: '<i class="icofont icofont-rounded-right"></i>'
+                }
+            },
+            columnDefs: [
+                { orderable: false, targets: [5] }
+            ]
+        });
+
+        $('#client_search_input').on('keyup input', function() {
+            table.search(this.value).draw();
+        });
+
+        $('.status-filter-opt').on('click', function() {
+            var val = $(this).data('value');
+            $('.status-filter-opt').removeClass('active');
+            $(this).addClass('active');
+            $('#statusFilterLabel').text(val ? val : 'Status');
+            table.column(4).search(val ? val : '').draw();
+        });
+
+        $('.sort-order-opt').on('click', function() {
+            var col = $(this).data('col');
+            var dir = $(this).data('dir');
+            $('.sort-order-opt').removeClass('active');
+            $(this).addClass('active');
+            $('#sortOrderLabel').text($(this).text());
+            table.order([col, dir]).draw();
+        });
+    });
+
     $('input[name="show_flag"]').on('change', function() {
-        // alert()
         var flag = $('input[name="show_flag"]:checked').val();
         $.ajax({
             method: "POST",
@@ -135,50 +218,37 @@
             },
             success: function (result) {
                 var res = JSON.parse(result);
-                console.log(res, 'Result');
-                // $("#basic-1 tbody").empty();
                 table.clear().draw();
 
                 if (res.suc > 0 && res.msg.length > 0){
-                    var i = 0
+                    var i = 0;
                     var tab_res = res.msg.map(dt => {
-                        var tab_field = []
-                        tab_field.push(++i)
-                        tab_field.push(dt.user_name)
-                        tab_field.push(dt.user_id)
-                        tab_field.push(res.user_type_list[dt.user_type])
-                        tab_field.push(`<a href="/manage_user_edit?id=${dt.id}" class="btn btn_UR btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
+                        var tab_field = [];
+                        tab_field.push(`<span class="client-row-index">${++i}</span>`);
+                        var initials = (dt.user_name || 'U').substring(0, 2).toUpperCase();
+                        tab_field.push(`<div class="client-user-cell"><div class="client-user-avatar">${initials}</div><div class="client-user-info"><span class="client-user-name">${dt.user_name}</span></div></div>`);
+                        tab_field.push(`<span class="client-user-email">${dt.user_id}</span>`);
+                        tab_field.push(`<span class="client-tag-pill">${res.user_type_list[dt.user_type] || dt.user_type}</span>`);
+                        var statusHtml = dt.checked == true ? 
+                            '<span class="client-badge-status client-badge-active"><span class="badge-dot"></span>Active</span>' : 
+                            '<span class="client-badge-status client-badge-expired"><span class="badge-dot"></span>Expired</span>';
+                        tab_field.push(statusHtml);
+                        tab_field.push(`<a href="/manage_user_edit?id=${dt.id}" class="client-btn-action" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit">
                                 <i class="icofont icofont-ui-edit"></i> Edit
-                            </a>`)
+                            </a>`);
                         return tab_field;
-                    })
-                    console.log(tab_res);
+                    });
                     table.rows.add(tab_res);
                     table.draw();
-                    // $.each(res.msg, function (i, dt) {
-                    //     $("#basic-1 tbody").append(`
-                    //     <tr>
-                    //         <td>${++i}</td>
-                    //         <td>${dt.user_name}</td>
-                    //         <td>${dt.user_id}</td>
-                    //         <td>${res.user_type_list[dt.user_type]}</td>
-                    //         <td><a href="/manage_user_edit?id=${dt.id}" class="btn btn-pill btn-outline-primary btn-air-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-original-title="Edit">
-                    //             <i class="icofont icofont-ui-edit"></i> Edit
-                    //         </a>
-                    //         </td>
-                    //     </tr>`);
-                    // });
-                }else{
-                    $("#basic-1 tbody").append(`<tr>
-                                    <td class="text-center text-danger" colspan="5">No Data Found</td>
-                                </tr>`)
+                } else {
+                    table.draw();
                 }
             },
             complete: function () {
                 $(".loader-wrapper").hide();
             }
-        })
-    })
+        });
+    });
 
     // $(document).ready(function(){
     //     setTimeout(() => {

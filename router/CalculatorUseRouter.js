@@ -600,7 +600,7 @@ AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c
 
   var getGhgQuestData = await getGhgQuestList(data.proj_id, client_id, currYear)
 
-  var cal_sec_type_list = await db_Select('id,scope_id,sec_name', 'md_cal_sec_type', `lang_flag="${data.flag == 'I' ? 'E' : 'F'}"`, null)
+  var cal_sec_type_list = await db_Select('id,scope_id,sec_name', 'md_cal_sec_type', `lang_flag="${data.flag == 'I' ? 'E' : 'F'}"`, 'ORDER BY sl_no')
 
   var scope_list = SCOPE_LIST
 
