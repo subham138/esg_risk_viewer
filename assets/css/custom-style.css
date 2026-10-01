@@ -670,18 +670,114 @@ td.today.active.start-date.active.end-date.available, .daterangepicker.ltr tr td
 
 .page-wrapper.compact-wrapper .page-body-wrapper header.main-nav nav,
 header.main-nav nav {
-  flex: 1 !important;
-  overflow: visible !important;
-  padding-bottom: 20px !important;
+  flex: 1 1 auto !important;
+  height: calc(100vh - 65px - 58px) !important;
+  max-height: calc(100vh - 65px - 58px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 12px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent !important;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* Sticky Sidebar Footer - Sign Out Button */
+.sidebar-bottom-signout {
+  position: relative !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  max-height: 58px !important;
+  width: 100% !important;
+  padding: 8px 14px !important;
+  background-color: #202A44 !important;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin-top: auto !important;
+  z-index: 1045 !important;
+  box-sizing: border-box !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sidebar-signout-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  height: 42px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+.sidebar-signout-link i.cusSignOutIcon {
+  font-size: 17px !important;
+  color: #f87171 !important;
+  margin-right: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+.sidebar-signout-link span.cusSignOutLabel {
+  color: #e2e8f0 !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.2px !important;
+  transition: color 0.2s ease !important;
+}
+
+.sidebar-signout-link:hover {
+  background-color: rgba(220, 38, 38, 0.18) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.sidebar-signout-link:hover i.cusSignOutIcon {
+  color: #fca5a5 !important;
+  transform: translateX(2px) !important;
+}
+
+.sidebar-signout-link:hover span.cusSignOutLabel {
+  color: #ffffff !important;
+}
+
 
 /* Custom Scrollbar for Sidebar */
 header.main-nav nav::-webkit-scrollbar {
-  width: 4px;
+  width: 4px !important;
+}
+header.main-nav nav::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 header.main-nav nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+}
+header.main-nav nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+
+header.main-nav .main-navbar,
+header.main-nav .main-navbar #mainnav,
+header.main-nav .main-navbar .customNav {
+  min-height: 0 !important;
+  height: auto !important;
+  justify-content: flex-start !important;
+  display: block !important;
 }
 
 /* 2. Sidebar Brand Header & Floating Toggle Arrow */
@@ -988,6 +1084,33 @@ body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li >
   display: none !important;
 }
 
+/* Squeezed Sign out footer (unhovered) */
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-bottom-signout,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-bottom-signout {
+  padding: 8px 11px !important;
+  justify-content: center !important;
+}
+
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-signout-link,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-signout-link {
+  width: 44px !important;
+  height: 42px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+}
+
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-signout-link i.cusSignOutIcon,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-signout-link i.cusSignOutIcon {
+  margin-right: 0 !important;
+}
+
+.sidebar-icon-only header.main-nav:not(:hover) .sidebar-signout-link span.cusSignOutLabel,
+body.sidebar-icon-only header.main-nav:not(:hover) .sidebar-signout-link span.cusSignOutLabel {
+  display: none !important;
+}
+
+
 /* Page body & Topbar margin when squeezed */
 .sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper .page-body,
 body.sidebar-icon-only .page-wrapper.compact-wrapper .page-body-wrapper .page-body,
@@ -1084,16 +1207,38 @@ body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .main-
   display: inline-flex !important;
 }
 
+/* Squeezed Sign out footer (hovered) */
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-bottom-signout,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-bottom-signout {
+  padding: 8px 14px !important;
+  justify-content: center !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-signout-link,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-signout-link {
+  width: 100% !important;
+  height: 42px !important;
+  padding: 0 14px !important;
+  justify-content: flex-start !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-signout-link i.cusSignOutIcon,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-signout-link i.cusSignOutIcon {
+  margin-right: 12px !important;
+}
+
+.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-signout-link span.cusSignOutLabel,
+body.sidebar-icon-only header.main-nav:not(.sidebar-just-collapsed):hover .sidebar-signout-link span.cusSignOutLabel {
+  display: inline-block !important;
+}
+
+
 /* ==========================================================================
    9. HORIZONTAL FLYOUT FOR ALL SUB-MENUS (OPENED & COLLAPSED STATES)
    ========================================================================== */
 
-/* Prevent containers from clipping horizontal flyout menus */
-header.main-nav,
-header.main-nav nav,
-header.main-nav .main-navbar,
-header.main-nav .main-navbar #mainnav,
-header.main-nav .main-navbar .nav-menu {
+/* Prevent main sidebar container from clipping floating toggle button */
+header.main-nav {
   overflow: visible !important;
 }
 
@@ -1102,8 +1247,8 @@ header.main-nav .main-navbar .nav-menu > li {
   position: relative !important;
 }
 
-/* Submenu indicator arrows point right (horizontal flyout) */
-header.main-nav .main-navbar .nav-menu > li > a .according-menu {
+/* Submenu indicator arrows point right (ONLY for items with sub-menus) */
+header.main-nav .main-navbar .nav-menu > li:has(ul, .nav-submenu, .mega-menu-container, .menu-content, .projects-vertical-menu) > a:not(.link-nav) .according-menu {
   margin-left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1113,7 +1258,7 @@ header.main-nav .main-navbar .nav-menu > li > a .according-menu {
   transition: transform 0.2s ease, color 0.2s ease !important;
 }
 
-header.main-nav .main-navbar .nav-menu > li:hover > a .according-menu {
+header.main-nav .main-navbar .nav-menu > li:has(ul, .nav-submenu, .mega-menu-container, .menu-content, .projects-vertical-menu) > a:not(.link-nav):hover .according-menu {
   color: #ffffff !important;
   transform: translateX(3px) !important;
 }
@@ -1122,14 +1267,32 @@ header.main-nav .main-navbar .nav-menu > li > a .according-menu i {
   transform: none !important;
 }
 
-/* ALL SUBMENUS: Absolute horizontal flyout floating to the right */
+/* Explicitly hide arrow if there are NO sub-menu or sub-sub-menu present */
+header.main-nav .main-navbar .nav-menu li a.link-nav .according-menu,
+header.main-nav .main-navbar .nav-menu > li > a.link-nav .according-menu,
+header.main-nav .main-navbar .nav-menu li a.link-nav .according-menu i,
+.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > a.link-nav .according-menu,
+body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > a.link-nav .according-menu,
+header.main-nav .main-navbar .nav-menu > li:not(:has(ul, .nav-submenu, .mega-menu-container, .menu-content, .projects-vertical-menu)) > a .according-menu,
+header.main-nav .main-navbar .nav-menu > li:not(:has(ul, .nav-submenu, .mega-menu-container, .menu-content, .projects-vertical-menu)) > a:hover .according-menu,
+header.main-nav .main-navbar .nav-menu li:not(:has(ul, .submenu-content, .horizontal-flyout-menu)) > a:not(:has(~ ul, ~ .menu-content, ~ .mega-menu-container)) .according-menu,
+header.main-nav .main-navbar .nav-menu li:not(:has(ul, .submenu-content, .horizontal-flyout-menu)) > .submenu-title:not(:has(~ ul, ~ .submenu-content)) .according-menu {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ALL SUBMENUS: Fixed horizontal flyout floating to the right */
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
 header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
 .sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
 body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu {
-  position: absolute !important;
-  top: 0 !important;
+  position: fixed !important;
   right: auto !important;
-  display: block !important;
+  display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -1138,7 +1301,7 @@ body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-subm
   min-width: 220px !important;
   max-width: 330px !important;
   width: max-content !important;
-  background-color: #111e24 !important;
+  background-color: #202A44 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 8px !important;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.25) !important;
@@ -1157,7 +1320,7 @@ body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-subm
   top: 0 !important;
   bottom: 0 !important;
   left: -20px !important;
-  width: 20px !important;
+  width: 25px !important;
   background: transparent !important;
 }
 
@@ -1165,18 +1328,19 @@ body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-subm
 body:not(.sidebar-icon-only) header.main-nav .main-navbar .nav-menu > li > ul.nav-submenu,
 body.sidebar-icon-only header.main-nav:hover .main-navbar .nav-menu > li > ul.nav-submenu,
 .sidebar-icon-only header.main-nav:hover .main-navbar .nav-menu > li > ul.nav-submenu {
-  left: calc(100% + 6px) !important;
+  left: calc(260px + 6px) !important;
   right: auto !important;
 }
 
 /* Flyout horizontal position in collapsed sidebar (70px unhovered sidebar) */
 body.sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > ul.nav-submenu,
 .sidebar-icon-only header.main-nav:not(:hover) .main-navbar .nav-menu > li > ul.nav-submenu {
-  left: 70px !important;
+  left: calc(70px + 6px) !important;
   right: auto !important;
 }
 
 /* REVEAL FLYOUT ON HOVER (BOTH COLLAPSED AND EXPANDED) */
+.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
 header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
 .sidebar-icon-only header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
 body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li:hover > ul.nav-submenu,
@@ -1275,14 +1439,7 @@ body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li > ul.nav-subm
   background-color: #ffffff !important;
 }
 
-.page-wrapper.compact-wrapper .page-body-wrapper header.main-nav .main-navbar .nav-menu>li .nav-submenu{
-  position: absolute !important;
-}
-header.main-nav .main-navbar .nav-menu>li>ul.nav-submenu,
-.sidebar-icon-only header.main-nav .main-navbar .nav-menu>li>ul.nav-submenu,
-body.sidebar-icon-only header.main-nav .main-navbar .nav-menu>li>ul.nav-submenu{
-  display: none !important;
-}
+
 
 /* ==========================================================================
    10. PROJECTS MENU: VERTICAL ACCORDION + HORIZONTAL FLYOUT FOR GHG MODULE
@@ -1414,9 +1571,8 @@ header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown > ul.proj
 header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu,
 .sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu,
 body.sidebar-icon-only header.main-nav .main-navbar .nav-menu > li.projects-vertical-dropdown ul.horizontal-flyout-menu {
-  position: absolute !important;
-  top: -4px !important;
-  left: calc(100% + 8px) !important;
+  position: fixed !important;
+  left: calc(260px + 8px) !important;
   right: auto !important;
   display: none !important;
   opacity: 0 !important;

@@ -12,29 +12,63 @@
         $(".page-wrapper").addClass("compact-wrapper");
     }   
 
+  // Helper to check if a menu title has child sub-menus or sub-sub-menus
+  function hasMenuChildren($el) {
+      if ($el.hasClass('link-nav')) return false;
+      var $li = $el.closest('li');
+      if ($li.hasClass('mega-menu') || $li.children('.mega-menu-container').length > 0) return true;
+      if ($li.children('ul.nav-submenu, ul.projects-vertical-menu, ul.menu-content').length > 0) return true;
+      if ($el.next('ul, .mega-menu-container, .menu-content').length > 0) return true;
+      if ($li.find('> ul, > .mega-menu-container, > .menu-content').length > 0) return true;
+      return false;
+  }
+
+  function hasSubmenuChildren($el) {
+      if ($el.next('ul, .submenu-content').length > 0) return true;
+      var $parent = $el.closest('.link-section, li');
+      if ($parent.find('> ul, > .submenu-content').length > 0) return true;
+      return false;
+  }
+
   // left sidebar and horizotal menu
     if($('#pageWrapper').hasClass('compact-wrapper')){
-          jQuery('.submenu-title').append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+          jQuery('.submenu-title').each(function () {
+              if (hasSubmenuChildren(jQuery(this))) {
+                  if (jQuery(this).find('.according-menu').length === 0) {
+                      jQuery(this).append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+                  }
+              } else {
+                  jQuery(this).find('.according-menu').remove();
+              }
+          });
           jQuery('.submenu-title').click(function () {
+              if (!hasSubmenuChildren(jQuery(this))) return;
               jQuery('.submenu-title').removeClass('active');
-              jQuery('.submenu-title').find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+              jQuery('.submenu-title').find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
               jQuery('.submenu-content').slideUp('normal');
               if (jQuery(this).next().is(':hidden') == true) {
                   jQuery(this).addClass('active');
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-down"></i></div>');
+                  jQuery(this).find('.according-menu i').removeClass('fa-angle-right').addClass('fa-angle-down');
                   jQuery(this).next().slideDown('normal');
               } else {
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+                  jQuery(this).find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
               }
           });
           jQuery('.submenu-content').hide();
 
           jQuery('.menu-title').each(function () {
-              if (jQuery(this).find('.according-menu').length === 0) {
-                  jQuery(this).append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+              if (hasMenuChildren(jQuery(this))) {
+                  if (jQuery(this).find('.according-menu').length === 0) {
+                      jQuery(this).append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+                  }
+              } else {
+                  jQuery(this).find('.according-menu').remove();
               }
           });
           jQuery('.menu-title').click(function (e) {
+              if (!hasMenuChildren(jQuery(this))) {
+                  return; // Standalone link without sub-menu; allow normal navigation
+              }
               if ($(this).attr('id') === 'custActMenuProject') {
                   e.preventDefault();
                   var $dropdown = $(this).closest('li');
@@ -58,15 +92,19 @@
                   e.preventDefault();
                   return false;
               }
-              jQuery('.menu-title').removeClass('active');
-              jQuery('.menu-title').find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+              jQuery('.menu-title').each(function () {
+                  if (hasMenuChildren(jQuery(this))) {
+                      jQuery(this).removeClass('active');
+                      jQuery(this).find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
+                  }
+              });
               jQuery('.menu-content').slideUp('normal');
               if (jQuery(this).next().is(':hidden') == true) {
                   jQuery(this).addClass('active');
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-down"></i></div>');
+                  jQuery(this).find('.according-menu i').removeClass('fa-angle-right').addClass('fa-angle-down');
                   jQuery(this).next().slideDown('normal');
               } else {
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+                  jQuery(this).find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
               }
           });
           jQuery('.menu-content').hide();
@@ -75,62 +113,82 @@
         if ((contentwidth) < '992') {
             $('#pageWrapper').removeClass('horizontal-wrapper').addClass('compact-wrapper');
             $('.page-body-wrapper').removeClass('horizontal-menu').addClass('sidebar-icon');
-            jQuery('.submenu-title').append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
-          jQuery('.submenu-title').click(function () {
-              jQuery('.submenu-title').removeClass('active');
-              jQuery('.submenu-title').find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
-              jQuery('.submenu-content').slideUp('normal');
-              if (jQuery(this).next().is(':hidden') == true) {
-                  jQuery(this).addClass('active');
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-down"></i></div>');
-                  jQuery(this).next().slideDown('normal');
-              } else {
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
-              }
-          });
-          jQuery('.submenu-content').hide();
+            jQuery('.submenu-title').each(function () {
+                if (hasSubmenuChildren(jQuery(this))) {
+                    if (jQuery(this).find('.according-menu').length === 0) {
+                        jQuery(this).append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+                    }
+                } else {
+                    jQuery(this).find('.according-menu').remove();
+                }
+            });
+            jQuery('.submenu-title').click(function () {
+                if (!hasSubmenuChildren(jQuery(this))) return;
+                jQuery('.submenu-title').removeClass('active');
+                jQuery('.submenu-title').find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
+                jQuery('.submenu-content').slideUp('normal');
+                if (jQuery(this).next().is(':hidden') == true) {
+                    jQuery(this).addClass('active');
+                    jQuery(this).find('.according-menu i').removeClass('fa-angle-right').addClass('fa-angle-down');
+                    jQuery(this).next().slideDown('normal');
+                } else {
+                    jQuery(this).find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
+                }
+            });
+            jQuery('.submenu-content').hide();
 
-          jQuery('.menu-title').each(function () {
-              if (jQuery(this).find('.according-menu').length === 0) {
-                  jQuery(this).append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
-              }
-          });
-          jQuery('.menu-title').click(function (e) {
-              if ($(this).attr('id') === 'custActMenuProject') {
-                  e.preventDefault();
-                  var $dropdown = $(this).closest('li');
-                  var $menu = $dropdown.find('> ul.projects-vertical-menu');
-                  var $arrow = $(this).find('.according-menu i');
+            jQuery('.menu-title').each(function () {
+                if (hasMenuChildren(jQuery(this))) {
+                    if (jQuery(this).find('.according-menu').length === 0) {
+                        jQuery(this).append('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
+                    }
+                } else {
+                    jQuery(this).find('.according-menu').remove();
+                }
+            });
+            jQuery('.menu-title').click(function (e) {
+                if (!hasMenuChildren(jQuery(this))) {
+                    return;
+                }
+                if ($(this).attr('id') === 'custActMenuProject') {
+                    e.preventDefault();
+                    var $dropdown = $(this).closest('li');
+                    var $menu = $dropdown.find('> ul.projects-vertical-menu');
+                    var $arrow = $(this).find('.according-menu i');
 
-                  if ($menu.is(':visible')) {
-                      $menu.slideUp('normal');
-                      $arrow.removeClass('fa-angle-down').addClass('fa-angle-right');
-                      $dropdown.removeClass('active');
-                      $(this).removeClass('active');
-                  } else {
-                      $menu.slideDown('normal');
-                      $arrow.removeClass('fa-angle-right').addClass('fa-angle-down');
-                      $dropdown.addClass('active');
-                      $(this).addClass('active');
-                  }
-                  return false;
-              }
-              if ($(this).next('ul.nav-submenu').length > 0 || $(this).closest('li').find('> ul.nav-submenu').length > 0) {
-                  e.preventDefault();
-                  return false;
-              }
-              jQuery('.menu-title').removeClass('active');
-              jQuery('.menu-title').find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
-              jQuery('.menu-content').slideUp('normal');
-              if (jQuery(this).next().is(':hidden') == true) {
-                  jQuery(this).addClass('active');
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-down"></i></div>');
-                  jQuery(this).next().slideDown('normal');
-              } else {
-                  jQuery(this).find('div').replaceWith('<div class="according-menu"><i class="fa fa-angle-right"></i></div>');
-              }
-          });
-          jQuery('.menu-content').hide();
+                    if ($menu.is(':visible')) {
+                        $menu.slideUp('normal');
+                        $arrow.removeClass('fa-angle-down').addClass('fa-angle-right');
+                        $dropdown.removeClass('active');
+                        $(this).removeClass('active');
+                    } else {
+                        $menu.slideDown('normal');
+                        $arrow.removeClass('fa-angle-right').addClass('fa-angle-down');
+                        $dropdown.addClass('active');
+                        $(this).addClass('active');
+                    }
+                    return false;
+                }
+                if ($(this).next('ul.nav-submenu').length > 0 || $(this).closest('li').find('> ul.nav-submenu').length > 0) {
+                    e.preventDefault();
+                    return false;
+                }
+                jQuery('.menu-title').each(function () {
+                    if (hasMenuChildren(jQuery(this))) {
+                        jQuery(this).removeClass('active');
+                        jQuery(this).find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
+                    }
+                });
+                jQuery('.menu-content').slideUp('normal');
+                if (jQuery(this).next().is(':hidden') == true) {
+                    jQuery(this).addClass('active');
+                    jQuery(this).find('.according-menu i').removeClass('fa-angle-right').addClass('fa-angle-down');
+                    jQuery(this).next().slideDown('normal');
+                } else {
+                    jQuery(this).find('.according-menu i').removeClass('fa-angle-down').addClass('fa-angle-right');
+                }
+            });
+            jQuery('.menu-content').hide();
         }
 
     }
@@ -492,3 +550,56 @@ $("#left-arrow").click(function () {
             scrollTop: $('a.nav-link.menu-title.active').offset().top - 500
         }, 1000);
     }
+
+    // Dynamic vertical alignment for fixed right flyouts on hover
+    function alignFlyout($li) {
+        var $submenu = $li.children('ul.nav-submenu');
+        if ($submenu.length) {
+            var rect = $li[0].getBoundingClientRect();
+            var sidebarWidth = $('header.main-nav').outerWidth() || 260;
+            var topPos = rect.top;
+            var submenuHeight = $submenu.outerHeight() || 240;
+            if (topPos + submenuHeight > window.innerHeight - 10) {
+                topPos = Math.max(10, window.innerHeight - submenuHeight - 10);
+            }
+            $submenu.css({
+                'top': topPos + 'px',
+                'left': (sidebarWidth + 6) + 'px'
+            });
+        }
+    }
+
+    function alignHorizontalFlyout($li) {
+        var $flyout = $li.children('ul.horizontal-flyout-menu');
+        if ($flyout.length) {
+            var rect = $li[0].getBoundingClientRect();
+            var sidebarWidth = $('header.main-nav').outerWidth() || 260;
+            var topPos = rect.top;
+            var flyoutHeight = $flyout.outerHeight() || 200;
+            if (topPos + flyoutHeight > window.innerHeight - 10) {
+                topPos = Math.max(10, window.innerHeight - flyoutHeight - 10);
+            }
+            $flyout.css({
+                'top': topPos + 'px',
+                'left': (sidebarWidth + 6) + 'px'
+            });
+        }
+    }
+
+    $(document).on('mouseenter mousemove', 'header.main-nav .main-navbar .nav-menu > li', function () {
+        alignFlyout($(this));
+    });
+
+    $(document).on('mouseenter mousemove', 'header.main-nav .main-navbar .nav-menu li.has-horizontal-sub', function () {
+        alignHorizontalFlyout($(this));
+    });
+
+    // Keep flyout aligned if sidebar is scrolled while hovering
+    $('header.main-nav nav').on('scroll', function () {
+        $('header.main-nav .main-navbar .nav-menu > li:hover').each(function () {
+            alignFlyout($(this));
+        });
+        $('header.main-nav .main-navbar .nav-menu li.has-horizontal-sub:hover').each(function () {
+            alignHorizontalFlyout($(this));
+        });
+    });
