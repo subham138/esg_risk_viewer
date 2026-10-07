@@ -133,7 +133,7 @@
                                 <td><span class="client-user-email"><%= dt.user_id %></span></td>
                                 <td><span class="client-tag-pill"><%= user_type_list[dt.user_type] || dt.user_type %></span></td>
                                 <td>
-                                    <% if(dt.checked==true){ %>
+                                    <% if(dt.active_flag=='Y'){ %>
                                         <span class="client-badge-status client-badge-active"><span class="badge-dot"></span>Active</span>
                                     <% } else { %>
                                         <span class="client-badge-status client-badge-expired"><span class="badge-dot"></span>Expired</span>

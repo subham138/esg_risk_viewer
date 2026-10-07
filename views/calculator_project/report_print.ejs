@@ -1,4 +1,4 @@
-<%- include('../templates/header.ejs') %>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: projName, show_br: true}) %>
 <% if(flag == "E"){ %>
     <script>document.write("<script src='/editor/richtexteditor/lang/rte-lang-fr.js'></scr" + "ipt>");</script>
 <% } %>
@@ -71,20 +71,6 @@
     }
 </style>
 
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-12">
-                <!-- <h3><%= header %></h3> -->
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-                    <li class="breadcrumb-item"><a href="<%= header_url %>"><%= header %> (<%= flag_name %>)</a></li>
-                    <li class="breadcrumb-item"><%= projName %></li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
 <% var fullMonths = {'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'};
     const proj_info = project_data.length > 0 ? project_data[0].proj_info : []
     var proj_sector = [], proj_inds = [], proj_bus_act = [], proj_loc_act = [];

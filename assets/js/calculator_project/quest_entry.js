@@ -85,14 +85,23 @@ const QuestHandler = {
             if ($parent.hasClass('sub-parent-quest')) {
                 const $subSub = $parent.next('.sub-sub-section');
                 if (['Yes', 'Oui'].includes(txt)) {
-                    $subSub.children().each(function () {
-                        const $dt = $(this);
-                        if ($dt.find('.quest-opt-btn input, .quest-opt-btn select, .quest-opt-btn button').length > 0) {
-                            $dt.show();
-                        } else {
-                            return false;
-                        }
-                    });
+                    $subSub.show();
+                    if ($subSub.hasClass('ppt-wrapper')) {
+                        // In PPT mode, show ONLY the first question slide, hide all others
+                        const $slides = $subSub.children('.sub-sub-parent-quest');
+                        $slides.hide();
+                        $slides.first().show();
+                    } else {
+                        // Non-PPT mode: legacy sequential show
+                        $subSub.children().each(function () {
+                            const $dt = $(this);
+                            if ($dt.find('.quest-opt-btn input, .quest-opt-btn select, .quest-opt-btn button').length > 0) {
+                                $dt.show();
+                            } else {
+                                return false;
+                            }
+                        });
+                    }
                 } else {
                     $subSub.hide().children().hide();
                     $subSub.find('input').val('');
@@ -154,9 +163,10 @@ const QuestHandler = {
                 $next.removeClass('bounceInLeft animated');
                 $el.removeClass('bounceOutRight animated');
 
-                // If entering sub-sub-section, show only the first slide
-                if ($next.hasClass('sub-parent-container')) {
-                    const $slides = $next.find('.sub-sub-parent-quest');
+                // If entering sub-sub-section or editing sub-parent, show only the first slide
+                const $subParentContainer = $el.closest('.sub-parent-container');
+                if ($subParentContainer.length > 0) {
+                    const $slides = $subParentContainer.find('.sub-sub-parent-quest');
                     $slides.hide();
                     $slides.first().show();
                 }
@@ -211,11 +221,12 @@ const QuestHandler = {
             return;
         }
 
-        const $next = $current.next('.sub-sub-parent-quest');
+        const $next = $current.nextAll('.sub-sub-parent-quest').first();
         if ($next.length > 0) {
             $current.addClass('bounceOutLeft animated');
             setTimeout(() => {
                 $current.hide().removeClass('bounceOutLeft animated');
+                $current.siblings('.sub-sub-parent-quest').hide();
                 $next.show().addClass('bounceInRight animated');
                 setTimeout(() => $next.removeClass('bounceInRight animated'), 1000);
             }, 500);
@@ -227,12 +238,13 @@ const QuestHandler = {
      */
     prevSubSlide: function (btn) {
         const $current = $(btn).closest('.question-box');
-        const $prev = $current.prev('.sub-sub-parent-quest');
+        const $prev = $current.prevAll('.sub-sub-parent-quest').first();
 
         if ($prev.length > 0) {
             $current.addClass('bounceOutRight animated');
             setTimeout(() => {
                 $current.hide().removeClass('bounceOutRight animated');
+                $current.siblings('.sub-sub-parent-quest').hide();
                 $prev.show().addClass('bounceInLeft animated');
                 setTimeout(() => $prev.removeClass('bounceInLeft animated'), 1000);
             }, 500);
@@ -584,7 +596,7 @@ const QuestHandler = {
             const isVisible = isSubParentYes && !hasShownFirstSlide;
             if (isVisible) hasShownFirstSlide = true;
 
-            const displayStyle = isVisible && ['R', 'C', 'S', 'I', 'A'].includes(ss.input_type) ? 'block' : 'none';
+            const displayStyle = isVisible ? 'block' : 'none';
 
             html += `<div class="question-box sub-sub-parent-quest ppt-fade-in" style="display:${displayStyle};" data-sub-seq="${subSubSeq}">
                 ${ss.input_heading ? `<h5 class="fadeIn animated">${ss.input_heading}</h5>` : ''}
@@ -744,7 +756,7 @@ const QuestHandler = {
             </div>
             <div class="col-md-12 mt-4 emi-table">
                 <table class="table table-bordered" id="userTable${id}">
-                    <thead><tr><th>Mode</th><th>${th1}</th><th>${th2}</th><th>${th3}</th></tr></thead>
+                    <thead><tr><th></th><th>${th1}</th><th>${th2}</th><th>${th3}</th></tr></thead>
                     <tbody><tr><td></td><td></td><td></td><td></td></tr></tbody>
                     <tfoot><tr><td colspan="3" class="h5">Total</td><td id="tot_emi_cal_${id}"></td></tr></tfoot>
                 </table>
@@ -942,9 +954,9 @@ const QuestHandler = {
         const questDt = $el.attr('quest-dt');
         this.saveSimpleData(questDt, val);
 
-        // Show next sibling question if exists
+        // Show next sibling question if exists (Only if NOT in PPT mode)
         const $nextQuest = $el.closest('.question-box').next();
-        if ($nextQuest.hasClass('question-box')) {
+        if ($nextQuest.hasClass('question-box') && !$el.closest('.sub-sub-section').hasClass('ppt-wrapper')) {
             $nextQuest.show();
         }
     },
@@ -1225,7 +1237,8 @@ const QuestHandler = {
             $scope.find('.custSelect2:not(.select2-hidden-accessible)').select2({
                 placeholder: "-- Select an option --",
                 allowClear: false,
-                theme: "bootstrap-5"
+                theme: "bootstrap-5",
+                width: '100%'
             });
         }, 100);
     }

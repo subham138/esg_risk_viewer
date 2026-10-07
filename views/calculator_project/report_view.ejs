@@ -1,4 +1,4 @@
-<%- include('../templates/header.ejs', {header: "Home", header_url: "/dashboard", sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: `"${projName}"`, show_br: true}) %>
+<%- include('../templates/header.ejs', {header: "Home" , header_url: "/dashboard" , sub_header: `${header} (${flag_name})`, sub_header_url: header_url, sub_sub_header: projName, show_br: true}) %>
 
 <script src="js/chart/google/google-chart-loader.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
@@ -74,15 +74,6 @@
                     <span class="badge cust-inp-grp p-2 mb-0"><%= idt.ind_name %></span>
                 <% })
             } %>
-        </div>
-        <div class="row">
-            <div class="col-sm-12" id="myHeader">
-                <ul class="nav nav-tabs border-tab nav-primary mb-2" id="info-tab" role="tablist">
-                    <li class="nav-item"><a class="nav-link" id="dash-top-tab" data-bs-toggle="pill" href="#dash-top" role="tab" aria-controls="dash-top" aria-selected="false">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link active" id="ghg-tab" data-bs-toggle="pill" href="#ghg" role="tab" aria-controls="ghg" aria-selected="true">GHG Emissions</a></li>
-                    <li class="nav-item"><a class="nav-link" id="trans-plan-tab" data-bs-toggle="pill" href="#trans-plan" role="tab" aria-controls="trans-plan" aria-selected="false">Transition Plan</a></li>
-                </ul>
-            </div>
         </div>
     </div>
 </div>

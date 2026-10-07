@@ -614,7 +614,7 @@ AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c
     repo_type: data.repo_type,
     project_data: project_data.suc > 0 ? project_data.msg : [],
     met_note: met_note_dtls.suc > 0 ? met_note_dtls.msg : [],
-    header: "Project Work",
+    header: "Project List",
     sub_header: "Project View",
     header_url: `/my_project?flag=${encodeURIComponent(
       new Buffer.from(data.flag).toString("base64")

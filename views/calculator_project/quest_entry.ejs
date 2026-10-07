@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/ppt-forms.css">
+<link rel="stylesheet" href="/css/ppt-forms.css?v=<%= Date.now() %>">
 <style>
 .dyn-tab-pills-bar {
     margin-bottom: 20px;
@@ -199,6 +199,21 @@
     top: 50px;
     right: 25px;
     animation: float3 3.5s ease-in-out infinite alternate;
+}
+
+.table th {
+    font-weight: 400 !important;
+}
+
+td span{
+    font-weight: 400 !important;
+}
+
+.form-control, .form-select{
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+.form-control:focus, .form-select:focus{
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
 }
 
 @keyframes float1 {
