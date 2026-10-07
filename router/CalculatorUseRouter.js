@@ -617,7 +617,7 @@ AND d.project_id=${data.proj_id} AND d.proj_year=${currYear} AND a.scope=3 AND c
     header: "Project List",
     sub_header: "Project View",
     header_url: `/my_project?flag=${encodeURIComponent(
-      new Buffer.from(data.flag).toString("base64")
+      new Buffer.from(data.dec_flag).toString("base64")
     )}`,
     flag: data.flag,
     user_type_master: USER_TYPE_LIST,
